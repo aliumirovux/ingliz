@@ -1,5 +1,21 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ingliz tili Beginner</title>
+<script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
+(function () {
+  if (!/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) return;
+  window.INGLIZ_PWA = true;
+  const add = (tag, attrs) => { const e = document.createElement(tag); for (const k in attrs) e.setAttribute(k, attrs[k]); document.head.appendChild(e); };
+  add("link", { rel: "manifest", href: "manifest.webmanifest" });
+  add("link", { rel: "apple-touch-icon", href: "icons/apple-touch-icon.png" });
+  add("link", { rel: "icon", type: "image/png", href: "icons/favicon-32.png" });
+  add("meta", { name: "apple-mobile-web-app-capable", content: "yes" });
+  add("meta", { name: "mobile-web-app-capable", content: "yes" });
+  add("meta", { name: "apple-mobile-web-app-title", content: "Ingliz tili" });
+  add("meta", { name: "theme-color", content: "#F3F4F1", media: "(prefers-color-scheme: light)" });
+  add("meta", { name: "theme-color", content: "#111113", media: "(prefers-color-scheme: dark)" });
+  if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+})();
+</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
@@ -208,6 +224,15 @@ blockquote .icon{padding:3px 8px;vertical-align:middle}
 .tile:hover{border-color:var(--ink)}
 .answer .tile{background:var(--marker-soft);border-color:var(--marker)}
 .tile.used{visibility:hidden}
+
+/* ilovani o'rnatish kartasi */
+.install{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.install img{width:44px;height:44px;border-radius:11px;flex:none}
+.install .tx{flex:1;min-width:0}
+.install .tx b{display:block;font-weight:600}
+.install .tx span{display:block;color:var(--muted);font-size:14px}
+.install .btn{width:auto;min-height:40px;padding:8px 14px;font-size:15px;flex:none}
+.install .x{flex:none;background:none;border:0;color:var(--muted);cursor:pointer;padding:6px;font-size:20px;line-height:1}
 
 /* nav: iOS uslubidagi suzuvchi shisha tab bar */
 nav.tabs{position:fixed;z-index:10;left:calc(12px + env(safe-area-inset-left, 0px));right:calc(12px + env(safe-area-inset-right, 0px));bottom:calc(12px + env(safe-area-inset-bottom, 0px));margin:0 auto;max-width:440px;height:var(--nav-h);padding:5px;display:flex;gap:2px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-edge)}
@@ -1123,6 +1148,25 @@ function todayPlan(n) {
   return plan;
 }
 
+/* ---------- ILOVANI O'RNATISH (faqat GitHub'dagi saytda) ---------- */
+let installEvt = null;
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = () => !/android/i.test(navigator.userAgent) && (/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+const installHidden = () => { try { return localStorage.getItem("ingliz-install-hide") === "1"; } catch (e) { return false; } };
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (!location.hash || location.hash === "#") render(); });
+window.addEventListener("appinstalled", () => { installEvt = null; if (!location.hash || location.hash === "#") render(); });
+function installCard() {
+  if (!window.INGLIZ_PWA || isStandalone() || installHidden()) return "";
+  const head = `<img src="icons/icon-192.png" alt="">`, close = `<button class="x" id="inhide" aria-label="Yopish">×</button>`;
+  if (installEvt) return `<div class="install">${head}<span class="tx"><b>Ilova qilib o'rnating</b><span>Bosh ekrandan bir bosishda ochiladi</span></span><button class="btn" id="inst">O'rnatish</button>${close}</div>`;
+  if (isIOS()) return `<div class="install">${head}<span class="tx"><b>Bosh ekranga qo'shing</b><span>Safari'da pastdagi «Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)</span></span>${close}</div>`;
+  return "";
+}
+function bindInstall() {
+  const b = $("#inst"); if (b) b.onclick = async () => { const e = installEvt; if (!e) return; e.prompt(); try { await e.userChoice; } catch (er) {} installEvt = null; render(); };
+  const x = $("#inhide"); if (x) x.onclick = () => { try { localStorage.setItem("ingliz-install-hide", "1"); } catch (e) {} render(); };
+}
+
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
@@ -1145,9 +1189,11 @@ route(/^$/, () => {
       <ul class="plan">${plan.map((x, i) => `<li><button class="step ${done.includes(x.tag) ? "done" : ""}" data-i="${i}"><span class="ck">${done.includes(x.tag) ? ICON.check : ""}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul>
     </div>
     <div class="facts" style="margin-top:6px"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span></div>
+    ${installCard()}
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a></p>
   </div>`;
   $("#cont").onclick = () => go("unit-" + cu.n);
+  bindInstall();
   app.querySelectorAll(".step").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });
 

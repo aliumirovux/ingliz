@@ -115,6 +115,7 @@ h2{font:700 20px/1.25 var(--font-display);letter-spacing:-.01em;margin:0;text-wr
 .step .go{color:var(--muted)}
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
 .facts b{color:var(--ink);font-weight:600}
+.course{display:inline-flex;align-items:center;gap:6px}.course select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 8px;min-height:32px}
 .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
 .foot a{color:var(--muted)}
 
@@ -407,23 +408,6 @@ window.PATTERNS = [
   ]
 },
 {
-  id: "there", unit: 5, title: "There is / There are",
-  lead: "\"...da ... bor\" — joyda nima borligini aytish. Bitta narsa — There's, ko'p — There are.",
-  rules: [
-    ["There's a bank near my house.", "Uyim yonida bank bor (1 ta)"],
-    ["There are two cafés on my street.", "Ko'chamda ikkita kafe bor (ko'p)"],
-    ["Is there a ...? / Are there any ...?", "... bormi?"],
-    ["There isn't a ... / There aren't any ...", "... yo'q"]
-  ],
-  examples: [["There's a swimming pool in the park.", "Parkda basseyn bor."], ["There are a lot of modern buildings.", "Ko'p zamonaviy binolar bor."]],
-  drill: [
-    {q:"There ___ a supermarket near my house.", o:["is","are","have"], a:0, why:"a supermarket — bitta → is."},
-    {q:"There ___ three banks on my street.", o:["is","are","has"], a:1, why:"three banks — ko'p → are."},
-    {q:"___ there a cinema in your town?", o:["Is","Are","Do"], a:0, why:"a cinema — bitta → Is there."},
-    {q:"There ___ any shops here.", o:["isn't","aren't","don't"], a:1, why:"shops — ko'p → aren't."}
-  ]
-},
-{
   id: "and", unit: 5, title: "and / but / because",
   lead: "Ikki gapni bog'lash: and = va, but = lekin, because = chunki. \"Why?\" savoliga because bilan javob beriladi.",
   rules: [
@@ -627,6 +611,42 @@ window.PATTERNS = [
     {q:"3:15 — It's ___ three.", o:["quarter to","half past","quarter past"], a:2, why:"Soatdan 15 daqiqa o'tgan — quarter past."},
     {q:"7:45 — It's quarter ___ eight.", o:["past","to","at"], a:1, why:"Sakkizga 15 daqiqa qoldi — quarter to."},
     {q:"The meeting is ___ 11 o'clock.", o:["in","on","at"], a:2, why:"Soat oldidan — at."}
+  ]
+},
+{
+  id: "there", unit: 6, title: "There is / There are",
+  lead: "\"...da ... bor\" — joyda nima borligini aytish. Bitta narsa — There's, ko'p — There are.",
+  rules: [
+    ["There's a bank near my house.", "Uyim yonida bank bor (1 ta)"],
+    ["There are two cafés on my street.", "Ko'chamda ikkita kafe bor (ko'p)"],
+    ["Is there a ...? / Are there any ...?", "... bormi?"],
+    ["There isn't a ... / There aren't any ...", "... yo'q"]
+  ],
+  examples: [["There's a swimming pool in the park.", "Parkda basseyn bor."], ["There are a lot of modern buildings.", "Ko'p zamonaviy binolar bor."]],
+  drill: [
+    {q:"There ___ a supermarket near my house.", o:["is","are","have"], a:0, why:"a supermarket — bitta → is."},
+    {q:"There ___ three banks on my street.", o:["is","are","has"], a:1, why:"three banks — ko'p → are."},
+    {q:"___ there a cinema in your town?", o:["Is","Are","Do"], a:0, why:"a cinema — bitta → Is there."},
+    {q:"There ___ any shops here.", o:["isn't","aren't","don't"], a:1, why:"shops — ko'p → aren't."}
+  ]
+},
+{
+  id: "isthere", unit: 6, title: "Is there ...? / Are there ...? — bormi?",
+  lead: "Mehmonxonada yoki shaharda biror narsa borligini so'rash (6.2). Bitta narsa — Is there, ko'p — Are there any. Javob qisqa: Yes, there is / No, there isn't.",
+  rules: [
+    ["Is there a gym? — Yes, there is. / No, there isn't.", "Sport zal bormi? — Ha, bor. / Yo'q."],
+    ["Are there any towels? — Yes, there are. / No, there aren't.", "Sochiqlar bormi? — Ha, bor. / Yo'q."],
+    ["Is there Wi-Fi? (a yo'q)", "Wi-Fi, water, air conditioning — sanalmaydi, a qo'yilmaydi"],
+    ["There are toilets. → They are next to the gym.", "There are — bor; They are — ular (qayerda ekanini aytish)"]
+  ],
+  examples: [["Is there a car park? — Yes, there is.", "Mashina to'xtash joyi bormi? — Ha, bor."], ["Are there any towels in the room? — No, there aren't.", "Xonada sochiqlar bormi? — Yo'q."], ["Where are the lifts? — They're next to reception.", "Liftlar qayerda? — Ular qabulxona yonida."]],
+  drill: [
+    {q:"___ there a safe in the room?", o:["Is","Are","Has"], a:0, why:"a safe — bitta → Is there."},
+    {q:"___ there any towels?", o:["Is","Are","Do"], a:1, why:"towels — ko'p → Are there any."},
+    {q:"Is there a gym? — Yes, there ___.", o:["is","are","it is"], a:0, why:"Qisqa javob: Yes, there is."},
+    {q:"Are there any shops? — No, there ___.", o:["isn't","aren't","don't"], a:1, why:"Ko'plik → No, there aren't."},
+    {q:"Is there ___ Wi-Fi in the hotel?", o:["a","—","an"], a:1, why:"Wi-Fi sanalmaydi → Is there Wi-Fi? (a yo'q)."},
+    {q:"Where are the toilets? — ___ next to the gym.", o:["There are","They are","It is"], a:1, why:"Joyini aytamiz → They are (ular)."}
   ]
 },
 {
@@ -1015,6 +1035,7 @@ function merge(a, b) {
   new Set(Object.keys(ap).concat(Object.keys(bp))).forEach(k => { out.pat[k] = Math.max(ap[k] || 0, bp[k] || 0); });
   const sa = a.streak || {}, sb = b.streak || {};
   out.streak = (sb.last || "") > (sa.last || "") ? sb : (sa.last ? sa : out.streak);
+  out.course = Math.max(a.course || 0, b.course || 0);
   return out;
 }
 const statusText = () => cloud.status === "cloud" ? "Natijalar hisobingizda saqlanadi" : "Natijalar shu qurilmada saqlanmoqda";
@@ -1121,6 +1142,7 @@ function unitStat(n) {
 function curUnit() {
   let n = 0;
   for (let k = 1; k <= 10; k++) if (unitStat(k).started) n = k;
+  if (S.course && S.course >= n) return { n: S.course, fresh: false }; // kursda shu unitdaman
   if (!n) return { n: 1, fresh: true };
   if (unitStat(n).pct >= 85 && n < 10) n++;
   return { n, fresh: false };
@@ -1195,10 +1217,11 @@ route(/^$/, () => {
       <div class="sec-h"><h2>Bugungi reja</h2><span class="n">${plan.filter(x => done.includes(x.tag)).length}/${plan.length} bajarildi</span></div>
       <ul class="plan">${plan.map((x, i) => `<li><button class="step ${done.includes(x.tag) ? "done" : ""}" data-i="${i}"><span class="ck">${done.includes(x.tag) ? ICON.check : ""}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul>
     </div>
-    <div class="facts" style="margin-top:6px"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span></div>
+    <div class="facts" style="margin-top:6px"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span><label class="course">Kursda:<select id="course"><option value="">tanlang</option>${UNIT_INFO.slice(1).map((x, i) => `<option value="${i + 1}"${S.course === i + 1 ? " selected" : ""}>Unit ${i + 1}</option>`).join("")}</select></label></div>
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   $("#cont").onclick = () => go("unit-" + cu.n);
+  $("#course").onchange = e => { S.course = +e.target.value || 0; save(); render(); };
   bindInstall();
   app.querySelectorAll(".step").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });

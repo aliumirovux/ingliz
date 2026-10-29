@@ -18,34 +18,37 @@
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Onest:wght@400;500;600;700&display=swap">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Layout: daftar varag'i — bitta ustun (640px gacha), muhim joylar sariq marker bilan belgilanadi, pastda 4 bo'limli menyu */
+/* Layout: iliq, tahririy (Busuu ruhida) — qog'oz fon, serif sarlavhalar, terrakota aksent; bitta ustun (640px gacha), pastda 4 bo'limli menyu */
 :root{
-  --bg:#F3F4F1; --surface:#FFFFFF; --ink:#17171B; --muted:#5E5F67; --line:#E1E2DD; --line-strong:#CBCCC6;
-  --marker:#FFD23F; --on-marker:#17171B; --hl:#FFE27A; --marker-soft:#FFF5CC;
-  --pron:#875800; --ok:#1C7843; --ok-bg:#E2F2E7; --bad:#BC3227; --bad-bg:#FBE7E4;
-  --glass:rgba(255,255,255,.58); --glass-solid:#FFFFFF; --glass-edge:rgba(255,255,255,.85); --glass-line:rgba(23,23,27,.08); --glass-shadow:0 10px 30px rgba(23,23,27,.14), 0 2px 6px rgba(23,23,27,.06); --lens:rgba(255,210,63,.42);
-  --font-display:"Bricolage Grotesque","Golos Text",-apple-system,"Segoe UI",sans-serif;
-  --font-body:"Golos Text",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-  --nav-h:64px; --r:16px;
+  --bg:#F6F2EA; --surface:#FFFDF8; --surface-2:#EEE8DC; --ink:#1C1A16; --muted:#645F55; --line:#E4DDCF; --line-strong:#D3C9B7;
+  --marker:#B9441F; --on-marker:#FFFFFF; --hl:#F8E4D9; --marker-soft:#F8E4D9; --accent-text:#9C3615;
+  --pron:#7A5A2B; --ok:#2C5E2A; --ok-strong:#3F8A3B; --ok-bg:#E5F2E4; --bad:#9A2B1C; --bad-strong:#C9452E; --bad-bg:#F9E3DD;
+  --shadow:0 1px 2px rgba(40,30,10,.05), 0 10px 28px -14px rgba(40,30,10,.18);
+  --glass:rgba(255,253,248,.72); --glass-solid:#FFFDF8; --glass-edge:rgba(255,255,255,.9); --glass-line:rgba(60,45,20,.09); --glass-shadow:0 10px 30px rgba(60,45,20,.14), 0 2px 6px rgba(60,45,20,.06); --lens:rgba(185,68,31,.13);
+  --font-display:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --font-body:"Onest",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-mono:var(--font-body);
+  --nav-h:64px; --r:20px;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#111113; --surface:#1A1A1E; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --marker:#FFD23F; --on-marker:#17171B; --hl:#5E4F12; --marker-soft:#2A2511;
-    --pron:#E4B95C; --ok:#5DCA8B; --ok-bg:#132A1C; --bad:#FF8B7D; --bad-bg:#351A17;
-    --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(255,210,63,.24);
+    --bg:#17140F; --surface:#221E18; --surface-2:#2D2820; --ink:#F1EBDF; --muted:#A99F8E; --line:#342E25; --line-strong:#4A4236;
+    --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    --glass:rgba(40,35,28,.62); --glass-solid:#2D2820; --glass-edge:rgba(255,245,225,.12); --glass-line:rgba(255,245,225,.07); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-    --bg:#111113; --surface:#1A1A1E; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --marker:#FFD23F; --on-marker:#17171B; --hl:#5E4F12; --marker-soft:#2A2511;
-    --pron:#E4B95C; --ok:#5DCA8B; --ok-bg:#132A1C; --bad:#FF8B7D; --bad-bg:#351A17;
-    --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(255,210,63,.24);
+    --bg:#17140F; --surface:#221E18; --surface-2:#2D2820; --ink:#F1EBDF; --muted:#A99F8E; --line:#342E25; --line-strong:#4A4236;
+    --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
+    --glass:rgba(40,35,28,.62); --glass-solid:#2D2820; --glass-edge:rgba(255,245,225,.12); --glass-line:rgba(255,245,225,.07); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
     color-scheme:dark;
 }
 
@@ -58,89 +61,112 @@ body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--font-body);-w
 button{font:inherit;color:inherit}
 a{color:inherit}
 svg{flex:none}
-:focus-visible{outline:2px solid var(--ink);outline-offset:2px;border-radius:6px}
+::selection{background:var(--hl);color:var(--ink)}
+:focus-visible{outline:2px solid var(--marker);outline-offset:2px;border-radius:6px}
 .wrap{max-width:640px;margin:0 auto;padding-block:20px 36px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
-h1{font:700 30px/1.15 var(--font-display);letter-spacing:-.02em;margin:4px 0 6px;text-wrap:balance}
-h2{font:700 20px/1.25 var(--font-display);letter-spacing:-.01em;margin:0;text-wrap:balance}
+h1{font:400 38px/1.05 var(--font-display);letter-spacing:-.01em;margin:4px 0 6px;text-wrap:balance}
+h2{font:400 26px/1.15 var(--font-display);letter-spacing:-.005em;margin:0;text-wrap:balance}
 .sub{color:var(--muted);font-size:15px;margin:0 0 20px;max-width:60ch}
 .muted{color:var(--muted);font-size:15px}
-.label,.eyebrow{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px}
+.label,.eyebrow{font-size:13px;font-weight:500;color:var(--muted);margin:0 0 10px}
 .hidden{display:none!important}
 .stack{display:flex;flex-direction:column;gap:12px}
 .stack>*+*{margin-top:0}
 .row{display:flex;gap:10px}.row>*{flex:1}
-.back{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:15px;text-decoration:none;margin:0 0 6px}
+.back{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:15px;text-decoration:none;margin:0 0 4px;min-height:44px}
 .back:hover{color:var(--ink)}
 /* marker highlight */
-.mk{background:linear-gradient(transparent 52%, var(--hl) 52%, var(--hl) 94%, transparent 94%);padding:0 .12em;margin:0 -.12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.mk{color:var(--accent-text)}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;min-height:52px;padding:12px 18px;font-weight:600;font-size:16px;cursor:pointer;background:var(--marker);color:var(--on-marker);width:100%;text-decoration:none;transition:transform .12s ease, box-shadow .12s ease}
-.btn:hover{box-shadow:0 0 0 3px var(--hl)}
-.btn:active{transform:translateY(1px)}
-.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line-strong)}
-.btn.ghost:hover{box-shadow:none;border-color:var(--ink)}
-.btn:disabled{opacity:.45;cursor:default;box-shadow:none}
-.icon{display:inline-flex;align-items:center;gap:6px;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);border-radius:999px;padding:7px 13px;font-weight:500;cursor:pointer;font-size:14px;line-height:1.2}
-.icon:hover{border-color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:16px;min-height:52px;padding:12px 18px;font-weight:600;font-size:16px;cursor:pointer;background:var(--marker);color:var(--on-marker);width:100%;text-decoration:none;transition:transform .15s cubic-bezier(.16,1,.3,1), filter .15s}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--surface-2);color:var(--ink)}
+.btn.ghost:hover{filter:brightness(.97)}
+.btn:disabled{background:var(--surface-2);color:var(--muted);cursor:default;filter:none;transform:none}
+.icon{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);color:var(--ink);border:0;border-radius:999px;padding:8px 14px;min-height:36px;font-weight:500;cursor:pointer;font-size:14px;line-height:1.2}
+.icon:hover{filter:brightness(.96)}
 .icon svg{width:17px;height:17px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:8px 13px;font-size:14px;cursor:pointer}
-.chip.on{background:var(--marker-soft);color:var(--ink);border-color:var(--ink);font-weight:600}
+.chip{border:0;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;min-height:36px}
+.chip.on{background:var(--marker-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1.5px var(--marker);font-weight:600}
 
 /* surfaces */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
-.hero{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px}
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.hero{background:var(--surface);border-radius:28px;box-shadow:var(--shadow);padding:20px}
 
-/* today */
-.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:15px;margin-bottom:14px}
-.streak{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 9px;font-variant-numeric:tabular-nums}
-.streak svg{width:18px;height:18px;color:var(--pron)}
-.unitbig{font:800 46px/1 var(--font-display);letter-spacing:-.03em;margin:6px 0 4px}
-.unitname{font:600 20px/1.25 var(--font-display);margin:0}
+/* today: salomlashuv, kurs joyi, bitta dars kartasi, haftalik seriya */
+.hello{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:4px 0 14px}
+.hello h1{margin:0}
+.hello .date{color:var(--muted);font-size:14px;margin:0 0 2px}
+.me{flex:none;width:44px;height:44px;border-radius:50%;background:var(--surface);box-shadow:var(--shadow);display:grid;place-items:center;color:var(--muted);text-decoration:none}
+.me:hover{color:var(--ink)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:999px;background:var(--surface);box-shadow:var(--shadow);font-size:14px;font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums}
+.pill svg{width:17px;height:17px;color:var(--marker)}
+.pill .dn{color:var(--muted);display:flex}.pill .dn svg{color:inherit;width:15px;height:15px}
+.pill select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;font-size:16px}
+.pill:focus-within{outline:2px solid var(--marker);outline-offset:2px}
+.lesson{background:var(--surface);border-radius:28px;box-shadow:var(--shadow);padding:20px}
+.lesson .meta{font-size:13px;color:var(--muted);margin:0}
+.lesson .meta b{color:var(--accent-text);font-weight:600}
+.lesson h2{font-size:38px;line-height:1.02;margin:6px 0 4px}
+.lesson .uz{color:var(--muted);font-size:15px;margin:0}
+.steps{list-style:none;margin:10px 0 16px;padding:0}
+.steps button{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;background:none;border:0;padding:10px 0;text-align:left;cursor:pointer}
+.steps li+li button{border-top:1px solid var(--line)}
+.steps .ic{flex:none;width:38px;height:38px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center}
+.steps .ic svg{width:19px;height:19px}
+.steps .done .ic{background:var(--ok-bg);color:var(--ok)}
+.steps .tx{flex:1;min-width:0}
+.steps .tx b{display:block;font-weight:600;font-size:15px}
+.steps .tx span{display:block;font-size:13px;color:var(--muted)}
+.steps .done .tx b{color:var(--muted)}
+.steps .min{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.week{display:flex;justify-content:space-between;padding:12px 14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow)}
+.week div{display:grid;justify-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.week i{width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--on-marker)}
+.week i svg{width:16px;height:16px}
+.week i.on{background:var(--marker)}
+.week i.now:not(.on){background:transparent;box-shadow:inset 0 0 0 2px var(--marker)}
+.week div.now{color:var(--ink);font-weight:600}
+.medal{width:96px;height:96px;margin:18px auto 0;border-radius:50%;background:var(--ok-strong);color:#fff;display:grid;place-items:center;box-shadow:0 0 0 12px var(--ok-bg)}
+.medal svg{width:44px;height:44px}
+.done-h{font:400 40px/1.05 var(--font-display);margin:30px 0 6px;text-align:center}
+.unitname{font:600 18px/1.3 var(--font-body);margin:0}
 .unituz{color:var(--muted);font-size:15px;margin:2px 0 16px}
 .meter{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
 .meter .pbar{flex:1;margin:0}
-.plan{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.plan li+li{border-top:1px solid var(--line)}
-.step{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:none;border:0;padding:15px 16px;cursor:pointer}
-.step:hover{background:var(--marker-soft)}
-.step .ck{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center}
-.step.done .ck{background:var(--ink);border-color:var(--ink);color:var(--surface)}
-.step.done .ck svg{width:15px;height:15px}
-.step .tx{flex:1;min-width:0}
-.step b{display:block;font-weight:600;font-size:16px}
-.step.done b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
-.step span{display:block;color:var(--muted);font-size:14px}
-.step .go{color:var(--muted)}
+.streak{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:14px}
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
 .facts b{color:var(--ink);font-weight:600}
-.course{display:inline-flex;align-items:center;gap:6px}.course select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 8px;min-height:32px}
 .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:8px}
 .foot a{color:var(--muted)}
 
+.unitbig{font:400 52px/1 var(--font-display);letter-spacing:-.01em;margin:6px 0 4px}
 /* unit list & rows */
 .units{display:flex;flex-direction:column;gap:10px}
-.unit{display:block;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
-.unit:hover{border-color:var(--line-strong)}
+.unit{display:block;text-align:left;width:100%;background:var(--surface);border:0;border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.unit:active{transform:scale(.99)}
 .unit .t{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .unit b{font-size:16px;font-weight:600}
 .unit .n{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
 .urow{display:flex;gap:14px;align-items:center}
-.urow .num{flex:none;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font:800 22px/1 var(--font-display);background:var(--bg);border:1px solid var(--line)}
-.urow.cur .num{background:var(--marker);color:var(--on-marker);border-color:var(--marker)}
+.urow .num{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font:400 28px/1 var(--font-display);background:var(--surface-2)}
+.urow.cur .num{background:var(--marker);color:var(--on-marker)}
 .urow .tx{flex:1;min-width:0}
 .urow .tx span{display:block;color:var(--muted);font-size:14px}
 .urow .pct{font-weight:600;font-variant-numeric:tabular-nums;font-size:15px}
-.pbar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:10px;display:flex}
+.pbar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:10px;display:flex}
 .pbar i{display:block;height:100%}
-.pbar .m{background:var(--ink)}.pbar .s{background:var(--marker)}
+.pbar .m{background:var(--marker)}.pbar .s{background:color-mix(in srgb,var(--marker) 32%,var(--surface-2))}
 
 /* unit hub sections */
 .sec{display:flex;flex-direction:column;gap:10px;margin-top:26px}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .sec-h .n{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
-.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.list{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
 .li{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .li+.li{border-top:1px solid var(--line)}
 .li:hover{background:var(--marker-soft)}
@@ -153,41 +179,41 @@ h2{font:700 20px/1.25 var(--font-display);letter-spacing:-.01em;margin:0;text-wr
 
 /* mode picker */
 .modes{display:grid;gap:10px}
-.mode{display:flex;gap:12px;align-items:flex-start;text-align:left;border:1px solid var(--line-strong);background:var(--surface);border-radius:14px;padding:14px;cursor:pointer}
-.mode.on{border:2px solid var(--ink);padding:13px;background:var(--marker-soft)}
+.mode{display:flex;gap:12px;align-items:flex-start;text-align:left;border:0;box-shadow:inset 0 0 0 1.5px var(--line);background:var(--surface);border-radius:16px;padding:14px;cursor:pointer}
+.mode.on{box-shadow:inset 0 0 0 2px var(--marker);background:var(--marker-soft)}
 .mode b{display:block;font-weight:600}
 .mode span{color:var(--muted);font-size:14px}
 .dot{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);margin-top:3px}
-.mode.on .dot{border:6px solid var(--ink)}
+.mode.on .dot{border:6px solid var(--marker)}
 
 /* practice */
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
-.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:16px}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-bottom:16px}
 .bar i{display:block;height:100%;background:var(--marker);width:0;transition:width .25s}
-.q{font:700 30px/1.2 var(--font-display);letter-spacing:-.01em;margin:6px 0 4px;word-break:break-word;text-wrap:balance}
-.qsmall{font-size:23px}
-.pron{color:var(--pron);font:500 15px/1.4 var(--font-mono)}
+.q{font:400 34px/1.15 var(--font-display);letter-spacing:-.005em;margin:6px 0 4px;word-break:break-word;text-wrap:balance}
+.qsmall{font-size:28px}
+.pron{color:var(--pron);font:500 15px/1.4 var(--font-mono);letter-spacing:.01em}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .hintline{color:var(--muted);font-size:14px;margin-top:6px;min-height:20px;white-space:pre-wrap}
 .opts{display:grid;gap:10px;margin-top:16px}
-.opt{text-align:left;border:1px solid var(--line-strong);background:var(--surface);border-radius:14px;padding:15px 16px;cursor:pointer;font-size:17px}
-.opt:hover:not(:disabled){border-color:var(--ink)}
-.opt.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok);font-weight:600}
-.opt.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.opt{text-align:left;border:0;box-shadow:inset 0 0 0 1.5px var(--line);background:var(--surface);border-radius:16px;padding:15px 16px;min-height:56px;cursor:pointer;font-size:17px;font-weight:500;transition:box-shadow .15s,background .15s}
+.opt:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.opt.ok{background:var(--ok-bg);box-shadow:inset 0 0 0 2px var(--ok-strong);color:var(--ok);font-weight:600}
+.opt.bad{background:var(--bad-bg);box-shadow:inset 0 0 0 2px var(--bad-strong);color:var(--bad)}
 .opt:disabled{cursor:default}
-input.spell,input.search,textarea{width:100%;font:inherit;padding:14px 16px;border-radius:14px;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);outline:none}
+input.spell,input.search,textarea{width:100%;font:inherit;padding:14px 16px;border-radius:16px;border:2px solid var(--line);background:var(--surface);color:var(--ink);outline:none}
 input.spell{font-size:22px;margin-top:16px}
-input.spell:focus,input.search:focus,textarea:focus{border-color:var(--ink);box-shadow:0 0 0 4px var(--hl)}
+input.spell:focus,input.search:focus,textarea:focus{border-color:var(--marker);box-shadow:0 0 0 4px var(--hl)}
 input.spell.ok{border-color:var(--ok)} input.spell.bad{border-color:var(--bad)}
-.fb{margin-top:14px;border-radius:14px;padding:13px 15px;font-size:15px}
+.fb{margin-top:14px;border-radius:16px;padding:14px 16px;font-size:15px}
 .fb.ok{background:var(--ok-bg);color:var(--ok)}
 .fb.bad{background:var(--bad-bg);color:var(--bad)}
 .fb .icon{background:transparent;border-color:currentColor;color:inherit;padding:4px 9px}
-.diff{font:700 22px/1.35 var(--font-display);margin:4px 0;color:var(--ink)}
+.diff{font:400 26px/1.3 var(--font-display);margin:4px 0;color:var(--ink)}
 .diff .x{background:var(--bad);color:var(--surface);border-radius:4px;padding:0 3px}
 .ex{margin-top:12px;font-size:15px}
 .ex small{display:block;color:var(--muted);font-style:italic}
-.score{font:800 52px/1 var(--font-display);letter-spacing:-.02em;margin:10px 0;font-variant-numeric:tabular-nums}
+.score{font:400 64px/1 var(--font-display);letter-spacing:-.01em;margin:10px 0;font-variant-numeric:tabular-nums}
 
 /* word list */
 .wl{list-style:none;margin:0;padding:0}
@@ -201,33 +227,33 @@ input.spell.ok{border-color:var(--ok)} input.spell.bad{border-color:var(--bad)}
 .wl .e{font-size:14px;margin-top:4px}
 .wl .e small{display:block;color:var(--muted);font-style:italic}
 .wl .say{margin-left:auto;padding:5px 9px}
-.box{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:2px 8px;background:var(--marker-soft);color:var(--pron);letter-spacing:.02em}
+.box{display:inline-block;font-size:11px;font-weight:600;border-radius:99px;padding:2px 8px;background:var(--marker-soft);color:var(--accent-text);letter-spacing:.02em}
 .box.m{background:var(--ok-bg);color:var(--ok)}
-.legend{font-size:13px;color:var(--muted);background:var(--bg);border-radius:12px;padding:10px 12px}
+.legend{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:12px;padding:10px 12px}
 
 /* patterns & speaking */
 .rule{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
 .rule:first-child{border-top:0}
 .rule b{font-weight:600;min-width:0}
 .rule span{color:var(--muted);text-align:right;min-width:0}
-blockquote{margin:10px 0;padding:11px 14px;border-left:4px solid var(--marker);background:var(--marker-soft);border-radius:0 12px 12px 0}
+blockquote{margin:10px 0;padding:12px 14px;border-left:3px solid var(--marker);background:var(--marker-soft);border-radius:0 14px 14px 0}
 blockquote small{display:block;color:var(--muted);font-style:italic}
 blockquote .icon{padding:3px 8px;vertical-align:middle}
 .ans{margin-top:10px}
 .ans p{margin:4px 0;font-size:16px}
 .slot{background:var(--hl);border-radius:4px;padding:0 4px;font-weight:600}
-.tip{font-size:14px;color:var(--pron);margin-top:8px}
+.tip{font-size:14px;color:var(--accent-text);margin-top:8px}
 
 /* gap tuzish */
-.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:60px;align-items:center;border-bottom:2px dashed var(--line-strong);padding:10px 0;margin:16px 0 14px}
+.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:72px;align-content:flex-start;align-items:center;background:var(--bg);border-radius:16px;padding:12px;margin:16px 0 14px}
 .tiles{display:flex;flex-wrap:wrap;gap:8px}
-.tile{border:1px solid var(--line-strong);border-bottom-width:3px;background:var(--surface);border-radius:12px;padding:9px 13px;font-size:17px;font-weight:500;cursor:pointer}
-.tile:hover{border-color:var(--ink)}
-.answer .tile{background:var(--marker-soft);border-color:var(--marker)}
+.tile{border:0;box-shadow:inset 0 0 0 1.5px var(--line),0 2px 0 var(--line);background:var(--surface);border-radius:12px;min-height:44px;padding:9px 14px;font-size:17px;font-weight:500;cursor:pointer}
+.tile:hover{box-shadow:inset 0 0 0 1.5px var(--line-strong),0 2px 0 var(--line-strong)}
+.answer .tile{background:var(--marker-soft);color:var(--accent-text);box-shadow:none}
 .tile.used{visibility:hidden}
 
 /* ilovani o'rnatish kartasi */
-.install{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.install{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px}
 .install img{width:44px;height:44px;border-radius:11px;flex:none}
 .install .tx{flex:1;min-width:0}
 .install .tx b{display:block;font-weight:600}
@@ -243,7 +269,7 @@ nav.tabs a.on .i{transform:translateY(-1px) scale(1.06)}
 nav.tabs a:active .i{transform:scale(.88);transition-duration:.1s}
 nav.tabs a .i svg{width:23px;height:23px}
 nav.tabs a:hover{color:var(--ink)}
-nav.tabs a.on{color:var(--ink)}
+nav.tabs a.on{color:var(--accent-text)}
 /* bitta linza tabdan tabga sirpanib o'tadi: prujinali egri chiziq, yo'lda biroz cho'ziladi */
 nav.tabs .lens{position:absolute;z-index:0;left:0;top:5px;bottom:5px;width:0;border-radius:999px;background:var(--lens);box-shadow:inset 0 1px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);pointer-events:none;opacity:0;transition:transform .55s cubic-bezier(.3,1.3,.4,1), width .55s cubic-bezier(.3,1.3,.4,1), opacity .2s ease}
 nav.tabs .lens.still{transition:none}
@@ -256,7 +282,7 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ nav.tabs{background:var(--glass-solid)} }
 @media (prefers-reduced-transparency: reduce){ nav.tabs{background:var(--glass-solid);-webkit-backdrop-filter:none;backdrop-filter:none} }
 
-@media (min-width:700px){ h1{font-size:34px} .unitbig{font-size:54px} }
+@media (min-width:700px){ h1{font-size:44px} .unitbig{font-size:60px} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 </style>
 <div class="stage"><main class="wrap" id="app"></main></div>
@@ -992,7 +1018,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1167,8 +1193,25 @@ function todayPlan(n) {
   const pd = PH.filter(isDue), pn = PH.filter(x => !isSeen(x));
   const pl = pd.length ? pd : pn.slice(0, 3);
   if (pl.length) plan.push({ tag: "gap", t: "Tayyor gaplar", s: pd.length ? pd.length + " ta gap takrorlanadi" : "3 ta yangi gap: " + pl[0].w, run: () => { startPh(pl, "Tayyor gaplar", "gap"); G.back = "#"; } });
+  plan.forEach(x => { x.min = STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
+const STEP_MIN = { rev: 4, gram: 3, tuz: 3, gap: 2 }, STEP_IC = { rev: "book", gram: "bulb", tuz: "tiles", gap: "chat" }, STEP_NAME = { rev: "So'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar" };
+
+/* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
+   Har bir mashq natijasida keyingi qadam tugmasi chiqadi; bosh sahifaga qaytilsa seans tugaydi. */
+let LES = false;
+const nextStep = () => { const done = dayDone(); return todayPlan(curUnit().n).find(x => !done.includes(x.tag)); };
+function lessonBtn(tag) {
+  if (!LES || !tag) return "";
+  const nx = nextStep();
+  return `<button class="btn" id="lnext">${nx ? "Keyingisi: " + STEP_NAME[nx.tag] + " " + ICON.arrow : "Darsni yakunlash " + ICON.check}</button><div style="height:10px"></div>`;
+}
+function bindLesson() {
+  const b = $("#lnext"); if (!b) return;
+  b.onclick = () => { const nx = nextStep(); if (nx) nx.run(); else { LES = false; go("yakun"); } };
+}
+const backLabel = tag => LES && tag ? "Bosh sahifaga" : "Orqaga";
 
 /* ---------- ILOVANI O'RNATISH (faqat GitHub'dagi saytda) ---------- */
 let installEvt = null;
@@ -1197,36 +1240,59 @@ function bindInstall() {
 
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
+  LES = false;
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0;
-  const plan = todayPlan(cu.n), done = dayDone();
+  const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag));
+  const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length;
+  const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
+  const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
   app.innerHTML = `
-  <div class="topline"><span>${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</span><span class="streak" title="Ketma-ket kunlar">${ICON.flame}${streak} kun</span></div>
+  <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
+  <div class="pills">
+    <label class="pill">${ICON.book}<span>${S.course ? "Kursda: Unit " + S.course : "Kursdagi unitni tanlang"}</span><span class="dn">${ICON.down}</span>
+      <select id="course" aria-label="Kursda qaysi unitdasiz"><option value="">tanlang</option>${UNIT_INFO.slice(1).map((x, i) => `<option value="${i + 1}"${S.course === i + 1 ? " selected" : ""}>Unit ${i + 1} · ${esc(x[0])}</option>`).join("")}</select></label>
+    <span class="pill" title="Ketma-ket kunlar">${ICON.flame}${streak} kun</span>
+  </div>
   <div class="stack">
-    ${installCard()}
-    <section class="hero">
-      <p class="eyebrow">${cu.fresh ? "Shu yerdan boshlang" : "Davom etish"}</p>
-      <div class="unitbig"><span class="mk">Unit ${cu.n}</span></div>
-      <p class="unitname">${esc(info[0])}</p>
-      <p class="unituz">${esc(info[1])} · kitobda ${bookPages(cu.n)}-betlar</p>
-      <div class="meter"><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div><span>${st.pct}%</span></div>
-      <button class="btn" id="cont">${cu.fresh ? "Unit 1 ni boshlash" : "Unit " + cu.n + " ga o'tish"} ${ICON.arrow}</button>
+    <section class="lesson">
+      <p class="meta"><b>Unit ${cu.n}</b> · kitobda ${bookPages(cu.n)}-betlar · ${st.pct}%</p>
+      <h2>${esc(info[0])}</h2>
+      <p class="uz">${esc(info[1])}</p>
+      <ul class="steps">${plan.map((x, i) => { const dn = done.includes(x.tag); return `<li><button class="${dn ? "done" : ""}" data-i="${i}"><span class="ic">${dn ? ICON.check : ICON[x.ic]}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="min">${dn ? "bajarildi" : x.min + " daq"}</span></button></li>`; }).join("")}</ul>
+      <button class="btn" id="les"${left.length ? "" : " disabled"}>${cta}</button>
+      ${left.length ? "" : `<div style="height:10px"></div><a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     </section>
-    <div class="sec" style="margin-top:14px">
-      <div class="sec-h"><h2>Bugungi reja</h2><span class="n">${plan.filter(x => done.includes(x.tag)).length}/${plan.length} bajarildi</span></div>
-      <ul class="plan">${plan.map((x, i) => `<li><button class="step ${done.includes(x.tag) ? "done" : ""}" data-i="${i}"><span class="ck">${done.includes(x.tag) ? ICON.check : ""}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul>
-    </div>
-    <div class="facts" style="margin-top:6px"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span><label class="course">Kursda:<select id="course"><option value="">tanlang</option>${UNIT_INFO.slice(1).map((x, i) => `<option value="${i + 1}"${S.course === i + 1 ? " selected" : ""}>Unit ${i + 1}</option>`).join("")}</select></label></div>
+    <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
+    ${installCard()}
+    <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span></div>
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
-  $("#cont").onclick = () => go("unit-" + cu.n);
+  $("#les").onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   $("#course").onchange = e => { S.course = +e.target.value || 0; save(); render(); };
   bindInstall();
-  app.querySelectorAll(".step").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+  app.querySelectorAll(".steps button").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+});
+/* haftalik qator: Dushanbadan boshlab, seriya kunlari belgilanadi */
+function weekDays(streak) {
+  const d = new Date(), dow = (d.getDay() + 6) % 7, lastOff = S.streak.last === today() ? 0 : 1;
+  return ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"].map((n, i) => {
+    const back = dow - i, on = back >= lastOff && back < lastOff + streak;
+    return `<div class="${i === dow ? "now" : ""}"><i class="${on ? "on" : ""} ${i === dow ? "now" : ""}">${on ? ICON.check : ""}</i>${n}</div>`;
+  }).join("");
+}
+
+/* ---------- DARS YAKUNI ---------- */
+route(/^yakun$/, () => {
+  const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0, cu = curUnit(), st = unitStat(cu.n);
+  app.innerHTML = `<div class="medal">${ICON.check}</div><h1 class="done-h">Bugungi dars tugadi</h1>
+  <p class="sub" style="text-align:center;margin:0 auto 24px">Ertaga qaytsangiz, seriya davom etadi.</p>
+  <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div></div>
+  <div style="height:16px"></div><a class="btn" href="#">Bosh sahifa</a>`;
 });
 
-/* ---------- UNITLAR ro'yxati ---------- */
+/* ---------- UNITLAR ro\'yxati ---------- */
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `<h1>Unitlar</h1><p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
@@ -1475,14 +1541,14 @@ function next() { Z.i++; if (Z.i < Z.q.length) ask(); else finish(); }
 function finish() {
   const total = Z.q.length - Z.wrong.length, pct = total ? Math.round(Z.right / total * 100) : 0;
   const uniq = [...new Map(Z.wrong.map(w => [w.id, w])).values()];
-  if (Z.tag) markDone(Z.tag); const back = Z.back; const again = uniq.slice(), mode = Z.mode, title = Z.title;
+  if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title;
   app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p>
     <div class="score">${Z.right} / ${total}</div>
     <p class="muted">${pct === 100 ? "Zo'r! Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? pct + "% — yaxshi. Xatolar ertaga yana chiqadi." : pct + "% — xatolarni hozir yana bir marta ishlang."}</p></div>
     ${uniq.length ? `<div class="card"><p class="label">Xato qilingan so'zlar</p><ul class="wl">${uniq.map(wordLi).join("")}</ul></div>` : ""}
-    <div class="card">${uniq.length ? `<button class="btn" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
-    <button class="btn ghost" id="back">Orqaga</button></div></div>`;
-  bindSay(app);
+    <div class="card">${lessonBtn(tag)}${uniq.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
+    <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
+  bindSay(app); bindLesson();
   Z = null;
   const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back);
   $("#back").onclick = () => { location.hash = back; };
@@ -1505,8 +1571,8 @@ route(/^qolip-([\w-]+)$/, id => {
   const draw = () => {
     if (i >= items.length) {
       S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); save(); markDone("gram");
-      $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${items.length}</div><button class="btn" id="re">Qaytadan</button>`;
-      $("#re").onclick = () => { i = 0; right = 0; draw(); }; return;
+      $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${items.length}</div>${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
+      bindLesson(); $("#re").onclick = () => { i = 0; right = 0; draw(); }; return;
     }
     const it = items[i];
     $("#drill").innerHTML = `<p class="label">Mashq · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
@@ -1621,12 +1687,12 @@ route(/^gapmashq$/, () => {
   $("#yes").onclick = () => ans(true); $("#no").onclick = () => ans(false);
 });
 function phFinish() {
-  if (G.tag) markDone(G.tag); const wrong = G.wrong.slice(), title = G.title, back = G.back, right = G.right, total = G.q.length; G = null;
+  if (G.tag) markDone(G.tag); const wrong = G.wrong.slice(), title = G.title, back = G.back, right = G.right, total = G.q.length, tag = G.tag; G = null;
   app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p><div class="score">${right} / ${total}</div>
     <p class="muted">${wrong.length ? "Bilmagan gaplaringiz ertaga yana chiqadi." : "Zo'r! Hammasini bildingiz."}</p></div>
     ${wrong.length ? `<div class="card"><p class="label">Bilmagan gaplar</p><ul class="wl">${wrong.map(p => `<li><div class="h"><span class="w">${esc(p.w)}</span><button class="icon say" data-say="${esc(p.w)}">${ICON.vol}</button></div><div class="p">[${esc(p.p)}]</div><div class="u">${esc(p.u)}</div></li>`).join("")}</ul></div>` : ""}
-    <div class="card">${wrong.length ? `<button class="btn" id="again">Bilmaganlarni qayta ishlash</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">Orqaga</button></div></div>`;
-  bindSay(app);
+    <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Bilmaganlarni qayta ishlash</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
+  bindSay(app); bindLesson();
   const a = $("#again"); if (a) a.onclick = () => { startPh(wrong, title); G.back = back; };
   $("#back").onclick = () => { location.hash = back; };
 }
@@ -1740,13 +1806,13 @@ route(/^tuzmashq$/, () => {
 });
 function tuzFinish() {
   if (T.tag) markDone(T.tag);
-  const { right, total, wrong, title, key, back } = T; T = null;
+  const { right, total, wrong, title, key, back, tag } = T; T = null;
   if (key) { S.pat[key] = Math.max(S.pat[key] || 0, right); save(); }
   app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p><div class="score">${right} / ${total}</div>
     <p class="muted">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Zo'r! Hamma gap birinchi urinishda to'g'ri."}</p></div>
     ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl">${wrong.map(it => `<li><div class="h"><span class="w">${esc(it.e)}</span><button class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div><div class="e"><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div>` : ""}
-    <div class="card">${wrong.length ? `<button class="btn" id="again">Xatolarni qayta tuzish</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">Orqaga</button></div></div>`;
-  bindSay(app);
+    <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta tuzish</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
+  bindSay(app); bindLesson();
   const a = $("#again"); if (a) a.onclick = () => { startTuz(wrong, title, null); T.back = back; };
   $("#back").onclick = () => { location.hash = back; };
 }

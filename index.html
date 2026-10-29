@@ -35,6 +35,9 @@
 
 *{box-sizing:border-box}
 html,body{margin:0}
+/* sahifa almashish animatsiyasi yon tomonga chiqib, telefonda sahifani kichraytirmasin */
+.stage{overflow-x:hidden}
+@supports (overflow:clip){ .stage{overflow-x:clip} }
 body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px))}
 button{font:inherit;color:inherit}
 a{color:inherit}
@@ -207,7 +210,7 @@ blockquote .icon{padding:3px 8px;vertical-align:middle}
 .tile.used{visibility:hidden}
 
 /* nav: iOS uslubidagi suzuvchi shisha tab bar */
-nav.tabs{position:fixed;z-index:10;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom, 0px));width:min(440px, calc(100% - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));height:var(--nav-h);padding:5px;display:flex;gap:2px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-edge)}
+nav.tabs{position:fixed;z-index:10;left:calc(12px + env(safe-area-inset-left, 0px));right:calc(12px + env(safe-area-inset-right, 0px));bottom:calc(12px + env(safe-area-inset-bottom, 0px));margin:0 auto;max-width:440px;height:var(--nav-h);padding:5px;display:flex;gap:2px;border-radius:999px;background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow), inset 0 1px 0 var(--glass-edge)}
 nav.tabs a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:999px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:.01em;transition:color .25s ease;position:relative;z-index:1;-webkit-tap-highlight-color:transparent}
 nav.tabs a .i{display:grid;place-items:center;height:26px;transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
 nav.tabs a.on .i{transform:translateY(-1px) scale(1.06)}
@@ -230,7 +233,7 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 @media (min-width:700px){ h1{font-size:34px} .unitbig{font-size:54px} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 </style>
-<main class="wrap" id="app"></main>
+<div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
   <span class="lens" aria-hidden="true"></span>
   <a href="#" data-tab="home"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span class="lb">Bugun</span></a>

@@ -1153,14 +1153,20 @@ let installEvt = null;
 const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const isIOS = () => !/android/i.test(navigator.userAgent) && (/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
 const installHidden = () => { try { return localStorage.getItem("ingliz-install-hide") === "1"; } catch (e) { return false; } };
-window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (!location.hash || location.hash === "#") render(); });
-window.addEventListener("appinstalled", () => { installEvt = null; if (!location.hash || location.hash === "#") render(); });
-function installCard() {
-  if (!window.INGLIZ_PWA || isStandalone() || installHidden()) return "";
-  const head = `<img src="icons/icon-192.png" alt="">`, close = `<button class="x" id="inhide" aria-label="Yopish">×</button>`;
-  if (installEvt) return `<div class="install">${head}<span class="tx"><b>Ilova qilib o'rnating</b><span>Bosh ekrandan bir bosishda ochiladi</span></span><button class="btn" id="inst">O'rnatish</button>${close}</div>`;
-  if (isIOS()) return `<div class="install">${head}<span class="tx"><b>Bosh ekranga qo'shing</b><span>Safari'da pastdagi «Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)</span></span>${close}</div>`;
-  return "";
+const isInApp = () => /Telegram|Instagram|FBAN|FBAV|Line\/|; wv\)/i.test(navigator.userAgent);
+const installRoute = () => !location.hash || location.hash === "#" || location.hash === "#sozlama";
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (installRoute()) render(); });
+window.addEventListener("appinstalled", () => { installEvt = null; if (installRoute()) render(); });
+const canOfferInstall = () => window.INGLIZ_PWA && !isStandalone();
+/* force: Sozlama sahifasida yopilgan bo'lsa ham ko'rsatiladi */
+function installCard(force) {
+  if (!canOfferInstall() || (!force && installHidden())) return "";
+  const head = `<img src="icons/icon-192.png" alt="">`, close = force ? "" : `<button class="x" id="inhide" aria-label="Yopish">×</button>`;
+  const card = (t, s, btn) => `<div class="install">${head}<span class="tx"><b>${t}</b><span>${s}</span></span>${btn || ""}${close}</div>`;
+  if (installEvt) return card("Ilova qilib o'rnating", "Bosh ekrandan bir bosishda ochiladi", `<button class="btn" id="inst">O'rnatish</button>`);
+  if (isInApp()) return card("Brauzerda oching", "Ilova qilib o'rnatish uchun menyudan «Brauzerda ochish»ni tanlang (Chrome yoki Safari)");
+  if (isIOS()) return card("Bosh ekranga qo'shing", "«Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)");
+  return card("Bosh ekranga qo'shing", "Brauzer menyusi (⋮) → «Ilovani o'rnatish» yoki «Bosh ekranga qo'shish»");
 }
 function bindInstall() {
   const b = $("#inst"); if (b) b.onclick = async () => { const e = installEvt; if (!e) return; e.prompt(); try { await e.userChoice; } catch (er) {} installEvt = null; render(); };
@@ -1176,6 +1182,7 @@ route(/^$/, () => {
   app.innerHTML = `
   <div class="topline"><span>${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</span><span class="streak" title="Ketma-ket kunlar">${ICON.flame}${streak} kun</span></div>
   <div class="stack">
+    ${installCard()}
     <section class="hero">
       <p class="eyebrow">${cu.fresh ? "Shu yerdan boshlang" : "Davom etish"}</p>
       <div class="unitbig"><span class="mk">Unit ${cu.n}</span></div>
@@ -1189,8 +1196,7 @@ route(/^$/, () => {
       <ul class="plan">${plan.map((x, i) => `<li><button class="step ${done.includes(x.tag) ? "done" : ""}" data-i="${i}"><span class="ck">${done.includes(x.tag) ? ICON.check : ""}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul>
     </div>
     <div class="facts" style="margin-top:6px"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span></div>
-    ${installCard()}
-    <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a></p>
+    <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   $("#cont").onclick = () => go("unit-" + cu.n);
   bindInstall();
@@ -1726,9 +1732,10 @@ function tuzFinish() {
 route(/^sozlama$/, () => {
   app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijani ko'chirish</h1>
   <p class="sub">Odatda natijalar hisobingizda o'zi saqlanadi. Bu sahifa zaxira uchun: kodni nusxalab qo'ying yoki boshqa joyga "Yuklash" orqali o'tkazing.</p>
-  <div class="stack"><div class="card"><p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
+  <div class="stack">${installCard(true)}<div class="card"><p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
   <div style="height:10px"></div><button class="btn" id="cp">Nusxalash</button></div>
   <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div></div>`;
+  bindInstall();
   $("#cp").onclick = () => { const t = $("#ex"); t.select(); try { navigator.clipboard.writeText(t.value); } catch (e) { try { document.execCommand("copy"); } catch (e2) {} } $("#cp").textContent = "Nusxalandi ✓"; };
   $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 } }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
 });

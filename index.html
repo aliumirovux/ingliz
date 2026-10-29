@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ingliz tili Beginner</title>
 <script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
 (function () {
@@ -11,8 +11,6 @@
   add("meta", { name: "apple-mobile-web-app-capable", content: "yes" });
   add("meta", { name: "mobile-web-app-capable", content: "yes" });
   add("meta", { name: "apple-mobile-web-app-title", content: "Ingliz tili" });
-  add("meta", { name: "theme-color", content: "#F3F4F1", media: "(prefers-color-scheme: light)" });
-  add("meta", { name: "theme-color", content: "#111113", media: "(prefers-color-scheme: dark)" });
   if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 })();
 </script>
@@ -54,6 +52,8 @@
 
 *{box-sizing:border-box}
 html,body{margin:0}
+/* fon html'da ham: Android Chrome pastki panel rangini sahifa fonidan olishi mumkin, boshida oq chiqmasin (tajriba) */
+html{background:var(--bg)}
 /* sahifa almashish animatsiyasi yon tomonga chiqib, telefonda sahifani kichraytirmasin */
 .stage{overflow-x:hidden}
 @supports (overflow:clip){ .stage{overflow-x:clip} }

@@ -169,7 +169,8 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .list{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
 .li{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .li+.li{border-top:1px solid var(--line)}
-.li:hover{background:var(--marker-soft)}
+a.li:hover,button.li:hover{background:var(--marker-soft)}
+div.li{cursor:default}
 .li .tx{flex:1;min-width:0}
 .li .tx b{display:block;font-weight:600}
 .li .tx span{display:block;color:var(--muted);font-size:14px}
@@ -1031,7 +1032,7 @@ const unitOf = n => UNITS.find(u => u.unit === n);
 
 /* ---------- storage (per browser) ---------- */
 const KEY = "ingliz-v1";
-let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {} };
+let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} pushSoon(); };
 
@@ -1065,6 +1066,8 @@ function merge(a, b) {
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
+  const al = a.log || {}, bl = b.log || {}; out.log = {};
+  new Set(Object.keys(al).concat(Object.keys(bl))).forEach(k => { const x = al[k], y = bl[k]; out.log[k] = !x ? y : !y ? x : (y.a > x.a ? y : x); });
   return out;
 }
 const statusText = () => cloud.status === "cloud" ? "Natijalar hisobingizda saqlanadi" : "Natijalar shu qurilmada saqlanmoqda";
@@ -1097,10 +1100,29 @@ function grade(w, ok, spelled) {
   if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; if (spelled) r.sp = (r.sp || 0) + 1; else if (w.a && !r.sp) r.b = Math.min(r.b, 2); } else { r.b = 0; r.bad++; }
   r.due = addDays(INT[r.b]);
   S.srs[w.id] = r;
+  logAns(ok, spelled);
   const t = today();
   if (S.streak.last !== t) { S.streak.n = (S.streak.last === addDays(-1)) ? S.streak.n + 1 : 1; S.streak.last = t; }
   save();
 }
+/* ---------- kunlik jurnal: javoblar, xotiradan yozilgan so'zlar va faol vaqt (soniya) ---------- */
+// a — javoblar, ok — to'g'ri, sw — yozib javob berilgan so'zlar, sp — shundan to'g'ri, t — faol vaqt
+let lastAns = 0;
+function logAns(ok, spelled) {
+  const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 }), now = Date.now(), gap = (now - lastAns) / 1000;
+  L.a++; if (ok) L.ok++; if (spelled) { L.sw++; if (ok) L.sp++; }
+  // javoblar orasi 90 soniyadan uzun bo'lsa, tanaffus deb hisoblanadi
+  L.t += lastAns && gap < 90 ? Math.round(gap) : 10; lastAns = now;
+}
+// off: 0 — shu hafta (Dushanbadan), 1 — o'tgan hafta
+function weekStat(off) {
+  const dow = (new Date().getDay() + 6) % 7, r = { a: 0, ok: 0, sw: 0, sp: 0, t: 0, days: 0 };
+  for (let i = 0; i < 7; i++) { const L = S.log[addDays(i - dow - 7 * off)]; if (!L || !L.a) continue; r.days++; ["a", "ok", "sw", "sp", "t"].forEach(k => r[k] += L[k] || 0); }
+  return r;
+}
+const pctOf = (x, n) => n ? Math.round(x / n * 100) : 0;
+const avgMin = r => r.days ? Math.max(1, Math.round(r.t / r.days / 60)) : 0;
+const overdueWords = () => WORDS.filter(w => { const r = rec(w.id); return r && r.due < today(); });
 const isDue = w => { const r = rec(w.id); return r && r.due <= today(); };
 const isMastered = w => { const r = rec(w.id); return r && r.b >= 3 && (!w.a || r.sp > 0); };
 const isSeen = w => !!rec(w.id);
@@ -1301,6 +1323,7 @@ route(/^$/, () => {
       ${left.length ? "" : `<div style="height:10px"></div><a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     </section>
     <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
+    ${weekLine()}
     ${installCard()}
     <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span>${nm ? `<a href="#xato"><b>${nm}</b> ta xato</a>` : ""}</div>
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
@@ -1310,6 +1333,13 @@ route(/^$/, () => {
   bindInstall();
   app.querySelectorAll(".steps button").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });
+/* haftalik natija: «Natijalar» sahifasiga havola; hali mashq bo'lmagan bo'lsa ko'rinmaydi */
+function weekLine() {
+  const r = weekStat(0);
+  if (!r.a && !weekStat(1).a) return "";
+  const sub = r.a ? (r.sw ? "imlo " + pctOf(r.sp, r.sw) + "% · " : "") + r.days + " faol kun · o'rtacha " + avgMin(r) + " daq" : "Bu hafta hali mashq qilinmadi";
+  return `<div class="list"><a class="li" href="#natija"><span class="tx"><b>Bu hafta: ${r.sp} ta so'z xotiradan</b><span>${sub}</span></span><span class="go">${ICON.chev}</span></a></div>`;
+}
 /* haftalik qator: Dushanbadan boshlab, seriya kunlari belgilanadi */
 function weekDays(streak) {
   const d = new Date(), dow = (d.getDay() + 6) % 7, lastOff = S.streak.last === today() ? 0 : 1;
@@ -1321,10 +1351,10 @@ function weekDays(streak) {
 
 /* ---------- DARS YAKUNI ---------- */
 route(/^yakun$/, () => {
-  const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0, cu = curUnit(), st = unitStat(cu.n);
+  const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0, cu = curUnit(), st = unitStat(cu.n), L = S.log[today()];
   app.innerHTML = `<div class="medal">${ICON.check}</div><h1 class="done-h">Bugungi dars tugadi</h1>
   <p class="sub" style="text-align:center;margin:0 auto 24px">Ertaga qaytsangiz, seriya davom etadi.</p>
-  <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div></div>
+  <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div>${L ? `<div class="li"><span class="tx"><b>Bugun xotiradan yozildi</b></span><span class="st">${L.sp} ta so'z</span></div><div class="li"><span class="tx"><b>Bugungi mashq</b></span><span class="st">${Math.max(1, Math.round(L.t / 60))} daq</span></div>` : ""}</div>
   <div style="height:16px"></div><a class="btn" href="#">Bosh sahifa</a>`;
 });
 
@@ -1629,7 +1659,7 @@ function runDrill(box, items, done, own) {
     box.innerHTML = `<p class="label">${other ? "Takrorlash · Unit " + it.unit + ": " + esc(it.title) : "Mashq"} · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
     box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
       const k = +b.dataset.k, ok = k === it.a, key = "g:" + it.pid + "#" + it.k;
-      res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); save();
+      res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); logAns(ok); save();
       box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.k === it.a) x.classList.add("ok"); });
       if (!ok) b.classList.add("bad");
       const full = it.q.includes("___") ? it.q.replace("___", it.o[it.a]).replace(/\s*\(.*?\)\s*$/, "") : it.o[it.a];
@@ -1653,6 +1683,28 @@ route(/^gtakror$/, () => {
 });
 
 /* ---------- XATOLARIM ---------- */
+/* ---------- NATIJALAR: haftalik ko'rsatkichlar va maqsadlar ---------- */
+route(/^natija$/, () => {
+  const r = weekStat(0), p = weekStat(1), od = overdueWords().length, acc = pctOf(r.sp, r.sw);
+  const row = (t, sub, v, met) => `<div class="li"><span class="tx"><b>${t}</b><span>${sub}</span></span><span class="st${met ? " full" : ""}">${met ? ICON.check : ""}${v}</span></div>`;
+  const was = (v, has) => has ? "O'tgan hafta: " + v : "O'tgan hafta: ma'lumot yo'q";
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const k = addDays(-i), L = S.log[k], dt = new Date(); dt.setDate(dt.getDate() - i);
+    const name = i === 0 ? "Bugun" : i === 1 ? "Kecha" : DAYS[dt.getDay()] + ", " + dt.getDate() + "-" + MONTHS[dt.getMonth()];
+    days.push(`<div class="li"><span class="tx"><b>${name}</b><span>${L && L.a ? L.a + " ta javob · " + pctOf(L.ok, L.a) + "% to'g'ri" : "Mashq qilinmagan"}</span></span><span class="st">${L && L.a ? L.sp + " ta so'z · " + Math.max(1, Math.round(L.t / 60)) + " daq" : "—"}</span></div>`);
+  }
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijalar</h1><p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: xotiradan to'g'ri yozilgan so'zlar.</p>
+  <section class="sec"><div class="list">
+    ${row("Xotiradan yozilgan so'zlar", was(p.sp, p.a), r.sp, false)}
+    ${row("Imlo aniqligi", "Maqsad: 80% va undan yuqori", r.sw ? acc + "%" : "—", r.sw && acc >= 80)}
+    ${row("Faol kunlar", "Maqsad: haftada 5 kun", r.days + " / 7", r.days >= 5)}
+    ${row("O'rtacha mashq", "Maqsad: kuniga 15 daqiqagacha", r.days ? avgMin(r) + " daq" : "—", r.days && avgMin(r) <= 15)}
+    ${row("Muddati o'tgan so'zlar", "Maqsad: 20 tadan oshmasin", od, od <= 20)}
+  </div></section>
+  <section class="sec"><div class="sec-h"><h2>Oxirgi 7 kun</h2></div><div class="list">${days.join("")}</div></section>`;
+});
+
 route(/^xato$/, () => {
   const mw = misWords(), mg = misGram(), mb = misBuild();
   app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Xatolarim</h1><p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
@@ -1819,7 +1871,7 @@ function startTuz(list, title, key, tag) {
   T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
-function tuzResult(it, ok) { if (!T.again.has(it)) { if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
+function tuzResult(it, ok) { if (!T.again.has(it)) { logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 function tuzNext() { T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 route(/^tuzmashq$/, () => {
   if (!T) return go("tuz");
@@ -1906,7 +1958,7 @@ route(/^sozlama$/, () => {
   <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div></div>`;
   bindInstall();
   $("#cp").onclick = () => { const t = $("#ex"); t.select(); try { navigator.clipboard.writeText(t.value); } catch (e) { try { document.execCommand("copy"); } catch (e2) {} } $("#cp").textContent = "Nusxalandi ✓"; };
-  $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {} }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
+  $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
 });
 
 render();

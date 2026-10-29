@@ -1018,7 +1018,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1031,7 +1031,7 @@ const unitOf = n => UNITS.find(u => u.unit === n);
 
 /* ---------- storage (per browser) ---------- */
 const KEY = "ingliz-v1";
-let S = { srs: {}, pat: {}, streak: { last: "", n: 0 } };
+let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {} };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} pushSoon(); };
 
@@ -1062,6 +1062,9 @@ function merge(a, b) {
   const sa = a.streak || {}, sb = b.streak || {};
   out.streak = (sb.last || "") > (sa.last || "") ? sb : (sa.last ? sa : out.streak);
   out.course = Math.max(a.course || 0, b.course || 0);
+  const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
+  new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
+  out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   return out;
 }
 const statusText = () => cloud.status === "cloud" ? "Natijalar hisobingizda saqlanadi" : "Natijalar shu qurilmada saqlanmoqda";
@@ -1088,9 +1091,10 @@ const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return 
 // Leitner qutilari: 0 → yangi/xato, 5 → mustahkam. Intervallar (kun):
 const INT = [1, 1, 3, 7, 14, 30];
 const rec = id => S.srs[id];
-function grade(w, ok) {
+// So'z kamida bir marta xotiradan to'g'ri yozilmaguncha 2-qutidan yuqoriga chiqmaydi (r.sp — to'g'ri yozilganlar soni).
+function grade(w, ok, spelled) {
   const r = S.srs[w.id] || { b: 0, due: today(), ok: 0, bad: 0 };
-  if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; } else { r.b = 0; r.bad++; }
+  if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; if (spelled) r.sp = (r.sp || 0) + 1; else if (w.a && !r.sp) r.b = Math.min(r.b, 2); } else { r.b = 0; r.bad++; }
   r.due = addDays(INT[r.b]);
   S.srs[w.id] = r;
   const t = today();
@@ -1098,10 +1102,34 @@ function grade(w, ok) {
   save();
 }
 const isDue = w => { const r = rec(w.id); return r && r.due <= today(); };
-const isMastered = w => { const r = rec(w.id); return r && r.b >= 3; };
+const isMastered = w => { const r = rec(w.id); return r && r.b >= 3 && (!w.a || r.sp > 0); };
 const isSeen = w => !!rec(w.id);
 const dueWords = () => WORDS.filter(isDue);
 const weakWords = () => WORDS.filter(w => { const r = rec(w.id); return r && r.b === 0; });
+
+/* ---------- XATOLARIM: har bir xato shu yerga tushadi, keyingi safar to'g'ri javob berilsa o'chadi ---------- */
+// kalitlar: "w:" so'z, "g:" qolip mashqi (qolip#raqam), "b:" gap tuzish
+const misAdd = k => { S.mis[k] = today(); };
+const misDel = k => { delete S.mis[k]; };
+// old: faqat oldingi kunlardagi xatolar (bugungisi darhol qayta so'ralmaydi), eskisi birinchi
+const misKeys = (pre, old) => Object.keys(S.mis).filter(k => k.startsWith(pre) && (!old || S.mis[k] < today())).sort((a, b) => S.mis[a] < S.mis[b] ? -1 : 1);
+const misWords = old => misKeys("w:", old).map(k => WORDS.find(w => w.id === k.slice(2))).filter(Boolean);
+const misGram = old => misKeys("g:", old).map(k => { const [id, i] = k.slice(2).split("#"), p = PATTERNS.find(x => x.id === id); return p && p.drill[+i] ? drillItem(p, +i) : null; }).filter(Boolean);
+const misBuild = old => misKeys("b:", old).map(k => BLD.find(x => x.e === k.slice(2))).filter(Boolean);
+
+/* ---------- grammatika ham oraliq bilan qaytadi: 80%+ to'g'ri bo'lsa keyingi quti, aks holda ertaga ---------- */
+function gradePat(p, ok) { const r = S.gr[p.id] || { b: 0, due: today() }; r.b = ok ? Math.min(r.b + 1, 5) : 0; r.due = addDays(INT[r.b]); S.gr[p.id] = r; }
+// jadvalga hali tushmagan, lekin oldin ishlangan qolip ham takrorlashga chiqadi
+const patDue = p => { const r = S.gr[p.id]; return r ? r.due <= today() : S.pat[p.id] != null; };
+const drillItem = (p, i) => Object.assign({}, p.drill[i], { pid: p.id, k: i, unit: p.unit, title: p.title });
+// takrorlash savollari: avval eski xatolar, keyin muddati kelgan qoliplardan bittadan
+function gramReview(n, skip, max) {
+  const out = misGram(true).filter(x => x.unit <= n), has = new Set(out.map(x => x.pid));
+  PATTERNS.filter(p => p.unit <= n && p.id !== skip && !has.has(p.id) && patDue(p))
+    .sort((a, b) => ((S.gr[a.id] || {}).due || "") < ((S.gr[b.id] || {}).due || "") ? -1 : 1)
+    .forEach(p => out.push(drillItem(p, Math.floor(Math.random() * p.drill.length))));
+  return out.slice(0, max);
+}
 
 /* ---------- speech ---------- */
 let voice = null;
@@ -1182,21 +1210,29 @@ const MONTHS = ["yanvar", "fevral", "mart", "aprel", "may", "iyun", "iyul", "avg
 const DAYS = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"];
 
 function todayPlan(n) {
-  const plan = [], due = dueWords(), unseen = byUnit(n).filter(w => !isSeen(w));
+  const plan = [], mw = misWords(true).filter(w => w.unit <= n).slice(0, 5), ids = new Set(mw.map(w => w.id));
+  if (mw.length) plan.push({ tag: "esla", t: "Esla: oldingi xatolar", s: mw.length + " ta so'z · xotiradan yozasiz", run: () => startQuiz(mw, "spell", "Esla", "#", "esla") });
+  const due = dueWords().filter(w => !ids.has(w.id)), unseen = byUnit(n).filter(w => !isSeen(w));
   if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z bugun qaytariladi", run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
   else if (unseen.length) plan.push({ tag: "rev", t: "Yangi so'zlar", s: "Unit " + n + " · " + Math.min(8, unseen.length) + " ta yangi so'z", run: () => startQuiz(unseen.slice(0, 8), "uz-en", "Unit " + n, "#", "rev") });
   else plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
-  const pats = unitPats(n), p = pats.find(x => patFrac(x) < 1) || pats[0];
-  if (p) plan.push({ tag: "gram", t: "Grammatika: " + p.title, s: S.pat[p.id] != null ? "Eng yaxshi natija: " + S.pat[p.id] + "/" + p.drill.length : "Qoida va " + p.drill.length + " ta mashq", run: () => go("qolip-" + p.id) });
+  const pats = unitPats(n), p = pats.find(x => patFrac(x) < 1), rv = gramReview(n, p && p.id, p ? 3 : 6), plus = rv.length ? " · +" + rv.length + " ta takrorlash" : "";
+  if (p) plan.push({ tag: "gram", t: "Grammatika: " + p.title, s: (S.pat[p.id] != null ? "Eng yaxshi natija: " + S.pat[p.id] + "/" + p.drill.length : "Qoida va " + p.drill.length + " ta mashq") + plus, min: rv.length ? 4 : 3, run: () => { GX = rv; go("qolip-" + p.id); } });
+  else if (rv.length) plan.push({ tag: "gram", t: "Grammatika: takrorlash", s: rv.length + " ta savol, o'tilgan qoliplardan", run: () => { GX = rv; go("gtakror"); } });
+  else if (pats[0]) plan.push({ tag: "gram", t: "Grammatika: " + pats[0].title, s: "Eng yaxshi natija: " + (S.pat[pats[0].id] || 0) + "/" + pats[0].drill.length, run: () => go("qolip-" + pats[0].id) });
   const bl = unitBuild(n);
-  if (bl.length) plan.push({ tag: "tuz", t: "Gap tuzish", s: "Unit " + n + " · 5 ta gap · " + (tuzMode === "yoz" ? "o'zim yozaman" : "so'zlardan yig'aman"), run: () => { startTuz(shuffle(bl).slice(0, 5), "Unit " + n, null, "tuz"); T.back = "#"; } });
+  if (bl.length) {
+    const mb = misBuild(true).filter(x => x.unit <= n).slice(0, 2), list = mb.concat(shuffle(bl).filter(x => !mb.includes(x))).slice(0, 5);
+    plan.push({ tag: "tuz", t: "Gap tuzish", s: "Unit " + n + " · 5 ta gap" + (mb.length ? " · " + mb.length + " tasi eski xato" : " · " + (tuzMode === "yoz" ? "o'zim yozaman" : "so'zlardan yig'aman")), run: () => { startTuz(list, "Unit " + n, null, "tuz"); T.back = "#"; } });
+  }
   const pd = PH.filter(isDue), pn = PH.filter(x => !isSeen(x));
   const pl = pd.length ? pd : pn.slice(0, 3);
   if (pl.length) plan.push({ tag: "gap", t: "Tayyor gaplar", s: pd.length ? pd.length + " ta gap takrorlanadi" : "3 ta yangi gap: " + pl[0].w, run: () => { startPh(pl, "Tayyor gaplar", "gap"); G.back = "#"; } });
-  plan.forEach(x => { x.min = STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
+  plan.forEach(x => { x.min = x.min || STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
-const STEP_MIN = { rev: 4, gram: 3, tuz: 3, gap: 2 }, STEP_IC = { rev: "book", gram: "bulb", tuz: "tiles", gap: "chat" }, STEP_NAME = { rev: "So'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar" };
+const STEP_MIN = { esla: 2, rev: 4, gram: 3, tuz: 3, gap: 2 }, STEP_IC = { esla: "redo", rev: "book", gram: "bulb", tuz: "tiles", gap: "chat" }, STEP_NAME = { esla: "Esla", rev: "So'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar" };
+let GX = null; // rejadan kelgan grammatika takrorlash savollari
 
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
    Har bir mashq natijasida keyingi qadam tugmasi chiqadi; bosh sahifaga qaytilsa seans tugaydi. */
@@ -1245,7 +1281,7 @@ route(/^$/, () => {
   const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0;
   const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag));
   const mins = left.reduce((a, x) => a + x.min, 0);
-  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length;
+  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
   app.innerHTML = `
@@ -1266,7 +1302,7 @@ route(/^$/, () => {
     </section>
     <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
     ${installCard()}
-    <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span></div>
+    <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span>${nm ? `<a href="#xato"><b>${nm}</b> ta xato</a>` : ""}</div>
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   $("#les").onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
@@ -1401,7 +1437,7 @@ route(/^soz-(\d+)$/, n => {
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
 function wordLi(w) {
   const r = rec(w.id);
-  const badge = r ? `<span class="box ${r.b >= 3 ? "m" : ""}">${r.b >= 3 ? "mustahkam" : r.b === 0 ? "xato" : r.b + "/5"}</span>` : "";
+  const m = isMastered(w), badge = r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "";
   return `<li><div class="h"><span class="w">${esc(w.w)}</span><span class="p">[${esc(w.p)}]</span>${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
     <div class="u">${w.star ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
     <div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>
@@ -1444,7 +1480,7 @@ document.addEventListener("keydown", e => {
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
   const r = rec(w.id); const b = r ? r.b : 0;
-  return b <= 1 ? "uz-en" : b === 2 ? "en-uz" : "spell";
+  return b === 0 ? "uz-en" : b === 1 ? "en-uz" : "spell";
 }
 function pool(w) { const same = WORDS.filter(x => x.unit === w.unit && x.id !== w.id); return same.length >= 3 ? same : WORDS.filter(x => x.id !== w.id); }
 function distractors(w, f) {
@@ -1486,7 +1522,9 @@ function ask() {
 function result(ok) {
   const w = Z.cur;
   if (Z.done.has(w.id)) return; // re-asked word: don't grade twice
-  grade(w, ok);
+  const spelled = Z.qmode === "spell";
+  if (!ok) misAdd("w:" + w.id); else if (spelled) misDel("w:" + w.id);
+  grade(w, ok, spelled);
   if (ok) Z.right++; else { Z.wrong.push(w); Z.q.push(w); Z.done.add(w.id); }
 }
 function choose(btn, o, f) {
@@ -1567,18 +1605,32 @@ route(/^qolip-([\w-]+)$/, id => {
   <div class="card"><p class="label">Misollar</p>${p.examples.map(e => `<blockquote>${esc(e[0])} <button class="icon" data-say="${esc(e[0])}" style="padding:4px 8px">${ICON.vol}</button><small>${esc(e[1])}</small></blockquote>`).join("")}</div>
   <div class="card" id="drill"></div></div>`;
   bindSay(app);
-  let i = 0, right = 0; const items = shuffle(p.drill);
+  const own = () => shuffle(p.drill.map((_, i) => drillItem(p, i))), extra = GX || []; GX = null;
+  const run = () => runDrill($("#drill"), own().concat(extra), res => {
+    const mine = res.filter(r => r.it.pid === p.id), right = mine.filter(r => r.ok).length, rv = res.filter(r => r.it.pid !== p.id);
+    S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); gradePat(p, right >= mine.length * .8); gradeReview(rv); save(); markDone("gram");
+    $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${mine.length}</div>${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
+    bindLesson(); $("#re").onclick = () => runAgain();
+  }, p.id);
+  const runAgain = () => { extra.length = 0; run(); };
+  run();
+});
+/* takrorlash: har bir qolip uchun hamma savoli to'g'ri bo'lsa keyingi quti */
+function gradeReview(res) {
+  const by = {}; res.forEach(r => { by[r.it.pid] = (by[r.it.pid] !== false) && r.ok; });
+  Object.keys(by).forEach(id => { const p = PATTERNS.find(x => x.id === id); if (p) gradePat(p, by[id]); });
+}
+/* qolip savollari: 3 ta variantdan tanlash; xato «Xatolarim»ga tushadi, to'g'ri javob uni o'chiradi */
+function runDrill(box, items, done, own) {
+  let i = 0; const res = [];
   const draw = () => {
-    if (i >= items.length) {
-      S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); save(); markDone("gram");
-      $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${items.length}</div>${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
-      bindLesson(); $("#re").onclick = () => { i = 0; right = 0; draw(); }; return;
-    }
-    const it = items[i];
-    $("#drill").innerHTML = `<p class="label">Mashq · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
-    $("#drill").querySelectorAll(".opt").forEach(b => b.onclick = () => {
-      const k = +b.dataset.k, ok = k === it.a; if (ok) right++;
-      $("#drill").querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.k === it.a) x.classList.add("ok"); });
+    if (i >= items.length) return done(res);
+    const it = items[i], other = it.pid !== own;
+    box.innerHTML = `<p class="label">${other ? "Takrorlash · Unit " + it.unit + ": " + esc(it.title) : "Mashq"} · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
+    box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      const k = +b.dataset.k, ok = k === it.a, key = "g:" + it.pid + "#" + it.k;
+      res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); save();
+      box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.k === it.a) x.classList.add("ok"); });
       if (!ok) b.classList.add("bad");
       const full = it.q.includes("___") ? it.q.replace("___", it.o[it.a]).replace(/\s*\(.*?\)\s*$/, "") : it.o[it.a];
       $("#pf").className = "fb " + (ok ? "ok" : "bad"); $("#pf").innerHTML = (ok ? "To'g'ri! " : "") + esc(it.why) + `<div style="margin-top:6px"><b>${esc(full)}</b></div>`;
@@ -1587,6 +1639,34 @@ route(/^qolip-([\w-]+)$/, id => {
     $("#pn").onclick = () => { i++; draw(); };
   };
   draw();
+}
+/* grammatika takrorlash: o'tilgan qoliplardan aralash savollar */
+route(/^gtakror$/, () => {
+  const items = GX; GX = null; if (!items || !items.length) return go("");
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Grammatika takrorlash</h1><p class="sub">O'tilgan qoliplardan ${items.length} ta savol. Xato qilganlaringiz shu yerga qaytadi.</p><div class="card" id="drill"></div>`;
+  runDrill($("#drill"), items, res => {
+    gradeReview(res); save(); markDone("gram");
+    const right = res.filter(r => r.ok).length;
+    $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${res.length}</div><p class="muted" style="text-align:center;margin:0 0 14px">${right === res.length ? "Zo'r! Bu qoliplar keyinroq yana chiqadi." : "Xatolar ertaga yana so'raladi."}</p>${lessonBtn("gram")}<a class="btn${LES ? " ghost" : ""}" href="#">Bugun</a>`;
+    bindLesson();
+  });
+});
+
+/* ---------- XATOLARIM ---------- */
+route(/^xato$/, () => {
+  const mw = misWords(), mg = misGram(), mb = misBuild();
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Xatolarim</h1><p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
+  ${!mw.length && !mg.length && !mb.length ? `<div class="card"><p class="muted" style="margin:0">Hozircha xato yo'q.</p></div>` : ""}
+  ${mw.length ? `<section class="sec"><div class="sec-h"><h2>So'zlar</h2><span class="n">${mw.length} ta</span></div>
+    <div class="card"><button class="btn" id="xw">Yozib mashq qilish</button><ul class="wl" style="margin-top:10px">${mw.map(wordLi).join("")}</ul></div></section>` : ""}
+  ${mg.length ? `<section class="sec"><div class="sec-h"><h2>Grammatika</h2><span class="n">${mg.length} ta</span></div>
+    <div class="card"><button class="btn" id="xg">Mashq qilish</button><ul class="wl" style="margin-top:10px">${mg.map(it => `<li><div class="bk">Unit ${it.unit} · ${esc(it.title)}</div><div class="u">${esc(it.q)}</div><div class="e"><b>${esc(it.o[it.a])}</b><small>${esc(it.why)}</small></div></li>`).join("")}</ul></div></section>` : ""}
+  ${mb.length ? `<section class="sec"><div class="sec-h"><h2>Gap tuzish</h2><span class="n">${mb.length} ta</span></div>
+    <div class="card"><button class="btn" id="xb">Qayta tuzish</button><ul class="wl" style="margin-top:10px">${mb.map(it => `<li><div class="u">${esc(it.u)}</div><div class="e"><b>${esc(it.e)}</b><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div></section>` : ""}`;
+  bindSay(app);
+  const w = $("#xw"); if (w) w.onclick = () => startQuiz(mw, "spell", "Xatolarim", "#xato");
+  const g = $("#xg"); if (g) g.onclick = () => { GX = shuffle(mg); go("gtakror"); };
+  const b = $("#xb"); if (b) b.onclick = () => { startTuz(mb, "Xatolarim", null); T.back = "#xato"; };
 });
 
 /* ---------- GAPIRISH ---------- */
@@ -1739,7 +1819,7 @@ function startTuz(list, title, key, tag) {
   T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
-function tuzResult(it, ok) { if (!T.again.has(it)) { if (ok) T.right++; else { T.wrong.push(it); T.again.add(it); T.q.push(it); } } }
+function tuzResult(it, ok) { if (!T.again.has(it)) { if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 function tuzNext() { T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 route(/^tuzmashq$/, () => {
   if (!T) return go("tuz");
@@ -1826,7 +1906,7 @@ route(/^sozlama$/, () => {
   <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div></div>`;
   bindInstall();
   $("#cp").onclick = () => { const t = $("#ex"); t.select(); try { navigator.clipboard.writeText(t.value); } catch (e) { try { document.execCommand("copy"); } catch (e2) {} } $("#cp").textContent = "Nusxalandi ✓"; };
-  $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 } }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
+  $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {} }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
 });
 
 render();

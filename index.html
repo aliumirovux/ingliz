@@ -277,7 +277,12 @@ blockquote .icon{padding:3px 8px;vertical-align:middle}
 
 /* ilovani o'rnatish kartasi */
 .install{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px}
-.install img{width:44px;height:44px;border-radius:11px;flex:none}
+.install img,.install .ic{width:44px;height:44px;border-radius:11px;flex:none}
+.install .ic{display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}
+a.tx{color:inherit;text-decoration:none;padding-block:4px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;cursor:pointer}
+.sw b{display:block;font-weight:600}
+.sw input{flex:none;width:24px;height:24px;margin:0;accent-color:var(--marker)}
 .install .tx{flex:1;min-width:0}
 .install .tx b{display:block;font-weight:600}
 .install .tx span{display:block;color:var(--muted);font-size:14px}
@@ -301,6 +306,16 @@ nav.tabs{transition:opacity .22s ease, transform .32s cubic-bezier(.16,1,.3,1), 
 /* dars va test — alohida rejim: pastki menyu yo'q, chiqish «Chiqish» tugmasi orqali */
 .quizmode nav.tabs{display:none}
 body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
+/* telefonda javob tugmalari va «Keyingisi» bosh barmoq yetadigan pastki qismda (yozish maydoni ochiq bo'lsa — yo'q, u yerda joyni klaviatura oladi) */
+@media (pointer:coarse) and (max-width:640px){
+  .quizmode .wrap:not(:has(.spell:not(.hidden))){display:flex;flex-direction:column;padding-bottom:0;min-height:calc(100vh - env(safe-area-inset-top, 0px) - 2 * env(safe-area-inset-bottom, 0px) - 24px);min-height:calc(100dvh - env(safe-area-inset-top, 0px) - 2 * env(safe-area-inset-bottom, 0px) - 24px)}
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card{flex:1 0 auto;display:flex;flex-direction:column}
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:not(:has(> .opts:not(:empty), > .tiles)) > .row:not(.hidden){margin-top:auto!important;padding-top:14px}
+  /* test va so'z bo'laklari: izoh variantlar ustida chiqadi — javob berilgach variantlar joyidan siljimaydi, «Keyingisi» uchun joy oldindan ajratilgan */
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > :is(.fb,.ex){order:1}
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > :is(.opts,.tiles){order:2;margin-top:auto;padding-top:14px}
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > .row{order:3;min-height:52px}
+}
 nav.tabs .lens.still{transition:none}
 nav.tabs .lens.pop{animation:lens-pop .55s cubic-bezier(.3,1.2,.4,1)}
 @keyframes lens-pop{0%{scale:1 1}30%{scale:1.14 .88}65%{scale:.97 1.03}100%{scale:1 1}}
@@ -1185,6 +1200,10 @@ function gramReview(n, skip, max) {
 let voice = null;
 function pickVoice() { try { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; } catch (e) {} }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
+/* javobda qisqa titrash (Android; iPhone Safari qo'llamaydi). Sozlamada o'chirib qo'yish mumkin */
+const canBuzz = () => typeof navigator.vibrate === "function" && matchMedia("(pointer:coarse)").matches;
+const buzzOn = () => { try { return localStorage.getItem("ingliz-vib") !== "0"; } catch (e) { return true; } };
+function buzz(ok) { if (!canBuzz() || !buzzOn()) return; try { navigator.vibrate(ok ? 15 : [35, 70, 35]); } catch (e) {} }
 function say(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(text).replace(/[\[\]]/g, "")); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85; speechSynthesis.speak(u); } catch (e) {} }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 
@@ -1321,7 +1340,17 @@ function installCard(force) {
   if (isIOS()) return card("Bosh ekranga qo'shing", "«Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)");
   return card("Bosh ekranga qo'shing", "Brauzer menyusi (⋮) → «Ilovani o'rnatish» yoki «Bosh ekranga qo'shish»");
 }
+/* zaxira eslatmasi: natijalar faqat shu brauzerda bo'lsa, 2 haftada bir zaxira kodni saqlashni eslatamiz («×» ham 2 haftaga kechiktiradi) */
+const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
+const bakMark = () => { try { localStorage.setItem("ingliz-bak", String(Date.now())); } catch (e) {} };
+// brauzer joy tanqisligida bu sayt ma'lumotini o'zi o'chirib yubormasin (Chrome so'ramasdan qaror qiladi, Firefox oyna chiqaradi — shuning uchun faqat o'rnatilgan ilovada yoki «Nusxalash» bosilganda)
+function persist() { try { const st = navigator.storage; if (st && st.persist) st.persisted().then(p => p || st.persist()).catch(() => {}); } catch (e) {} }
+function backupCard(seen) {
+  if (cloud.status === "cloud" || seen < 20 || Date.now() - bakAt() < 14 * 864e5) return "";
+  return `<div class="install"><span class="ic">${sv('<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>')}</span><a class="tx" href="#sozlama"><b>Natijalar faqat shu qurilmada</b><span>Brauzer tozalansa, yo'qoladi. Zaxira kodni saqlang ›</span></a><button class="x" id="bakhide" aria-label="Keyinroq eslatish">×</button></div>`;
+}
 function bindInstall() {
+  const bh = $("#bakhide"); if (bh) bh.onclick = () => { bakMark(); render(); };
   const b = $("#inst"); if (b) b.onclick = async () => { const e = installEvt; if (!e) return; e.prompt(); try { await e.userChoice; } catch (er) {} installEvt = null; render(); };
   const x = $("#inhide"); if (x) x.onclick = () => { try { localStorage.setItem("ingliz-install-hide", "1"); } catch (e) {} render(); };
 }
@@ -1354,7 +1383,7 @@ route(/^$/, () => {
     </section>
     <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
     ${weekLine()}
-    ${installCard()}
+    ${backupCard(seen) || installCard()}
     <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span>${nm ? `<a href="#xato"><b>${nm}</b> ta xato</a>` : ""}</div>
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
@@ -1643,7 +1672,7 @@ function choose(btn, o, f) {
   const w = Z.cur, ok = norm(o[f]) === norm(w[f]);
   document.querySelectorAll(".opt").forEach(b => { b.disabled = true; if (norm(b.textContent) === norm(w[f])) b.classList.add("ok"); });
   if (!ok) btn.classList.add("bad");
-  result(ok);
+  result(ok); buzz(ok);
   if (Z.qmode === "uz-en") say(spoken(w));
   feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> [${esc(w.p)}] — ${esc(w.u)}`);
   toNext();
@@ -1670,17 +1699,20 @@ function check() {
   if (!val) return sp.focus();
   const ok = w.a.some(x => norm(x) === val);
   if (Z.retype) {
-    if (ok) { sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
-    else { sp.className = "spell bad"; sp.select(); }
+    if (ok) { buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
+    else { buzz(false); sp.className = "spell bad"; sp.select(); }
     return;
   }
   say(spoken(w));
-  if (ok) { result(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> [${esc(w.p)}]`); toNext(); }
+  if (ok) { result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> [${esc(w.p)}]`); toNext(); }
   else {
-    result(false);
-    const t = w.a[0], df = diffHTML(sp.value, t);
+    result(false); buzz(false);
+    // bir nechta to'g'ri variant bo'lsa, yozilganiga eng yaqini bilan solishtiramiz
+    const dist = w.a.map(x => lev(val, norm(x))), best = dist.indexOf(Math.min(...dist)), t = w.a[best], df = diffHTML(sp.value, t);
+    const near = dist[best] === 1 && norm(t).length > 3;
     sp.className = "spell bad";
-    feedback(false, `Siz yozdingiz: <s>${esc(sp.value.trim())}</s><div class="diff">${df.html}</div><span>[${esc(w.p)}]${df.extra ? " · ortiqcha harf bor" : ""} — qizil harflarga e'tibor bering. Endi to'g'risini bir marta yozing.</span>`);
+    const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
+    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>[${esc(w.p)}]${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta yozing.</span>`);
     Z.retype = true; sp.value = ""; sp.placeholder = "To'g'risini yozing: " + t; sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     $("#pts").textContent = "✓ " + Z.right;
@@ -1740,7 +1772,7 @@ function runDrill(box, items, done, own) {
     box.innerHTML = `<p class="label">${other ? "Takrorlash · Unit " + it.unit + ": " + esc(it.title) : "Mashq"} · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
     box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
       const k = +b.dataset.k, ok = k === it.a, key = "g:" + it.pid + "#" + it.k;
-      res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); logAns(ok); save();
+      res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); logAns(ok); save(); buzz(ok);
       box.querySelectorAll(".opt").forEach(x => { x.disabled = true; if (+x.dataset.k === it.a) x.classList.add("ok"); });
       if (!ok) b.classList.add("bad");
       const full = it.q.includes("___") ? it.q.replace("___", it.o[it.a]).replace(/\s*\(.*?\)\s*$/, "") : it.o[it.a];
@@ -1969,7 +2001,7 @@ route(/^tuzmashq$/, () => {
   $("#quit").onclick = () => { const b = T.back; T = null; location.hash = b; };
   let done = false;
   const show = (cls, html) => {
-    $("#tf").className = "fb " + cls;
+    $("#tf").className = "fb " + cls; buzz(cls === "ok");
     $("#tf").innerHTML = html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
     bindSay($("#tf")); say(it.e);
     const c = $("#clr"); if (c) c.classList.add("hidden");
@@ -2032,18 +2064,26 @@ function tuzFinish() {
 
 /* ---------- SOZLAMA: export / import ---------- */
 route(/^sozlama$/, () => {
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijani ko'chirish</h1>
-  <p class="sub">Odatda natijalar hisobingizda o'zi saqlanadi. Bu sahifa zaxira uchun: kodni nusxalab qo'ying yoki boshqa joyga "Yuklash" orqali o'tkazing.</p>
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Sozlamalar</h1>
+  <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Kodni nusxalab, xavfsiz joyga (masalan, Telegram «Saqlangan xabarlar»ga) qo'ying — boshqa qurilmada «Yuklash» orqali tiklaysiz."}</p>
   <div class="stack">${installCard(true)}<div class="card"><p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
   <div style="height:10px"></div><button class="btn" id="cp">Nusxalash</button></div>
-  <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div></div>`;
+  <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div>
+  ${canBuzz() ? `<div class="card"><label class="sw"><span><b>Javobda titrash</b><span class="muted">To'g'ri — bir marta, xato — ikki marta</span></span><input type="checkbox" id="vib"${buzzOn() ? " checked" : ""}></label></div>` : ""}</div>`;
   bindInstall();
-  $("#cp").onclick = () => { const t = $("#ex"); t.select(); try { navigator.clipboard.writeText(t.value); } catch (e) { try { document.execCommand("copy"); } catch (e2) {} } $("#cp").textContent = "Nusxalandi ✓"; };
+  const vb = $("#vib"); if (vb) vb.onchange = () => { try { localStorage.setItem("ingliz-vib", vb.checked ? "1" : "0"); } catch (e) {} buzz(true); };
+  $("#cp").onclick = () => {
+    const t = $("#ex"), b = $("#cp"); t.select(); persist();
+    const ok = () => { bakMark(); b.textContent = "Nusxalandi ✓"; };
+    const old = () => { let r = false; try { r = document.execCommand("copy"); } catch (e) {} if (r) ok(); else b.textContent = "Kodni belgilab, o'zingiz nusxalang"; };
+    try { navigator.clipboard.writeText(t.value).then(ok, old); } catch (e) { old(); }
+  };
   $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
 });
 
 render();
 initCloud();
+if (isStandalone() && Object.keys(S.srs).length >= 10) persist();
 })();
 </script>
 

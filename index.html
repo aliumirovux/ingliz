@@ -292,9 +292,9 @@ nav.tabs a:hover{color:var(--ink)}
 nav.tabs a.on{color:var(--accent-text)}
 /* bitta linza tabdan tabga sirpanib o'tadi: prujinali egri chiziq, yo'lda biroz cho'ziladi */
 nav.tabs .lens{position:absolute;z-index:0;left:0;top:5px;bottom:5px;width:0;border-radius:999px;background:var(--lens);box-shadow:inset 0 1px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);pointer-events:none;opacity:0;transition:transform .55s cubic-bezier(.3,1.3,.4,1), width .55s cubic-bezier(.3,1.3,.4,1), opacity .2s ease}
-/* klaviatura ochilganda menyu pastga sirg'alib yo'qoladi, yopilganda xuddi shunday qaytadi */
+/* klaviatura ochilganda menyu darhol yo'qoladi (animatsiya qilsa, ekran qisqarib ketgani uchun klaviatura bilan tepaga ko'tarilib ko'rinadi), yopilganda pastdan silliq qaytadi */
 nav.tabs{transition:opacity .22s ease, transform .32s cubic-bezier(.16,1,.3,1), visibility 0s}
-.typing nav.tabs{opacity:0;transform:translateY(calc(100% + 16px));visibility:hidden;pointer-events:none;transition:opacity .16s ease, transform .2s cubic-bezier(.4,0,1,1), visibility 0s .2s}
+.typing nav.tabs{opacity:0;transform:translateY(calc(100% + 16px));visibility:hidden;pointer-events:none;transition:none}
 nav.tabs .lens.still{transition:none}
 nav.tabs .lens.pop{animation:lens-pop .55s cubic-bezier(.3,1.2,.4,1)}
 @keyframes lens-pop{0%{scale:1 1}30%{scale:1.14 .88}65%{scale:.97 1.03}100%{scale:1 1}}

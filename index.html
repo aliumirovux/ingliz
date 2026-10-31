@@ -62,6 +62,8 @@ button{font:inherit;color:inherit}
 a{color:inherit}
 svg{flex:none}
 ::selection{background:var(--hl);color:var(--ink)}
+input,textarea{caret-color:var(--marker)}
+html{scrollbar-color:var(--line-strong) transparent;scrollbar-width:thin}
 :focus-visible{outline:2px solid var(--marker);outline-offset:2px;border-radius:6px}
 /* telefonda bosilganda brauzerning ko'k fonini o'chiramiz; o'rniga o'zimizning bosish holatlari */
 html{-webkit-tap-highlight-color:transparent}
@@ -130,7 +132,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .steps button:disabled{cursor:default}
 /* ayting */
 .mic{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 4px}
-.micbtn{width:84px;height:84px;border-radius:50%;border:0;background:var(--marker);color:var(--on-marker);display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px -10px var(--marker);transition:transform .15s}
+.micbtn{width:84px;height:84px;border-radius:50%;border:0;background:var(--marker);color:var(--on-marker);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
 .micbtn svg{width:34px;height:34px}
 .micbtn:active{transform:scale(.95)}
 .micbtn.on{animation:micpulse 1.2s ease-in-out infinite}
@@ -208,7 +210,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .done-h{font:700 32px/1.1 var(--font-display);letter-spacing:-.025em;margin:30px 0 6px;text-align:center}
 .unitname{font:600 18px/1.3 var(--font-body);margin:0}
 .unituz{color:var(--muted);font-size:15px;margin:2px 0 16px}
-.meter{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
+.meter{display:flex;align-items:center;gap:12px;margin-bottom:18px;font-weight:600;font-size:15px}
 .meter .pbar{flex:1;margin:0}
 .streak{display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:14px}
 .facts{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
@@ -234,11 +236,23 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .pbar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:10px;display:flex}
 .pbar i{display:block;height:100%}
 .pbar .m{background:var(--marker)}.pbar .s{background:color-mix(in srgb,var(--marker) 32%,var(--surface-2))}
+.pbar.split{height:10px;margin:2px 0 12px;gap:2px;background:transparent}
+.pbar.split i{border-radius:99px}.pbar.split::after{content:"";flex:1;background:var(--surface-2);border-radius:99px}
+.split-l{list-style:none;display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 14px;padding:0;font-size:13px;color:var(--muted)}
+.split-l li{display:flex;align-items:center;gap:6px}
+.split-l i{width:10px;height:10px;border-radius:50%;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.split-l i.m{background:var(--marker);box-shadow:none}.split-l i.s{background:color-mix(in srgb,var(--marker) 32%,var(--surface-2));box-shadow:none}
+.split-l b{color:var(--ink);font-weight:600}
+.due{display:flex;align-items:center;gap:8px;margin:-4px 0 14px;font-size:14px;color:var(--accent-text)}
+.due svg{width:16px;height:16px;flex:none}.due b{font-weight:700}
+.clamp{display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.streak{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 4px;font-size:14px;color:var(--muted)}
+.streak svg{width:17px;height:17px;color:var(--marker)}.streak b{color:var(--ink);font-weight:600}
 
 /* unit hub sections */
 .sec{display:flex;flex-direction:column;gap:10px;margin-top:26px}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.sec-h .n{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.sec-h .n{color:var(--muted);font-size:14px}
 .list{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
 .li{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .li+.li{border-top:1px solid var(--line)}
@@ -326,7 +340,7 @@ textarea.spell{display:block;resize:none;overflow:hidden;white-space:pre;height:
 .rule:first-child{border-top:0}
 .rule b{font-weight:600;min-width:0}
 .rule span{color:var(--muted);text-align:right;min-width:0}
-blockquote{margin:10px 0;padding:12px 14px;border-left:3px solid var(--marker);background:var(--marker-soft);border-radius:0 14px 14px 0}
+blockquote{margin:10px 0;padding:12px 14px;background:var(--surface-2);border-radius:14px}
 blockquote small{display:block;color:var(--muted);font-style:italic}
 blockquote .icon{padding:3px 8px;vertical-align:middle}
 .ans{margin-top:10px}
@@ -1499,7 +1513,7 @@ route(/^$/, () => {
   <div class="pills">
     <label class="pill">${ICON.book}<span>${S.course ? "Kursda: Unit " + S.course : "Kursdagi unitni tanlang"}</span><span class="dn">${ICON.down}</span>
       <select id="course" aria-label="Kursda qaysi unitdasiz"><option value="">tanlang</option>${UNIT_INFO.slice(1).map((x, i) => `<option value="${i + 1}"${S.course === i + 1 ? " selected" : ""}>Unit ${i + 1} · ${esc(x[0])}</option>`).join("")}</select></label>
-    <span class="pill" title="Ketma-ket kunlar">${ICON.flame}${streak} kun</span>
+    <span class="streak" title="Ketma-ket kunlar">${ICON.flame}<b>${streak}</b> kun ketma-ket</span>
   </div>
   <div class="stack">
     ${askUnit ? `<section class="lesson ask-unit">
@@ -1570,7 +1584,8 @@ route(/^unitlar$/, () => {
 route(/^unit-(\d+)$/, n => {
   n = +n; const info = UNIT_INFO[n]; if (!info) return go("unitlar");
   const st = unitStat(n), pats = unitPats(n), bl = unitBuild(n), sp = SPEAKING.filter(t => t.unit === n);
-  const best = k => S.pat[k] != null ? S.pat[k] + "/" + bl.length : "boshlanmagan";
+  const best = k => S.pat[k] != null ? S.pat[k] + "/" + bl.length : "yangi";
+  const udue = byUnit(n).filter(isDue).length;
   app.innerHTML = `<a class="back" href="#unitlar">${ICON.back} Unitlar</a>
   <div class="unitbig"><span class="mk">Unit ${n}</span></div>
   <p class="unitname">${esc(info[0])}</p>
@@ -1578,10 +1593,10 @@ route(/^unit-(\d+)$/, n => {
   <div class="meter"><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div><span>${st.pct}%</span></div>
 
   <section class="sec">
-    <div class="sec-h"><h2>So'zlar</h2><span class="n">${st.mast} / ${st.words} mustahkam</span></div>
-    <div class="card"><div class="pbar" style="margin:0 0 14px"><i class="m" style="width:${st.mast / st.words * 100}%"></i><i class="s" style="width:${(st.seen - st.mast) / st.words * 100}%"></i></div>
-      <p class="muted" style="margin:0 0 14px">${st.seen ? st.seen + " ta so'z ko'rilgan, " + (st.words - st.seen) + " tasi hali yangi." : "Kitob oxiridagi Unit " + n + " lug'ati: " + st.words + " ta so'z, o'qilishi va misol gaplari bilan."}</p>
-      <button class="btn" id="sozgo">So'zlarni mashq qilish</button></div>
+    <div class="sec-h"><h2>So'zlar</h2><span class="n">${st.words} ta so'z</span></div>
+    <div class="card">${st.seen ? `<div class="pbar split" role="img" aria-label="${st.mast} mustahkam, ${st.seen - st.mast} o'rganilmoqda, ${st.words - st.seen} yangi"><i class="m" style="width:${st.mast / st.words * 100}%"></i><i class="s" style="width:${(st.seen - st.mast) / st.words * 100}%"></i></div>
+      <ul class="split-l"><li><i class="m"></i><b>${st.mast}</b> mustahkam</li><li><i class="s"></i><b>${st.seen - st.mast}</b> o'rganilmoqda</li><li><i></i><b>${st.words - st.seen}</b> yangi</li></ul>${udue ? `<p class="due">${ICON.redo}<span>Bugun <b>${udue}</b> ta so'z takrorlanadi</span></p>` : ""}` : `<p class="muted" style="margin:0 0 14px">Kitob oxiridagi lug'at: ${st.words} ta so'z, o'qilishi va misol gaplari bilan.</p>`}
+      <button class="btn" id="sozgo">${udue ? "Takrorlash va mashq" : "So'zlarni mashq qilish"}</button></div>
   </section>
 
   ${pats.length ? `<section class="sec">
@@ -1598,7 +1613,7 @@ route(/^unit-(\d+)$/, n => {
   </section>` : ""}
 
   ${sp.length ? `<section class="sec">
-    <div class="sec-h"><h2>Gapirish</h2><span class="n">ilovadagi topshiriq</span></div>
+    <div class="sec-h"><h2>Gapirish</h2><span class="n">${sp.length} ta topshiriq</span></div>
     <div class="list">${sp.map(t => `<a class="li" href="#gapir-${n}"><span class="tx"><b>${esc(t.task)} · ${esc(t.title)}</b><span>${t.items.length} ta savol va tayyor javoblar</span></span><span class="go">${ICON.chev}</span></a>`).join("")}</div>
   </section>` : ""}`;
   $("#sozgo").onclick = () => go("soz-" + n);
@@ -2129,7 +2144,7 @@ function finish() {
 /* ---------- QOLIPLAR ---------- */
 route(/^qolip$/, () => {
   app.innerHTML = `<a class="back" href="#unitlar">${ICON.back} Unitlar</a><h1>Grammatika qoliplari</h1><p class="sub">Kitobdagi grammatika, unit tartibida. Har birida qoida, misollar va mashq.</p>
-  <div class="units">${PATTERNS.slice().sort((a, b) => a.unit - b.unit).map(p => { const b = S.pat[p.id]; return `<a class="unit" href="#qolip-${p.id}"><div class="t"><b>${esc(p.title)}</b><span class="n">Unit ${p.unit} · ${b != null ? "eng yaxshi: " + b + "/" + p.drill.length : p.drill.length + " ta savol"}</span></div><div class="muted" style="margin-top:2px">${esc(p.lead)}</div></a>`; }).join("")}</div>`;
+  <div class="stack">${[...new Set(PATTERNS.map(p => p.unit))].sort((a, b) => a - b).map(u => `<section><p class="label">Unit ${u} · ${esc(UNIT_INFO[u][0])}</p><div class="list">${PATTERNS.filter(p => p.unit === u).map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="tx"><b>${esc(p.title)}</b><span class="clamp">${esc(p.lead)}</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section>`).join("")}</div>`;
 });
 route(/^qolip-([\w-]+)$/, id => {
   const p = PATTERNS.find(x => x.id === id); if (!p) return go("qolip");

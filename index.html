@@ -606,6 +606,19 @@ a.pill{text-decoration:none;color:var(--ink)}
 .ask-unit .ugrid{margin-top:0}
 .lv-empty{margin:12px 0 16px;color:var(--muted);font-size:15px;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.tl .bx{transition:none}}
+
+/* ===== sahifa sarlavhasi (markaziy) ===== */
+.nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:52px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50% + 4px) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
+.nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
+.nb-back{justify-self:start;display:inline-flex;align-items:center;gap:0;min-height:44px;padding:0 10px 0 2px;border-radius:12px;color:var(--accent-text);font-size:17px;font-weight:500;text-decoration:none;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nb-back svg{width:24px;height:24px;flex:none}
+.nb-back span{overflow:hidden;text-overflow:ellipsis}
+.nb-back:active{opacity:.55}
+.nb-back:focus-visible{outline:2px solid var(--marker);outline-offset:0}
+.nb-t{grid-column:2;margin:0;font:600 17px/1.25 var(--font-body);letter-spacing:-.01em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.nb + .sub,.nb + .pg-h{margin-top:8px}
+.pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
+@media (prefers-reduced-motion:reduce){.nb{transition:none}}
 </style>
 <div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -1509,6 +1522,13 @@ function say(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthes
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 const pr = w => w.p ? "[" + w.p + "]" : "";
 
+/* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
+function nav(back, label, title) {
+  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}<span>${esc(label)}</span></a>` : "<span></span>"}<h1 class="nb-t">${title}</h1><span></span></header>`;
+}
+const navScroll = () => { const n = document.querySelector(".nb"); if (n) n.classList.toggle("on", scrollY > 2); };
+addEventListener("scroll", navScroll, { passive: true });
+
 /* ---------- router ---------- */
 const routes = [];
 const route = (re, fn) => routes.push([re, fn]);
@@ -1517,6 +1537,7 @@ function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
   const h = location.hash.replace(/^#/, "");
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
+  navScroll();
   const tab = h === "" || h === "kurs" ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -1780,7 +1801,7 @@ function emptyLevelCard(lv) {
 /* ---------- KURS: daraja va unit ---------- */
 route(/^kurs$/, () => {
   const lv = curLevel(), cu = curUnit();
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Kurs va daraja</h1><p class="sub">Navigate (Oxford) seriyasi. Bugungi reja tanlangan daraja va unit bo'yicha tuziladi.</p>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Kurs va daraja`)}<p class="sub">Navigate (Oxford) seriyasi. Bugungi reja tanlangan daraja va unit bo'yicha tuziladi.</p>
   <section class="sec"><div class="card">${levelPicker()}</div></section>
   <section class="sec"><div class="sec-h"><h2>Kursda qaysi unitdasiz?</h2></div>
   ${lv.ready ? `<div class="card"><div class="ugrid" style="margin:0">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}" class="${S.course === i + 1 ? "guess" : ""}"${S.course === i + 1 ? ' aria-current="true"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div></div>`
@@ -1889,7 +1910,7 @@ route(/^yakun$/, () => {
 /* ---------- UNITLAR ro\'yxati ---------- */
 route(/^unitlar$/, () => {
   const cu = curUnit();
-  app.innerHTML = `<h1>Unitlar</h1><p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
+  app.innerHTML = `${nav(null, "", "Unitlar")}<p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
   <div class="units">${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="unit" href="#unit-${n}"><div class="urow ${n === cu.n ? "cur" : ""}"><span class="num">${n}</span><span class="tx"><b>${esc(info[0])}</b><span>${esc(info[1])}${n === cu.n ? " · hozir shu yerdasiz" : ""}</span></span><span class="pct">${st.pct}%</span></div><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div></a>`; }).join("")}</div>
   <div class="sec"><div class="list">
     <a class="li" href="#qolip"><span class="tx"><b>Barcha grammatika qoliplari</b><span>${PATTERNS.length} ta qolip, unit tartibida</span></span><span class="go">${ICON.chev}</span></a>
@@ -1904,9 +1925,8 @@ route(/^unit-(\d+)$/, n => {
   const st = unitStat(n), pats = unitPats(n), bl = unitBuild(n), sp = SPEAKING.filter(t => t.unit === n);
   const best = k => S.pat[k] != null ? S.pat[k] + "/" + bl.length : "yangi";
   const udue = byUnit(n).filter(isDue).length;
-  app.innerHTML = `<a class="back" href="#unitlar">${ICON.back} Unitlar</a>
-  <div class="unitbig"><span class="mk">Unit ${n}</span></div>
-  <p class="unitname">${esc(info[0])}</p>
+  app.innerHTML = `${nav("#unitlar", "Unitlar", `Unit ${n}`)}
+  <h2 class="pg-h">${esc(info[0])}</h2>
   <p class="unituz">${esc(info[1])} · kitobda ${bookPages(n)}-betlar</p>
   <div class="meter"><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div><span>${st.pct}%</span></div>
 
@@ -1943,7 +1963,7 @@ route(/^unit-(\d+)$/, n => {
 let MYPRE = "";
 route(/^mening$/, () => {
   const mine = WORDS.filter(w => w.mine), fresh = mine.filter(w => !isSeen(w));
-  app.innerHTML = `<a class="back" href="#lugat">${ICON.back} Lug'at</a><h1>Mening so'zlarim</h1>
+  app.innerHTML = `${nav(`#lugat`, `Lug'at`, `Mening so'zlarim`)}
   <p class="sub">Darsda doskaga yozilgan yoki ishda kerak bo'lgan so'zlar. Ular ham tanishuv kartasi va 3 bosqichdan o'tadi, keyin takrorlashga qo'shiladi.</p>
   <div class="stack">
     <form class="card myf" id="myf" novalidate>
@@ -1982,7 +2002,7 @@ route(/^mening$/, () => {
   });
 });
 route(/^lugat$/, () => {
-  app.innerHTML = `<h1>Lug'at</h1><p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
+  app.innerHTML = `${nav(null, "", "Lug'at")}<p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
   <div class="stack"><input class="search" id="q" placeholder="Masalan: weekend yoki ofis" autocomplete="off">
   <div id="res"></div>
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
@@ -2002,8 +2022,7 @@ let pick = { groups: null, mode: "uz-en" };
 route(/^soz-(\d+)$/, n => {
   n = +n; const u = unitOf(n); if (!u) return go("lugat");
   pick.groups = new Set(u.groups.map((_, i) => i));
-  app.innerHTML = `<a class="back" href="#unit-${n}">${ICON.back} Unit ${n}</a>
-  <h1>So'zlar</h1><p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
+  app.innerHTML = `${nav(`#unit-${n}`, `Unit ${n}`, `So'zlar`)}<p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
   <div class="stack">
     <div class="card"><p class="label">1. Guruhlar</p><div class="chips" id="chips" role="group" aria-label="So'z guruhlari"></div><p class="picked" id="picked"></p></div>
     <div class="card"><p class="label" id="segl">2. Test turi</p><div class="modes seg" role="radiogroup" aria-labelledby="segl">
@@ -2462,12 +2481,12 @@ function finish() {
 
 /* ---------- QOLIPLAR ---------- */
 route(/^qolip$/, () => {
-  app.innerHTML = `<a class="back" href="#unitlar">${ICON.back} Unitlar</a><h1>Grammatika qoliplari</h1><p class="sub">Kitobdagi grammatika, unit tartibida. Har birida qoida, misollar va mashq.</p>
+  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Grammatika qoliplari`)}<p class="sub">Kitobdagi grammatika, unit tartibida. Har birida qoida, misollar va mashq.</p>
   <div class="stack">${[...new Set(PATTERNS.map(p => p.unit))].sort((a, b) => a - b).map(u => `<section><p class="label">Unit ${u} · ${esc(UNIT_INFO[u][0])}</p><div class="list">${PATTERNS.filter(p => p.unit === u).map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="tx"><b>${esc(p.title)}</b><span class="clamp">${esc(p.lead)}</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section>`).join("")}</div>`;
 });
 route(/^qolip-([\w-]+)$/, id => {
   const p = PATTERNS.find(x => x.id === id); if (!p) return go("qolip");
-  app.innerHTML = `<a class="back" href="#unit-${p.unit}">${ICON.back} Unit ${p.unit}</a><h1>${esc(p.title)}</h1><p class="sub">${esc(p.lead)}</p>
+  app.innerHTML = `${nav(`#unit-${p.unit}`, `Unit ${p.unit}`, `Grammatika`)}<h2 class="pg-h">${esc(p.title)}</h2><p class="sub">${esc(p.lead)}</p>
   <div class="stack"><div class="card"><p class="label">Qoida</p>${p.rules.map(r => `<div class="rule"><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join("")}</div>
   <div class="card"><p class="label">Misollar</p>${p.examples.map(e => `<blockquote>${esc(e[0])} <button class="icon" data-say="${esc(e[0])}" style="padding:4px 8px">${ICON.vol}</button><small>${esc(e[1])}</small></blockquote>`).join("")}</div>
   <div class="card" id="drill"></div></div>`;
@@ -2510,7 +2529,7 @@ function runDrill(box, items, done, own) {
 /* grammatika takrorlash: o'tilgan qoliplardan aralash savollar */
 route(/^gtakror$/, () => {
   const items = GX; GX = null; if (!items || !items.length) return go("");
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Grammatika takrorlash</h1><p class="sub">O'tilgan qoliplardan ${items.length} ta savol. Xato qilganlaringiz shu yerga qaytadi.</p><div class="card" id="drill"></div>`;
+  app.innerHTML = `${nav(`#`, `Bugun`, `Grammatika takrorlash`)}<p class="sub">O'tilgan qoliplardan ${items.length} ta savol. Xato qilganlaringiz shu yerga qaytadi.</p><div class="card" id="drill"></div>`;
   runDrill($("#drill"), items, res => {
     gradeReview(res); save(); markDone("gram");
     const right = res.filter(r => r.ok).length;
@@ -2532,7 +2551,7 @@ route(/^natija$/, () => {
     days.push(`<div class="li"><span class="tx"><b>${name}</b><span>${L && L.a ? L.a + " ta javob · " + pctOf(L.ok, L.a) + "% to'g'ri" : "Mashq qilinmagan"}</span></span><span class="st">${L && L.a ? L.sp + " ta so'z · " + Math.max(1, Math.round(L.t / 60)) + " daq" : "—"}</span></div>`);
   }
   const ret = pctOf(r.rk, r.rv), pret = pctOf(p.rk, p.rv);
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijalar</h1><p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: oldingi kunlarda o'rganilgan so'zlarning qanchasi esda qolgani.</p>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Natijalar`)}<p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: oldingi kunlarda o'rganilgan so'zlarning qanchasi esda qolgani.</p>
   <section class="sec"><div class="ret card"><p class="label">Esda qolgan so'zlar</p>
     <div class="retn">${r.rv ? ret + "%" : "—"}</div>
     <div class="retbar" role="img" aria-label="${r.rv ? ret + "% esda qolgan, maqsad 80%" : "Hali ma'lumot yo'q"}"><i style="width:${r.rv ? ret : 0}%"></i><b style="left:80%"></b></div><div class="rettg"><span style="left:80%">maqsad 80%</span></div>
@@ -2549,7 +2568,7 @@ route(/^natija$/, () => {
 
 route(/^xato$/, () => {
   const mw = misWords(), mg = misGram(), mb = misBuild();
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Xatolarim</h1><p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Xatolarim`)}<p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
   ${!mw.length && !mg.length && !mb.length ? `<div class="card"><p class="muted" style="margin:0">Hozircha xato yo'q.</p></div>` : ""}
   ${mw.length ? `<section class="sec"><div class="sec-h"><h2>So'zlar</h2><span class="n">${mw.length} ta</span></div>
     <div class="card"><button class="btn" id="xw">Yozib mashq qilish</button><ul class="wl" style="margin-top:10px">${mw.map(wordLi).join("")}</ul></div></section>` : ""}
@@ -2566,7 +2585,7 @@ route(/^xato$/, () => {
 /* ---------- GAPIRISH ---------- */
 route(/^gapir(?:-(\d+))?$/, n => {
   const list = n ? SPEAKING.filter(t => t.unit === +n) : SPEAKING;
-  app.innerHTML = `<a class="back" href="${n ? "#unit-" + n : "#unitlar"}">${ICON.back} ${n ? "Unit " + n : "Unitlar"}</a><h1>Gapirish</h1><p class="sub">Ilovadagi speaking topshiriqlari · [sariq] joylarni o'zingizga moslang</p>
+  app.innerHTML = `${nav(n ? "#unit-" + n : "#unitlar", n ? "Unit " + n : "Unitlar", "Gapirish")}<p class="sub">Ilovadagi speaking topshiriqlari · [sariq] joylarni o'zingizga moslang</p>
   <div class="card" style="margin-bottom:12px"><label class="muted" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="hide"> Mashq rejimi: javoblarni yashirish (avval o'zingiz ayting, keyin oching)</label></div>
   <div class="stack">${list.map(t => `<p class="label" style="margin-top:8px">${esc(t.task)} · Unit ${t.unit} · ${esc(t.title)}</p>` + t.items.map(it => `<div class="card sp">
     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:17px">${esc(it.q)}</b><button class="icon" data-say="${esc(it.q)}">${ICON.vol}</button></div>
@@ -2614,7 +2633,7 @@ PHRASES.forEach(c => c.items.forEach(it => PH.push({ id: "gap|" + it.e, w: it.e,
 const phDue = () => PH.filter(isDue);
 route(/^gap$/, () => {
   const due = phDue().length;
-  app.innerHTML = `<h1>Tayyor gaplar</h1><p class="sub">Ish va kundalik muloqot uchun · ${PH.length} ta gap · eshiting, ayting, yodlang</p>
+  app.innerHTML = `${nav(null, "", "Tayyor gaplar")}<p class="sub">Ish va kundalik muloqot uchun · ${PH.length} ta gap · eshiting, ayting, yodlang</p>
   <div class="stack">
     <div class="card"><p class="label">Mashq qanday ishlaydi</p><p class="muted" style="margin:0">O'zbekchasi chiqadi. Inglizchasini o'zingiz ayting yoki «Aytib ko'rish» tugmasini bosing, keyin javobni oching. Bilmagan gaplaringiz ertaga yana chiqadi.</p></div>
     ${due ? `<button class="btn" id="phdue">Bugungi takrorlash (${due})</button>` : ""}
@@ -2625,7 +2644,7 @@ route(/^gap$/, () => {
 route(/^gap-(\w+)$/, id => {
   const c = PHRASES.find(x => x.id === id); if (!c) return go("gap");
   const ps = PH.filter(p => p.cat === id);
-  app.innerHTML = `<a class="back" href="#gap">${ICON.back} Tayyor gaplar</a><h1>${esc(c.title)}</h1><p class="sub">${ps.length} ta gap · eshiting va aytib tekshiring</p>
+  app.innerHTML = `${nav(`#gap`, `Tayyor gaplar`, `${esc(c.title)}`)}<p class="sub">${ps.length} ta gap · eshiting va aytib tekshiring</p>
   <div class="stack"><button class="btn" id="go">Mashq qilish</button>
   ${ps.map(p => { const r = rec(p.id); return `<div class="card" data-micbox>
     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:18px">${esc(p.w)}</b>${r ? `<span class="box ${r.b >= 3 ? "m" : ""}">${r.b >= 3 ? "mustahkam" : r.b === 0 ? "xato" : r.b + "/5"}</span>` : ""}</div>
@@ -2693,7 +2712,7 @@ let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
 route(/^tuz$/, () => {
   const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-";
-  app.innerHTML = `<a class="back" href="#unitlar">${ICON.back} Unitlar</a><h1>Gap tuzish</h1><p class="sub">O'zbekcha gapni inglizchaga aylantiring · ${BLD.length} ta gap</p>
+  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}<p class="sub">O'zbekcha gapni inglizchaga aylantiring · ${BLD.length} ta gap</p>
   <div class="stack">
     <div class="card"><p class="label">Mashq turi</p><div class="modes">
       ${modeBtn("tile", "So'zlardan yig'aman", "So'zlarni to'g'ri tartibda bosasiz. Orasida tuzoq so'zlar ham bor (am, do).")}
@@ -2791,7 +2810,7 @@ function tuzFinish() {
 
 /* ---------- SOZLAMA: export / import ---------- */
 route(/^sozlama$/, () => {
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Sozlamalar</h1>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Sozlamalar`)}
   <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Haftada bir zaxira faylini saqlang — boshqa qurilmada «Zaxiradan tiklash» orqali ochasiz."}</p>
   <div class="stack">${installCard(true)}
   <div class="card"><p class="label">Zaxira · oxirgisi: ${bakWhen()}</p>

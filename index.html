@@ -620,6 +620,64 @@ a.pill{text-decoration:none;color:var(--ink)}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
 
+/* ===== yumshoq va undovchi qismlar ===== */
+.metag{display:inline-block;margin:0 0 4px;padding:2px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok);font:600 12px/1.5 var(--font-body);font-style:normal}
+.ex.pex,.wl .e.pex{display:block}
+.pex .metag{display:table}
+.exsep{height:10px}
+.mini{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;margin:8px 0 0;border:0;border-radius:999px;background:none;color:var(--muted);font:500 14px var(--font-body);cursor:pointer}
+.mini svg{width:18px;height:18px}
+.mini:hover{color:var(--ink)}
+.mini:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.cls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border-radius:24px;padding:14px 16px}
+.cls .tx{flex:1;min-width:160px}
+.cls .tx b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.cls .tx span{display:block;font-size:13px;color:var(--muted)}
+.cls .lic{flex:none;width:40px;height:40px;border-radius:14px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center}
+.cls .lic svg{width:19px;height:19px}
+.cls-b{display:flex;gap:8px;flex-wrap:wrap;width:100%}
+.cls-b .chip{text-decoration:none;color:var(--ink)}
+.cls.lost .lic{background:var(--surface-2);color:var(--muted)}
+.btn.sm{width:auto;min-height:44px;padding:0 16px;font-size:15px}
+.ms{display:flex;align-items:center;gap:12px;background:var(--ok-bg);border-radius:24px;padding:14px 8px 14px 16px}
+.ms .ic{flex:none;width:40px;height:40px;border-radius:50%;background:var(--ok-strong);color:#fff;display:grid;place-items:center}
+.ms .ic svg{width:20px;height:20px}
+.ms .tx{flex:1}.ms .tx b{display:block;font-size:16px;color:var(--ok)}.ms .tx span{display:block;font-size:13px;color:var(--ink);opacity:.8}
+.ms .x,.wk .x{flex:none;width:44px;height:44px;border:0;background:none;color:var(--muted);display:grid;place-items:center;border-radius:50%;cursor:pointer}
+.ms .x svg,.wk .x svg{width:18px;height:18px}
+.wk .xm-h{margin-bottom:2px}
+.wk-g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.wk-g div{background:var(--surface-2);border-radius:16px;padding:10px 12px}
+.wk-g b{display:block;font:700 22px/1.2 var(--font-display);font-variant-numeric:tabular-nums}
+.wk-g span{display:block;font-size:12.5px;color:var(--muted)}
+.week i.rest{background:var(--surface-2);color:var(--muted)}
+.lbig{display:inline-flex;align-items:center;gap:10px;min-height:56px;padding:0 20px;border:0;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font:600 17px var(--font-body);cursor:pointer}
+.lbig svg{width:24px;height:24px}
+.story{padding:6px}
+.sline{display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:inherit;padding:12px 12px;border-radius:16px;cursor:pointer}
+.sline+.sline{margin-top:2px}
+.sline .en{display:block;font-size:18px;line-height:1.45}
+.sline .en b{font-weight:600;color:var(--accent-text)}
+.sline .uz{display:none;margin-top:4px;font-size:14px;color:var(--muted);font-style:italic}
+.sline.open{background:var(--surface-2)}
+.sline.open .uz{display:block}
+.sline:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.tfield{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;font-weight:500}
+.tfield input{font:600 17px var(--font-body);color:var(--ink);background:var(--surface-2);border:0;border-radius:12px;padding:10px 12px;min-height:44px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row2 .btn{font-size:15px;padding:0 10px;text-decoration:none}
+.nb-act{justify-self:end;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--accent-text);text-decoration:none}
+.nb-act svg{width:24px;height:24px}
+.nb-act:focus-visible{outline:2px solid var(--marker)}
+/* keng ekranda Bugun ikki ustun: chapda dars, o'ngda natijalar */
+@media (min-width:980px){
+  .wrap.home{max-width:1040px}
+  .wrap.home .stack{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start;grid-auto-flow:row dense}
+  .wrap.home .stack>*{grid-column:2}
+  .wrap.home .stack>.lesson{grid-column:1;grid-row:span 7}
+  .wrap.home .stack>.cls,.wrap.home .stack>.ms{grid-column:1 / -1}
+}
+
 /* ===== Unitlar: umumiy mashqlar ===== */
 .qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}
 .qa a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:96px;padding:12px;border-radius:20px;background:var(--surface);color:var(--ink);text-decoration:none}
@@ -1398,7 +1456,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1421,6 +1479,149 @@ function syncMyWords() {
   (S.my || []).forEach(m => WORDS.push(Object.assign({ p: "", e: "", t: "", star: 0 }, m, { unit: 0, g: 0, a: [m.w], mine: true })));
 }
 syncMyWords();
+/* ---------- unit hikoyalari: o'sha unit so'zlari bilan 6 gap (o'qib tushunish) ---------- */
+const STORIES = {
+  1: { t: "Hello, I'm Aziz", u: "Salom, men Azizman", s: [
+    ["Hello! My name is Aziz.", "Salom! Mening ismim Aziz."],
+    ["I'm from Uzbekistan.", "Men O'zbekistondanman."],
+    ["My city is Tashkent.", "Mening shahrim — Toshkent."],
+    ["I'm in London on business.", "Men Londonda ish bilan yuribman."],
+    ["This is my hotel. It's great!", "Bu mening mehmonxonam. U ajoyib!"],
+    ["Good bye! See you at the meeting.", "Xayr! Uchrashuvda ko'rishamiz."]] },
+  2: { t: "Malika's class", u: "Malikaning darsi", s: [
+    ["This is Malika. She's a teacher.", "Bu Malika. U o'qituvchi."],
+    ["Her school is next to the river.", "Uning maktabi daryo yonida."],
+    ["Her students are from Japan, Italy and Mexico.", "O'quvchilari Yaponiya, Italiya va Meksikadan."],
+    ["Her bag is big. Her laptop, pen and notepad are in her bag.", "Sumkasi katta. Kompyuteri, ruchkasi va bloknoti sumkasida."],
+    ["The class is at nine o'clock.", "Dars soat to'qqizda."],
+    ["Where's her phone? It's on the bus!", "Telefoni qayerda? U avtobusda!"]] },
+  3: { t: "Aziz's family", u: "Azizning oilasi", s: [
+    ["Aziz has got a big family.", "Azizning katta oilasi bor."],
+    ["His wife, Nilufar, is an artist.", "Rafiqasi Nilufar — rassom."],
+    ["They've got two children, a son and a daughter.", "Ularning ikki farzandi bor: o'g'il va qiz."],
+    ["Their flat is small, but it's lovely.", "Xonadoni kichkina, lekin ajoyib."],
+    ["They've got a cat called Mosh.", "Ularning Mosh ismli mushugi bor."],
+    ["Aziz's car is old, but it's very good.", "Azizning mashinasi eski, lekin juda yaxshi."]] },
+  4: { t: "Aziz's day", u: "Azizning kuni", s: [
+    ["Aziz gets up at seven o'clock.", "Aziz soat yettida turadi."],
+    ["He has a shower and has breakfast.", "Dush qabul qiladi va nonushta qiladi."],
+    ["He goes to work by bus.", "Ishga avtobusda boradi."],
+    ["He starts work at nine and checks emails.", "Ishni soat to'qqizda boshlaydi va xatlarni tekshiradi."],
+    ["He finishes work at six and gets home at seven.", "Soat oltida ishni tugatadi va yettida uyga yetib keladi."],
+    ["In his free time, he plays tennis.", "Bo'sh vaqtida tennis o'ynaydi."]] },
+  5: { t: "A shopping day", u: "Xarid kuni", s: [
+    ["Malika usually wears casual clothes.", "Malika odatda erkin kiyim kiyadi."],
+    ["Today she's at a big shop in the city.", "Bugun u shahardagi katta do'konda."],
+    ["She likes a long blue dress and a white jacket.", "Unga uzun ko'k ko'ylak va oq kurtka yoqadi."],
+    ["The dress is good quality, but it's expensive.", "Ko'ylak sifatli, lekin qimmat."],
+    ["\"I think the jacket is really smart,\" says her friend.", "«Menimcha, kurtka juda rasmiy», — deydi dugonasi."],
+    ["She buys the jacket and goes for lunch.", "U kurtkani sotib oladi va tushlikka boradi."]] },
+  6: { t: "At the hotel", u: "Mehmonxonada", s: [
+    ["Aziz arrives at the hotel at eight p.m.", "Aziz mehmonxonaga kechki soat sakkizda yetib keladi."],
+    ["The receptionist is very friendly.", "Qabulxona xodimi juda do'stona."],
+    ["\"Is there wi-fi in the room?\" Aziz asks.", "«Xonada vay-fay bormi?» — so'raydi Aziz."],
+    ["\"Yes, there is. The password is on the card.\"", "«Ha, bor. Parol kartada yozilgan.»"],
+    ["The room is clean and quiet, but there isn't a fridge.", "Xona toza va tinch, lekin sovutgich yo'q."],
+    ["There's a café and a gym near the hotel.", "Mehmonxona yaqinida kafe va sport zali bor."]] },
+  7: { t: "Nilufar's skills", u: "Nilufarning ko'nikmalari", s: [
+    ["Nilufar can paint very well.", "Nilufar juda yaxshi rasm chiza oladi."],
+    ["She can't sing, but she can dance.", "U kuylay olmaydi, lekin raqsga tusha oladi."],
+    ["She's interested in photos and social media.", "U surat va ijtimoiy tarmoqlarga qiziqadi."],
+    ["She takes photos of her paintings and posts them online.", "Rasmlarini suratga olib, internetga joylaydi."],
+    ["She can speak a foreign language — Spanish.", "U xorijiy tilda — ispanchada gapira oladi."],
+    ["She is never bored.", "U hech qachon zerikmaydi."]] },
+  8: { t: "Grandfather's stories", u: "Bobomning hikoyalari", s: [
+    ["Aziz's grandfather was born in a small village.", "Azizning bobosi kichik qishloqda tug'ilgan."],
+    ["He grew up near the mountains.", "U tog'lar yaqinida ulg'aygan."],
+    ["He was a carpenter and a great storyteller.", "U duradgor va ajoyib hikoyachi edi."],
+    ["Last year, Aziz collected his old stories.", "O'tgan yili Aziz uning eski hikoyalarini to'pladi."],
+    ["Yesterday was his grandfather's birthday.", "Kecha bobosining tug'ilgan kuni edi."],
+    ["The family had a big party.", "Oila katta bazm qildi."]] },
+  9: { t: "A bad day", u: "Omadsiz kun", s: [
+    ["Last winter, it was cold and snowy.", "O'tgan qish sovuq va qorli edi."],
+    ["One morning, Malika missed the train.", "Bir kuni ertalab Malika poyezdni o'tkazib yubordi."],
+    ["She got to work late and had a headache.", "Ishga kech keldi va boshi og'ridi."],
+    ["Then she lost her phone!", "Keyin telefonini yo'qotdi!"],
+    ["In the evening, a waiter called her: \"Your phone is here.\"", "Kechqurun ofitsiant qo'ng'iroq qildi: «Telefoningiz shu yerda.»"],
+    ["In fact, it was a good day in the end.", "Aslida, oxiri yaxshi kun bo'ldi."]] },
+  10: { t: "Weekend plans", u: "Dam olish rejalari", s: [
+    ["Tomorrow is Saturday.", "Ertaga shanba."],
+    ["Aziz and Nilufar are going to have lunch at a new café.", "Aziz va Nilufar yangi kafeda tushlik qilmoqchi."],
+    ["Aziz would like a burger and an orange juice.", "Aziz gamburger va apelsin sharbatini xohlaydi."],
+    ["Next month, they're going to travel to an island.", "Keyingi oy ular orolga sayohat qilmoqchi."],
+    ["Aziz is also going to learn a new language.", "Aziz yangi til ham o'rganmoqchi."],
+    ["\"It's a great chance,\" he says.", "«Bu ajoyib imkoniyat», — deydi u."]] }
+};
+/* ---------- o'zingiz haqingizdagi misollar: so'z o'z hayotingizga bog'lansa, yaxshiroq eslab qolinadi ---------- */
+const MYEX = {
+  "1|hello": ["Hello! I'm Ali. I'm a designer.", "Salom! Men Aliman. Men dizaynerman."],
+  "1|city": ["My city is Tashkent.", "Mening shahrim — Toshkent."],
+  "1|country": ["I'm from Uzbekistan. It's a great country.", "Men O'zbekistondanman. Bu ajoyib mamlakat."],
+  "1|study": ["I study English three days a week.", "Men haftada uch kun ingliz tili o'qiyman."],
+  "1|meeting": ["I'm at a meeting. Call me later, please.", "Men uchrashuvdaman. Keyinroq qo'ng'iroq qiling, iltimos."],
+  "1|introduce": ["Can I introduce my team?", "Jamoamni tanishtirsam maylimi?"],
+  "1|day": ["Have a good day!", "Kuningiz yaxshi o'tsin!"],
+  "2|office": ["Our office is in Tashkent.", "Ofisimiz Toshkentda."],
+  "2|company": ["My company makes apps for a bank.", "Kompaniyam bank uchun ilovalar yaratadi."],
+  "2|laptop": ["My laptop is on my desk.", "Kompyuterim stolimda."],
+  "2|phone": ["My phone is in my bag.", "Telefonim sumkamda."],
+  "2|teacher": ["My English teacher is very nice.", "Ingliz tili o'qituvchim juda yaxshi."],
+  "2|language school": ["My language school is Inter Nation.", "Mening til maktabim — Inter Nation."],
+  "2|email": ["This email is from my manager.", "Bu xat menejerimdan."],
+  "2|time": ["It's nine o'clock. Time for work!", "Soat to'qqiz. Ish vaqti!"],
+  "2|job": ["My job is product design.", "Mening kasbim — mahsulot dizayni."],
+  "3|project": ["This is my new project.", "Bu mening yangi loyiham."],
+  "3|car": ["My car is a Chevrolet Nexia.", "Mening mashinam — Chevrolet Nexia."],
+  "3|coffee": ["My coffee is hot.", "Qahvam issiq."],
+  "3|interesting": ["My job is really interesting.", "Ishim juda qiziqarli."],
+  "3|message": ["I message my team every morning.", "Har kuni ertalab jamoamga xabar yozaman."],
+  "4|get up": ["I get up at seven o'clock.", "Men soat yettida turaman."],
+  "4|have breakfast": ["I have breakfast at home.", "Uyda nonushta qilaman."],
+  "4|go to work": ["I go to work by car.", "Ishga mashinada boraman."],
+  "4|check emails": ["I check emails at nine.", "Soat to'qqizda xatlarni tekshiraman."],
+  "4|start work": ["I start work at nine o'clock.", "Ishni soat to'qqizda boshlayman."],
+  "4|finish work": ["I finish work at six.", "Ishni soat oltida tugataman."],
+  "4|in my free time": ["In my free time, I learn English.", "Bo'sh vaqtimda ingliz tili o'rganaman."],
+  "4|help": ["Can you help me with this design?", "Bu dizaynda menga yordam bera olasizmi?"],
+  "4|like": ["I like my job.", "Menga ishim yoqadi."],
+  "4|need": ["I need more English words for work.", "Ish uchun menga ko'proq inglizcha so'z kerak."],
+  "5|designer": ["I'm a product designer.", "Men mahsulot dizaynerman."],
+  "5|busy": ["I'm very busy on Mondays.", "Dushanbada juda band bo'laman."],
+  "5|usually": ["I usually wear casual clothes to work.", "Ishga odatda erkin kiyimda boraman."],
+  "5|team": ["My team is small but strong.", "Jamoam kichik, lekin kuchli."],
+  "5|important": ["This meeting is really important.", "Bu uchrashuv juda muhim."],
+  "5|useful": ["This app is really useful for me.", "Bu ilova men uchun juda foydali."],
+  "5|lunch": ["I have lunch at one o'clock.", "Soat birda tushlik qilaman."],
+  "5|always": ["I always drink coffee in the morning.", "Ertalab doim qahva ichaman."],
+  "5|think": ["I think this design is good.", "Menimcha, bu dizayn yaxshi."],
+  "5|style": ["I like a simple style.", "Menga oddiy uslub yoqadi."],
+  "6|password": ["What's the wi-fi password?", "Vay-fay paroli qanday?"],
+  "6|website": ["I design websites and apps.", "Men veb-saytlar va ilovalar dizaynini qilaman."],
+  "6|link": ["Can you send me the link?", "Havolani menga yubora olasizmi?"],
+  "6|send": ["I send my designs to the team.", "Dizaynlarimni jamoaga yuboraman."],
+  "6|problem": ["No problem, I can do it.", "Muammo yo'q, qila olaman."],
+  "6|minute": ["Give me five minutes, please.", "Besh daqiqa bering, iltimos."],
+  "6|quiet": ["The office is quiet in the morning.", "Ertalab ofis tinch bo'ladi."],
+  "7|computer skills": ["Designers need good computer skills.", "Dizaynerlarga yaxshi kompyuter ko'nikmalari kerak."],
+  "7|remember": ["I can remember new words now.", "Endi yangi so'zlarni eslab qola olaman."],
+  "7|know": ["I know a lot of English words now.", "Endi ko'p inglizcha so'z bilaman."],
+  "7|skill": ["Design is my main skill.", "Dizayn — mening asosiy ko'nikmam."],
+  "7|foreign language": ["I'm learning a foreign language — English.", "Men xorijiy til — ingliz tilini o'rganyapman."],
+  "8|yesterday": ["Yesterday I was at the office all day.", "Kecha kun bo'yi ofisda edim."],
+  "8|document": ["I read the project document yesterday.", "Kecha loyiha hujjatini o'qidim."],
+  "9|a day off": ["Sunday is my day off.", "Yakshanba — dam olish kunim."],
+  "9|mistake": ["I make mistakes, but I learn.", "Xato qilaman, lekin o'rganaman."],
+  "9|forget": ["I don't forget new words now.", "Endi yangi so'zlarni unutmayman."],
+  "9|memory": ["Practice is good for my memory.", "Mashq xotiram uchun foydali."],
+  "9|summer": ["Tashkent is very hot in summer.", "Yozda Toshkent juda issiq."],
+  "9|winter": ["Tashkent is cold in winter.", "Qishda Toshkent sovuq."],
+  "10|tomorrow": ["Tomorrow I have an English class.", "Ertaga ingliz tili darsim bor."],
+  "10|order (v)": ["I'd like to order a coffee, please.", "Bitta qahva buyurtma qilmoqchiman, iltimos."],
+  "10|probably": ["I'll probably work late tomorrow.", "Ertaga ehtimol kech ishlayman."],
+  "10|international": ["I work for an international company.", "Men xalqaro kompaniyada ishlayman."],
+  "10|learn a new language": ["Learning a new language is hard but fun.", "Yangi til o'rganish qiyin, lekin qiziq."]
+};
+WORDS.forEach(w => { const m = MYEX[w.id]; if (m) { w.pe = m[0]; w.pt = m[1]; } });
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} pushSoon(); };
 
 /* ---------- cloud sync: the viewer's own private record (db capability) ---------- */
@@ -1450,6 +1651,9 @@ function merge(a, b) {
   const sa = a.streak || {}, sb = b.streak || {};
   out.streak = (sb.last || "") > (sa.last || "") ? sb : (sa.last ? sa : out.streak);
   out.course = Math.max(a.course || 0, b.course || 0);
+  out.rest = [...new Set((a.rest || []).concat(b.rest || []))].sort().slice(-40);
+  out.story = Object.assign({}, a.story || {}, b.story || {});
+  out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
   out.level = b.level || a.level || "";
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
@@ -1491,14 +1695,48 @@ function grade(w, ok, spelled) {
   if (prev && (prev.ls ? prev.ls < today() : !isToday(prev.lt))) logRet(ok);
   const r = prev || { b: 0, due: today(), ok: 0, bad: 0 };
   r.ls = today();
-  if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; if (spelled) r.sp = (r.sp || 0) + 1; else if (w.a && !r.sp) r.b = Math.min(r.b, 2); } else { r.b = 0; r.bad++; }
+  if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; if (spelled) r.sp = (r.sp || 0) + 1; else if (w.a && !r.sp) r.b = Math.min(r.b, 2); if (r.bad >= 3) r.b = Math.min(r.b, 3); } else { r.b = 0; r.bad++; }
   r.due = addDays(INT[r.b]);
   S.srs[w.id] = r;
   logAns(ok, spelled);
   touchStreak();
   save();
 }
-function touchStreak() { const t = today(); if (S.streak.last !== t) { S.streak.n = (S.streak.last === addDays(-1)) ? S.streak.n + 1 : 1; S.streak.last = t; } }
+/* seriya: haftasiga 2 tagacha mashqsiz kun «dam olish kuni» bo'lib, seriyani uzmaydi (Duolingo: 2 ta muzlatish 1 tadan yaxshi ishlagan).
+   uzilsa — keyingi 3 kun ichida 2 kun darsni oxirigacha qilib, seriyani qaytarish mumkin */
+const REST_N = 2;
+const dOf = k => new Date(k + "T12:00:00");
+const kOf = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const dayDiff = (a, b) => Math.round((dOf(b) - dOf(a)) / 864e5);
+const addTo = (k, n) => { const d = dOf(k); d.setDate(d.getDate() + n); return kOf(d); };
+const weekOf = k => { const d = dOf(k); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return kOf(d); };
+const restLeft = wk => REST_N - (S.rest || []).filter(x => weekOf(x) === wk).length;
+function missedDays(last, t) { const out = []; for (let i = 1; i < dayDiff(last, t); i++) out.push(addTo(last, i)); return out; }
+function canRest(days) { const by = {}; days.forEach(d => { const w = weekOf(d); by[w] = (by[w] || 0) + 1; }); return days.length > 0 && Object.keys(by).every(w => by[w] <= restLeft(w)); }
+function touchStreak() {
+  const t = today(), last = S.streak.last; if (last === t) return;
+  let n = S.streak.n || 0;
+  if (!last) n = 1;
+  else { const miss = missedDays(last, t);
+    if (!miss.length) n++;
+    else if (canRest(miss)) { S.rest = (S.rest || []).concat(miss).slice(-40); n++; }
+    else { if (n >= 3) S.lost = { n, d: t, k: 0 }; n = 1; } }
+  S.streak = { last: t, n };
+}
+/* ko'rsatiladigan seriya: bugun yoki kecha mashq qilingan bo'lsa yoki o'tkazilgan kunlar dam olish kuniga sig'sa */
+function liveStreak() {
+  const last = S.streak.last, t = today(); if (!last) return 0;
+  if (last === t || last === addDays(-1)) return S.streak.n;
+  return canRest(missedDays(last, t)) ? S.streak.n : 0;
+}
+/* kunlik dars oxirigacha bajarilganda: uzilgan seriyani qaytarish hisoblanadi */
+function earnBack() {
+  const L = S.lost; if (!L) return null;
+  if (dayDiff(L.d, today()) > 2) { delete S.lost; save(); return null; }
+  if (L.cd !== today()) { L.k++; L.cd = today(); }
+  if (L.k >= 2) { S.streak.n += L.n; delete S.lost; save(); return "back"; }
+  save(); return "step";
+}
 /* ---------- kechki takrorlash: bugun o'rganilgan so'zlar 3 soatdan keyin, uxlashdan oldin bir marta xotiradan yoziladi ---------- */
 const KECH_H = 3;
 const isToday = ts => ts && new Date(ts).toDateString() === new Date().toDateString();
@@ -1568,9 +1806,9 @@ const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim(
 const pr = w => w.p ? "[" + w.p + "]" : "";
 
 /* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
-function nav(back, label, title) {
+function nav(back, label, title, act) {
   const long = String(title).replace(/<[^>]+>/g, "").length + String(label).length > 26;
-  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}${long ? "" : `<span>${esc(label)}</span>`}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1><span></span></header>`;
+  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}${long ? "" : `<span>${esc(label)}</span>`}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1>${act ? `<a class="nb-act" href="${act.href}" aria-label="${esc(act.label)}">${act.icon}</a>` : "<span></span>"}</header>`;
 }
 const navScroll = () => { const n = document.querySelector(".nb"); if (n) n.classList.toggle("on", scrollY > 2); };
 addEventListener("scroll", navScroll, { passive: true });
@@ -1594,6 +1832,7 @@ function go(h) { location.hash = h; }
 const SCROLLS = {}, HIST = []; let curH = null;
 function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
+  app.classList.remove("home");
   const h = location.hash.replace(/^#/, ""), same = h === curH, quizy = /^(quiz|gapmashq|tuzmashq)/.test(h);
   if (curH !== null) SCROLLS[curH] = scrollY;
   let back = false;
@@ -1613,6 +1852,11 @@ function render() {
   navScroll();
 }
 window.addEventListener("hashchange", render);
+/* ochiq bo'limning tugmasi yana bosilsa — sahifa tepasiga (real ilovalardagidek) */
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("nav.tabs a"); if (!a) return;
+  if ((a.getAttribute("href") || "#") === (location.hash || "#") && scrollY > 0) { e.preventDefault(); scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
+});
 /* tab bar linzasi va sahifa animatsiyasi */
 const TABS = ["home", "unitlar", "gap", "lugat"];
 let lastTab = null;
@@ -1681,11 +1925,11 @@ const DAYS = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "J
 function todayPlan(n) {
   const plan = [], mw = misWords(true).filter(w => w.unit <= n).slice(0, 5), ids = new Set(mw.map(w => w.id));
   if (mw.length) plan.push({ tag: "esla", t: "Esla: oldingi xatolar", s: mw.length + " ta so'z · xotiradan yozasiz", run: () => startQuiz(mw, "spell", "Esla", "#", "esla") });
-  const due = dueWords().filter(w => !ids.has(w.id)), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
-  if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z bugun qaytariladi", run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
+  const dueAll = revOrder(dueWords().filter(w => !ids.has(w.id))), due = dueAll.slice(0, REV_CAP), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
+  if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z" + (dueAll.length > due.length ? " · yana " + (dueAll.length - due.length) + " tasi keyingi kunlarga" : " bugun qaytariladi"), run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
   // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
-  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + n) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z", d: Math.min(LEARN_N, unseen.length) + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + n, "#", "new") });
-  if (!due.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
+  if (unseen.length && dueAll.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + n) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z", d: Math.min(LEARN_N, unseen.length) + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + n, "#", "new") });
+  if (!dueAll.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
   const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
   if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
   else if (lt.length) plan.push({ tag: "kech", lock: true, t: "Kechki takrorlash", s: "Soat " + hhmm(Math.min(...lt.map(w => rec(w.id).lt)) + KECH_H * 36e5) + " dan keyin ochiladi · uxlashdan oldin qiling", run: () => {} });
@@ -1698,13 +1942,15 @@ function todayPlan(n) {
     const mb = misBuild(true).filter(x => x.unit <= n).slice(0, 2), list = mb.concat(shuffle(bl).filter(x => !mb.includes(x))).slice(0, 5);
     plan.push({ tag: "tuz", t: "Gap tuzish", s: "Unit " + n + " · 5 ta gap" + (mb.length ? " · " + mb.length + " tasi eski xato" : " · " + (tuzMode === "yoz" ? "o'zim yozaman" : "so'zlardan yig'aman")), run: () => { startTuz(list, "Unit " + n, null, "tuz"); T.back = "#"; } });
   }
+  const stv = STORIES[n]; S.story = S.story || {};
+  if (stv && (!S.story[n] || S.story[n] === today()) && unitStat(n).pct >= 40) plan.push({ tag: "story", t: "Hikoya: " + stv.t, s: stv.u + " · 6 gap · o'qing va tinglang", min: 3, run: () => go("hikoya-" + n) });
   const pd = PH.filter(isDue), pn = PH.filter(x => !isSeen(x));
   const pl = pd.length ? pd : pn.slice(0, 3);
   if (pl.length) plan.push({ tag: "gap", t: "Tayyor gaplar", s: pd.length ? pd.length + " ta gap takrorlanadi" : "3 ta yangi gap: " + pl[0].w, run: () => { startPh(pl, "Tayyor gaplar", "gap"); G.back = "#"; } });
   plan.forEach(x => { x.min = x.min || STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
-const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon" }, STEP_NAME = { esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
+const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read" }, STEP_NAME = { story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
 let GX = null; // rejadan kelgan grammatika takrorlash savollari
 
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
@@ -1790,19 +2036,20 @@ function bindInstall() {
 route(/^$/, () => {
   LES = false;
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
-  const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0;
+  const streak = liveStreak();
   const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag) && !x.lock);
   const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
-  app.innerHTML = `
+  app.classList.add("home"); app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
-    <a class="pill" href="#kurs" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + S.course : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></a>
+    <a class="pill" href="#kurs" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + cu.n : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></a>
     <span class="streak" title="Ketma-ket kunlar">${ICON.flame}${streak ? `<b>${streak}</b> kun ketma-ket` : "Seriyani boshlang"}</span>
   </div>
   <div class="stack">
+    ${msCard(mast)}${lostCard()}${lvReady && !askUnit ? classCard(cu) : ""}
     ${!lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
@@ -1810,20 +2057,127 @@ route(/^$/, () => {
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
+    <div class="week" aria-label="Shu hafta">${weekDays()}</div>
     ${backupCard(seen) || installCard()}
     ${nm ? `<div class="facts"><a href="#xato"><b>${nm}</b> ta xato — qayta mashq</a></div>` : ""}
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
-  bindLevelPicker();
+  bindLevelPicker(); bindHomeCards(); bindClass(cu);
+  const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });
+/* ---------- takrorlash tartibi va kunlik chegara: eng kechikkan va eng zaif so'z birinchi; qolgani keyingi kunlarga ---------- */
+const REV_CAP = 30;
+const revOrder = list => list.slice().sort((a, b) => { const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; });
+/* «2 daqiqa»: charchagan kuni — 10 ta so'z, seriya saqlanadi */
+const miniPool = () => { const d = revOrder(dueWords()); return (d.length >= 5 ? d : d.concat(shuffle(WORDS.filter(w => isSeen(w) && !isDue(w))).sort((a, b) => rec(a.id).b - rec(b.id).b))).slice(0, 10); };
+const myEx = w => w.pe ? `<div class="ex pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : "";
+/* ---------- HIKOYA: unit so'zlari bilan qisqa matn ---------- */
+function storyLine(en, vocab) {
+  return en.split(/(\s+)/).map(t => { const k = t.toLowerCase().replace(/[^a-z'-]/g, ""); return k.length > 1 && vocab.has(k) ? "<b>" + esc(t) + "</b>" : esc(t); }).join("");
+}
+function sayAll(lines, i = 0, done) {
+  if (i >= lines.length) { if (done) done(); return; }
+  try { if (i === 0) speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(lines[i]); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85;
+    u.onend = () => sayAll(lines, i + 1, done); speechSynthesis.speak(u); } catch (e) {}
+}
+route(/^hikoya-(\d+)$/, n => {
+  n = +n; const st = STORIES[n]; if (!st) return go("unitlar");
+  // faqat bitta so'zli lug'at birliklari (ko'p so'zlilardan «the», «in» kabi yordamchi so'zlar ajralib qolmasin)
+  const vocab = new Set(byUnit(n).flatMap(w => w.w.toLowerCase().split(/\s*\/\s*/)).filter(x => !/\s/.test(x)).map(x => x.replace(/[^a-z'-]/g, "")).filter(x => x.length > 1));
+  const read = S.story && S.story[n];
+  app.innerHTML = `${nav(`#unit-${n}`, `Unit ${n}`, "Hikoya")}<h2 class="pg-h">${esc(st.t)}</h2><p class="sub">${esc(st.u)} · gapni bossangiz, tarjimasi chiqadi va o'qiladi. Qalin so'zlar — shu unitdan.</p>
+  <div class="stack"><button class="btn ghost" id="all">${ICON.vol} Hammasini tinglash</button>
+  <div class="card story">${st.s.map(([en, uz], i) => `<button class="sline" data-i="${i}" aria-expanded="false"><span class="en">${storyLine(en, vocab)}</span><span class="uz">${esc(uz)}</span></button>`).join("")}</div>
+  <div class="card">${read ? `<p class="muted" style="margin:0 0 12px">O'qilgan ✓</p>` : ""}${lessonBtn("story")}<button class="btn${LES ? " ghost" : ""}" id="rd">${read ? "Unit sahifasiga" : "O'qidim " + ICON.check}</button></div></div>`;
+  app.querySelectorAll(".sline").forEach(b => b.onclick = () => { const o = b.classList.toggle("open"); b.setAttribute("aria-expanded", o); if (o) say(st.s[+b.dataset.i][0]); });
+  $("#all").onclick = () => { app.querySelectorAll(".sline").forEach(b => { b.classList.add("open"); b.setAttribute("aria-expanded", "true"); }); sayAll(st.s.map(x => x[0])); };
+  const mark = () => { S.story = S.story || {}; if (!S.story[n]) S.story[n] = today(); save(); markDone("story"); };
+  $("#rd").onclick = () => { mark(); go("unit-" + n); };
+  if (LES) { mark(); bindLesson(); }
+});
+/* ---------- eslatma: telefon kalendariga har kungi voqea (sayt o'zi bildirishnoma yubora olmaydi) ---------- */
+const SITE = "https://aliumirovux.github.io/ingliz/";
+function calLinks(title, hhmm, details) {
+  const t = addDays(1).replace(/-/g, ""), [h, m] = hhmm.split(":"), end = new Date(2000, 0, 1, +h, +m + 10);
+  const st = t + "T" + h + m + "00", en = t + "T" + String(end.getHours()).padStart(2, "0") + String(end.getMinutes()).padStart(2, "0") + "00";
+  const g = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" + encodeURIComponent(title) + "&dates=" + st + "/" + en + "&ctz=Asia/Tashkent&recur=" + encodeURIComponent("RRULE:FREQ=DAILY") + "&details=" + encodeURIComponent(details + "\n" + SITE);
+  const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//ingliz//uz", "BEGIN:VEVENT", "UID:ingliz-" + h + m + "@aliumirovux", "DTSTAMP:" + t + "T000000", "DTSTART:" + st, "DTEND:" + en, "RRULE:FREQ=DAILY", "SUMMARY:" + title, "DESCRIPTION:" + details + "\\n" + SITE, "URL:" + SITE, "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + title, "TRIGGER:PT0M", "END:VALARM", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+  return { g, ics };
+}
+function icsDownload(name, text) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/calendar" })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+const remSet = () => { try { return !!localStorage.getItem("ingliz-rem"); } catch (e) { return false; } };
+function remCard() {
+  let t = "08:30"; try { t = localStorage.getItem("ingliz-remt") || t; } catch (e) {}
+  return `<div class="card" id="rem"><p class="label">Kunlik eslatma</p>
+    <p class="muted" style="margin:0 0 12px">Sayt o'zi bildirishnoma yubora olmaydi — eslatma telefoningiz kalendariga har kungi voqea bo'lib qo'shiladi.</p>
+    <label class="tfield"><span>Dars vaqti</span><input type="time" id="remt" value="${t}"></label>
+    <div class="row2"><a class="btn" id="remg" target="_blank" rel="noopener">Google Kalendar</a><button class="btn ghost" id="remi">Kalendar fayli</button></div>
+    <div style="height:14px"></div><p class="label">Kechki takrorlash · 21:30</p>
+    <div class="row2"><a class="btn ghost" id="remkg" target="_blank" rel="noopener">Google Kalendar</a><button class="btn ghost" id="remki">Kalendar fayli</button></div>
+    <p class="gohint" style="text-align:left">Android — «Google Kalendar». iPhone va Samsung kalendari — «Kalendar fayli».</p></div>`;
+}
+function bindRem() {
+  const ti = $("#remt"); if (!ti) return;
+  const day = () => calLinks("Ingliz tili · bugungi dars", ti.value || "08:30", "13 daqiqalik dars: takrorlash va yangi so'zlar"), eve = calLinks("Ingliz tili · kechki takrorlash", "21:30", "2 daqiqa: bugungi so'zlarni uxlashdan oldin takrorlang");
+  const mark = () => { try { localStorage.setItem("ingliz-rem", "1"); localStorage.setItem("ingliz-remt", ti.value); } catch (e) {} toast("Eslatma kalendarga qo'shilmoqda"); };
+  const upd = () => { $("#remg").href = day().g; }; upd(); ti.onchange = upd;
+  $("#remg").onclick = mark; $("#remi").onclick = () => { mark(); icsDownload("ingliz-dars.ics", day().ics); };
+  $("#remkg").href = eve.g; $("#remkg").onclick = mark; $("#remki").onclick = () => { mark(); icsDownload("ingliz-kechki.ics", eve.ics); };
+}
+/* ---------- dars kunlari (kursdagi darslar): standart Se, Pa, Sh ---------- */
+const clsDays = () => S.cls || [2, 4, 6];
+function clsCard() {
+  const DN = [["Du", 1], ["Se", 2], ["Ch", 3], ["Pa", 4], ["Ju", 5], ["Sh", 6], ["Ya", 0]], on = clsDays();
+  return `<div class="card"><p class="label" id="clsl">Kursdagi dars kunlari</p><p class="muted" style="margin:0 0 12px">Shu kunlari Bugun sahifasida darsga 5 daqiqalik tayyorgarlik chiqadi, kechqurun esa unit so'raladi.</p>
+    <div class="chips" role="group" aria-labelledby="clsl">${DN.map(([t, d]) => `<button class="chip${on.includes(d) ? " on" : ""}" data-d="${d}" aria-pressed="${on.includes(d)}">${t}</button>`).join("")}</div></div>`;
+}
+function bindCls() { app.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { const d = +b.dataset.d, c = clsDays().slice(), i = c.indexOf(d); if (i >= 0) c.splice(i, 1); else c.push(d); S.cls = c; save(); render(); }); }
+/* Bugun: dars kuni kartasi — kunduzi tayyorgarlik, kechqurun «qaysi unitni o'tdingiz?» */
+function classCard(cu) {
+  const d = new Date(); if (!clsDays().includes(d.getDay()) || !S.course) return "";
+  const n = cu.n, bl = unitBuild(n), eve = d.getHours() >= 18;
+  if (eve) {
+    if (S.clsAsk === today()) return "";
+    return `<section class="cls"><div class="tx"><b>Bugun darsda qaysi unitni o'tdingiz?</b><span>Reja shunga qarab tuziladi</span></div>
+      <div class="cls-b">${[n, n + 1].filter(x => x <= 10).map(x => `<button class="chip${x === n ? " on" : ""}" data-cu="${x}">Unit ${x}</button>`).join("")}<a class="chip" href="#kurs">Boshqa</a></div></section>`;
+  }
+  if (dayDone().includes("prep") || !bl.length) return "";
+  return `<section class="cls"><span class="lic">${ICON.tiles}</span><div class="tx"><b>Bugun dars kuni</b><span>Darsga 5 daqiqalik tayyorgarlik: Unit ${n} gaplarini tuzing</span></div><button class="btn ghost sm" id="prep">Boshlash</button></section>`;
+}
+function bindClass(cu) {
+  const p = $("#prep"); if (p) p.onclick = () => { startTuz(shuffle(unitBuild(cu.n)).slice(0, 5), "Darsga tayyorgarlik", null, "prep"); T.back = "#"; };
+  app.querySelectorAll("[data-cu]").forEach(b => b.onclick = () => { S.course = +b.dataset.cu; S.clsAsk = today(); save(); toast("Kursda: Unit " + S.course); render(); });
+}
+function lostCard() {
+  const L = S.lost; if (!L || dayDiff(L.d, today()) > 2) return "";
+  return `<section class="cls lost"><span class="lic">${ICON.flame}</span><div class="tx"><b>Seriya uzildi — ${L.n} kun</b><span>Ketma-ket 2 kun darsni oxirigacha qilsangiz, qaytadi · ${L.k}/2</span></div></section>`;
+}
+/* ---------- haftalik xulosa va mustahkam so'z bosqichlari ---------- */
+const MS = [25, 50, 100, 200, 300, 400, 500, 600, 700];
+function msCard(mast) {
+  if (S.ms == null) { S.ms = MS.filter(x => x <= mast).pop() || 0; save(); return ""; }
+  const m = MS.filter(x => x <= mast && x > S.ms).pop(); if (!m) return "";
+  return `<section class="ms"><span class="ic">${ICON.check}</span><div class="tx"><b>${m} ta mustahkam so'z!</b><span>Bu so'zlar uzoq muddatli xotiraga o'tdi. Kitobdagi ${WORDS.length} so'zning ${Math.round(m / WORDS.length * 100)}% i.</span></div><button class="x" id="msok" data-m="${m}" aria-label="Yopish">${ICON.x}</button></section>`;
+}
+function weekCard() {
+  const wk = weekOf(today()), p = weekStat(1); if (S.wkSum === wk || !p.a) return "";
+  const hard = WORDS.filter(w => { const r = rec(w.id); return r && r.bad > 0; }).sort((a, b) => rec(b.id).bad - rec(a.id).bad).slice(0, 3);
+  return `<section class="xm wk"><div class="xm-h"><b>O'tgan hafta</b><button class="x" id="wkok" aria-label="Yopish">${ICON.x}</button></div>
+    <div class="wk-g"><div><b>${p.rv ? pctOf(p.rk, p.rv) + "%" : "—"}</b><span>esda qolgan</span></div><div><b>${p.days}/7</b><span>faol kun</span></div><div><b>${p.sp}</b><span>xotiradan yozildi</span></div></div>
+    ${hard.length ? `<p class="xm-note">Eng qiyin so'zlar: ${hard.map(w => `<b>${esc(w.w)}</b>`).join(", ")}. Bu hafta ular ko'proq chiqadi.</p>` : ""}</section>`;
+}
+function bindHomeCards() {
+  const a = $("#msok"); if (a) a.onclick = () => { S.ms = +a.dataset.m; save(); render(); };
+  const w = $("#wkok"); if (w) w.onclick = () => { S.wkSum = weekOf(today()); save(); render(); };
+}
 /* ---------- Bugungi dars: qadamlar yo'li ---------- */
 function stepView(x) {
   const m = /^([^:]+):\s*(.+)$/.exec(x.t), title = m ? m[1] : x.t, topic = m ? m[2] : "";
@@ -1842,7 +2196,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
   return `<section class="lesson dars">
     <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" aria-label="${dn} / ${all} qadam bajarildi">${dn}/${all}</span></div>
     <ol class="tl">${li}</ol>
-    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
+    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>${miniPool().length >= 5 ? `<button class="mini" id="mini">${ICON.clock}Vaqt kam? 2 daqiqalik takrorlash</button>` : ""}` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${cu.n} · ${esc(info[0])}</b><span>${esc(info[1])} · ${bookPages(cu.n)}-betlar</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
   </section>`;
 }
@@ -1954,21 +2308,23 @@ function mastTile(seen, mast) {
   addEventListener("scroll", hide, { passive: true }); addEventListener("hashchange", hide);
 })();
 /* haftalik qator: Dushanbadan boshlab, seriya kunlari belgilanadi */
-function weekDays(streak) {
-  const d = new Date(), dow = (d.getDay() + 6) % 7, lastOff = S.streak.last === today() ? 0 : 1;
+function weekDays() {
+  const dow = (new Date().getDay() + 6) % 7, rest = new Set(S.rest || []);
   return ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"].map((n, i) => {
-    const back = dow - i, on = back >= lastOff && back < lastOff + streak;
-    return `<div class="${i === dow ? "now" : ""}"><i class="${on ? "on" : ""} ${i === dow ? "now" : ""}">${on ? ICON.check : ""}</i>${n}</div>`;
+    const k = addDays(i - dow), L = S.log[k], on = L && L.a, rs = !on && rest.has(k), now = i === dow;
+    return `<div class="${now ? "now" : ""}" title="${on ? "Mashq qilingan" : rs ? "Dam olish kuni — seriya uzilmadi" : ""}"><i class="${on ? "on" : rs ? "rest" : ""} ${now ? "now" : ""}">${on ? ICON.check : rs ? ICON.moon : ""}</i>${n}</div>`;
   }).join("");
 }
 
 /* ---------- DARS YAKUNI ---------- */
 route(/^yakun$/, () => {
-  const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0, cu = curUnit(), st = unitStat(cu.n), L = S.log[today()];
+  const streak = liveStreak(), cu = curUnit(), st = unitStat(cu.n), L = S.log[today()];
+  const eb = earnBack(), wk = weekOf(today()), rl = restLeft(wk);
   app.innerHTML = `<div class="medal">${ICON.check}</div><h1 class="done-h">Bugungi dars tugadi</h1>
-  <p class="sub" style="text-align:center;margin:0 auto 24px">Ertaga qaytsangiz, seriya davom etadi.</p>
+  <p class="sub" style="text-align:center;margin:0 auto 24px">${eb === "back" ? "Seriya qaytarildi! Endi " + liveStreak() + " kun ketma-ket." : eb === "step" ? "Seriyani qaytarishga yana 1 kun: ertaga ham darsni oxirigacha qiling." : "Ertaga qaytsangiz, seriya davom etadi." + (rl > 0 ? " Bu hafta yana " + rl + " ta dam olish kuni bor — o'tkazib yuborsangiz ham seriya uzilmaydi." : "")}</p>
   <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div>${L ? `<div class="li"><span class="tx"><b>Bugun xotiradan yozildi</b></span><span class="st">${L.sp} ta so'z</span></div><div class="li"><span class="tx"><b>Bugungi mashq</b></span><span class="st">${Math.max(1, Math.round(L.t / 60))} daq</span></div>` : ""}</div>
   ${bakStale(WORDS.filter(isSeen).length) ? `<div style="height:16px"></div>${backupCard(WORDS.filter(isSeen).length)}` : ""}
+  ${remSet() ? "" : `<div style="height:16px"></div><a class="install" href="#sozlama" style="text-decoration:none;color:inherit"><span class="ic">${ICON.clock}</span><span class="tx"><b>Ertaga eslatib turaymi?</b><span>Kalendaringizga har kungi dars vaqtini qo'shing</span></span><span class="go">${ICON.chev}</span></a>`}
   <div style="height:16px"></div><a class="btn" href="#">Bosh sahifa</a>`;
   bindInstall();
 });
@@ -2017,6 +2373,8 @@ route(/^unit-(\d+)$/, n => {
     </div>
   </section>` : ""}
 
+  ${STORIES[n] ? `<section class="sec"><div class="sec-h"><h2>Hikoya</h2><span class="n">6 gap</span></div>
+    <div class="list"><a class="li" href="#hikoya-${n}"><span class="lic">${ICON.read}</span><span class="tx"><b>${esc(STORIES[n].t)}</b><span>${esc(STORIES[n].u)} · o'qing va tinglang</span></span><span class="st${S.story && S.story[n] ? " full" : ""}">${S.story && S.story[n] ? ICON.check + "o'qildi" : "yangi"}</span><span class="go">${ICON.chev}</span></a></div></section>` : ""}
   ${sp.length ? `<section class="sec">
     <div class="sec-h"><h2>Gapirish</h2><span class="n">${sp.length} ta topshiriq</span></div>
     <div class="list">${sp.map(t => `<a class="li" href="#gapir-${n}"><span class="lic">${ICON.mic}</span><span class="tx"><b>${esc(t.task)} · ${esc(t.title)}</b><span>${t.items.length} ta savol va tayyor javoblar</span></span><span class="go">${ICON.chev}</span></a>`).join("")}</div>
@@ -2073,7 +2431,7 @@ route(/^mening$/, () => {
   });
 });
 route(/^lugat$/, () => {
-  app.innerHTML = `${nav(null, "", "Lug'at")}<p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
+  app.innerHTML = `${nav(null, "", "Lug'at", { href: "#mening", label: "So'z qo'shish", icon: ICON.plus })}<p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
   <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="Masalan: weekend yoki ofis" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
@@ -2158,7 +2516,7 @@ function wordLi(w) {
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
   return `<li><div class="h"><span class="w">${esc(w.w)}</span>${w.p ? `<span class="p">[${esc(w.p)}]</span>` : ""}${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
     <div class="u">${w.star ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
-    ${w.e ? `<div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}
+    ${w.pe ? `<div class="e pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : ""}${w.e ? `<div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}
     ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}${S.hook[w.id] || isHard(w) ? hookBox(w) : ""}</li>`;
 }
 function bindSay(root) { root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say)); }
@@ -2320,7 +2678,7 @@ route(/^quiz$/, () => {
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
   $("#h2").onclick = () => { const t = Z.cur.a[0]; $("#hint").textContent = "1-harf: " + t[0].toUpperCase() + " · " + t.replace(/[ -]/g, "").length + " ta harf:  " + t[0] + " " + t.slice(1).replace(/[^ -]/g, "_ ").trim(); };
-  $("#next").onclick = () => { if ((Z.qmode === "spell" || Z.qmode === "cloze") && Z.state !== "next") check(); else next(); };
+  $("#next").onclick = () => { if (typedQ() && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
   $("#kbt").onclick = () => { try { localStorage.setItem("ingliz-kbd", useLetters() ? "1" : "0"); } catch (er) {} setInputMode(Z.ltTarget); };
@@ -2329,7 +2687,7 @@ route(/^quiz$/, () => {
 document.addEventListener("keydown", e => {
   if (!Z || !location.hash.startsWith("#quiz") || e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
   if (e.key === "Enter" && Z.state === "next") { e.preventDefault(); next(); }
-  if (Z.state === "ask" && Z.qmode !== "spell" && Z.qmode !== "cloze" && Z.qmode !== "say" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
+  if (Z.state === "ask" && !typedQ() && Z.qmode !== "say" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
 });
 /* Javob tekshirilgach maydon qulflanadi (disabled emas): fokus va klaviatura joyida qoladi, Enter keyingi so'zga o'tkazadi */
 document.addEventListener("beforeinput", e => { const t = e.target; if (t.classList && t.classList.contains("spell") && /^insert(LineBreak|Paragraph)$/.test(e.inputType)) { e.preventDefault(); t.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })); } }, true);
@@ -2381,9 +2739,17 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
   // izoh yoki yordam qatori paydo bo'lsa, karta qayta joylashadi
   if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(fit)).observe(app);
 })();
+const typedQ = () => !!Z && (Z.qmode === "spell" || Z.qmode === "cloze" || Z.qmode === "listen");
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
+  const m = qmodeRaw(w), r = rec(w.id), b = r ? r.b : 0;
+  // aralash: ketma-ket ikki marta bir xil turdagi savol chiqmasin (mustahkamroq so'zlarda)
+  if (b >= 2 && m === Z.prevQ) { const alt = ["spell", "listen"].concat(clozeOf(w) ? ["cloze"] : []).filter(x => x !== m); Z.prevQ = alt[Math.floor(Math.random() * alt.length)]; return Z.prevQ; }
+  Z.prevQ = m; return m;
+}
+function qmodeRaw(w) {
   const r = rec(w.id); const b = r ? r.b : 0;
+  if (b >= 2 && "speechSynthesis" in window && Math.random() < .25) return "listen";
   // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi, goh ovoz chiqarib aytiladi
   if (b >= 2 && canSpeak() && spkOn() && Math.random() < .25) return "say";
   if (b >= 3 && clozeOf(w) && Math.random() < .5) return "cloze";
@@ -2418,7 +2784,7 @@ function ask() {
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
   $("#bank").innerHTML = ""; $("#bank").classList.add("hidden"); $("#kbt").classList.add("hidden");
   const sp = $("#spell"); sp.readOnly = false; sp.removeAttribute("inputmode");
-  $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say");
+  $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say" || Z.qmode === "listen");
   if (Z.qmode === "intro") {
     // tanishuv kartasi: so'z, o'qilishi, ovoz, ma'nosi, misol gap va eslatgich — keyin darhol 1-bosqich
     if (document.activeElement === sp) sp.blur();
@@ -2426,7 +2792,7 @@ function ask() {
     setLabel(Z.title + " · tanishing, keyin eslab topasiz");
     $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = pr(w);
     $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
-    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div>${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
+    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div>${myEx(w)}${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
     $("#intro").classList.remove("hidden");
     say(spoken(w));
     Z.state = "next"; $("#next").classList.remove("hidden"); $("#next").innerHTML = "Tushundim " + ICON.arrow;
@@ -2441,10 +2807,11 @@ function ask() {
     askSay(w);
     return;
   }
-  if (Z.qmode === "spell" || Z.qmode === "cloze") {
-    const cz = Z.qmode === "cloze" ? clozeOf(w) : null; Z.cz = cz && cz.word;
-    setLabel(Z.title + (cz ? " · gapni to'ldiring" : " · inglizcha yozing"));
-    if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
+  if (typedQ()) {
+    const cz = Z.qmode === "cloze" ? clozeOf(w) : null, ls = Z.qmode === "listen"; Z.cz = cz && cz.word;
+    setLabel(Z.title + (cz ? " · gapni to'ldiring" : ls ? " · eshitib yozing" : " · inglizcha yozing"));
+    if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
+    else if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
     else { $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = ""; }
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
@@ -2512,7 +2879,7 @@ function bankLock() { $("#bank").querySelectorAll("button").forEach(b => b.disab
 function bankNudge() { const b = $("#bank"); b.classList.remove("nudge"); void b.offsetWidth; b.classList.add("nudge"); }
 /* kompyuterda: harflar rejimida ham klaviaturadan terish mumkin */
 document.addEventListener("keydown", e => {
-  if (!Z || !location.hash.startsWith("#quiz") || !useLetters() || (Z.qmode !== "spell" && Z.qmode !== "cloze") || Z.state !== "ask" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (!Z || !location.hash.startsWith("#quiz") || !useLetters() || !typedQ() || Z.state !== "ask" || e.metaKey || e.ctrlKey || e.altKey) return;
   const bank = $("#bank"); if (!bank || bank.classList.contains("hidden")) return;
   if (e.key === "Backspace") { e.preventDefault(); ltUndo(); return; }
   if (e.key === "Enter") { e.preventDefault(); check(); return; }
@@ -2524,7 +2891,7 @@ function result(ok) {
   if (Z.learn) return learnResult(ok);
   // qayta so'ralgan so'z ikkinchi marta baholanmaydi; yana xato bo'lsa, to'g'ri topilguncha (3 martagacha) qaytadi
   if (Z.done.has(w.id)) { if (!ok && (Z.rq[w.id] = (Z.rq[w.id] || 0) + 1) < 3) Z.q.push(w); return; }
-  const spelled = Z.qmode === "spell" || Z.qmode === "cloze";
+  const spelled = typedQ();
   if (Z.kech) {
     // kechki takrorlash qutini o'zgartirmaydi; faqat xato bo'lsa so'z ertaga boshidan qaytadi
     const r = rec(w.id); logAns(ok, true); r.ev = today();
@@ -2545,7 +2912,7 @@ function choose(btn, o, f) {
   feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> ${esc(pr(w))} — ${esc(w.u)}`);
   toNext();
 }
-function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
+function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
 function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
@@ -2573,7 +2940,7 @@ function check() {
     return;
   }
   say(spoken(w));
-  if (ok) { bankLock(); result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); }
+  if (ok) { bankLock(); result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}${Z.qmode === "listen" ? " — " + esc(w.u) : ""}`); toNext(); }
   else {
     result(false); buzz(false);
     // bir nechta to'g'ri variant bo'lsa, yozilganiga eng yaqini bilan solishtiramiz
@@ -2581,7 +2948,7 @@ function check() {
     const near = dist[best] === 1 && norm(t).length > 3;
     sp.className = "spell bad";
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
-    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta ${useLetters() ? "tering" : "yozing"}.</span>`);
+    feedback(false, `${Z.qmode === "listen" ? "<b>" + esc(w.w) + "</b> — " + esc(w.u) + "<br>" : ""}${rec(w.id) && rec(w.id).bad >= 3 ? "<b>Bu so'z " + rec(w.id).bad + "-marta xato bo'ldi — eslatgich yozing, bog'lanish yordam beradi.</b><br>" : ""}${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta ${useLetters() ? "tering" : "yozing"}.</span>`);
     Z.retype = true; sp.value = ""; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t;
     if (useLetters()) setInputMode(t); else sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
@@ -2599,7 +2966,7 @@ function finish() {
   const more = ch && ch.left > 0 ? `<button class="btn" id="more">Keyingi ${Math.min(CHUNK, ch.left)} ta so'z ${ICON.arrow}</button><p class="gohint">Unitda yana ${ch.left} ta so'z qoldi</p><div style="height:10px"></div>` : "";
   app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)}${ch && ch.of > 1 ? " · " + ch.n + "-bo'lak / " + ch.of : ""} · natija</p>
     <div class="score">${Z.right} / ${total}</div>
-    <p class="muted">${pct === 100 ? "Zo'r! Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? pct + "% — yaxshi. Xatolar ertaga yana chiqadi." : pct + "% — xatolarni hozir yana bir marta ishlang."}</p></div>
+    ${tag === "mini" ? `<p class="muted" style="margin:0 0 6px"><b>Seriya saqlandi ✓</b> Ertaga to'liq darsni qilasiz.</p>` : ""}<p class="muted">${pct === 100 ? "Zo'r! Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? pct + "% — yaxshi. Xatolar ertaga yana chiqadi." : pct + "% — xatolarni hozir yana bir marta ishlang."}</p></div>
     ${uniq.length ? `<div class="card"><p class="label">Xato qilingan so'zlar</p><ul class="wl">${uniq.map(wordLi).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${more}${uniq.length ? `<button class="btn${LES && tag || more ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
@@ -2699,9 +3066,11 @@ route(/^natija$/, () => {
 });
 
 route(/^xato$/, () => {
-  const mw = misWords(), mg = misGram(), mb = misBuild();
+  const mw = misWords(), mg = misGram(), mb = misBuild(), hw = WORDS.filter(isHard).sort((a, b) => rec(b.id).bad - rec(a.id).bad);
   app.innerHTML = `${nav(`#`, `Bugun`, `Xatolarim`)}<p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
-  ${!mw.length && !mg.length && !mb.length ? `<div class="card"><p class="muted" style="margin:0">Hozircha xato yo'q.</p></div>` : ""}
+  ${!mw.length && !mg.length && !mb.length && !hw.length ? `<div class="card"><p class="muted" style="margin:0">Hozircha xato yo'q.</p></div>` : ""}
+  ${hw.length ? `<section class="sec"><div class="sec-h"><h2>Qiyin so'zlar</h2><span class="n">${hw.length} ta · 3+ marta xato</span></div>
+    <div class="card"><p class="muted" style="margin:0 0 12px">Bu so'zlar tez-tez qaytadi. Har biriga eslatgich yozing — o'zingiz o'ylagan bog'lanish yaxshiroq eslanadi.</p><button class="btn" id="xh">Mashq qilish</button><ul class="wl" style="margin-top:10px">${hw.map(wordLi).join("")}</ul></div></section>` : ""}
   ${mw.length ? `<section class="sec"><div class="sec-h"><h2>So'zlar</h2><span class="n">${mw.length} ta</span></div>
     <div class="card"><button class="btn" id="xw">Yozib mashq qilish</button><ul class="wl" style="margin-top:10px">${mw.map(wordLi).join("")}</ul></div></section>` : ""}
   ${mg.length ? `<section class="sec"><div class="sec-h"><h2>Grammatika</h2><span class="n">${mg.length} ta</span></div>
@@ -2710,6 +3079,7 @@ route(/^xato$/, () => {
     <div class="card"><button class="btn" id="xb">Qayta tuzish</button><ul class="wl" style="margin-top:10px">${mb.map(it => `<li><div class="u">${esc(it.u)}</div><div class="e"><b>${esc(it.e)}</b><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div></section>` : ""}`;
   bindSay(app);
   const w = $("#xw"); if (w) w.onclick = () => startQuiz(mw, "spell", "Xatolarim", "#xato");
+  const xh = $("#xh"); if (xh) xh.onclick = () => startQuiz(hw, "auto", "Qiyin so'zlar", "#xato");
   const g = $("#xg"); if (g) g.onclick = () => { GX = shuffle(mg); go("gtakror"); };
   const b = $("#xb"); if (b) b.onclick = () => { startTuz(mb, "Xatolarim", null); T.back = "#xato"; };
 });
@@ -2945,7 +3315,7 @@ function tuzFinish() {
 route(/^sozlama$/, () => {
   app.innerHTML = `${nav(`#`, `Bugun`, `Sozlamalar`)}
   <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Haftada bir zaxira faylini saqlang — boshqa qurilmada «Zaxiradan tiklash» orqali ochasiz."}</p>
-  <div class="stack">${installCard(true)}
+  <div class="stack">${installCard(true)}${remCard()}${clsCard()}
   <div class="card"><p class="label">Zaxira · oxirgisi: ${bakWhen()}</p>
     <button class="btn" id="bk">${sv('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>')} Zaxira faylini saqlash</button>
     <p class="gohint" style="text-align:left">Telefonda «Ulashish» oynasi ochiladi — Telegram «Saqlangan xabarlar»ga yuboring.</p><p class="muted" id="bkmsg" role="status"></p></div>
@@ -2958,7 +3328,7 @@ route(/^sozlama$/, () => {
     <div style="height:16px"></div><p class="label">Boshqa qurilmadan kod</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button></details>
   ${canSpeak() ? `<div class="card"><label class="sw"><span><b>Takrorlashda gapirish savollari</b><span class="muted">Ba'zan so'zni ovoz chiqarib aytasiz. Ofisda bo'lsangiz — «Yozib javob bering».</span></span><input type="checkbox" id="spk"${spkOn() ? " checked" : ""}></label></div>` : ""}
   ${canBuzz() ? `<div class="card"><label class="sw"><span><b>Javobda titrash</b><span class="muted">To'g'ri — bir marta, xato — ikki marta</span></span><input type="checkbox" id="vib"${buzzOn() ? " checked" : ""}></label></div>` : ""}</div>`;
-  bindInstall();
+  bindInstall(); bindRem(); bindCls();
   const sk = $("#spk"); if (sk) sk.onchange = () => { try { localStorage.setItem("ingliz-spk", sk.checked ? "1" : "0"); } catch (e) {} };
   const vb = $("#vib"); if (vb) vb.onchange = () => { try { localStorage.setItem("ingliz-vib", vb.checked ? "1" : "0"); } catch (e) {} buzz(true); };
   $("#cp").onclick = () => {

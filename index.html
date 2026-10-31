@@ -703,9 +703,10 @@ a.nwb{text-decoration:none}
 .qa a,.ystreak,.ytiles div,.cls,.xm,.xm-t{box-shadow:var(--card-shadow)}
 .home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--surface)}}
-.home .xm,.home .xm-t,.home .skc{border-radius:30px;background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
-:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
+.home .xm,.home .xm-t,.home .skc{border-radius:30px}
+.home .xm,.home .xm-t,.home .skc,.home .lesson.dars,.home .xrow{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
+:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
 /* dars: halqa va ixcham qadamlar */
 .dars .cnt{position:relative;width:58px;height:58px;padding:0;background:none;justify-content:center;margin:-4px -2px 0 0}
 .dars .cnt .rg{position:absolute;inset:0}

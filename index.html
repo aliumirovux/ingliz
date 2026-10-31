@@ -827,6 +827,8 @@ small{font-size:13px}
 .qcard .tools .icon,.wl .icon.say{background:var(--btn-glass);box-shadow:inset 0 1px 0 var(--btn-hair)}
 .icon:active{transform:scale(.94);transition-duration:.1s}
 @media (prefers-reduced-motion:reduce){.btn:not(:disabled):active,.icon:active{transform:none}}
+/* gapirish savolida yozish varianti — ko'rinadigan ikkinchi darajali tugma */
+.mic .totype{width:auto;min-width:220px;margin-top:22px;padding:0 24px}
 /* so'z mashqi: so'z, o'qilishi, yordam tugmalari va ishora — markazda */
 #hint .hmask{font:600 20px/1.4 var(--font-display);letter-spacing:.08em;color:var(--ink);white-space:pre}
 #hint .hn{font-size:13px;color:var(--muted)}
@@ -919,7 +921,20 @@ small{font-size:13px}
 .ks .pick-l{margin:22px 0 10px}
 .ks-body{padding-top:12px}
 button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:focus-within:not(:focus-visible){outline:none}
-@media (min-width:600px){.qs{bottom:auto;top:50%;border-radius:28px;transform:translateY(-40%) scale(.96);opacity:0;transition:transform .28s cubic-bezier(.16,1,.3,1),opacity .2s}.qsheet.on .qs{transform:translateY(-50%);opacity:1}.qs-grab{display:none}}
+@media (min-width:600px){
+  .qs{bottom:auto;top:50%;width:min(420px,calc(100% - 48px));padding:28px 28px 24px;border-radius:28px;transform:translateY(-46%) scale(.96);opacity:0;transition:transform .28s cubic-bezier(.16,1,.3,1),opacity .2s;box-shadow:0 30px 80px -20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)}
+  .qsheet.on .qs{transform:translateY(-50%);opacity:1}.qs-grab{display:none}
+  .qs-bd{background:rgba(10,10,12,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  #qsheet .qs{text-align:center}
+  #qsheet .qs h2{font-size:21px;margin:0 0 8px}
+  #qsheet .qs p{margin:0 0 22px;font-size:15px}
+  /* tugmalar yonma-yon: chapda chiqish, o'ngda asosiy */
+  #qsheet .qs{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}
+  #qsheet .qs>h2,#qsheet .qs>p,#qsheet .qs>.qs-grab{grid-column:1/-1}
+  #qsheet .qs .btn{min-height:46px;font-size:16px;margin:0!important}
+  #qsheet #qsgo{grid-column:2;grid-row:3}#qsheet #qsout{grid-column:1;grid-row:3}
+  .qs.ks{width:min(520px,calc(100% - 48px));padding:8px 4px 8px}
+}
 /* ===== sahifa sarlavhasi (markaziy) ===== */
 .nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:60px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50%) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
 .nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
@@ -3280,7 +3295,7 @@ function askSay(w) {
   Z.tries = 0; Z.micUsed = false;
   $("#opts").innerHTML = `<div class="mic"><div class="mstage" id="mstage"><svg class="mblob" viewBox="-110 -110 220 220" aria-hidden="true"><path class="b1"/><path class="b2"/></svg><button class="micbtn" id="mic" aria-label="Bosing va inglizcha ayting">${ICON.mic}</button></div>
     <p class="micst" id="micst" role="status">Bosing va inglizcha ayting</p><span class="micq" aria-hidden="true"><i id="micq"></i></span>
-    <button class="hl2" id="totype">Ovoz chiqarib bo'lmaydimi? Yozib javob bering</button></div>`;
+    <button class="btn ghost totype" id="totype">Yozib javob berish</button></div>`;
   $("#totype").onclick = () => { if (srObj) srObj.abort(); Z.force = "spell"; ask(); };
   $("#mic").onclick = () => {
     if (Z.state !== "ask") return;
@@ -3486,7 +3501,7 @@ function ask() {
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
     setLabel(Z.title + " · inglizcha ovoz chiqarib ayting");
     $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
-    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.remove("hidden");
+    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.add("hidden");
     askSay(w);
     return;
   }

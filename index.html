@@ -1096,11 +1096,25 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 .sclr svg{width:18px;height:18px}
 .sclr:focus-visible{outline:2px solid var(--marker)}
 /* ===== qisqa xabar ===== */
-.toast{position:fixed;z-index:90;left:50%;bottom:calc(var(--nav-h) + 28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 32px);min-height:48px;padding:6px 6px 6px 16px;border-radius:16px;background:#17171B;color:#fff;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.toast{position:fixed;z-index:90;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translate(-50%,calc(-100% - 24px));opacity:0;display:flex;align-items:center;gap:12px;
+  width:min(440px,calc(100% - 24px));min-height:64px;padding:10px 6px 10px 14px;border-radius:24px;color:var(--ink);touch-action:none;
+  background:var(--alert-bg);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--glass-line);
+  box-shadow:0 18px 40px -14px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.08),inset 0 1px 0 var(--glass-edge);transition:opacity .25s ease,transform .45s cubic-bezier(.3,1.25,.5,1)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.toast{background:var(--glass-solid)}}
+:root{--alert-bg:rgba(252,252,250,.94)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--alert-bg:rgba(36,36,42,.94)}}
+:root[data-theme="dark"]{--alert-bg:rgba(36,36,42,.94)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-.toast span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.toast button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:rgba(255,255,255,.12);color:#F2B08F;font:600 15px var(--font-body);cursor:pointer}
-@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+.toast .ti{flex:none;display:flex}.toast .ti svg{width:32px;height:32px}
+.toast.on .ti svg{animation:m-pop .5s cubic-bezier(.34,1.56,.64,1) .12s both}
+.toast .tt{flex:1;min-width:0;line-height:1.3}
+.toast .tt b{display:block;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast .tt small{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast .ta{flex:none;min-height:36px;padding:0 12px;border:0;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font:600 14px var(--font-body);cursor:pointer}
+.toast .tx{flex:none;width:44px;height:44px;border:0;background:none;color:var(--muted);display:grid;place-items:center;border-radius:50%;cursor:pointer}
+.toast .tx svg{width:20px;height:20px}
+.toast button:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.toast{transition:opacity .2s}.toast.on .ti svg{animation:none}}
 
 /* ===== yozish: harflar banki ===== */
 .bank{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
@@ -2295,14 +2309,31 @@ function confirmQuit(done, total, exit) {
   $("#qsgo").focus();
 }
 /* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
-function toast(msg, act, fn) {
+/* ogohlantirish (alert): turi bo'yicha belgi, sarlavha, izoh, yopish ✕; ixtiyoriy amal tugmasi. Tepada chiqadi, 5 s da yoki tepaga surilsa yopiladi.
+   toast(sarlavha, amal?, fn?, { type: "ok" | "warn" | "info" | "err", sub: "izoh" }) */
+const ALERT_IC = {
+  ok: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="var(--ok-strong)"/><path d="m7.5 12.5 3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.6a2 2 0 0 1 3.4 0l8.4 14.6A2 2 0 0 1 20.4 21H3.6a2 2 0 0 1-1.7-2.8z" fill="#E9A23B"/><path d="M12 9v4.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.4" fill="#fff"/></svg>',
+  info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="var(--marker)"/><path d="M12 11v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="7.4" r="1.5" fill="#fff"/></svg>',
+  err: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 1.5h8L22.5 8v8L16 22.5H8L1.5 16V8z" fill="var(--bad-strong)"/><path d="M12 6.5v7" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.4" fill="#fff"/></svg>'
+};
+function toast(msg, act, fn, o = {}) {
   let t = document.getElementById("toast"); if (t) t.remove();
-  t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status");
-  t.innerHTML = `<span>${esc(msg)}</span>${act ? `<button>${esc(act)}</button>` : ""}`;
+  const type = o.type || "ok";
+  t = document.createElement("div"); t.id = "toast"; t.className = "toast " + type; t.setAttribute("role", type === "err" || type === "warn" ? "alert" : "status");
+  t.innerHTML = `<span class="ti">${ALERT_IC[type] || ALERT_IC.ok}</span><span class="tt"><b>${esc(msg)}</b>${o.sub ? `<small>${esc(o.sub)}</small>` : ""}</span>${act ? `<button class="ta">${esc(act)}</button>` : ""}<button class="tx" aria-label="Yopish">${ICON.x}</button>`;
   document.body.appendChild(t); requestAnimationFrame(() => t.classList.add("on"));
-  const close = () => { t.classList.remove("on"); setTimeout(() => t.remove(), 250); };
-  if (act) t.querySelector("button").onclick = () => { close(); fn(); };
-  setTimeout(close, 6000);
+  let tm = 0;
+  const close = () => { clearTimeout(tm); t.classList.remove("on"); setTimeout(() => t.remove(), 300); };
+  if (act) t.querySelector(".ta").onclick = () => { close(); fn(); };
+  t.querySelector(".tx").onclick = close;
+  // tepaga surib yopish
+  let y0 = null;
+  t.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; y0 = e.clientY; t.style.transition = "none"; t.setPointerCapture(e.pointerId); });
+  t.addEventListener("pointermove", e => { if (y0 === null) return; const d = Math.min(0, e.clientY - y0); t.style.transform = `translate(-50%, ${d}px)`; });
+  const up = e => { if (y0 === null) return; const d = e.clientY - y0; y0 = null; t.style.transition = ""; t.style.transform = ""; if (d < -30) close(); };
+  t.addEventListener("pointerup", up); t.addEventListener("pointercancel", up);
+  tm = setTimeout(close, act ? 6000 : 4500);
 }
 
 /* ---------- router ---------- */
@@ -2638,7 +2669,7 @@ function remCard() {
 function bindRem() {
   const ti = $("#remt"); if (!ti) return;
   const day = () => calLinks("Ingliz tili · bugungi dars", ti.value || "08:30", "13 daqiqalik dars: takrorlash va yangi so'zlar"), eve = calLinks("Ingliz tili · kechki takrorlash", "21:30", "2 daqiqa: bugungi so'zlarni uxlashdan oldin takrorlang");
-  const mark = () => { try { localStorage.setItem("ingliz-rem", "1"); localStorage.setItem("ingliz-remt", ti.value); } catch (e) {} toast("Eslatma kalendarga qo'shilmoqda"); };
+  const mark = () => { try { localStorage.setItem("ingliz-rem", "1"); localStorage.setItem("ingliz-remt", ti.value); } catch (e) {} toast("Eslatma qo'shilmoqda", null, null, { type: "info", sub: "Kalendar ochiladi — saqlashni bosing" }); };
   const upd = () => { $("#remg").href = day().g; }; upd(); ti.onchange = upd;
   $("#remg").onclick = mark; $("#remi").onclick = () => { mark(); icsDownload("ingliz-dars.ics", day().ics); };
   $("#remkg").href = eve.g; $("#remkg").onclick = mark; $("#remki").onclick = () => { mark(); icsDownload("ingliz-kechki.ics", eve.ics); };
@@ -2665,7 +2696,7 @@ function classCard(cu) {
 }
 function bindClass(cu) {
   const p = $("#prep"); if (p) p.onclick = () => { startTuz(shuffle(unitBuild(cu.n)).slice(0, 5), "Darsga tayyorgarlik", null, "prep"); T.back = "#"; };
-  app.querySelectorAll("[data-cu]").forEach(b => b.onclick = () => { S.course = +b.dataset.cu; S.clsAsk = today(); save(); toast("Kursda: Unit " + S.course); render(); });
+  app.querySelectorAll("[data-cu]").forEach(b => b.onclick = () => { S.course = +b.dataset.cu; S.clsAsk = today(); save(); toast("Kursda: Unit " + S.course, null, null, { sub: "Bugungi reja yangilandi" }); render(); });
 }
 function lostCard() {
   const L = S.lost; if (!L || dayDiff(L.d, today()) > 2) return "";
@@ -2752,8 +2783,8 @@ function courseSheet(kind) {
     ${kind === "lvl" ? "" : lv.ready ? `${kind === "unit" ? "" : `<p class="pick-l" id="ul2">Kursda qaysi unitdasiz?</p>`}${ug(kind === "unit" ? "ksh" : "ul2")}`
       : lv.zero ? `<p class="lv-empty">Bu darajada unit yo'q: avval ${GUIDES.length} ta qisqa qo'llanma — alifbo, tovushlar, sonlar va darsdagi gaplar. Tugagach, Beginner (A1) ga o'tasiz.</p><button class="btn" id="ksasos">Qo'llanmalarni ochish</button>`
       : `<p class="lv-empty">${lv.t} uchun unitlar hali qo'shilmagan. Kitob oxiridagi so'zlar ro'yxati sahifalarini Claude'ga yuboring — shu yerga qo'shiladi.</p>`}`;
-    body.querySelectorAll(".lad button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); if (kind === "lvl") { close(); render(); toast(curLevel().t + " tanlandi"); } else { fill(); render(); } });
-    body.querySelectorAll(".ug button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); close(); render(); toast("Unit " + b.dataset.u + " tanlandi — bugungi reja yangilandi"); });
+    body.querySelectorAll(".lad button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); if (kind === "lvl") { close(); render(); toast(curLevel().t + " tanlandi", null, null, curLevel().ready || curLevel().zero ? { sub: "Bugungi reja shu darajaga moslandi" } : { type: "info", sub: "Bu daraja uchun darslar tez orada qo'shiladi" }); } else { fill(); render(); } });
+    body.querySelectorAll(".ug button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); close(); render(); toast("Unit " + b.dataset.u + " tanlandi", null, null, { sub: "Bugungi reja yangilandi" }); });
     const a = body.querySelector("#ksasos"); if (a) a.onclick = () => { close(); go("asos"); };
   };
   fill();
@@ -3050,7 +3081,7 @@ route(/^asos-(\w+)$/, id => {
   <div class="stack" style="margin-top:20px">${g.quiz ? "" : `<button class="btn${d ? " ghost" : ""}" id="gdone">${d ? "O'rganildi ✓" : "Tushundim " + ICON.check}</button>`}
   ${nx ? `<a class="nwb" href="#asos-${nx.id}"><span class="tx"><b>Keyingisi: ${esc(nx.t)}</b><span>${esc(nx.s)} · ${nx.min} daq</span></span><i>${ICON.chev}</i></a>` : `<a class="nwb" href="#unit-1"><span class="tx"><b>Asoslar tayyor — Unit 1</b><span>Kitob bo'yicha so'zlar va gaplar</span></span><i>${ICON.chev}</i></a>`}</div>`;
   app.querySelectorAll("[data-say]").forEach(b => b.onclick = () => { say(b.dataset.say); b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit"); });
-  const gd = $("#gdone"); if (gd) gd.onclick = () => { markGuide(g); toast("«" + g.t + "» o'rganildi"); render(); };
+  const gd = $("#gdone"); if (gd) gd.onclick = () => { markGuide(g); toast("«" + g.t + "» o'rganildi", null, null, { sub: "Keyingi qo'llanmaga o'tishingiz mumkin" }); render(); };
   if (g.quiz) guideQuiz(g);
 });
 /* qo'llanma oxiridagi mashq: 8 savol, 4 variant; 6 va undan ko'p to'g'ri — o'rganildi */
@@ -3172,7 +3203,7 @@ route(/^mening$/, () => {
     toast("«" + w.w + "» o'chirildi", "Qaytarish", () => {
       S.my = snap.my; if (snap.srs) S.srs[id] = snap.srs; if (snap.hook) S.hook[id] = snap.hook; if (snap.mis) S.mis["w:" + id] = snap.mis;
       syncMyWords(); save(); if (location.hash === "#mening") render();
-    });
+    }, { type: "warn", sub: "Natijalari ham o'chdi" });
   });
 });
 route(/^lugat$/, () => {

@@ -448,9 +448,9 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 /* ===== TONAL elementlar (1-variant): chegarasiz, yuzalar rang toni bilan ajraladi. Ranglar, tuzilma va pastki menyu o'zgarmaydi ===== */
 :root{--track:#E2E3DE;--edge:#8C8D86;--rr:26px;
   /* kartalar: bosh sahifadagi yumshoq uslub butun ilovada */
-  --card:#FFFFFF;--card-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25);--card-sm:0 1px 2px rgba(23,23,27,.05),0 8px 18px -12px rgba(23,23,27,.22)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--card:linear-gradient(180deg,#1F1F24,#18181C);--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}}
-:root[data-theme="dark"]{--card:linear-gradient(180deg,#1F1F24,#18181C);--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}
+  --card:rgba(255,255,255,.7);--card-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25);--card-sm:0 1px 2px rgba(23,23,27,.05),0 8px 18px -12px rgba(23,23,27,.22)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--card:linear-gradient(180deg,rgba(40,40,46,.62),rgba(26,26,30,.56));--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--card:linear-gradient(180deg,rgba(40,40,46,.62),rgba(26,26,30,.56));--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}}
 :root[data-theme="dark"]{--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}
 /* yuzalar: soya o'rniga ton */
@@ -693,8 +693,8 @@ a.nwb{text-decoration:none}
 .aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
 @keyframes au-dr{50%{transform:translate(-3%,3%) scale(1.05)}}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aura{opacity:.2}}
-:root[data-theme="dark"] .aura{opacity:.2}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aura{opacity:.32}}
+:root[data-theme="dark"] .aura{opacity:.32}
 /* mashq paytida fon tinchroq */
 .quizmode .aura{opacity:.45}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .quizmode .aura{opacity:.1}}
@@ -704,9 +704,9 @@ a.nwb{text-decoration:none}
 .home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--surface)}}
 .home .xm,.home .xm-t,.home .skc{border-radius:30px}
-.home .xm,.home .xm-t,.home .skc,.home .lesson.dars,.home .xrow{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
-:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:linear-gradient(180deg,#1F1F24,#18181C);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
+.home .xm,.home .xm-t,.home .skc,.home .lesson.dars,.home .xrow{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
+:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
 /* dars: halqa va ixcham qadamlar */
 .dars .cnt{position:relative;width:58px;height:58px;padding:0;background:none;justify-content:center;margin:-4px -2px 0 0}
 .dars .cnt .rg{position:absolute;inset:0}
@@ -820,6 +820,11 @@ small{font-size:13px}
 /* so'z mashqi: so'z, o'qilishi, yordam tugmalari va ishora — markazda */
 #qlabel,#qword,#qpron,#hint{text-align:center}
 #tools{justify-content:center}
+/* kartalar — yengil shisha: orqadagi iliq fon xira ko'rinib turadi */
+.card,.hero,.lesson,.unit,.list,.install,.xm,.xm-t,.ystreak,.ytiles div,.cls,.qa a,.skc,.xrow{-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%)}
+.qcard{-webkit-backdrop-filter:none;backdrop-filter:none}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--card:var(--surface)}}
+@media (prefers-reduced-transparency:reduce){:root{--card:var(--surface)}}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}

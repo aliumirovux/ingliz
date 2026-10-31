@@ -201,8 +201,8 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .ugrid button:active{transform:scale(.98)}
 
 /* surfaces */
-.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
-.hero{background:var(--surface);border-radius:28px;box-shadow:var(--shadow);padding:20px}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.hero{background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:20px}
 
 /* today: salomlashuv, kurs joyi, bitta dars kartasi, haftalik seriya */
 .hello{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:4px 0 14px}
@@ -216,7 +216,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .pill .dn{color:var(--muted);display:flex}.pill .dn svg{color:inherit;width:15px;height:15px}
 .pill select{position:absolute;inset:0;width:100%;opacity:0;cursor:pointer;font-size:16px}
 .pill:focus-within{outline:2px solid var(--marker);outline-offset:2px}
-.lesson{background:var(--surface);border-radius:28px;box-shadow:var(--shadow);padding:20px}
+.lesson{background:var(--card);border-radius:28px;box-shadow:var(--shadow);padding:20px}
 .lesson .meta{font-size:13px;color:var(--muted);margin:0}
 .lesson .meta b{color:var(--accent-text);font-weight:600}
 .lesson h2{font-size:30px;line-height:1.1;letter-spacing:-.025em;margin:6px 0 4px}
@@ -232,7 +232,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .steps .tx span{display:block;font-size:13px;color:var(--muted)}
 .steps .done .tx b{color:var(--muted)}
 .steps .min{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
-.week{display:flex;justify-content:space-between;padding:12px 14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow)}
+.week{display:flex;justify-content:space-between;padding:12px 14px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow)}
 .week div{display:grid;justify-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .week i{width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;color:var(--on-marker)}
 .week i svg{width:16px;height:16px}
@@ -256,7 +256,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .unitbig{font:700 34px/1.1 var(--font-display);letter-spacing:-.025em;margin:6px 0 4px}
 /* unit list & rows */
 .units{display:flex;flex-direction:column;gap:10px}
-.unit{display:block;text-align:left;width:100%;background:var(--surface);border:0;border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.unit{display:block;text-align:left;width:100%;background:var(--card);border:0;border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .15s cubic-bezier(.16,1,.3,1)}
 .unit:active{transform:scale(.99)}
 .unit .t{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .unit b{font-size:16px;font-weight:600}
@@ -287,7 +287,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .sec{display:flex;flex-direction:column;gap:10px;margin-top:26px}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .sec-h .n{color:var(--muted);font-size:14px}
-.list{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.list{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
 .li{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .li+.li{border-top:1px solid var(--line)}
 a.li:hover,button.li:hover{background:var(--press)}
@@ -391,7 +391,7 @@ blockquote .icon{padding:3px 8px;vertical-align:middle}
 .tile.used{visibility:hidden}
 
 /* ilovani o'rnatish kartasi */
-.install{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px}
+.install{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px}
 .install img,.install .ic{width:44px;height:44px;border-radius:11px;flex:none}
 .install .ic{display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}
 a.tx{color:inherit;text-decoration:none;padding-block:4px}
@@ -447,11 +447,15 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
 
 /* ===== TONAL elementlar (1-variant): chegarasiz, yuzalar rang toni bilan ajraladi. Ranglar, tuzilma va pastki menyu o'zgarmaydi ===== */
-:root{--track:#E2E3DE;--edge:#8C8D86;--rr:24px}
+:root{--track:#E2E3DE;--edge:#8C8D86;--rr:26px;
+  /* kartalar: bosh sahifadagi yumshoq uslub butun ilovada */
+  --card:#FFFFFF;--card-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25);--card-sm:0 1px 2px rgba(23,23,27,.05),0 8px 18px -12px rgba(23,23,27,.22)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--card:linear-gradient(180deg,#1F1F24,#18181C);--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}}
+:root[data-theme="dark"]{--card:linear-gradient(180deg,#1F1F24,#18181C);--card-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8);--card-sm:inset 0 1px 0 rgba(255,255,255,.05),0 8px 18px -12px rgba(0,0,0,.7)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}}
 :root[data-theme="dark"]{--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}
 /* yuzalar: soya o'rniga ton */
-.card,.list,.lesson,.week,.install,.unit,.hero{box-shadow:none}
+.card,.list,.lesson,.week,.install,.unit,.hero{box-shadow:var(--card-shadow)}
 .card,.list,.install,.unit{border-radius:var(--rr)}
 .lesson{border-radius:28px}
 .me,.pill{box-shadow:none;background:var(--surface)}
@@ -488,11 +492,11 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 .top .icon#quit{width:44px;height:44px;padding:0;justify-content:center;border-radius:50%}
 .top .icon#quit svg{width:20px;height:20px}
 .opts{gap:10px}
-.opt{box-shadow:none;background:var(--surface);border-radius:20px;min-height:60px;padding:16px 18px}
+.opt{box-shadow:var(--card-sm);background:var(--card);border-radius:20px;min-height:60px;padding:16px 18px}
 .card .opt{background:var(--surface-2)}
 .opt:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px var(--edge)}
 .opt:disabled:not(.ok):not(.bad){opacity:.6}
-.tile{box-shadow:none;background:var(--surface-2);border-radius:14px}
+.tile{box-shadow:var(--card-sm);background:var(--surface-2);border-radius:14px}
 .tile:hover{box-shadow:inset 0 0 0 1.5px var(--edge)}
 /* maydonlar: to'ldirilgan, fokusda terrakota halqa */
 .spell,input.search,textarea,.myf input,.hrow .hin{border:0;background:var(--surface-2);box-shadow:inset 0 0 0 2px transparent;border-radius:16px}
@@ -511,13 +515,14 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .top .bar{flex:1;margin:0;height:10px}
 .top .cnt{flex:none;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
 .top .icon#quit{flex:none}
-.qcard{background:none;padding:0;border-radius:0}
+.qcard{background:none;padding:0;border-radius:0;box-shadow:none}
 .qcard > .label{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
 .qcard > .label:not(#qlabel),.qcard #qlabel .ltx{display:inline-flex;align-items:center;width:max-content;max-width:100%;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;border-radius:999px;padding:4px 12px}
 .qcard #qlabel{display:flex;flex-wrap:wrap;gap:6px}
 .qcard #qlabel .qtag{margin:0;font-size:13px;padding:4px 12px}
 .qcard .opts{margin-top:22px}
-.qcard .opt,.qcard .tile,.qcard .spell,.qcard textarea,.qcard .intro .ex,.qcard .hook.edit{background:var(--surface)}
+.qcard .spell,.qcard textarea,.qcard .intro .ex,.qcard .hook.edit{background:var(--surface)}
+.qcard .opt,.qcard .tile{background:var(--card)}
 .qcard .spell:focus,.qcard textarea:focus{background:var(--surface)}
 .qcard .fb{border-radius:20px;padding:14px 16px;margin-top:16px}
 .qcard .fb.ok{background:var(--surface);color:var(--ink)}
@@ -540,7 +545,7 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 :root{--m2:#E69B78;--grid:#ECEDE8}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--m2:#8E4A2E;--grid:#26262C}}
 :root[data-theme="dark"]{--m2:#8E4A2E;--grid:#26262C}
-.xm{background:var(--surface);border-radius:24px;padding:16px 16px 14px}
+.xm{background:var(--card);border-radius:24px;padding:16px 16px 14px}
 .xm-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 6px}
 .xm-h b{font-size:15px;font-weight:600}
 .xm-h a{color:var(--accent-text);font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:2px;min-height:44px;margin:-12px -6px -12px 0;padding:0 6px}
@@ -558,7 +563,7 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty svg{width:18px;height:18px;margin-top:1px}
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.xm-t{background:var(--surface);border-radius:24px;padding:14px 14px 12px;min-width:0}
+.xm-t{background:var(--card);border-radius:24px;padding:14px 14px 12px;min-width:0}
 .xm-k{font-size:14px;color:var(--muted);font-weight:500;margin:0}
 .xm-v{font:700 30px/1.1 var(--font-display);letter-spacing:-.02em;margin:4px 0 2px;font-variant-numeric:tabular-nums}
 .xm-v small{font-size:14px;font-weight:500;color:var(--muted);letter-spacing:0}
@@ -685,12 +690,18 @@ a.nwb{text-decoration:none}
 .gqr{margin:0 0 14px;font-size:16px}.gqr b{font-size:22px;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
 /* ===== Bosh sahifa: iliq shisha (aura fon + muzli kartalar + widgetlar) ===== */
-.home>*:not(.aura){position:relative;z-index:1}
-.home .aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.home .aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
+.stage{position:relative;z-index:1}
+.aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
 @keyframes au-dr{50%{transform:translate(-3%,3%) scale(1.05)}}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home .aura{opacity:.2}}
-:root[data-theme="dark"] .home .aura{opacity:.2}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aura{opacity:.2}}
+:root[data-theme="dark"] .aura{opacity:.2}
+/* mashq paytida fon tinchroq */
+.quizmode .aura{opacity:.45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .quizmode .aura{opacity:.1}}
+:root[data-theme="dark"] .quizmode .aura{opacity:.1}
+/* kichik kartalar ham soyali */
+.qa a,.ystreak,.ytiles div,.cls,.xm,.xm-t{box-shadow:var(--card-shadow)}
 .home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--surface)}}
 .home .xm,.home .xm-t,.home .skc{border-radius:30px;background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
@@ -806,12 +817,12 @@ a.nwb{text-decoration:none}
 @keyframes m-pop{0%{transform:scale(.2)}60%{transform:scale(1.08,.94)}80%{transform:scale(.97,1.03)}100%{transform:none}}
 @keyframes m-bob{50%{transform:translateY(-5px)}}
 @keyframes m-sway{50%{transform:rotate(8deg)}}
-.ystreak{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:24px;padding:14px 16px}
+.ystreak{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:24px;padding:14px 16px}
 .ystreak .sflame{flex:none;width:44px;height:52px}
 .ystreak .tx b{display:block;font-size:17px}.ystreak .tx span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
 .yweek i.now.on{box-shadow:0 0 0 4px var(--marker-soft);animation:m-pop .6s cubic-bezier(.34,1.56,.64,1) .45s both}
 .ytiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ytiles div{background:var(--surface);border-radius:20px;padding:12px 8px;text-align:center}
+.ytiles div{background:var(--card);border-radius:20px;padding:12px 8px;text-align:center}
 .ytiles b{display:block;font:700 22px/1.2 var(--font-display);font-variant-numeric:tabular-nums}.ytiles span{display:block;font-size:12px;color:var(--muted)}
 .cfetti{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
 .cfetti i{position:absolute;top:-20px;width:8px;height:12px;border-radius:2px;animation:cf-fall 1.9s cubic-bezier(.25,.7,.4,1) both}
@@ -870,7 +881,7 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 .mini svg{width:18px;height:18px}
 .mini:hover{color:var(--ink)}
 .mini:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
-.cls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border-radius:24px;padding:14px 16px}
+.cls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card);border-radius:24px;padding:14px 16px}
 .cls .tx{flex:1;min-width:160px}
 .cls .tx b{display:block;font-size:15px;font-weight:600;line-height:1.3}
 .cls .tx span{display:block;font-size:13px;color:var(--muted)}
@@ -920,7 +931,7 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 
 /* ===== Unitlar: umumiy mashqlar ===== */
 .qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}
-.qa a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:96px;padding:12px;border-radius:20px;background:var(--surface);color:var(--ink);text-decoration:none}
+.qa a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:96px;padding:12px;border-radius:20px;background:var(--card);color:var(--ink);text-decoration:none}
 .qa .ic{width:36px;height:36px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center;margin-bottom:6px}
 .qa .ic svg{width:19px;height:19px}
 .qa b{font-size:15px;font-weight:600;line-height:1.25}
@@ -995,7 +1006,7 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 .spell.ltm:focus{box-shadow:none}
 @media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
 </style>
-<div class="stage"><main class="wrap" id="app"></main></div>
+<div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
   <span class="lens" aria-hidden="true"></span>
   <a href="#" data-tab="home"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span class="lb">Bugun</span></a>
@@ -2376,7 +2387,7 @@ route(/^$/, () => {
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
   /* kirish animatsiyasi faqat boshqa sahifadan kelganda (joyida qayta chizilganda emas) */
-  app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `<div class="aura" aria-hidden="true"></div>
+  app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
     <button class="pill" id="kursb" aria-haspopup="dialog" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + cu.n : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></button>

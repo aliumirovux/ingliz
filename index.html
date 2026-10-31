@@ -56,7 +56,7 @@ html{background:var(--bg)}
 /* sahifa almashish animatsiyasi yon tomonga chiqib, telefonda sahifani kichraytirmasin */
 .stage{overflow-x:hidden}
 @supports (overflow:clip){ .stage{overflow-x:clip} }
-body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav-h) + 28px + env(safe-area-inset-bottom, 0px))}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--font-body);-webkit-font-smoothing:antialiased;padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom, 0px))}
 button{font:inherit;color:inherit}
 a{color:inherit}
 svg{flex:none}
@@ -69,10 +69,10 @@ html{-webkit-tap-highlight-color:transparent}
 a.li:active,button.li:active{background:var(--surface-2)}
 .steps button:active,.back:active{opacity:.6}
 .opt:active:not(:disabled),.mode:active,.chip:active,.tile:active,.me:active{transform:scale(.98)}
-.wrap{max-width:640px;margin:0 auto;padding-block:20px 36px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:640px;margin:0 auto;padding-block:16px 8px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
 h1{font:700 32px/1.1 var(--font-display);letter-spacing:-.025em;margin:4px 0 6px;text-wrap:balance}
 h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
-.sub{color:var(--muted);font-size:15px;margin:0 0 20px;max-width:60ch}
+.sub{color:var(--muted);font-size:15px;margin:0 0 16px;max-width:60ch}
 .muted{color:var(--muted);font-size:15px}
 .label,.eyebrow{font-size:13px;font-weight:500;color:var(--muted);margin:0 0 10px}
 .hidden{display:none!important}
@@ -284,7 +284,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .streak svg{width:17px;height:17px;color:var(--marker)}.streak b{color:var(--ink);font-weight:600}
 
 /* unit hub sections */
-.sec{display:flex;flex-direction:column;gap:10px;margin-top:26px}
+.sec{display:flex;flex-direction:column;gap:10px;margin-top:22px}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
 .sec-h .n{color:var(--muted);font-size:14px}
 .list{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
@@ -388,7 +388,8 @@ blockquote .icon{padding:3px 8px;vertical-align:middle}
 .tile{border:0;box-shadow:inset 0 0 0 1.5px var(--line),0 2px 0 var(--line);background:var(--surface);border-radius:12px;min-height:44px;padding:9px 14px;font-size:17px;font-weight:500;cursor:pointer}
 .tile:hover{box-shadow:inset 0 0 0 1.5px var(--line-strong),0 2px 0 var(--line-strong)}
 .answer .tile{background:var(--marker-soft);color:var(--accent-text);box-shadow:none}
-.tile.used{visibility:hidden}
+/* ishlatilgan so'z o'rnida xira «uya» qoladi — bo'sh teshik emas, joylar siljimaydi */
+.tile.used{color:transparent;background:var(--surface-2)!important;box-shadow:none!important;opacity:.55;pointer-events:none}
 
 /* ilovani o'rnatish kartasi */
 .install{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px}
@@ -430,11 +431,9 @@ body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
 @media (pointer:coarse) and (max-width:640px){
   .quizmode .wrap:not(:has(.spell:not(.hidden))){display:flex;flex-direction:column;padding-bottom:0;min-height:calc(100vh - env(safe-area-inset-top, 0px) - 2 * env(safe-area-inset-bottom, 0px) - 24px);min-height:calc(100dvh - env(safe-area-inset-top, 0px) - 2 * env(safe-area-inset-bottom, 0px) - 24px)}
   .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card{flex:1 0 auto;display:flex;flex-direction:column}
-  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:not(:has(> .opts:not(:empty), > .tiles)) > .row:not(.hidden){margin-top:auto!important;padding-top:14px}
-  /* test va so'z bo'laklari: izoh variantlar ustida chiqadi — javob berilgach variantlar joyidan siljimaydi, «Keyingisi» uchun joy oldindan ajratilgan */
-  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > :is(.fb,.ex){order:1}
-  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > :is(.opts,.tiles){order:2;margin-top:auto;padding-top:14px}
-  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > .row{order:3;min-height:52px}
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card > .row:not(.hidden){margin-top:auto!important;padding-top:14px}
+  /* test va so'z bo'laklari: variantlar savol ostida, izoh ulardan keyin chiqadi — javob berilgach variantlar joyidan siljimaydi */
+  .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > .row{min-height:52px}
 }
 nav.tabs .lens.still{transition:none}
 /* sahifa almashishi: tab yo'nalishidan yumshoq kirib keladi */
@@ -789,11 +788,16 @@ a.nwb{text-decoration:none}
 .home.hin .skc .week i.on{animation:m-pop .5s cubic-bezier(.34,1.56,.64,1) both}
 .home.hin .skc .week div:nth-child(2) i{animation-delay:.05s}.home.hin .skc .week div:nth-child(3) i{animation-delay:.1s}.home.hin .skc .week div:nth-child(4) i{animation-delay:.15s}
 .home.hin .skc .week div:nth-child(5) i{animation-delay:.2s}.home.hin .skc .week div:nth-child(6) i{animation-delay:.25s}.home.hin .skc .week div:nth-child(7) i{animation-delay:.3s}
+/* mayda matnlar: o'qiladigan eng kichik o'lcham */
+small{font-size:13px}
+.box,.metag{font-size:12px}
+.gbar .goal em{font-size:12px}
 /* gap tuzish: natija holatlari */
 .answer{position:relative}
 .answer .tile.g{background:var(--ok-bg);color:var(--ok)}
 .answer .tile.r{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px}
 .answer .tile:disabled{opacity:1;cursor:default}
+.qcard .answer:not(.ok):not(.bad){background:transparent;box-shadow:inset 0 0 0 1.5px var(--line-strong)}
 .answer.ok{box-shadow:inset 0 0 0 2px var(--ok-strong)}
 .answer.ok .tile{animation:lt-hop .45s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--j,0) * 60ms)}
 .answer.ok::after{content:"";position:absolute;right:-8px;top:-10px;width:30px;height:30px;border-radius:50%;background:var(--ok-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/17px no-repeat;box-shadow:0 0 0 4px var(--bg);animation:lt-badge .45s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--n,1) * 60ms + 120ms)}
@@ -2408,7 +2412,6 @@ route(/^$/, () => {
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}
-    <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
@@ -2636,7 +2639,7 @@ function retCard() {
     <div class="xm-empty">${ICON.info}<span><b>Ertaga paydo bo'ladi.</b> Bugun o'rgangan so'zlaringiz ertaga takrorlanganda, nechtasini birinchi urinishda topganingiz shu yerda chiziladi.</span></div></section>`;
   const dl = cur.rv && prev ? cur.p - prev.p : null;
   const delta = dl === null ? "" : `<span class="xm-delta${dl > 0 ? " up" : ""}">${dl > 0 ? ICON.up : dl < 0 ? ICON.down : ""}${dl ? Math.abs(dl) : "o'zgarmadi,"} o'tgan haftaga</span>`;
-  const note = cur.rv ? `Oldingi kunlarda o'rgangan so'zlarni takrorlaganda <b>${cur.rv} tadan ${cur.rk} tasini</b> birinchi urinishda topdingiz. ${cur.p >= 80 ? "Maqsadga yetdingiz." : "Maqsadga " + (80 - cur.p) + " foiz qoldi."}${cur.rv < 15 ? " Takrorlash hali kam — foiz tez o'zgaradi." : ""}`
+  const note = cur.rv ? `<b>${cur.rv} tadan ${cur.rk} tasi</b> birinchi urinishda. ${cur.p >= 80 ? "Maqsadga yetdingiz." : "Maqsadga " + (80 - cur.p) + " foiz qoldi."}${cur.rv < 15 ? " Takrorlash hali kam — foiz tez o'zgaradi." : ""}`
     : `Bu hafta hali takrorlash bo'lmadi. ${prev ? prev.long + ": <b>" + prev.p + "%</b>." : ""}`;
   const v = cur.rv ? cur.p : prev ? prev.p : null;
   return `<section class="xm">${head}<div class="xm-hero"><span class="xm-n${cur.rv ? "" : " dim"}">${cur.rv ? `<span data-c="${cur.p}">${cur.p}</span>%` : "—"}</span><span class="xm-goal">maqsad 80%</span>${delta}</div>${scale(v, v == null ? "" : "Esda qolgan " + v + "%, maqsad 80%")}<p class="xm-note">${note}</p></section>`;
@@ -2651,7 +2654,7 @@ function fcTile() {
 }
 function mastTile(seen, mast) {
   const k = WORDS.length, l = seen - mast;
-  return `<div class="xm-t xg"><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan · ${l} tasi o'rganilmoqda</p></div>`;
+  return `<div class="xm-t xg"><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan</p></div>`;
 }
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {
@@ -2725,7 +2728,7 @@ route(/^yakun$/, () => {
 /* ---------- UNITLAR ro\'yxati ---------- */
 route(/^unitlar$/, () => {
   const cu = curUnit();
-  app.innerHTML = `${nav(null, "", "Unitlar")}<p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
+  app.innerHTML = `${nav(null, "", "Unitlar")}
   <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar · ${GUIDES.length} ta qo'llanma</span></span><i>${GUIDES.length - guidesLeft()}/${GUIDES.length} ›</i></a>
   <div class="qa" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.length} ta qolip</span></a>
@@ -2858,7 +2861,7 @@ function zeroCard() {
 route(/^asos$/, () => {
   const done = GUIDES.length - guidesLeft();
   app.innerHTML = `${nav("#unitlar", "Unitlar", "Noldan boshlash")}<h2 class="pg-h">Noldan boshlash</h2>
-  <p class="sub">Kitobdan oldin yoki u bilan birga kerak bo'ladigan asoslar: harflar, tovushlar, sonlar va darsdagi gaplar. Har biri 2–5 daqiqa, oxirida qisqa mashq.</p>
+  <p class="sub">Harflar, tovushlar, sonlar va darsdagi gaplar · har biri 2–5 daqiqa</p>
   <div class="uprog" style="margin-top:4px"><div class="r"><b>${done} / ${GUIDES.length} o'rganildi</b><span>tavsiya etilgan tartibda</span></div><div class="pbar"><i class="m" style="width:${done / GUIDES.length * 100}%"></i></div></div>
   <ol class="list gl-list">${GUIDES.map((g, i) => { const d = guideDone(g); return `<li><a class="li" href="#asos-${g.id}"><span class="gn${d ? " d" : ""}" aria-hidden="true">${d ? ICON.check : i + 1}</span><span class="tx"><b>${esc(g.t)}</b><span>${esc(g.s)} · ${g.min} daq</span></span>${d ? `<span class="st full">o'rganildi</span>` : ""}<span class="go">${ICON.chev}</span></a></li>`; }).join("")}</ol>
   <p class="foot">Keyin: <a href="#unit-1">Unit 1</a> · <a href="#qolip">Grammatika qoliplari</a> · <a href="#gap">Tayyor gaplar</a></p>`;
@@ -2971,7 +2974,7 @@ let MYPRE = "";
 route(/^mening$/, () => {
   const mine = WORDS.filter(w => w.mine), fresh = mine.filter(w => !isSeen(w));
   app.innerHTML = `${nav(`#lugat`, `Lug'at`, `Mening so'zlarim`)}
-  <p class="sub">Darsda doskaga yozilgan yoki ishda kerak bo'lgan so'zlar. Ular ham tanishuv kartasi va 3 bosqichdan o'tadi, keyin takrorlashga qo'shiladi.</p>
+  <p class="sub">Darsda yoki ishda uchragan so'zlar — ular ham takrorlashga qo'shiladi.</p>
   <div class="stack">
     <form class="card myf" id="myf" novalidate>
       <p class="label">Yangi so'z</p>
@@ -3013,8 +3016,8 @@ route(/^mening$/, () => {
   });
 });
 route(/^lugat$/, () => {
-  app.innerHTML = `${nav(null, "", "Lug'at", { href: "#mening", label: "So'z qo'shish", icon: ICON.plus })}<p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
-  <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="Masalan: weekend yoki ofis" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
+  app.innerHTML = `${nav(null, "", "Lug'at", { href: "#mening", label: "So'z qo'shish", icon: ICON.plus })}
+  <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="${WORDS.length} ta so'zdan qidiring" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
   $("#qclr").onclick = () => { const i = $("#q"); i.value = ""; i.dispatchEvent(new Event("input")); i.focus(); };
@@ -3613,7 +3616,7 @@ function finish() {
 
 /* ---------- QOLIPLAR ---------- */
 route(/^qolip$/, () => {
-  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Grammatika qoliplari`)}<p class="sub">Kitobdagi grammatika, unit tartibida. Har birida qoida, misollar va mashq.</p>
+  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Grammatika qoliplari`)}
   <div class="stack">${[...new Set(PATTERNS.map(p => p.unit))].sort((a, b) => a - b).map(u => `<section><p class="label">Unit ${u} · ${esc(UNIT_INFO[u][0])}</p><div class="list">${PATTERNS.filter(p => p.unit === u).map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="tx"><b>${esc(p.title)}</b><span class="clamp">${esc(p.lead)}</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section>`).join("")}</div>`;
 });
 route(/^qolip-([\w-]+)$/, id => {
@@ -3683,11 +3686,11 @@ route(/^natija$/, () => {
     days.push(`<div class="li"><span class="tx"><b>${name}</b><span>${L && L.a ? L.a + " ta javob · " + pctOf(L.ok, L.a) + "% to'g'ri" : "Mashq qilinmagan"}</span></span><span class="st">${L && L.a ? L.sp + " ta so'z · " + Math.max(1, Math.round(L.t / 60)) + " daq" : "—"}</span></div>`);
   }
   const ret = pctOf(r.rk, r.rv), pret = pctOf(p.rk, p.rv);
-  app.innerHTML = `${nav(`#`, `Bugun`, `Natijalar`)}<p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: oldingi kunlarda o'rganilgan so'zlarning qanchasi esda qolgani.</p>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Natijalar`)}
   <section class="sec"><div class="ret card"><p class="label">Esda qolgan so'zlar</p>
     <div class="retn">${r.rv ? ret + "%" : "—"}</div>
     <div class="retbar" role="img" aria-label="${r.rv ? ret + "% esda qolgan, maqsad 80%" : "Hali ma'lumot yo'q"}"><i style="width:${r.rv ? ret : 0}%"></i><b style="left:80%"></b></div><div class="rettg"><span style="left:80%">maqsad 80%</span></div>
-    <p class="muted">${r.rv ? `Ertasi va keyingi kunlardagi takrorlashda ${r.rv} ta javobdan ${r.rk} tasi birinchi urinishda to'g'ri. Maqsad: 80% va undan yuqori. ${ret >= 80 ? "Usul ishlayapti." : ret >= 65 ? "Yaxshi, lekin yangi so'zlarni kamaytirib, eslatgich yozib ko'ring." : "Ko'p unutilyapti: kechki takrorlashni qiling va yangi so'zlarni vaqtincha kamaytiring."}` : "Ertaga, bugungi so'zlar takrorlanganda paydo bo'ladi."}${p.rv ? " O'tgan hafta: " + pret + "%." : ""}</p></div>
+    <p class="muted">${r.rv ? `${r.rv} tadan ${r.rk} tasi birinchi urinishda. ${ret >= 80 ? "Usul ishlayapti." : ret >= 65 ? "Yaxshi, lekin yangi so'zlarni kamaytirib, eslatgich yozib ko'ring." : "Ko'p unutilyapti: kechki takrorlashni qiling va yangi so'zlarni vaqtincha kamaytiring."}` : "Ertaga, bugungi so'zlar takrorlanganda paydo bo'ladi."}${p.rv ? " O'tgan hafta: " + pret + "%." : ""}</p></div>
   <div class="list">
     ${row("Xotiradan yozilgan so'zlar", was(p.sp, p.a), r.sp, false)}
     ${row("Imlo aniqligi", "Maqsad: 80% va undan yuqori", r.sw ? acc + "%" : "—", r.sw && acc >= 80)}
@@ -3700,7 +3703,7 @@ route(/^natija$/, () => {
 
 route(/^xato$/, () => {
   const mw = misWords(), mg = misGram(), mb = misBuild(), hw = WORDS.filter(isHard).sort((a, b) => rec(b.id).bad - rec(a.id).bad);
-  app.innerHTML = `${nav(`#`, `Bugun`, `Xatolarim`)}<p class="sub">Har bir xato shu yerga tushadi. Keyingi safar to'g'ri javob bersangiz, ro'yxatdan o'chadi.</p>
+  app.innerHTML = `${nav(`#`, `Bugun`, `Xatolarim`)}<p class="sub">To'g'ri javob bersangiz, so'z ro'yxatdan o'chadi.</p>
   ${!mw.length && !mg.length && !mb.length && !hw.length ? `<div class="card"><p class="muted" style="margin:0">Hozircha xato yo'q.</p></div>` : ""}
   ${hw.length ? `<section class="sec"><div class="sec-h"><h2>Qiyin so'zlar</h2><span class="n">${hw.length} ta · 3+ marta xato</span></div>
     <div class="card"><p class="muted" style="margin:0 0 12px">Bu so'zlar tez-tez qaytadi. Har biriga eslatgich yozing — o'zingiz o'ylagan bog'lanish yaxshiroq eslanadi.</p><button class="btn" id="xh">Mashq qilish</button><ul class="wl" style="margin-top:10px">${hw.map(wordLi).join("")}</ul></div></section>` : ""}
@@ -3768,7 +3771,7 @@ PHRASES.forEach(c => c.items.forEach(it => PH.push({ id: "gap|" + it.e, w: it.e,
 const phDue = () => PH.filter(isDue);
 route(/^gap$/, () => {
   const due = phDue().length;
-  app.innerHTML = `${nav(null, "", "Tayyor gaplar")}<p class="sub">Ish va kundalik muloqot uchun · ${PH.length} ta gap · eshiting, ayting, yodlang</p>
+  app.innerHTML = `${nav(null, "", "Tayyor gaplar")}<p class="sub">${PH.length} ta gap · ish va kundalik muloqot</p>
   <div class="stack">
     ${PH.some(isSeen) ? "" : `<div class="card"><p class="label">Mashq qanday ishlaydi</p><p class="muted" style="margin:0">O'zbekchasi chiqadi. Inglizchasini o'zingiz ayting yoki «Aytib ko'rish» tugmasini bosing, keyin javobni oching. Bilmagan gaplaringiz ertaga yana chiqadi.</p></div>`}
     ${due ? `<button class="btn" id="phdue">Bugungi takrorlash (${due})</button>` : ""}
@@ -3854,7 +3857,7 @@ let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
 route(/^tuz$/, () => {
   const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-";
-  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}<p class="sub">O'zbekcha gapni inglizchaga aylantiring · ${BLD.length} ta gap</p>
+  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}<p class="sub">${BLD.length} ta gap · o'zbekchadan inglizchaga</p>
   <div class="stack">
     <div class="card"><p class="label">Mashq turi</p><div class="modes">
       ${modeBtn("tile", "So'zlardan yig'aman", "So'zlarni to'g'ri tartibda bosasiz. Orasida tuzoq so'zlar ham bor (am, do).")}
@@ -3955,7 +3958,7 @@ function tuzFinish() {
 /* ---------- SOZLAMA: export / import ---------- */
 route(/^sozlama$/, () => {
   app.innerHTML = `${nav(`#`, `Bugun`, `Sozlamalar`)}
-  <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Haftada bir zaxira faylini saqlang — boshqa qurilmada «Zaxiradan tiklash» orqali ochasiz."}</p>
+  <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi — haftada bir zaxira oling."}</p>
   <div class="stack">${installCard(true)}${remCard()}${clsCard()}
   <div class="card"><p class="label">Zaxira · oxirgisi: ${bakWhen()}</p>
     <button class="btn" id="bk">${sv('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>')} Zaxira faylini saqlash</button>

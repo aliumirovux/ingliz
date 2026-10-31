@@ -33,7 +33,7 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -42,7 +42,7 @@
 }
 :root[data-theme="dark"]{
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -66,7 +66,7 @@ html{scrollbar-color:var(--line-strong) transparent;scrollbar-width:thin}
 :focus-visible{outline:2px solid var(--marker);outline-offset:2px;border-radius:6px}
 /* telefonda bosilganda brauzerning ko'k fonini o'chiramiz; o'rniga o'zimizning bosish holatlari */
 html{-webkit-tap-highlight-color:transparent}
-a.li:active,button.li:active{background:var(--marker-soft)}
+a.li:active,button.li:active{background:var(--surface-2)}
 .steps button:active,.back:active{opacity:.6}
 .opt:active:not(:disabled),.mode:active,.chip:active,.tile:active,.me:active{transform:scale(.98)}
 .wrap{max-width:640px;margin:0 auto;padding-block:20px 36px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
@@ -282,7 +282,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .list{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
 .li{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:0;padding:14px 16px;cursor:pointer;text-decoration:none;color:var(--ink)}
 .li+.li{border-top:1px solid var(--line)}
-a.li:hover,button.li:hover{background:var(--marker-soft)}
+a.li:hover,button.li:hover{background:var(--press)}
 div.li{cursor:default}
 .li .tx{flex:1;min-width:0}
 .li .tx b{display:block;font-weight:600}
@@ -586,6 +586,7 @@ svg.xm-ch .hit:focus-visible{stroke:var(--marker);stroke-width:2}
 .tl .done .dot{background:var(--ok-strong);color:#fff}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tl .done .dot{color:#0F1A0E}}
 :root[data-theme="dark"] .tl .done .dot{color:#0F1A0E}
+.tl .dot{border:0} /* umumiy .dot ramkasi bu yerga tushmasin */
 .tl .now .dot{background:var(--marker);color:var(--on-marker)}
 .tl .lock .dot{background:var(--surface);box-shadow:inset 0 0 0 2px var(--track)}
 .tl .bx{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;min-height:48px;transition:background-color .15s}

@@ -434,6 +434,12 @@ body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
   .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card > .row:not(.hidden){margin-top:auto!important;padding-top:14px}
   /* test va so'z bo'laklari: variantlar savol ostida, izoh ulardan keyin chiqadi — javob berilgach variantlar joyidan siljimaydi */
   .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > .row{min-height:52px}
+  /* klaviatura bilan yozishda: tugmalar ekran pastida suzadi, klaviatura ochilsa uning ustiga ko'tariladi, yopilsa pastga tushadi */
+  .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)){padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+  .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)) > .card > .row:not(.hidden){position:fixed;z-index:20;left:0;right:0;bottom:0;max-width:640px;margin:0 auto!important;
+    padding:20px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    background:linear-gradient(to bottom,transparent,var(--bg) 40%);transform:translateY(calc(-1 * var(--kb, 0px)));transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  .typing .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)) > .card > .row:not(.hidden){padding-bottom:12px}
 }
 nav.tabs .lens.still{transition:none}
 /* sahifa almashishi: tab yo'nalishidan yumshoq kirib keladi */
@@ -3485,6 +3491,8 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
   // fokusdagi maydonni qayta bosish focusin chiqarmaydi (klaviatura orqaga tugmasi bilan yopilgan bo'lsa) — bosishning o'zini ushlaymiz
   document.addEventListener("pointerdown", e => { if (isField(e.target) && e.target === document.activeElement && !root.classList.contains("typing")) arm(); }, true);
   document.addEventListener("focusout", e => { if (isField(e.target)) later(400); });
+  const kbVar = () => { const k = vv ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0; root.style.setProperty("--kb", k + "px"); };
+  if (vv) { vv.addEventListener("resize", kbVar); vv.addEventListener("scroll", kbVar); }
   if (vv) vv.addEventListener("resize", () => { if (vv.height > full) full = vv.height; later(120); });
   addEventListener("orientationchange", () => setTimeout(() => { if (vv) full = vv.height; }, 500));
   addEventListener("hashchange", () => later(120));

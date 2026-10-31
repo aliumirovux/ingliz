@@ -2028,7 +2028,8 @@ function unitStat(n) {
 function curUnit() {
   let n = 0;
   for (let k = 1; k <= 10; k++) if (unitStat(k).started) n = k;
-  if (S.course && S.course >= n) return { n: S.course, fresh: false }; // kursda shu unitdaman
+  // siz tanlagan unit (Kurs va daraja) har doim ustun: oldinroq unitlarni mashq qilgan bo'lsangiz ham reja va yozuv shu unitni ko'rsatadi
+  if (S.course) return { n: S.course, fresh: false };
   if (!n) return { n: 1, fresh: true };
   if (unitStat(n).pct >= 85 && n < 10) n++;
   return { n, fresh: false };

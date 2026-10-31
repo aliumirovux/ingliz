@@ -780,6 +780,7 @@ a.nwb{text-decoration:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rg.mst .p{stroke:#9B87D8}}
 :root[data-theme="dark"] .rg.mst .p{stroke:#9B87D8}
 .xm-t.xg .xm-s{margin-top:8px}
+button.xm-t.tap .xm-s{margin-bottom:12px}
 /* xatolar qatori */
 .xrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 14px;border-radius:22px;color:inherit;text-decoration:none}
 .xrow .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bad-bg);color:var(--bad-strong)}
@@ -844,7 +845,9 @@ small{font-size:13px}
 button.xm-t.tap{border:0;font:inherit;color:inherit;cursor:pointer;width:100%;transition:transform .4s cubic-bezier(.3,1.4,.5,1)}
 button.xm-t.tap:active{transform:scale(.97);transition-duration:.12s}
 button.xm-t.tap:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
-.mchip{display:inline-flex;align-items:center;margin-top:10px;height:32px;padding:0 14px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
+/* chip karta chetidan uch tomonda bir xil (12px), radiusi karta radiusiga mos (30 − 12 = 18) */
+button.xm-t.tap{padding:14px 12px 12px}
+.mchip{display:flex;align-self:stretch;justify-content:center;align-items:center;margin-top:auto;height:36px;padding:0 12px;border-radius:18px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
 /* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
 .side{display:contents}
 .home .stack>.side>.skc{order:-1}

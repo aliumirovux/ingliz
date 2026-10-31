@@ -635,14 +635,21 @@ a.pill{text-decoration:none;color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.tl .bx{transition:none}}
 
 /* ===== sahifa sarlavhasi (markaziy) ===== */
-.nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:52px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50% + 4px) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
+.nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:60px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50%) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
 .nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
-.nb-back{justify-self:start;display:inline-flex;align-items:center;gap:0;min-height:44px;padding:0 10px 0 2px;border-radius:12px;color:var(--accent-text);font-size:17px;font-weight:500;text-decoration:none;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nb-back svg{width:24px;height:24px;flex:none}
-.nb-back span{overflow:hidden;text-overflow:ellipsis}
-.nb-back:active{opacity:.55}
-.nb-back:focus-visible{outline:2px solid var(--marker);outline-offset:0}
-.nb-t{grid-column:2;margin:0;font:600 17px/1.25 var(--font-body);letter-spacing:-.01em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+/* orqaga va o'ng amal — dumaloq «shisha» tugma: pastdagi suzuvchi menyu bilan bir oila */
+.nb-back,.nb-act{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;padding:0;color:var(--ink);text-decoration:none;background:color-mix(in srgb,var(--surface) 72%,transparent);-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 0 0 1px var(--line),0 4px 14px -6px rgba(0,0,0,.25);transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.nb-back{justify-self:start}
+.nb-back svg,.nb-act svg{width:22px;height:22px}
+.nb-back:active,.nb-act:active{transform:scale(.92)}
+.nb-back:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.nb-t{grid-column:2;margin:0;font:600 17px/1.25 var(--font-body);letter-spacing:-.01em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw;transition:opacity .2s}
+/* katta sarlavhali sahifa: tepada markaz bo'sh, katta sarlavha nav ostiga o'tganda nomi chiqadi (iOS) */
+.nb.big .nb-t{opacity:0}.nb.big.tt .nb-t{opacity:1}
+.eyb{margin:16px 0 6px;font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent-text)}
+.eyb + .pg-h{font-size:30px;line-height:1.1;letter-spacing:-.025em;margin:0 0 6px}
+.uprog{margin:16px 0 22px}.uprog .r{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin:0 0 8px}.uprog .r b{font-weight:600}.uprog .r span{color:var(--muted);text-align:right}
+.uprog .pbar{margin:0;height:8px}
 .nb + .sub,.nb + .pg-h{margin-top:8px}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
@@ -697,8 +704,7 @@ a.pill{text-decoration:none;color:var(--ink)}
 .tfield input{font:600 17px var(--font-body);color:var(--ink);background:var(--surface-2);border:0;border-radius:12px;padding:10px 12px;min-height:44px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .row2 .btn{font-size:15px;padding:0 10px;text-decoration:none}
-.nb-act{justify-self:end;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--accent-text);text-decoration:none}
-.nb-act svg{width:24px;height:24px}
+.nb-act{justify-self:end}
 .nb-act:focus-visible{outline:2px solid var(--marker)}
 /* keng ekranda Bugun ikki ustun: chapda dars, o'ngda natijalar */
 @media (min-width:980px){
@@ -1838,10 +1844,16 @@ const pr = w => w.p ? "[" + w.p + "]" : "";
 
 /* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
 function nav(back, label, title, act) {
-  const long = String(title).replace(/<[^>]+>/g, "").length + String(label).length > 26;
-  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}${long ? "" : `<span>${esc(label)}</span>`}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1>${act ? `<a class="nb-act" href="${act.href}" aria-label="${esc(act.label)}">${act.icon}</a>` : "<span></span>"}</header>`;
+  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}" title="${esc(label)}">${ICON.back}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1>${act ? `<a class="nb-act" href="${act.href}" aria-label="${esc(act.label)}">${act.icon}</a>` : "<span></span>"}</header>`;
 }
-const navScroll = () => { const n = document.querySelector(".nb"); if (n) n.classList.toggle("on", scrollY > 2); };
+const navScroll = () => {
+  const n = document.querySelector(".nb"); if (!n) return;
+  n.classList.toggle("on", scrollY > 2);
+  const h = n.classList.contains("big") && document.querySelector(".pg-h");
+  if (h) n.classList.toggle("tt", h.getBoundingClientRect().bottom < n.getBoundingClientRect().bottom);
+};
+// katta sarlavha bor sahifada nav markazida o'sha sarlavha (aylantirilganda chiqadi)
+const navBig = () => { const n = document.querySelector(".nb"), h = document.querySelector(".nb ~ .pg-h, .nb ~ .eyb + .pg-h"); if (n && h && n.querySelector(".nb-back")) { n.classList.add("big"); n.querySelector(".nb-t").textContent = h.textContent; } };
 addEventListener("scroll", navScroll, { passive: true });
 
 /* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
@@ -1870,7 +1882,7 @@ function render() {
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
   curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  navScroll();
+  navBig(); navScroll();
   const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -2380,9 +2392,9 @@ route(/^unit-(\d+)$/, n => {
   const best = k => S.pat[k] != null ? S.pat[k] + "/" + bl.length : "yangi";
   const udue = byUnit(n).filter(isDue).length;
   app.innerHTML = `${nav("#unitlar", "Unitlar", `Unit ${n}`)}
-  <h2 class="pg-h">${esc(info[0])}</h2>
-  <p class="unituz">${esc(info[1])} · kitobda ${bookPages(n)}-betlar</p>
-  <div class="meter"><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div><span>${st.pct}%</span></div>
+  <p class="eyb">Unit ${n} · Kitobda ${bookPages(n)}-bet</p><h2 class="pg-h">${esc(info[0])}</h2>
+  <p class="unituz" style="margin:0">${esc(info[1])}</p>
+  <div class="uprog"><div class="r"><b>${st.pct}% o'tildi</b><span>so'z · grammatika · gaplar</span></div><div class="pbar" role="img" aria-label="Unit ${st.pct}% o'tildi"><i class="m" style="width:${st.pct}%"></i></div></div>
 
   <section class="sec">
     <div class="sec-h"><h2>So'zlar</h2><span class="n">${st.words} ta so'z</span></div>

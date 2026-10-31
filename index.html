@@ -619,6 +619,10 @@ a.pill{text-decoration:none;color:var(--ink)}
 .nb + .sub,.nb + .pg-h{margin-top:8px}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
+/* test ekranlarida «Unit 2 · inglizcha yozing» yorlig'i ko'rinmaydi (vazifa ekrandan tushunarli); ekran o'quvchi uchun qoladi */
+.qcard > .label,.qcard > .label:not(#qlabel){position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.qcard{position:relative}
+.qcard > .q:first-of-type{margin-top:4px}
 
 /* ===== yumshoq va undovchi qismlar ===== */
 .metag{display:inline-block;margin:0 0 4px;padding:2px 8px;border-radius:999px;background:var(--ok-bg);color:var(--ok);font:600 12px/1.5 var(--font-body);font-style:normal}

@@ -16,13 +16,12 @@
 </script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
-<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap"></noscript>
 <style>
 /* Layout: iliq, tahririy (Busuu ruhida) — neytral ochiq fon, Onest Bold sarlavhalar, terrakota aksent; bitta ustun (640px gacha), pastda 4 bo'limli menyu */
 :root{
   --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#E9EAE5; --ink:#17171B; --muted:#5E5F67; --line:#E1E2DD; --line-strong:#CBCCC6;
-  --marker:#B9441F; --on-marker:#FFFFFF; --hl:#F8E4D9; --marker-soft:#F8E4D9; --accent-text:#9C3615;
+  --press:rgba(23,23,27,.05); --marker:#B9441F; --on-marker:#FFFFFF; --hl:#F8E4D9; --marker-soft:#F8E4D9; --accent-text:#9C3615;
   --pron:#7A5A2B; --ok:#2C5E2A; --ok-strong:#3F8A3B; --ok-bg:#E5F2E4; --bad:#9A2B1C; --bad-strong:#C9452E; --bad-bg:#F9E3DD;
   --shadow:0 1px 2px rgba(23,23,27,.05), 0 10px 28px -14px rgba(23,23,27,.18);
   --glass:rgba(255,255,255,.72); --glass-solid:#FFFFFF; --glass-edge:rgba(255,255,255,.9); --glass-line:rgba(23,23,27,.08); --glass-shadow:0 10px 30px rgba(23,23,27,.14), 0 2px 6px rgba(23,23,27,.06); --lens:rgba(185,68,31,.13);
@@ -34,7 +33,7 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -43,7 +42,7 @@
 }
 :root[data-theme="dark"]{
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#3A2318; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -304,7 +303,7 @@ div.li{cursor:default}
 /* practice */
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
 .bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-bottom:16px}
-.bar i{display:block;height:100%;background:var(--marker);width:0;transition:width .25s}
+.bar i{display:block;height:100%;width:100%;background:var(--marker);transform:translateX(-100%);transition:transform .35s cubic-bezier(.16,1,.3,1)}
 .q{font:600 26px/1.25 var(--font-display);letter-spacing:-.015em;margin:6px 0 4px;word-break:break-word;text-wrap:balance}
 .qsmall{font-size:22px}
 .pron{color:var(--pron);font:500 15px/1.4 var(--font-mono);letter-spacing:.01em}
@@ -430,11 +429,8 @@ body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
   .quizmode .wrap:not(:has(.spell:not(.hidden))) > .card:has(> .opts:not(:empty), > .tiles) > .row{order:3;min-height:52px}
 }
 nav.tabs .lens.still{transition:none}
-nav.tabs .lens.pop{animation:lens-pop .55s cubic-bezier(.3,1.2,.4,1)}
-@keyframes lens-pop{0%{scale:1 1}30%{scale:1.14 .88}65%{scale:.97 1.03}100%{scale:1 1}}
 /* sahifa almashishi: tab yo'nalishidan yumshoq kirib keladi */
-#app.enter{animation:page-in .34s cubic-bezier(.2,.8,.2,1) both}
-@keyframes page-in{from{opacity:.25;transform:translate(var(--dx, 0px), var(--dy, 8px))}to{opacity:1;transform:none}}
+
 nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ nav.tabs{background:var(--glass-solid)} }
 @media (prefers-reduced-transparency: reduce){ nav.tabs{background:var(--glass-solid);-webkit-backdrop-filter:none;backdrop-filter:none} }
@@ -634,6 +630,16 @@ a.pill{text-decoration:none;color:var(--ink)}
 .lv-empty{margin:12px 0 16px;color:var(--muted);font-size:15px;line-height:1.5}
 @media (prefers-reduced-motion:reduce){.tl .bx{transition:none}}
 
+/* uzun ro'yxatlar: ekrandan tashqaridagi qatorlar chizilmaydi — sahifa tezroq ochiladi va silliq aylanadi */
+.wl > li{content-visibility:auto;contain-intrinsic-size:auto 76px}
+/* qator bosilganda yumshoq fon: maket o'zgarmaydi (fon 8px tashqariga soya bilan chiziladi) */
+.grow,.mrow{border-radius:10px;transition:background-color .15s,box-shadow .15s}
+.grow:active,.mrow:active:not(:disabled){background:var(--press,rgba(0,0,0,.05));box-shadow:0 0 0 8px var(--press,rgba(0,0,0,.05))}
+@media (hover:hover){.grow:hover,.mrow:hover:not(:disabled){background:var(--press,rgba(0,0,0,.03));box-shadow:0 0 0 8px var(--press,rgba(0,0,0,.03))}}
+.nwb{transition:transform .15s cubic-bezier(.16,1,.3,1)}.nwb:active{transform:scale(.98)}
+.lh button:active{opacity:.6}
+/* mashq paytida «tortib yangilash» tasodifan sessiyani o'chirib yubormasin */
+body.quizmode{overscroll-behavior-y:none}
 /* ===== sahifa sarlavhasi (markaziy) ===== */
 .nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:60px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50%) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
 .nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
@@ -1507,7 +1513,30 @@ const unitOf = n => UNITS.find(u => u.unit === n);
 /* ---------- storage (per browser) ---------- */
 const KEY = "ingliz-v1";
 let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} };
+/* saqlangan ma'lumotni tozalash: eski versiya, qo'lda tahrir yoki buzilgan zaxira ilovani to'xtatib qo'ymasin */
+function fixState(o) {
+  const obj = v => v && typeof v === "object" && !Array.isArray(v) ? v : {}, arr = v => Array.isArray(v) ? v : [];
+  const num = v => Number.isFinite(+v) && +v >= 0 ? +v : 0, day = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  o = obj(o); const s = Object.assign({}, o);
+  s.srs = {}; Object.entries(obj(o.srs)).forEach(([k, r]) => { if (r && typeof r === "object") s.srs[k] = Object.assign({}, r, { b: Math.min(5, Math.round(num(r.b))), due: day(r.due) ? r.due : "", ok: num(r.ok), bad: num(r.bad), sp: num(r.sp) }); });
+  s.pat = {}; Object.entries(obj(o.pat)).forEach(([k, v]) => { if (v != null && Number.isFinite(+v)) s.pat[k] = Math.max(0, +v); });
+  s.gr = {}; Object.entries(obj(o.gr)).forEach(([k, r]) => { if (r && typeof r === "object") s.gr[k] = { b: Math.min(5, Math.round(num(r.b))), due: day(r.due) ? r.due : "" }; });
+  s.log = {}; Object.entries(obj(o.log)).forEach(([k, r]) => { if (day(k) && r && typeof r === "object") s.log[k] = r; });
+  s.mis = {}; Object.entries(obj(o.mis)).forEach(([k, v]) => { if (day(v)) s.mis[k] = v; });
+  s.hook = {}; Object.entries(obj(o.hook)).forEach(([k, v]) => { if (typeof v === "string" && v.trim()) s.hook[k] = v; });
+  s.story = obj(o.story);
+  s.my = arr(o.my).filter(m => m && typeof m.w === "string" && m.w.trim() && typeof m.u === "string").map(m => Object.assign({}, m, { id: typeof m.id === "string" && m.id ? m.id : "my|" + m.w.trim().toLowerCase() }));
+  const st = obj(o.streak); s.streak = { last: day(st.last) ? st.last : "", n: Math.round(num(st.n)) };
+  s.rest = arr(o.rest).filter(day);
+  if (o.cls !== undefined) s.cls = arr(o.cls).filter(n => Number.isInteger(n) && n >= 0 && n < 7);
+  s.course = Number.isInteger(o.course) && o.course > 0 ? o.course : 0;
+  s.level = typeof o.level === "string" ? o.level : "";
+  s.ms = num(o.ms);
+  if (o.lost && (typeof o.lost !== "object" || !day(o.lost.d))) delete s.lost;
+  return s;
+}
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+S = fixState(S);
 S.hook = S.hook || {}; // eslatgichlar: so'z → o'zi yozgan bog'lanish
 S.my = S.my || []; // o'zi qo'shgan so'zlar (darsdan, ishdan): { id, w, u, p, e, t }
 /* o'z so'zlari umumiy WORDS ro'yxatiga «unit 0» bo'lib qo'shiladi — takrorlash, qidiruv va reja ularni ham ko'radi */
@@ -1712,7 +1741,7 @@ async function initCloud() {
     const ref = db.doc("data/users/" + id + "/progress");
     const snap = await ref.get();
     if (snap.exists) {
-      try { S = merge(S, JSON.parse(snap.data().state)); syncMyWords(); } catch (e) {}
+      try { S = fixState(merge(S, fixState(JSON.parse(snap.data().state)))); fixCourse(); syncMyWords(); } catch (e) {}
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
     }
     cloud.ref = ref; setStatus("cloud");
@@ -1854,7 +1883,7 @@ const navScroll = () => {
 };
 // katta sarlavha bor sahifada nav markazida o'sha sarlavha (aylantirilganda chiqadi)
 const navBig = () => { const n = document.querySelector(".nb"), h = document.querySelector(".nb ~ .pg-h, .nb ~ .eyb + .pg-h"); if (n && h && n.querySelector(".nb-back")) { n.classList.add("big"); n.querySelector(".nb-t").textContent = h.textContent; } };
-addEventListener("scroll", navScroll, { passive: true });
+let navRaf = 0; addEventListener("scroll", () => { if (!navRaf) navRaf = requestAnimationFrame(() => { navRaf = 0; navScroll(); }); }, { passive: true });
 
 /* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
 function toast(msg, act, fn) {
@@ -1882,7 +1911,7 @@ function render() {
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
   curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  navBig(); navScroll();
+  navBig();
   const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -1903,22 +1932,28 @@ document.addEventListener("click", e => {
 /* tab bar linzasi va sahifa animatsiyasi */
 const TABS = ["home", "unitlar", "gap", "lugat"];
 let lastTab = null;
+/* menyu tugmalarining o'lchami bir marta o'lchanadi (o'lcham o'zgarganda qayta) — har sahifada sahifani majburan qayta hisoblamaslik uchun */
+let TABGEO = null;
+const tabGeo = a => { if (!TABGEO) { const g = {}; document.querySelectorAll("nav.tabs a[data-tab]").forEach(x => { if (x.offsetWidth) g[x.dataset.tab] = [x.offsetLeft, x.offsetWidth]; }); if (Object.keys(g).length) TABGEO = g; } return TABGEO && TABGEO[a.dataset.tab]; };
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 function moveLens(tab, instant) {
   const lens = document.querySelector("nav.tabs .lens"); if (!lens) return;
   const a = document.querySelector('nav.tabs a[data-tab="' + tab + '"]');
   if (!a) { lens.style.opacity = "0"; return; }
+  const g = tabGeo(a); if (!g) return;
   if (instant) lens.classList.add("still");
-  lens.style.opacity = "1"; lens.style.width = a.offsetWidth + "px"; lens.style.transform = "translateX(" + a.offsetLeft + "px)";
-  if (instant) { void lens.offsetWidth; lens.classList.remove("still"); return; }
-  if (lastTab !== tab && TABS.includes(lastTab)) { lens.classList.remove("pop"); void lens.offsetWidth; lens.classList.add("pop"); }
+  lens.style.opacity = "1"; lens.style.width = g[1] + "px"; lens.style.transform = "translateX(" + g[0] + "px)";
+  if (instant) { requestAnimationFrame(() => lens.classList.remove("still")); return; }
+  if (lastTab !== tab && TABS.includes(lastTab) && !calm() && lens.animate) lens.animate([{ scale: "1 1" }, { scale: "1.14 .88", offset: .3 }, { scale: ".97 1.03", offset: .65 }, { scale: "1 1" }], { duration: 550, easing: "cubic-bezier(.3,1.2,.4,1)" });
 }
+let pageAnim = null;
 function pageIn(tab) {
+  if (calm() || !app.animate) return;
   const i = TABS.indexOf(tab), j = TABS.indexOf(lastTab), side = i >= 0 && j >= 0 && i !== j;
-  app.style.setProperty("--dx", side ? (i > j ? "18px" : "-18px") : "0px");
-  app.style.setProperty("--dy", side ? "0px" : "8px");
-  app.classList.remove("enter"); void app.offsetWidth; app.classList.add("enter");
+  if (pageAnim) pageAnim.cancel();
+  pageAnim = app.animate([{ opacity: .25, transform: side ? `translateX(${i > j ? 18 : -18}px)` : "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 340, easing: "cubic-bezier(.2,.8,.2,1)" });
 }
-window.addEventListener("resize", () => moveLens(lastTab, true));
+window.addEventListener("resize", () => { TABGEO = null; moveLens(lastTab, true); });
 
 /* ---------- UNITLAR: kitobdagi nomlar va progress ---------- */
 /* Navigate (Oxford) darajalari. Hozircha faqat Beginner kontenti bor; qolganlari uchun kitob sahifalari yuborilganda qo'shiladi */
@@ -1935,6 +1970,9 @@ const UNIT_INFO = [null,
   ["My life", "Mening hayotim"], ["Style and design", "Uslub va dizayn"], ["Places and facilities", "Joylar va qulayliklar"],
   ["Skills and interests", "Ko'nikma va qiziqishlar"], ["Our past", "O'tmishimiz"], ["Unusual stories", "G'aroyib voqealar"],
   ["New places, new projects", "Yangi joylar, yangi rejalar"]];
+// kurs raqami mavjud unitga to'g'ri kelmasa (eski zaxira) — tanlov qaytadan so'raladi
+const fixCourse = () => { if (S.course && !UNIT_INFO[S.course]) S.course = 0; if (S.level && !LEVELS.some(l => l.id === S.level)) S.level = ""; };
+fixCourse();
 const bookPages = n => (6 + (n - 1) * 10) + "–" + (15 + (n - 1) * 10);
 const unitPats = n => PATTERNS.filter(p => p.unit === n);
 const unitBuild = n => (BUILD.find(b => b.unit === n) || { items: [] }).items;
@@ -2056,7 +2094,7 @@ function readBackup(text) {
 }
 function restoreBackup(d) {
   const before = Object.keys(S.srs).length;
-  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {}, hook: {}, my: [] }, merge(S, d)); syncMyWords(); save();
+  S = fixState(merge(S, fixState(d))); fixCourse(); syncMyWords(); save();
   return Object.keys(S.srs).length - before;
 }
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
@@ -2541,7 +2579,8 @@ route(/^soz-(\d+)$/, n => {
     bindSay($("#list"));
   };
   document.querySelectorAll(".mrow").forEach(b => b.onclick = () => startChunk(sel(), b.dataset.m, "Unit " + n, "#soz-" + n, new Set()));
-  chips(); list();
+  // pastdagi lug'at ro'yxati birinchi kadrdan keyin chiziladi — sahifa darrov ochiladi; chuqurga qaytilsa (scroll tiklash) darhol
+  chips(); if ((SCROLLS["soz-" + n] || 0) > 400) list(); else requestAnimationFrame(() => setTimeout(() => { if (location.hash === "#soz-" + n) list(); }, 0));
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
 function wordLi(w) {
@@ -2804,14 +2843,14 @@ function ask() {
     const stp = Z.words.reduce((a, x) => a + (Z.fin.has(x.id) ? 3 : Z.lv[x.id] || 0), 0), all = Z.words.length * 3;
     $("#pos").textContent = Math.min(stp + 1, all) + "/" + all;
     $("#pts").textContent = "✓ " + Z.right;
-    $("#barfill").style.width = (stp / all * 100) + "%";
+    $("#barfill").style.transform = "translateX(" + (stp / all - 1) * 100 + "%)";
   } else {
     // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
     const re = Z.i >= Z.base;
     Z.re = re; Z.tag2 = re ? "Yana bir bor" : "";
     $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + "/" + (Z.q.length - Z.base) : (Z.i + 1) + "/" + Z.base;
     $("#pts").textContent = "✓ " + Z.right;
-    $("#barfill").style.width = (re ? 100 : Z.i / Z.base * 100) + "%";
+    $("#barfill").style.transform = "translateX(" + (re ? 0 : Z.i / Z.base - 1) * 100 + "%)";
   }
   ["#fb", "#ex", "#skip", "#intro"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron";
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
@@ -2902,7 +2941,7 @@ function ltTap(b) {
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
   sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b);
   // hamma harf terilgach o'zi tekshiradi (oxirgi harf ko'rinib turishi uchun qisqa pauza)
-  if (sp.value.length >= Z.ltTarget.length) { const q = Z.cur; setTimeout(() => { if (Z && Z.cur === q && Z.state === "ask" && sp.value.length >= Z.ltTarget.length) check(); }, 280); }
+  if (sp.value.length >= Z.ltTarget.length) { const q = Z.cur; setTimeout(() => { if (location.hash === "#quiz" && sp.isConnected && Z && Z.cur === q && Z.state === "ask" && sp.value.length >= Z.ltTarget.length) check(); }, 280); }
 }
 function ltUndo() {
   const sp = $("#spell"), b = Z && Z.ltUsed.pop(); if (!b || Z.state === "next") return;
@@ -3008,7 +3047,7 @@ function finish() {
   const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back);
   const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
-  $("#barfill") && ($("#barfill").style.width = "100%");
+  $("#barfill") && ($("#barfill").style.transform = "none");
 }
 
 /* ---------- QOLIPLAR ---------- */
@@ -3318,7 +3357,7 @@ route(/^tuzmashq$/, () => {
     $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}">${esc(t)}</button>`).join("");
     $("#ans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
     $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw();
-      if (picked.length === want.length) setTimeout(() => { if (!done && picked.length === want.length) $("#chk").onclick(); }, 350); });
+      if (picked.length === want.length) setTimeout(() => { const c = $("#chk"); if (!done && c && picked.length === want.length) c.onclick(); }, 350); });
     if (!done) { $("#chk").disabled = !picked.length; $("#clr").disabled = !picked.length; }
   };
   $("#clr").onclick = () => { if (done) return; picked.length = 0; draw(); };

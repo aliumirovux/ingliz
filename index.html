@@ -798,6 +798,8 @@ small{font-size:13px}
 :root[data-theme="dark"]{--btn-fill:#BE4C24;--btn-glass:rgba(118,118,128,.24);--btn-glass-on:rgba(118,118,128,.34);--btn-hair:rgba(255,255,255,.08)}
 .btn{position:relative;isolation:isolate;overflow:hidden;white-space:nowrap;min-height:52px;font-size:17px;font-weight:600;letter-spacing:-.015em;touch-action:manipulation;transition:transform .4s cubic-bezier(.3,1.4,.5,1),background-color .2s ease,filter .2s ease}
 .btn:hover{filter:none}
+/* matnli tugmada ikonka yo'q — matnning o'zi yetarli */
+.btn svg{display:none}
 .btn:not(.ghost):not(:disabled){color:#fff;background:var(--btn-fill);box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
 .btn.ghost:not(:disabled){color:var(--ink);background:var(--btn-glass);-webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);box-shadow:inset 0 1px 0 var(--btn-hair)}
 .btn:disabled{background:var(--btn-glass);color:var(--muted);box-shadow:none}
@@ -2601,7 +2603,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
   return `<section class="lesson dars">
     <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
     <ol class="tl">${li}</ol>
-    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>${miniPool().length >= 5 ? `<button class="mini" id="mini">${ICON.clock}Vaqt kam? 2 daqiqalik takrorlash</button>` : ""}` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
+    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>${miniPool().length >= 5 ? `<button class="mini" id="mini">Vaqt kam? 2 daqiqalik takrorlash</button>` : ""}` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${cu.n} · ${esc(info[0])}</b><span>${esc(info[1])} · ${bookPages(cu.n)}-betlar</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
   </section>`;
 }
@@ -3195,7 +3197,7 @@ function finishLearn() {
 function hookBox(w, edit) {
   const h = S.hook[w.id];
   if (!edit && h) return `<div class="hook" data-hw="${esc(w.id)}"><span class="hi">${ICON.bulb}</span><span class="ht"><b>Eslatgich</b>${esc(h)}</span><button class="hl" data-hedit>O'zgartirish</button></div>`;
-  if (!edit) return `<div class="hook" data-hw="${esc(w.id)}"><button class="hadd" data-hedit>${ICON.plus} Eslatgich yozish</button></div>`;
+  if (!edit) return `<div class="hook" data-hw="${esc(w.id)}"><button class="hadd" data-hedit>Eslatgich yozish</button></div>`;
   return `<div class="hook edit" data-hw="${esc(w.id)}"><label class="label" for="hk">Eslatgich (ixtiyoriy)</label>
     <div class="hrow"><input id="hk" class="hin" maxlength="140" value="${esc(h || "")}" placeholder="Nimaga o'xshaydi?" enterkeyhint="done" autocomplete="off"><button class="icon" data-hsave>Saqlash</button></div>
     <p class="hhelp">Masalan: <i>safe [seyf] — «seyf»: pul turadigan temir quti</i>. O'zingiz o'ylagan bog'lanish yaxshiroq eslanadi.</p></div>`;
@@ -3317,7 +3319,7 @@ route(/^quiz$/, () => {
   if (!Z) return go("");
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i id="barfill"></i></div><span class="cnt" id="pos"></span><span id="pts" hidden></span></div>
   <div class="card qcard"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
-    <div class="tools" id="tools"><button class="icon" id="say">${ICON.vol} Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
+    <div class="tools" id="tools"><button class="icon" id="say">Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
     <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
     <div class="lans hidden" id="lans" role="group" aria-label="Javobingiz — harfni bossangiz, joyiga qaytadi"></div>
@@ -3502,7 +3504,7 @@ function bankLetters(t) {
 function setInputMode(target) {
   const sp = $("#spell"), bank = $("#bank"), lt = useLetters(), kb = $("#kbt");
   Z.ltTarget = target; Z.ltUsed = [];
-  kb.classList.remove("hidden"); kb.innerHTML = lt ? ICON.kbd + "Klaviatura bilan yozish" : ICON.tiles + "Harflardan terish";
+  kb.classList.remove("hidden"); kb.innerHTML = lt ? "Klaviatura bilan yozish" : "Harflardan terish";
   kb.setAttribute("aria-label", lt ? "Klaviatura bilan yozish" : "Harflardan terish");
   sp.readOnly = lt; if (lt) sp.setAttribute("inputmode", "none"); else sp.removeAttribute("inputmode");
   sp.dataset.lt = lt ? "1" : ""; bank.classList.remove("done");
@@ -3594,7 +3596,7 @@ function choose(btn, o, f) {
   toNext();
 }
 function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
-function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -3704,7 +3706,7 @@ function runDrill(box, items, done, own) {
   const draw = () => {
     if (i >= items.length) return done(res);
     const it = items[i], other = it.pid !== own;
-    box.innerHTML = `<p class="label">${other ? "Takrorlash · Unit " + it.unit + ": " + esc(it.title) : "Mashq"} · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi →</button></div>`;
+    box.innerHTML = `<p class="label">${other ? "Takrorlash · Unit " + it.unit + ": " + esc(it.title) : "Mashq"} · ${i + 1} / ${items.length}</p><div class="q qsmall">${esc(it.q)}</div><div class="opts">${it.o.map((o, k) => `<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div><div class="fb hidden" id="pf"></div><div class="row" style="margin-top:14px"><button class="btn hidden" id="pn">Keyingisi</button></div>`;
     box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
       const k = +b.dataset.k, ok = k === it.a, key = "g:" + it.pid + "#" + it.k;
       res.push({ it, ok }); if (ok) misDel(key); else misAdd(key); logAns(ok); save(); buzz(ok);
@@ -3784,7 +3786,7 @@ route(/^gapir(?:-(\d+))?$/, n => {
   <div class="card" style="margin-bottom:12px"><label class="muted" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="hide"> Mashq rejimi: javoblarni yashirish (avval o'zingiz ayting, keyin oching)</label></div>
   <div class="stack">${list.map(t => `<p class="label" style="margin-top:8px">${esc(t.task)} · Unit ${t.unit} · ${esc(t.title)}</p>` + t.items.map(it => `<div class="card sp">
     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:17px">${esc(it.q)}</b><button class="icon" data-say="${esc(it.q)}">${ICON.vol}</button></div>
-    <div class="ans">${it.a.map(l => `<p>${esc(l).replace(/\[(.+?)\]/g, '<span class="slot">$1</span>')}</p>`).join("")}<div class="row" style="margin-top:8px"><button class="icon" data-say="${esc(it.a.join(" "))}">${ICON.vol} Javobni eshitish</button></div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ""}</div>
+    <div class="ans">${it.a.map(l => `<p>${esc(l).replace(/\[(.+?)\]/g, '<span class="slot">$1</span>')}</p>`).join("")}<div class="row" style="margin-top:8px"><button class="icon" data-say="${esc(it.a.join(" "))}">Javobni eshitish</button></div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ""}</div>
     <button class="btn ghost hidden show" style="margin-top:10px">Javobni ko'rsatish</button></div>`).join("")).join("")}</div>`;
   bindSay(app);
   const apply = () => { const h = $("#hide").checked; document.querySelectorAll(".sp").forEach(c => { c.querySelector(".ans").classList.toggle("hidden", h); c.querySelector(".show").classList.toggle("hidden", !h); }); };
@@ -3820,7 +3822,7 @@ function listen(target, out, btn) {
   try { r.start(); } catch (e) { btn.disabled = false; btn.innerHTML = label; }
 }
 function bindMic(root) { root.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(b.dataset.mic, b.closest("[data-micbox]").querySelector(".micout"), b)); }
-const micBtn = t => SR ? `<button class="icon" data-mic="${esc(t)}">${ICON.mic} Aytib ko'rish</button>` : "";
+const micBtn = t => SR ? `<button class="icon" data-mic="${esc(t)}">Aytib ko'rish</button>` : "";
 
 /* ---------- TAYYOR GAPLAR ---------- */
 const PH = [];
@@ -3844,7 +3846,7 @@ route(/^gap-(\w+)$/, id => {
   ${ps.map(p => { const r = rec(p.id); return `<div class="card" data-micbox>
     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:18px">${esc(p.w)}</b>${r ? `<span class="box ${r.b >= 3 ? "m" : ""}">${r.b >= 3 ? "mustahkam" : r.b === 0 ? "xato" : r.b + "/5"}</span>` : ""}</div>
     <div class="pron">[${esc(p.p)}]</div><div style="margin-top:4px">${esc(p.u)}</div>
-    <div class="tools"><button class="icon" data-say="${esc(p.w)}">${ICON.vol} Eshitish</button>${micBtn(p.w)}</div><div class="micout hidden"></div></div>`; }).join("")}</div>`;
+    <div class="tools"><button class="icon" data-say="${esc(p.w)}">Eshitish</button>${micBtn(p.w)}</div><div class="micout hidden"></div></div>`; }).join("")}</div>`;
   bindSay(app); bindMic(app);
   $("#go").onclick = () => startPh(ps, c.title);
 });
@@ -3861,7 +3863,7 @@ route(/^gapmashq$/, () => {
   <div class="card qcard" data-micbox><p class="label">${esc(G.title)} · inglizchasini ayting</p><div class="q qsmall">${esc(p.u)}</div>
     <div class="tools">${micBtn(p.w)}</div><div class="micout hidden"></div>
     <div id="ans" class="hidden" style="margin-top:14px"><div class="q qsmall" style="margin:0">${esc(p.w)}</div><div class="pron">[${esc(p.p)}]</div>
-      <div class="tools"><button class="icon" data-say="${esc(p.w)}">${ICON.vol} Eshitish</button></div></div>
+      <div class="tools"><button class="icon" data-say="${esc(p.w)}">Eshitish</button></div></div>
     <div class="row" style="margin-top:14px" id="r1"><button class="btn" id="show">Javobni ko'rish</button></div>
     <div class="row hidden" style="margin-top:14px" id="r2"><button class="btn ghost" id="no">Bilmadim</button><button class="btn" id="yes">Bildim</button></div>
   </div>`;
@@ -3952,7 +3954,7 @@ route(/^tuzmashq$/, () => {
     $("#tf").className = "fb tz " + cls; buzz(cls === "ok");
     $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : ICON.x + "Xato"}</div>` + html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
     bindSay($("#tf")); say(it.e);
-    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi →" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
+    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
   };
   if (yoz) {
     const inp = $("#tin"), want = canon(it.e);

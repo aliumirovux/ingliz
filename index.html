@@ -113,7 +113,20 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .grow .pb{flex:none;width:56px;height:6px;border-radius:3px;background:var(--track);overflow:hidden;display:flex;gap:2px}
 .grow .pb b{background:var(--marker)}.grow .pb u{background:var(--marker);opacity:.38}
 .grow .pc{flex:none;width:38px;text-align:right;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums}
-.grow .tx em{white-space:nowrap}@media (max-width:360px){.grow{gap:10px}.grow .pb{width:36px}}
+.grow .tx em{white-space:nowrap}
+.pgo{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:24px;padding:16px;background:var(--marker);color:var(--on-marker);font:inherit;text-align:left;cursor:pointer;transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.pgo .tx{flex:1;min-width:0}.pgo b{display:block;font-size:17px;font-weight:600}.pgo .tx span{display:block;font-size:13px;opacity:.88}
+.pgo .ar{flex:none;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:grid;place-items:center}
+.pgo:active:not(:disabled){transform:scale(.98)}.pgo:disabled{background:var(--surface-2);color:var(--muted);cursor:default}.pgo:disabled .ar{display:none}
+.nwb{display:flex;align-items:center;gap:12px;width:100%;border:0;border-radius:20px;padding:12px 14px;background:var(--marker-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.nwb .tx{flex:1;min-width:0}.nwb b{display:block;font-size:15px;font-weight:600;color:var(--accent-text)}.nwb .tx span{font-size:13px;color:var(--accent-text)}
+.nwb i{font-style:normal;font-weight:600;font-size:14px;color:var(--accent-text);white-space:nowrap}
+.pmi{flex:none;width:40px;height:40px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;color:var(--ink)}
+.nwb .pmi{background:var(--surface);color:var(--accent-text)}
+.mrow{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:8px 0;border:0;background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.mrow .tx{flex:1;min-width:0}.mrow .tx b{display:block;font-size:15px;font-weight:600}.mrow .tx span{display:block;font-size:13px;color:var(--muted);line-height:1.35}
+.mrow .go{color:var(--muted)}.mrow:disabled{opacity:.45;cursor:default}
+.mrow:focus-visible,.pgo:focus-visible,.nwb:focus-visible{outline:2px solid var(--marker);outline-offset:2px}@media (max-width:360px){.grow{gap:10px}.grow .pb{width:36px}}
 .picked b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 .gohint{margin:8px 2px 0;font-size:14px;color:var(--muted);text-align:center}
 /* takror savol yorlig'i (xato javob oxirida qayta so'raladi) */
@@ -1474,7 +1487,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -2469,22 +2482,18 @@ route(/^lugat$/, () => {
 let LQ = "";
 
 /* ---------- UNIT page ---------- */
-let pick = { groups: null, mode: "uz-en" };
+let pick = { groups: null };
+const SOLO = [["uz-en", "Tanlash", "pick", "O'zbekchasi chiqadi — 4 ta variantdan inglizchasini tanlaysiz"], ["en-uz", "Eshitish", "vol", "So'zni eshitasiz — o'zbekcha ma'nosini tanlaysiz"],
+  ["spell", "Yozish", "pen", "O'zbekchasiga qarab inglizchasini xotiradan yozasiz"], ["say", "Ayting", "mic", "Inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi"]];
 const gTitle = g => g.title.replace(/^\d+\.\s*/, "");
 route(/^soz-(\d+)$/, n => {
   n = +n; const u = unitOf(n); if (!u) return go("lugat");
   pick.groups = new Set(u.groups.map((_, i) => i));
   app.innerHTML = `${nav(`#unit-${n}`, `Unit ${n}`, `So'zlar`)}<p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
   <div class="stack">
+    <div class="stack" id="ptop" style="gap:12px"></div>
     <div class="card"><div class="lh"><h2 id="glh">Qaysi so'zlar?</h2><button id="gall"></button></div><ul class="gl" id="chips" role="group" aria-labelledby="glh"></ul></div>
-    <div class="card"><p class="label" id="segl">Test turi</p><div class="modes seg" role="radiogroup" aria-labelledby="segl">
-      ${byUnit(n).some(w => !isSeen(w)) ? segBtn("learn", "Yangi", "Yangi so'zlar: avval tanishasiz, keyin 3 bosqich — tanlash, eshitish, yozish") : ""}
-      ${segBtn("uz-en", "Tanlash", "O'zbekchasi chiqadi — 4 ta variantdan inglizchasini tanlaysiz")}
-      ${segBtn("en-uz", "Eshitish", "So'zni eshitasiz — o'zbekcha ma'nosini tanlaysiz")}
-      ${segBtn("spell", "Yozish", "O'zbekchasiga qarab inglizchasini xotiradan yozasiz")}
-      ${canSpeak() ? segBtn("say", "Ayting", "O'zbekchasiga qarab inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi") : ""}
-    </div><p class="segd" id="segd" aria-live="polite"></p></div>
-    <div><button class="btn" id="go">Testni boshlash</button><p class="gohint" id="gohint"></p></div>
+    <div class="card"><p class="label" id="segl">Yoki bitta tur bilan</p><ul class="gl" aria-labelledby="segl">${SOLO.filter(x => x[0] !== "say" || canSpeak()).map(([m, t, ic, d]) => `<li><button class="mrow" data-m="${m}"><span class="pmi">${ICON[ic]}</span><span class="tx"><b>${t}</b><span>${d}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul></div>
     <div class="card"><p class="label">Lug'at ro'yxati</p>
       <div class="legend">So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.</div>
       <div id="list"></div></div>
@@ -2504,32 +2513,25 @@ route(/^soz-(\d+)$/, n => {
     goLabel();
   };
   $("#gall").onclick = () => { pick.groups = pick.groups.size === u.groups.length ? new Set() : allIdx(); chips(); list(); };
+  // Asosiy yo'l — «Mashqni boshlash» (aralash: har so'zga darajasiga mos savol); yangi so'z bo'lsa — avval tanishish; aniq tur — pastdagi qatorlar o'zi boshlaydi
+  const sel = () => byUnit(n).filter(w => pick.groups.has(w.g));
   const goLabel = () => {
-    const sel = byUnit(n).filter(w => pick.groups.has(w.g)), cnt = sel.length, nu = sel.filter(w => !isSeen(w)).length, go = $("#go");
-    if (!cnt) { go.disabled = true; go.textContent = "Kamida bitta guruhni tanlang"; $("#gohint").textContent = ""; return; }
-    if (pick.mode === "learn") {
-      go.disabled = !nu;
-      go.textContent = nu ? "O'rganishni boshlash · " + Math.min(LEARN_N, nu) + " ta yangi so'z" : "Bu guruhlarda yangi so'z qolmadi";
-      $("#gohint").textContent = nu > LEARN_N ? "Bir martada " + LEARN_N + " ta — yaxshi o'rnashishi uchun. Tanlangan guruhlarda " + nu + " ta yangi so'z bor" : "";
-    } else {
-      go.disabled = false;
-      go.textContent = "Testni boshlash · " + Math.min(CHUNK, cnt) + " ta so'z";
-      $("#gohint").textContent = cnt > CHUNK ? CHUNK + " tadan bo'lib beriladi: avval xato va muddati kelganlar, keyin yangilari" : "";
-    }
+    const ws = sel(), cnt = ws.length, nu = ws.filter(w => !isSeen(w)).length;
+    $("#ptop").innerHTML = (nu ? `<button class="nwb" id="gnew"><span class="pmi">${ICON.spark}</span><span class="tx"><b>${nu} ta yangi so'z</b><span>Avval tanishing, keyin test</span></span><i>Tanishish ›</i></button>` : "")
+      + `<button class="pgo" id="go"${cnt ? "" : " disabled"}><span class="tx"><b>${cnt ? "Mashqni boshlash" : "Kamida bitta guruhni tanlang"}</b><span>${cnt ? "Aralash · " + Math.min(CHUNK, cnt) + " ta so'z · har so'zga mos savol" : "Pastdagi ro'yxatdan belgilang"}</span></span><span class="ar">${ICON.arrow}</span></button>`;
+    document.querySelectorAll(".mrow").forEach(b => b.disabled = !cnt);
+    $("#go").onclick = () => startChunk(sel(), "auto", "Unit " + n, "#soz-" + n, new Set());
+    const gn = $("#gnew"); if (gn) gn.onclick = () => startLearn(sel().filter(w => !isSeen(w)), "Unit " + n, "#soz-" + n, null);
   };
   const list = () => {
     const gs = u.groups.map((g, i) => [g, i]).filter(([, i]) => pick.groups.has(i));
     $("#list").innerHTML = gs.map(([g, i]) => `<h2 style="margin-top:16px">${esc(gTitle(g))}</h2><ul class="wl">${byUnit(n).filter(w => w.g === i).map(wordLi).join("")}</ul>`).join("");
     bindSay($("#list"));
   };
-  if (pick.mode === "learn" && !byUnit(n).some(w => !isSeen(w))) pick.mode = "uz-en";
-  const segSel = b => { document.querySelectorAll(".mode").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); $("#segd").textContent = b.dataset.s || ""; };
-  document.querySelectorAll(".mode").forEach(b => { if (b.dataset.m === pick.mode) segSel(b); b.onclick = () => { pick.mode = b.dataset.m; segSel(b); goLabel(); }; });
-  $("#go").onclick = () => { const sel = byUnit(n).filter(w => pick.groups.has(w.g)); if (pick.mode === "learn") startLearn(sel.filter(w => !isSeen(w)), "Unit " + n, "#soz-" + n, null); else startChunk(sel, pick.mode, "Unit " + n, "#soz-" + n, new Set()); };
+  document.querySelectorAll(".mrow").forEach(b => b.onclick = () => startChunk(sel(), b.dataset.m, "Unit " + n, "#soz-" + n, new Set()));
   chips(); list();
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
-const segBtn = (m, t, s) => `<button class="mode" data-m="${m}" data-s="${esc(s)}" role="radio">${t}</button>`;
 function wordLi(w) {
   const r = rec(w.id);
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");

@@ -622,6 +622,7 @@ a.pill{text-decoration:none;color:var(--ink)}
 .lvl button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:58px;padding:10px 12px;border:0;border-radius:18px;background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .lvl button b{font-size:15px;font-weight:600;line-height:1.25}
 .lvl button span{font-size:13px;color:var(--muted)}
+.lvl button.wide{grid-column:1/-1}
 .lvl button.on{background:var(--marker-soft);box-shadow:inset 0 0 0 2px var(--marker)}
 .lvl button.on span{color:var(--accent-text)}
 .lvl button:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
@@ -640,6 +641,40 @@ a.pill{text-decoration:none;color:var(--ink)}
 .lh button:active{opacity:.6}
 /* mashq paytida «tortib yangilash» tasodifan sessiyani o'chirib yubormasin */
 body.quizmode{overscroll-behavior-y:none}
+/* ===== Noldan boshlash: qo'llanmalar ===== */
+a.nwb{text-decoration:none}
+.gl-list{list-style:none;margin:16px 0 0;padding:4px}
+.gn{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.gn.d{background:var(--ok-bg);color:var(--ok)}.gn svg{width:16px;height:16px}
+.gsteps{list-style:none;margin:16px 0 0;padding:6px 16px}
+.gsteps li{display:flex;gap:12px;align-items:flex-start;padding:12px 0}.gsteps li+li{border-top:1px solid var(--line)}
+.gsteps .tx b{display:block;font-size:16px}.gsteps .tx span{display:block;color:var(--muted);font-size:14px;line-height:1.45;margin-top:2px}
+.gtip{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:16px;padding:12px 14px;margin:14px 0 16px;font-size:14px;line-height:1.5}
+.gtip svg{flex:none;width:20px;height:20px;color:var(--accent-text);margin-top:1px}.gtip p{margin:0}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.ggrid.num{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.gt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:68px;padding:8px 4px;border:0;border-radius:16px;background:var(--surface-2);color:var(--ink);font:inherit;cursor:pointer;transition:transform .15s cubic-bezier(.16,1,.3,1),background-color .15s}
+.gt b{font:700 24px/1.1 var(--font-display)}.gt span{font-size:12px;color:var(--muted);text-align:center;line-height:1.2}
+.gt.v{background:var(--marker-soft)}.gt.v b{color:var(--accent-text)}
+.gt:active{transform:scale(.94)}
+.gt.hit,.gchip.hit,.grow2.hit{animation:g-hit .5s cubic-bezier(.16,1,.3,1)}
+@keyframes g-hit{0%{box-shadow:0 0 0 0 var(--marker-soft)}40%{box-shadow:0 0 0 6px var(--marker-soft)}100%{box-shadow:0 0 0 0 transparent}}
+.gnote{margin:12px 2px 0;font-size:13px;color:var(--muted)}
+.gsnd b{display:block;font-size:17px}.gsnd p{margin:4px 0 12px;color:var(--muted);font-size:14px;line-height:1.5}
+.gex{display:flex;flex-wrap:wrap;gap:8px}
+.gchip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border:0;border-radius:999px;background:var(--surface-2);color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s cubic-bezier(.16,1,.3,1)}
+.gchip svg{width:18px;height:18px;color:var(--accent-text)}.gchip:active{transform:scale(.95)}
+.grow2 .tx b{display:block;font-size:16px}.grow2 .gp{display:block;font-size:13px;color:var(--pron);font-weight:500}
+.grow2 .tx span{display:block;font-size:14px;color:var(--muted)}.grow2 .gx{margin-top:4px;color:var(--ink);font-size:13px}
+.gv{flex:none;color:var(--accent-text)}.gv svg{width:20px;height:20px}
+.gq .opt{background:var(--surface-2)}.gq .opts.g4{grid-template-columns:1fr 1fr}.gq .opts.g4 .opt{text-align:center;font-size:20px;font-weight:700}
+.gqi{margin:0 0 14px;color:var(--muted);font-size:15px}
+.gqh{display:flex;justify-content:space-between;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.gqw{font:600 22px/1.3 var(--font-display);margin:10px 0 0;text-wrap:balance}
+.gplay{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:88px;margin-top:10px;border:0;border-radius:20px;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-weight:600;cursor:pointer}
+.gplay svg{width:28px;height:28px}
+.gqr{margin:0 0 14px;font-size:16px}.gqr b{font-size:22px;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
 /* ===== sahifa sarlavhasi (markaziy) ===== */
 .nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:60px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50%) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
 .nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
@@ -1525,6 +1560,7 @@ function fixState(o) {
   s.mis = {}; Object.entries(obj(o.mis)).forEach(([k, v]) => { if (day(v)) s.mis[k] = v; });
   s.hook = {}; Object.entries(obj(o.hook)).forEach(([k, v]) => { if (typeof v === "string" && v.trim()) s.hook[k] = v; });
   s.story = obj(o.story);
+  s.guide = {}; Object.entries(obj(o.guide)).forEach(([k, v]) => { if (day(v)) s.guide[k] = v; });
   s.my = arr(o.my).filter(m => m && typeof m.w === "string" && m.w.trim() && typeof m.u === "string").map(m => Object.assign({}, m, { id: typeof m.id === "string" && m.id ? m.id : "my|" + m.w.trim().toLowerCase() }));
   const st = obj(o.streak); s.streak = { last: day(st.last) ? st.last : "", n: Math.round(num(st.n)) };
   s.rest = arr(o.rest).filter(day);
@@ -1719,6 +1755,7 @@ function merge(a, b) {
   out.course = Math.max(a.course || 0, b.course || 0);
   out.rest = [...new Set((a.rest || []).concat(b.rest || []))].sort().slice(-40);
   out.story = Object.assign({}, a.story || {}, b.story || {});
+  out.guide = Object.assign({}, a.guide || {}, b.guide || {});
   out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
   out.level = b.level || a.level || "";
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
@@ -1912,7 +1949,7 @@ function render() {
   curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
@@ -1958,13 +1995,14 @@ window.addEventListener("resize", () => { TABGEO = null; moveLens(lastTab, true)
 /* ---------- UNITLAR: kitobdagi nomlar va progress ---------- */
 /* Navigate (Oxford) darajalari. Hozircha faqat Beginner kontenti bor; qolganlari uchun kitob sahifalari yuborilganda qo'shiladi */
 const LEVELS = [
+  { id: "zero", t: "Noldan boshlash", cefr: "Pre-A1 · alifbo, tovushlar, sonlar, birinchi gaplar", zero: true },
   { id: "beginner", t: "Beginner", cefr: "A1", ready: true },
   { id: "elementary", t: "Elementary", cefr: "A2" },
   { id: "pre", t: "Pre-intermediate", cefr: "B1" },
   { id: "inter", t: "Intermediate", cefr: "B1+" },
   { id: "upper", t: "Upper-intermediate", cefr: "B2" },
   { id: "adv", t: "Advanced", cefr: "C1" }];
-const curLevel = () => LEVELS.find(l => l.id === S.level) || LEVELS[0];
+const curLevel = () => LEVELS.find(l => l.id === S.level) || LEVELS.find(l => l.id === "beginner");
 const UNIT_INFO = [null,
   ["First meetings", "Tanishuv"], ["Questions", "Savollar"], ["People and possessions", "Odamlar va narsalar"],
   ["My life", "Mening hayotim"], ["Style and design", "Uslub va dizayn"], ["Places and facilities", "Joylar va qulayliklar"],
@@ -2130,14 +2168,15 @@ route(/^$/, () => {
     <span class="streak" title="Ketma-ket kunlar">${ICON.flame}${streak ? `<b>${streak}</b> kun ketma-ket` : "Seriyani boshlang"}</span>
   </div>
   <div class="stack">
-    ${msCard(mast)}${lostCard()}${lvReady && !askUnit ? classCard(cu) : ""}
-    ${!lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
+    ${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
+    ${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
       ${levelPicker()}
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
@@ -2151,6 +2190,7 @@ route(/^$/, () => {
   bindLevelPicker(); bindHomeCards(); bindClass(cu);
   const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
+  const tb = $("#tobeg"); if (tb) tb.onclick = () => { S.level = "beginner"; save(); render(); };
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });
@@ -2284,7 +2324,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
 /* daraja tanlash (Bugun kartasida va #kurs sahifasida) */
 function levelPicker() {
   const cur = curLevel();
-  return `<p class="pick-l" id="lvl">Daraja · Navigate</p><div class="lvl" role="radiogroup" aria-labelledby="lvl">${LEVELS.map(l => `<button role="radio" aria-checked="${l === cur}" class="${l === cur ? "on" : ""}" data-l="${l.id}"><b>${l.t}</b><span>${l.cefr}${l.ready ? "" : " · tez orada"}</span></button>`).join("")}</div>`;
+  return `<p class="pick-l" id="lvl">Daraja · Navigate</p><div class="lvl" role="radiogroup" aria-labelledby="lvl">${LEVELS.map(l => `<button role="radio" aria-checked="${l === cur}" class="${l === cur ? "on" : ""}${l.zero ? " wide" : ""}" data-l="${l.id}"><b>${l.t}</b><span>${l.cefr}${l.ready || l.zero ? "" : " · tez orada"}</span></button>`).join("")}</div>`;
 }
 function bindLevelPicker() {
   app.querySelectorAll(".lvl button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); render(); });
@@ -2306,6 +2346,7 @@ route(/^kurs$/, () => {
   <section class="sec"><div class="card">${levelPicker()}</div></section>
   <section class="sec"><div class="sec-h"><h2>Kursda qaysi unitdasiz?</h2></div>
   ${lv.ready ? `<div class="card"><div class="ugrid" style="margin:0">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}" class="${S.course === i + 1 ? "guess" : ""}"${S.course === i + 1 ? ' aria-current="true"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div></div>`
+    : lv.zero ? `<div class="card"><p class="lv-empty" style="margin:0 0 14px">Bu darajada unit yo'q: avval ${GUIDES.length} ta qisqa qo'llanma — alifbo, tovushlar, sonlar va darsdagi gaplar. Tugagach, Beginner (A1) ga o'tasiz.</p><a class="btn" href="#asos">Qo'llanmalarni ochish</a></div>`
     : `<div class="card"><p class="lv-empty" style="margin:0">${lv.t} uchun unitlar hali qo'shilmagan. Kitob oxiridagi so'zlar ro'yxati sahifalarini Claude'ga yuboring — shu yerga qo'shiladi.</p></div>`}</section>`;
   bindLevelPicker();
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); go(""); });
@@ -2414,6 +2455,7 @@ route(/^yakun$/, () => {
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}<p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
+  <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar · ${GUIDES.length} ta qo'llanma</span></span><i>${GUIDES.length - guidesLeft()}/${GUIDES.length} ›</i></a>
   <div class="qa" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.length} ta qolip</span></a>
     <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.length} ta gap</span></a>
@@ -2422,6 +2464,194 @@ route(/^unitlar$/, () => {
   <div class="units">${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="unit" href="#unit-${n}"><div class="urow ${n === cu.n ? "cur" : ""}"><span class="num">${n}</span><span class="tx"><b>${esc(info[0])}</b><span>${esc(info[1])}${n === cu.n ? " · hozir shu yerdasiz" : ""}</span></span><span class="pct">${st.pct}%</span></div><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div></a>`; }).join("")}</div>
 `;
 });
+
+/* ---------- NOLDAN BOSHLASH: yangi o'rganuvchi uchun qo'llanmalar (kursdan oldin yoki u bilan birga) ---------- */
+const GUIDES = [
+  { id: "yol", t: "Qanday o'rganamiz", s: "Yo'l xaritasi va 1-hafta rejasi", min: 2, kind: "plan",
+    intro: "Ingliz tilini noldan boshlashda eng muhimi — har kuni oz-ozdan. Bu ilova Navigate Beginner kitobi va darslaringiz bilan birga ishlaydi: kitobdagi so'zlar, qoliplar va gaplar shu yerda takrorlanadi.",
+    steps: [
+      ["Avval asoslar", "1-haftada shu qo'llanmalarni kuniga bittadan o'ting: alifbo, tovushlar, salomlashish, sonlar."],
+      ["Har kuni 10–15 daqiqa", "«Bugun» sahifasidagi darsni oxirigacha qiling. Takrorlanadigan so'zlar o'z vaqtida o'zi chiqadi."],
+      ["Eshiting va ovoz chiqarib ayting", "Har so'zni tinglang, keyin o'zingiz ayting. «Ayting» mashqida telefon tekshiradi."],
+      ["Xato — normal", "Xatolar «Xatolarim»ga tushadi va qayta so'raladi. To'g'ri javob bersangiz, ro'yxatdan o'chadi."],
+      ["O'z hayotingizga bog'lang", "Qiyin so'zga eslatgich yozing: ishingiz, uyingiz, oilangiz bilan bog'lang."],
+      ["Dars kunlari", "Darsdan oldin 5 ta gap mashqi, kechqurun darsda o'tilgan unitni belgilang."],
+      ["Haftada bir zaxira", "Natijalar telefonda saqlanadi. Sozlamalardan zaxira faylini Telegram'ga yuboring."]],
+    week: [["1-kun", "alifbo"], ["2-kun", "tovush"], ["3-kun", "salom"], ["4-kun", "son"], ["5-kun", "dars"], ["6-kun", "savol"], ["7-kun", "vaqt"]] },
+  { id: "alifbo", t: "Alifbo", s: "26 ta harf va ularning nomi", min: 4, kind: "grid", quiz: "listen",
+    intro: "Ingliz alifbosida 26 ta harf bor. Harfning nomi va so'zdagi tovushi har xil bo'lishi mumkin: A harfi «ey» deb ataladi, lekin cat so'zida boshqacha o'qiladi. Harfni bosing — nomini eshitasiz.",
+    tip: "Ismingizni harflab aytishni mashq qiling: A-L-I — «ey, el, ay». Darsda «How do you spell it?» — «Qanday yoziladi?» deb so'rashadi.",
+    items: [["A", "ey", 1], ["B", "bii"], ["C", "sii"], ["D", "dii"], ["E", "ii", 1], ["F", "ef"], ["G", "jii"], ["H", "eych"], ["I", "ay", 1], ["J", "jey"], ["K", "key"], ["L", "el"], ["M", "em"], ["N", "en"], ["O", "ou", 1], ["P", "pii"], ["Q", "kyuu"], ["R", "aa"], ["S", "es"], ["T", "tii"], ["U", "yuu", 1], ["V", "vii"], ["W", "DA-bl yuu"], ["X", "eks"], ["Y", "uay"], ["Z", "zed"]],
+    note: "Rangli harflar — unlilar: A, E, I, O, U." },
+  { id: "tovush", t: "Tovushlar", s: "O'zbek tilida yo'q yoki boshqacha tovushlar", min: 5, kind: "sounds", quiz: "listen",
+    intro: "Ko'p tovushlar o'zbekcha bilan bir xil. Quyidagilar esa boshqacha — ularni og'iz holati bilan o'rganing. Misol so'zni bosing va takrorlang.",
+    items: [
+      ["th — jarangsiz", "Til uchini tishlar orasiga qo'yib, havoni puflang. «s» ham, «t» ham emas.", ["think", "three", "thank you"]],
+      ["th — jarangli", "Xuddi shunday, lekin ovoz bilan — «z»ga yaqin. «d» emas.", ["this", "that", "mother"]],
+      ["w", "Lablarni dumaloqlab qisqa «u» qiling va keyingi unliga o'ting. Tish labga tegmaydi.", ["what", "water", "where"]],
+      ["v", "Yuqori tishlar pastki labga tegadi — o'zbekcha «v» kabi.", ["very", "seven", "five"]],
+      ["r", "Til tanglayga tegmaydi va titramaydi. So'z oxirida (car, teacher) Britaniyada deyarli aytilmaydi.", ["red", "sorry", "car"]],
+      ["a — cat", "Og'izni keng ochib, «a» va «e» orasidagi tovush.", ["cat", "bag", "family"]],
+      ["Qisqa i va cho'ziq ii", "Uzunligi ma'noni o'zgartiradi: ship — kema, sheep — qo'y.", ["ship", "sheep", "sit", "seat"]],
+      ["ng", "Burundan chiqadigan bitta tovush; oxiridagi «g» alohida aytilmaydi.", ["sing", "morning", "evening"]],
+      ["Jim harflar", "Ba'zi harflar yoziladi, lekin aytilmaydi: k, w, t, h.", ["know", "write", "listen", "hour"]],
+      ["Oxiridagi e", "So'z oxiridagi e aytilmaydi, lekin oldingi unlini harf nomi bilan o'qitadi: name — «neym».", ["name", "like", "home"]]] },
+  { id: "salom", t: "Salomlashish va tanishuv", s: "Birinchi darsdagi gaplar", min: 4, kind: "rows", quiz: "meaning",
+    intro: "Bu gaplar har kuni kerak bo'ladi. Avval tinglang, keyin ovoz chiqarib takrorlang. Katta harf bilan yozilgan bo'g'in — urg'u.",
+    sections: [["Salomlashish", [
+      ["Hello.", "he-LOU", "Salom."], ["Hi.", "HAY", "Salom (do'stona)."], ["Good morning.", "gud MOO-ning", "Xayrli tong."],
+      ["Good afternoon.", "gud aaf-ta-NUUN", "Xayrli kun."], ["Good evening.", "gud IIV-ning", "Xayrli kech."],
+      ["How are you?", "hau AA yu", "Qalaysiz?"], ["I'm fine, thanks. And you?", "aym FAYN, thenks. end YU", "Yaxshi, rahmat. O'zingiz-chi?"]]],
+    ["Tanishuv", [
+      ["What's your name?", "uots yo NEYM", "Ismingiz nima?"], ["My name's Ali.", "may neymz A-li", "Mening ismim Ali."],
+      ["Nice to meet you.", "nays tu MIIT yu", "Tanishganimdan xursandman."], ["Where are you from?", "uea a yu FROM", "Qayerdansiz?"],
+      ["I'm from Uzbekistan.", "aym from uz-be-ki-STAAN", "Men O'zbekistondanman."]]],
+    ["Odob va xayrlashuv", [
+      ["Thank you.", "THENK yu", "Rahmat."], ["You're welcome.", "yo UEL-kam", "Arzimaydi."], ["Excuse me.", "iks-KYUUZ mi", "Kechirasiz (e'tibor so'rash)."],
+      ["Sorry.", "SO-ri", "Kechirasiz (uzr)."], ["Goodbye.", "gud-BAY", "Xayr."], ["See you tomorrow.", "SII yu ta-MO-rou", "Ertaga ko'rishamiz."]]]] },
+  { id: "son", t: "Sonlar", s: "0 dan 1000 gacha", min: 5, kind: "grid", quiz: "listen",
+    intro: "Sonlar narx, telefon, vaqt va yoshda kerak. Sonni bosing — eshitasiz.",
+    tip: "13–19 da urg'u oxirida: thir-TEEN. 30–90 da boshida: THIR-ty. Shu farq bilan 13 va 30 ni ajratasiz. 21 — twenty-one (chiziqcha bilan). Telefon raqamida 0 «oh» deyiladi: 90 123 — nine oh, one two three.",
+    items: [["0", "zero"], ["1", "one"], ["2", "two"], ["3", "three"], ["4", "four"], ["5", "five"], ["6", "six"], ["7", "seven"], ["8", "eight"], ["9", "nine"], ["10", "ten"],
+      ["11", "eleven"], ["12", "twelve"], ["13", "thirteen"], ["14", "fourteen"], ["15", "fifteen"], ["16", "sixteen"], ["17", "seventeen"], ["18", "eighteen"], ["19", "nineteen"], ["20", "twenty"],
+      ["30", "thirty"], ["40", "forty"], ["50", "fifty"], ["60", "sixty"], ["70", "seventy"], ["80", "eighty"], ["90", "ninety"], ["100", "a hundred"], ["1000", "a thousand"]] },
+  { id: "dars", t: "Darsda kerakli gaplar", s: "So'rash, tushunmaslik, o'qituvchi buyruqlari", min: 4, kind: "rows", quiz: "meaning",
+    intro: "Darsda tushunmasangiz yoki so'z bilmasangiz — shu gaplar yordam beradi. O'qituvchining buyruqlarini ham taniysiz.",
+    sections: [["Siz so'raysiz", [
+      ["Can you repeat that, please?", "ken yu ri-PIIT dhet, pliiz", "Qaytarib bera olasizmi?"],
+      ["Can you speak more slowly, please?", "ken yu spiik moo SLOU-li, pliiz", "Sekinroq gapira olasizmi?"],
+      ["How do you say \"kitob\" in English?", "hau du yu SEY ... in ING-glish", "«Kitob» inglizcha qanday bo'ladi?"],
+      ["What does \"busy\" mean?", "uot daz BI-zi MIIN", "«Busy» nima degani?"],
+      ["How do you spell it?", "hau du yu SPEL it", "Qanday yoziladi?"],
+      ["I don't understand.", "ay dount an-da-STEND", "Tushunmadim."], ["I don't know.", "ay dount NOU", "Bilmayman."],
+      ["Which page?", "uich PEYJ", "Qaysi bet?"], ["I have a question.", "ay hev a KUES-chan", "Savolim bor."],
+      ["Is this correct?", "iz dhis ka-REKT", "Bu to'g'rimi?"], ["Sorry, I'm late.", "SO-ri, aym LEYT", "Kechirasiz, kechikdim."],
+      ["I've finished.", "ayv FI-nisht", "Tugatdim."]]],
+    ["O'qituvchi aytadi", [
+      ["Open your books, please.", "OU-pan yo BUKS, pliiz", "Kitoblaringizni oching."], ["Listen and repeat.", "LI-san end ri-PIIT", "Tinglang va takrorlang."],
+      ["Work in pairs.", "uyok in PEAZ", "Juftlikda ishlang."], ["Look at the board.", "luk et dha BOOD", "Doskaga qarang."]]]] },
+  { id: "savol", t: "Savol so'zlari", s: "What, Where, Who, When…", min: 3, kind: "rows", quiz: "meaning",
+    intro: "Savol so'zi gap boshida turadi. Har birini misol gap bilan eslab qoling — qatorni bossangiz, misolni eshitasiz.",
+    sections: [["", [
+      ["What?", "uot", "Nima?", "What's this? — Bu nima?"], ["Where?", "uea", "Qayerda? Qayerga?", "Where's the bank? — Bank qayerda?"],
+      ["Who?", "huu", "Kim?", "Who's that? — U kim?"], ["When?", "uen", "Qachon?", "When's the class? — Dars qachon?"],
+      ["Why?", "uay", "Nega?", "Why are you late? — Nega kechikdingiz?"], ["How?", "hau", "Qanday?", "How are you? — Qalaysiz?"],
+      ["How much?", "hau MACH", "Qancha? (narx)", "How much is it? — Bu qancha turadi?"], ["How many?", "hau ME-ni", "Nechta?", "How many students? — Nechta talaba?"],
+      ["How old?", "hau OULD", "Necha yosh?", "How old are you? — Necha yoshdasiz?"], ["Which?", "uich", "Qaysi?", "Which bus? — Qaysi avtobus?"]]]] },
+  { id: "vaqt", t: "Kunlar, oylar, vaqt", s: "Hafta kunlari, oylar, soat", min: 5, kind: "rows", quiz: "meaning",
+    intro: "Kun va oy nomlari doim katta harf bilan yoziladi: Monday, May. Bosing — eshitasiz.",
+    tip: "on Monday — dushanba kuni · in May — mayda · at 7 o'clock — soat 7 da.",
+    sections: [["Hafta kunlari", [
+      ["Monday", "MAN-dey", "Dushanba"], ["Tuesday", "TYUUZ-dey", "Seshanba"], ["Wednesday", "UENZ-dey", "Chorshanba"], ["Thursday", "THYOOZ-dey", "Payshanba"],
+      ["Friday", "FRAY-dey", "Juma"], ["Saturday", "SE-ta-dey", "Shanba"], ["Sunday", "SAN-dey", "Yakshanba"]]],
+    ["Oylar", [
+      ["January", "JE-nyu-a-ri", "Yanvar"], ["February", "FEB-ru-a-ri", "Fevral"], ["March", "MAACH", "Mart"], ["April", "EY-pril", "Aprel"],
+      ["May", "MEY", "May"], ["June", "JUUN", "Iyun"], ["July", "ju-LAY", "Iyul"], ["August", "OO-gast", "Avgust"],
+      ["September", "sep-TEM-ba", "Sentyabr"], ["October", "ok-TOU-ba", "Oktyabr"], ["November", "nou-VEM-ba", "Noyabr"], ["December", "di-SEM-ba", "Dekabr"]]],
+    ["Soat", [
+      ["What time is it?", "uot TAYM iz it", "Soat necha?"], ["It's seven o'clock.", "its SE-van a-KLOK", "Soat yetti."],
+      ["It's half past seven.", "its HAAF paast SE-van", "Yetti yarim."], ["It's quarter past seven.", "its KUOO-ta paast SE-van", "Yettidan o'n besh daqiqa o'tdi."],
+      ["It's quarter to eight.", "its KUOO-ta tu EYT", "Sakkizga o'n besh daqiqa qoldi."], ["today", "ta-DEY", "bugun"], ["tomorrow", "ta-MO-rou", "ertaga"], ["yesterday", "YES-ta-dey", "kecha"]]]] }
+];
+const guideById = id => GUIDES.find(g => g.id === id);
+const guideDone = g => !!(S.guide && S.guide[g.id]);
+const guidesLeft = () => GUIDES.filter(g => !guideDone(g)).length;
+function markGuide(g) { S.guide = S.guide || {}; if (!S.guide[g.id]) { S.guide[g.id] = today(); save(); } }
+// mashq uchun savollar: tinglab tanlash (harf, son, tovush) yoki o'zbekchasidan inglizchasini tanlash
+function guidePool(g) {
+  if (g.kind === "grid") return g.items.map(x => ({ say: g.id === "son" ? x[1] : x[0], label: x[0], uz: g.id === "son" ? x[1] : x[1] }));
+  if (g.kind === "sounds") return [...new Set(g.items.flatMap(x => x[2]))].map(w => ({ say: w, label: w, uz: w }));
+  return g.sections.flatMap(s => s[1]).map(r => ({ say: r[0], label: r[0], uz: r[2] }));
+}
+/* Bugun sahifasidagi taklif: hali ko'p so'z o'rganilmagan va qo'llanmalar tugamagan bo'lsa */
+function guideCard(seen) {
+  const left = guidesLeft(); if (!left || seen > 60) return "";
+  const next = GUIDES.find(g => !guideDone(g));
+  return `<a class="nwb" href="#asos-${next.id}"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Keyingisi: ${esc(next.t)} · ${next.min} daq</span></span><i>${GUIDES.length - left}/${GUIDES.length} ›</i></a>`;
+}
+/* «Noldan boshlash» darajasi tanlanganda Bugun sahifasidagi asosiy karta: keyingi qo'llanma va umumiy holat */
+function zeroCard() {
+  const left = guidesLeft(), done = GUIDES.length - left, next = GUIDES.find(g => !guideDone(g)), due = dueWords().length;
+  return `<section class="lesson dars">
+    <div class="dh"><div><h2>Noldan boshlash</h2><p>Pre-A1 · ${done} / ${GUIDES.length} qo'llanma</p></div></div>
+    <div class="pbar" style="margin:12px 0 16px" role="img" aria-label="${done} / ${GUIDES.length} qo'llanma o'rganildi"><i class="m" style="width:${done / GUIDES.length * 100}%"></i></div>
+    ${next ? `<p class="lv-empty" style="margin:0 0 14px">Bugun: <b>${esc(next.t)}</b> — ${esc(next.s)}, ${next.min} daqiqa. Oxirida qisqa mashq bor.</p>
+    <a class="btn" href="#asos-${next.id}">${done ? "Davom etish" : "Boshlash"} · ${esc(next.t)} ${ICON.arrow}</a>`
+    : `<p class="lv-empty" style="margin:0 0 14px">Asoslar tayyor! Endi kitob bo'yicha Beginner (A1) darajasiga o'ting — so'zlar, grammatika va gaplar unitlar bo'yicha.</p>
+    <button class="btn" id="tobeg">Beginner (A1) ga o'tish ${ICON.arrow}</button>`}
+    <div style="height:10px"></div>
+    ${due ? `<button class="btn ghost" id="erev">Takrorlash · ${due} ta so'z</button><div style="height:10px"></div>` : ""}
+    <a class="btn ghost" href="#asos">Hamma qo'llanmalar</a>
+  </section>`;
+}
+route(/^asos$/, () => {
+  const done = GUIDES.length - guidesLeft();
+  app.innerHTML = `${nav("#unitlar", "Unitlar", "Noldan boshlash")}<h2 class="pg-h">Noldan boshlash</h2>
+  <p class="sub">Kitobdan oldin yoki u bilan birga kerak bo'ladigan asoslar: harflar, tovushlar, sonlar va darsdagi gaplar. Har biri 2–5 daqiqa, oxirida qisqa mashq.</p>
+  <div class="uprog" style="margin-top:4px"><div class="r"><b>${done} / ${GUIDES.length} o'rganildi</b><span>tavsiya etilgan tartibda</span></div><div class="pbar"><i class="m" style="width:${done / GUIDES.length * 100}%"></i></div></div>
+  <ol class="list gl-list">${GUIDES.map((g, i) => { const d = guideDone(g); return `<li><a class="li" href="#asos-${g.id}"><span class="gn${d ? " d" : ""}" aria-hidden="true">${d ? ICON.check : i + 1}</span><span class="tx"><b>${esc(g.t)}</b><span>${esc(g.s)} · ${g.min} daq</span></span>${d ? `<span class="st full">o'rganildi</span>` : ""}<span class="go">${ICON.chev}</span></a></li>`; }).join("")}</ol>
+  <p class="foot">Keyin: <a href="#unit-1">Unit 1</a> · <a href="#qolip">Grammatika qoliplari</a> · <a href="#gap">Tayyor gaplar</a></p>`;
+});
+route(/^asos-(\w+)$/, id => {
+  const g = guideById(id); if (!g) return go("asos");
+  const i = GUIDES.indexOf(g), nx = GUIDES[i + 1], d = guideDone(g);
+  const vol = `<span class="gv" aria-hidden="true">${ICON.vol}</span>`;
+  let body = "";
+  if (g.kind === "plan") {
+    body = `<ol class="card gsteps">${g.steps.map((s, k) => `<li><span class="gn" aria-hidden="true">${k + 1}</span><span class="tx"><b>${esc(s[0])}</b><span>${esc(s[1])}</span></span></li>`).join("")}</ol>
+    <section class="sec"><div class="sec-h"><h2>1-hafta rejasi</h2><span class="n">kuniga bittadan</span></div>
+    <div class="list">${g.week.map(([k, gid]) => { const x = guideById(gid); return `<a class="li" href="#asos-${gid}"><span class="tx"><b>${esc(x.t)}</b><span>${k} · ${x.min} daq</span></span>${guideDone(x) ? `<span class="st full">${ICON.check}</span>` : ""}<span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section>`;
+  } else if (g.kind === "grid") {
+    body = `<div class="card"><div class="ggrid${g.id === "son" ? " num" : ""}">${g.items.map(x => `<button class="gt${x[2] ? " v" : ""}" data-say="${esc(g.id === "son" ? x[1] : x[0])}" aria-label="${esc(x[0])} — ${esc(x[1])}, eshitish"><b>${esc(x[0])}</b><span>${esc(x[1])}</span></button>`).join("")}</div>${g.note ? `<p class="gnote">${esc(g.note)}</p>` : ""}</div>`;
+  } else if (g.kind === "sounds") {
+    body = `<div class="stack">${g.items.map(x => `<div class="card gsnd"><b>${esc(x[0])}</b><p>${esc(x[1])}</p><div class="gex">${x[2].map(w => `<button class="gchip" data-say="${esc(w)}">${ICON.vol}${esc(w)}</button>`).join("")}</div></div>`).join("")}</div>`;
+  } else {
+    body = g.sections.map(([h, rows]) => `${h ? `<section class="sec"><div class="sec-h"><h2>${esc(h)}</h2><span class="n">${rows.length} ta</span></div>` : `<section class="sec">`}
+      <div class="list">${rows.map(r => `<button class="li grow2" data-say="${esc(r[3] ? r[0] + " " + r[3].split(" — ")[0] : r[0])}"><span class="tx"><b>${esc(r[0])}</b><span class="gp">${esc(r[1])}</span><span>${esc(r[2])}</span>${r[3] ? `<span class="gx">${esc(r[3])}</span>` : ""}</span>${vol}</button>`).join("")}</div></section>`).join("");
+  }
+  app.innerHTML = `${nav("#asos", "Noldan boshlash", esc(g.t))}<h2 class="pg-h">${esc(g.t)}</h2><p class="sub">${esc(g.intro)}</p>
+  ${g.tip ? `<div class="gtip">${ICON.bulb}<p>${esc(g.tip)}</p></div>` : ""}
+  ${body}
+  ${g.quiz ? `<section class="sec"><div class="sec-h"><h2>Mashq</h2><span class="n">8 ta savol</span></div><div class="card gq" id="gq"></div></section>` : ""}
+  <div class="stack" style="margin-top:20px">${g.quiz ? "" : `<button class="btn${d ? " ghost" : ""}" id="gdone">${d ? "O'rganildi ✓" : "Tushundim " + ICON.check}</button>`}
+  ${nx ? `<a class="nwb" href="#asos-${nx.id}"><span class="tx"><b>Keyingisi: ${esc(nx.t)}</b><span>${esc(nx.s)} · ${nx.min} daq</span></span><i>${ICON.chev}</i></a>` : `<a class="nwb" href="#unit-1"><span class="tx"><b>Asoslar tayyor — Unit 1</b><span>Kitob bo'yicha so'zlar va gaplar</span></span><i>${ICON.chev}</i></a>`}</div>`;
+  app.querySelectorAll("[data-say]").forEach(b => b.onclick = () => { say(b.dataset.say); b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit"); });
+  const gd = $("#gdone"); if (gd) gd.onclick = () => { markGuide(g); toast("«" + g.t + "» o'rganildi"); render(); };
+  if (g.quiz) guideQuiz(g);
+});
+/* qo'llanma oxiridagi mashq: 8 savol, 4 variant; 6 va undan ko'p to'g'ri — o'rganildi */
+function guideQuiz(g) {
+  const box = $("#gq"), pool = guidePool(g), canHear = "speechSynthesis" in window, listen = g.quiz === "listen" && canHear;
+  if (!canHear && g.kind === "sounds") { box.innerHTML = `<p class="gqi">Bu mashq uchun telefonda ovoz (matnni o'qish) kerak.</p>`; return; }
+  const intro = () => {
+    box.innerHTML = `<p class="gqi">${listen ? "Eshiting va to'g'ri javobni tanlang." : g.quiz === "listen" ? "O'qilishiga qarab to'g'ri javobni tanlang." : "O'zbekchasiga qarab inglizchasini tanlang."}</p><button class="btn" id="gqs">${guideDone(g) ? "Yana mashq qilish" : "Mashqni boshlash"}</button>`;
+    $("#gqs").onclick = start;
+  };
+  let q = [], k = 0, right = 0;
+  const start = () => { q = shuffle(pool.slice()).slice(0, Math.min(8, pool.length)); k = 0; right = 0; ask(); };
+  const ask = () => {
+    if (k >= q.length) return end();
+    const it = q[k], opts = shuffle([it].concat(shuffle(pool.filter(x => x.label !== it.label)).slice(0, 3)));
+    box.innerHTML = `<div class="gqh"><span>${k + 1} / ${q.length}</span><span>✓ ${right}</span></div>
+      ${listen ? `<button class="gplay" id="gqp" aria-label="Qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>` : `<p class="gqw">${esc(g.quiz === "listen" ? it.uz : it.uz)}</p>`}
+      <div class="opts${g.kind === "grid" ? " g4" : ""}">${opts.map(o => `<button class="opt" data-l="${esc(o.label)}">${esc(o.label)}</button>`).join("")}</div>`;
+    if (listen) { say(it.say); $("#gqp").onclick = () => say(it.say); }
+    box.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      if (box.dataset.lock) return; box.dataset.lock = "1";
+      const ok = b.dataset.l === it.label; if (ok) right++;
+      b.classList.add(ok ? "ok" : "bad");
+      if (!ok) box.querySelectorAll(".opt").forEach(x => { if (x.dataset.l === it.label) x.classList.add("ok"); });
+      if (!listen) say(it.say);
+      setTimeout(() => { delete box.dataset.lock; if (box.isConnected) { k++; ask(); } }, ok ? 650 : 1300);
+    });
+  };
+  const end = () => {
+    const pass = right >= Math.ceil(q.length * .75); if (pass) markGuide(g);
+    box.innerHTML = `<p class="gqr"><b>${right} / ${q.length}</b>${pass ? " — zo'r, o'rganildi ✓" : " — yana bir marta urinib ko'ring"}</p><button class="btn${pass ? " ghost" : ""}" id="gqs">Qayta mashq</button>`;
+    $("#gqs").onclick = start;
+  };
+  intro();
+}
 
 /* ---------- UNIT sahifasi: hammasi bir joyda ---------- */
 route(/^unit-(\d+)$/, n => {

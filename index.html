@@ -165,6 +165,14 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 var(--hl)}50%{box-shadow:0 0 0 16px var(--hl)}}
 @media (prefers-reduced-motion:reduce){.micbtn.on{animation:none;outline:4px solid var(--hl)}}
 .micst{margin:0;text-align:center;font-size:15px;color:var(--muted);min-height:22px}
+.mstage{position:relative;width:200px;height:200px;margin:-40px 0 -44px;display:grid;place-items:center}
+.mstage .micbtn{position:relative;z-index:1}
+.mblob{position:absolute;inset:0;width:100%;height:100%;overflow:visible;opacity:0;transition:opacity .3s}
+.mblob path{fill:var(--marker)}.mblob .b1{opacity:.16}.mblob .b2{opacity:.26}
+.mstage.live .mblob{opacity:1}
+.mstage .micbtn.on{animation:none;outline:0}
+.micq{display:block;width:120px;height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:-4px}.micq i{display:block;height:100%;width:0;background:var(--muted)}
+@media (prefers-reduced-motion:reduce){.mstage.live .micbtn{outline:4px solid var(--hl)}}
 .hl2{background:none;border:0;color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer;min-height:44px;padding:8px 6px;text-decoration:underline;text-underline-offset:3px}
 .wl li .del{margin-top:2px;color:var(--bad)}
 /* mening so'zlarim */
@@ -676,6 +684,15 @@ a.nwb{text-decoration:none}
 .gplay svg{width:28px;height:28px}
 .gqr{margin:0 0 14px;font-size:16px}.gqr b{font-size:22px;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
+/* chiqishni tasdiqlash oynasi */
+.qsheet{position:fixed;inset:0;z-index:60}
+.qs-bd{position:absolute;inset:0;background:rgba(10,10,12,.45);opacity:0;transition:opacity .22s}
+.qs{position:absolute;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));background:var(--surface);border-radius:28px 28px 0 0;box-shadow:0 -16px 40px -16px rgba(0,0,0,.45);transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1)}
+.qsheet.on .qs-bd{opacity:1}.qsheet.on .qs{transform:none}
+.qs-grab{display:block;width:40px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px}
+.qs h2{font-size:22px;margin:0 0 6px}.qs p{margin:0 0 18px;color:var(--muted);font-size:15px;line-height:1.5}.qs p b{color:var(--ink)}
+.qs .btn+.btn{margin-top:10px}
+@media (min-width:600px){.qs{bottom:auto;top:50%;border-radius:28px;transform:translateY(-40%) scale(.96);opacity:0;transition:transform .28s cubic-bezier(.16,1,.3,1),opacity .2s}.qsheet.on .qs{transform:translateY(-50%);opacity:1}.qs-grab{display:none}}
 /* ===== sahifa sarlavhasi (markaziy) ===== */
 .nb{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);align-items:center;gap:8px;min-height:60px;margin:-20px calc(50% - 50vw) 0;padding:env(safe-area-inset-top,0px) calc(50vw - 50%) 0;margin-top:calc(-20px - env(safe-area-inset-top,0px));transition:background-color .2s,box-shadow .2s}
 .nb.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
@@ -808,6 +825,19 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 .lans.ok{box-shadow:inset 0 0 0 2px var(--ok-strong)}.lans.ok button{background:var(--ok-bg);color:var(--ok)}
 .lans.bad{box-shadow:inset 0 0 0 2px var(--bad-strong)}
 @keyframes lt-in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+/* to'g'ri: harflar chapdan o'ngga yashil bo'lib sakraydi, oxirida ✓; xato: yumshoq silkinish, keyin harflar pastga tushadi */
+.lans{position:relative}
+.lans.ok button{animation:lt-hop .42s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0) * 55ms)}
+.lans.ok::after{content:"";position:absolute;right:12px;top:50%;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:var(--ok-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/16px no-repeat;animation:lt-badge .4s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--n,1) * 55ms + 120ms)}
+.lans.bad button{background:var(--bad-bg);color:var(--bad)}
+.lans.bad button.k{background:var(--key);color:var(--ink)}
+.lans.bad,.spell.bad{animation:lt-shake .42s cubic-bezier(.36,.07,.19,.97)}
+.lans.out button{animation:lt-drop .36s cubic-bezier(.55,0,1,.45) both;animation-delay:calc(var(--i,0) * 30ms)}
+@keyframes lt-hop{0%{transform:none}35%{transform:translateY(-7px) scale(1.08)}100%{transform:none}}
+@keyframes lt-badge{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes lt-shake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-6px)}40%,60%{transform:translateX(6px)}}
+@keyframes lt-drop{to{transform:translateY(18px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.lans.ok button,.lans.ok::after,.lans.bad,.spell.bad,.lans.out button{animation:none}.lans.out button{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.lans button.n{animation:none}}
 .bank .lt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 .bank.done .lt{opacity:.35}
@@ -1942,6 +1972,25 @@ const navScroll = () => {
 const navBig = () => { const n = document.querySelector(".nb"), h = document.querySelector(".nb ~ .pg-h, .nb ~ .eyb + .pg-h"); if (n && h && n.querySelector(".nb-back")) { n.classList.add("big"); n.querySelector(".nb-t").textContent = h.textContent; } };
 let navRaf = 0; addEventListener("scroll", () => { if (!navRaf) navRaf = requestAnimationFrame(() => { navRaf = 0; navScroll(); }); }, { passive: true });
 
+/* mashq o'rtasida chiqishda tasdiqlash: pastdan chiquvchi oyna. Javoblar har savolda saqlanadi — hech narsa yo'qolmaydi, buni ochiq aytamiz */
+function confirmQuit(done, total, exit) {
+  if (!done || done >= total) return exit();
+  const old = document.getElementById("qsheet"); if (old) old.remove();
+  const left = total - done, wrap = document.createElement("div");
+  wrap.id = "qsheet"; wrap.className = "qsheet";
+  wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs" role="dialog" aria-modal="true" aria-labelledby="qsh" aria-describedby="qsp">
+    <span class="qs-grab" aria-hidden="true"></span><h2 id="qsh">Mashqni tugatasizmi?</h2>
+    <p id="qsp"><b>${done}</b> ta javobingiz saqlandi. Qolgan ${left} ta savol keyingi safar so'raladi.</p>
+    <button class="btn" id="qsgo">Davom etish</button><button class="btn ghost" id="qsout">Chiqish</button></div>`;
+  document.body.appendChild(wrap); requestAnimationFrame(() => wrap.classList.add("on"));
+  const prev = document.activeElement;
+  const close = () => { wrap.classList.remove("on"); document.removeEventListener("keydown", key, true); setTimeout(() => wrap.remove(), 260); if (prev && prev.focus) prev.focus(); };
+  const key = e => { if (e.key === "Escape") { e.preventDefault(); close(); } else if (e.key !== "Tab" && e.key !== "Enter" && e.key !== " ") e.stopPropagation(); };
+  document.addEventListener("keydown", key, true);
+  wrap.querySelector("[data-x]").onclick = close; $("#qsgo").onclick = close;
+  $("#qsout").onclick = () => { wrap.remove(); document.removeEventListener("keydown", key, true); exit(); };
+  $("#qsgo").focus();
+}
 /* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
 function toast(msg, act, fn) {
   let t = document.getElementById("toast"); if (t) t.remove();
@@ -2917,38 +2966,68 @@ const spkOn = () => { try { return localStorage.getItem("ingliz-spk") !== "0"; }
 let srObj = null;
 // solishtirish: katta-kichik harf, tire, tinish belgisi va boshidagi a/an/the/to farq qilmaydi
 const normSay = s => norm(s).replace(/[-.,!?']/g, " ").replace(/^(a|an|the|to) /, "").replace(/\s+/g, " ").trim();
-function hearWord(onres, onerr) {
+function hearWord(onres, onerr, onact) {
   let got = false;
   try {
-    const r = new SR(); r.lang = "en-US"; r.interimResults = false; r.maxAlternatives = 5;
-    r.onresult = e => { got = true; onres([...e.results[0]].map(a => a.transcript)); };
+    const r = new SR(); r.lang = "en-US"; r.interimResults = true; r.maxAlternatives = 5;
+    const act = v => { if (onact) onact(v); };
+    r.onsoundstart = () => act(.5); r.onspeechstart = () => act(.8); r.onspeechend = () => act(0);
+    r.onresult = e => { const res = e.results[e.results.length - 1]; act(1); if (res.isFinal && !got) { got = true; onres([...res].map(a => a.transcript)); } };
     r.onerror = e => { got = true; onerr(e.error); };
     r.onend = () => { srObj = null; if (!got) onerr("no-speech"); };
     srObj = r; r.start();
   } catch (e) { srObj = null; onerr("start"); }
 }
+/* Telegram uslubidagi ovoz to'lqini: mikrofon atrofida ikki qatlam «suyuq» shakl; gapirganda o'sadi, jimlikda tinchlanadi */
+const blobPath = (R, amp, t, seed) => { let d = ""; for (let i = 0; i <= 64; i++) { const a = i / 64 * Math.PI * 2, r = R * (1 + amp * (Math.sin(3 * a + t * 1.3 + seed) * .5 + Math.sin(5 * a - t * 1.7 + seed * 2) * .3 + Math.sin(2 * a + t * .9) * .2)); d += (i ? "L" : "M") + (Math.cos(a) * r).toFixed(1) + " " + (Math.sin(a) * r).toFixed(1); } return d + "Z"; };
+let micAnim = null;
+function micWave(stage) {
+  const b1 = stage.querySelector(".b1"), b2 = stage.querySelector(".b2"), bar = $("#micq");
+  let lvl = 0, target = 0, t0 = performance.now(), last = t0, heardAt = 0, quiet = 0, stopped = false;
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  stage.classList.add("live");
+  const api = {
+    act(v) { target = Math.max(target, v); if (v > 0) { heardAt = performance.now(); quiet = 0; } },
+    stop() { stopped = true; stage.classList.remove("live"); if (bar) bar.style.width = "0%"; }
+  };
+  const frame = now => {
+    if (stopped || !stage.isConnected) return;
+    const dt = now - last; last = now; target *= Math.pow(.2, dt / 1000); lvl += (target - lvl) * Math.min(1, dt / 90);
+    const t = (now - t0) / 1000;
+    if (!calm) { b1.setAttribute("d", blobPath(52 + lvl * 30, .05 + lvl * .14, t, 0)); b2.setAttribute("d", blobPath(46 + lvl * 18, .04 + lvl * .1, t * 1.4, 2)); }
+    // gapirib bo'lingach 1,2 s jimlik — o'zi to'xtaydi va tekshiradi
+    if (heardAt) { quiet = now - heardAt; if (bar) bar.style.width = Math.min(100, quiet / 1200 * 100) + "%"; if (quiet > 1200 && srObj) { srObj.stop(); heardAt = 0; } }
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  return api;
+}
 function askSay(w) {
-  Z.tries = 0;
-  $("#opts").innerHTML = `<div class="mic"><button class="micbtn" id="mic" aria-label="Bosing va inglizcha ayting">${ICON.mic}</button>
-    <p class="micst" id="micst" role="status">Bosing va inglizcha ayting</p>
+  Z.tries = 0; Z.micUsed = false;
+  $("#opts").innerHTML = `<div class="mic"><div class="mstage" id="mstage"><svg class="mblob" viewBox="-110 -110 220 220" aria-hidden="true"><path class="b1"/><path class="b2"/></svg><button class="micbtn" id="mic" aria-label="Bosing va inglizcha ayting">${ICON.mic}</button></div>
+    <p class="micst" id="micst" role="status">Bosing va inglizcha ayting</p><span class="micq" aria-hidden="true"><i id="micq"></i></span>
     <button class="hl2" id="totype">Ovoz chiqarib bo'lmaydimi? Yozib javob bering</button></div>`;
   $("#totype").onclick = () => { if (srObj) srObj.abort(); Z.force = "spell"; ask(); };
   $("#mic").onclick = () => {
     if (Z.state !== "ask") return;
     if (srObj) { srObj.stop(); return; }
     const b = $("#mic"), st = $("#micst");
+    Z.micAuto = true; Z.micUsed = true; if (micAnim) micAnim.stop(); micAnim = micWave($("#mstage"));
     b.classList.add("on"); st.textContent = "Tinglayapman… ayting";
-    hearWord(alts => { b.classList.remove("on"); heard(w, alts); }, err => {
-      b.classList.remove("on");
+    hearWord(alts => { b.classList.remove("on"); micAnim && micAnim.stop(); heard(w, alts); }, err => {
+      b.classList.remove("on"); micAnim && micAnim.stop();
+      if (err === "not-allowed" || err === "service-not-allowed") Z.micAuto = false;
       st.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Mikrofonga ruxsat yo'q. Manzil satridagi belgini bosib, Mikrofon → Ruxsat bering." : err === "no-speech" ? "Hech narsa eshitilmadi. Yana bosing." : "Eshitib bo'lmadi. Yana bosing yoki yozib javob bering.";
-    });
+    }, v => micAnim && micAnim.act(v));
   };
+  // seansda bir marta bosilgandan keyin keyingi «Ayting» savollarida mikrofon o'zi yoqiladi (ovoz tugashini kutib — o'z ovozini eshitmasin)
+  if (Z.micAuto) { const q = Z.cur, t0 = Date.now(); const wait = () => { if (!Z || Z.cur !== q || Z.state !== "ask" || location.hash !== "#quiz" || srObj || Z.micUsed) return; let busy = false; try { busy = speechSynthesis.speaking; } catch (e) {} if (busy && Date.now() - t0 < 6000) return setTimeout(wait, 200); setTimeout(() => { const m = $("#mic"); if (m && Z && Z.cur === q && Z.state === "ask" && !srObj && !Z.micUsed) m.click(); }, 450); }; setTimeout(wait, 300); }
 }
 function heard(w, alts) {
   if (Z.state !== "ask" || Z.cur !== w) return;
   const ok = alts.some(a => w.a.some(x => normSay(x) === normSay(a)) || normSay(spoken(w)) === normSay(a));
   const h = esc(alts[0] || "");
-  if (ok) { result(true); buzz(true); $(".mic").classList.add("hidden"); feedback(true, `To'g'ri! Eshitildi: «${h}» → <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); return; }
+  if (ok) { result(true); buzz(true); $(".mic").classList.add("hidden"); feedback(true, `To'g'ri! Eshitildi: «${h}» → <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); setTimeout(() => say(spoken(w)), 250); return; }
   Z.tries++; buzz(false);
   if (Z.tries < 2) { $("#micst").innerHTML = `Eshitildi: «${h}». Yana bir bor, aniqroq ayting.`; return; }
   result(false); say(spoken(w)); $(".mic").classList.add("hidden");
@@ -2998,7 +3077,7 @@ route(/^quiz$/, () => {
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazib yuborish</button><button class="btn" id="next">Tekshirish</button></div>
   </div>`;
-  $("#quit").onclick = () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; location.hash = b; };
+  $("#quit").onclick = () => confirmQuit(Z ? Z.i + (Z.state === "next" ? 1 : 0) : 0, Z ? Math.max(Z.base || 0, Z.i + 1) : 0, () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; location.hash = b; });
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
   $("#h2").onclick = () => { const t = Z.cur.a[0]; $("#hint").textContent = "1-harf: " + t[0].toUpperCase() + " · " + t.replace(/[ -]/g, "").length + " ta harf:  " + t[0] + " " + t.slice(1).replace(/[^ -]/g, "_ ").trim(); };
@@ -3190,7 +3269,7 @@ function setInputMode(target) {
   ltDraw();
 }
 function ltTap(b) {
-  const sp = $("#spell"); if (!Z || Z.state === "next" || b.disabled || b.classList.contains("used")) return;
+  const sp = $("#spell"); if (!Z || Z.state === "next" || Z.ltWait || b.disabled || b.classList.contains("used")) return;
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
   sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b); ltNew = true; ltDraw(); ltNew = false;
   // hamma harf terilgach o'zi tekshiradi (oxirgi harf ko'rinib turishi uchun qisqa pauza)
@@ -3202,8 +3281,15 @@ function ltUndo() {
 }
 /* tepaga chiqqan harf bosilsa — o'sha harf pastdagi joyiga qaytadi (o'chirish tugmasi kerak emas) */
 let ltNew = false;
+/* xato javob: qator yumshoq «bosh chayqaydi», xato harflar qizil — so'ng harflar pastga, panelga qaytadi va qayta terish boshlanadi */
+function ltFail(then) {
+  const q = Z && Z.cur; Z.ltWait = true;
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => { const b = $("#lans"); if (b && Z && Z.cur === q) b.classList.add("out"); }, calm ? 500 : 700);
+  setTimeout(() => { if (!Z || Z.cur !== q || location.hash !== "#quiz") return; Z.ltWait = false; then(); }, calm ? 700 : 1080);
+}
 function ltBack(k) {
-  const sp = $("#spell"); if (!Z || Z.state === "next" || !Z.ltUsed) return;
+  const sp = $("#spell"); if (!Z || Z.state === "next" || Z.ltWait || !Z.ltUsed) return;
   const b = Z.ltUsed.splice(k, 1)[0]; if (!b) return;
   b.classList.remove("used"); b.disabled = false;
   sp.value = Z.ltUsed.map(x => x.dataset.c).join("");
@@ -3216,8 +3302,9 @@ function ltDraw() {
   const show = sp.dataset.lt === "1" && !sp.classList.contains("hidden");
   box.classList.toggle("hidden", !show); if (!show) return;
   box.classList.toggle("ok", sp.classList.contains("ok")); box.classList.toggle("bad", sp.classList.contains("bad"));
-  const used = (Z && Z.ltUsed) || [], lock = !Z || Z.state === "next";
-  box.innerHTML = used.length ? used.map((b, i) => `<button class="${b.dataset.c === " " ? "sp" : ""}${ltNew && i === used.length - 1 ? " n" : ""}" data-k="${i}"${lock ? " disabled" : ""} aria-label="${b.dataset.c === " " ? "bo'sh joy" : esc(b.dataset.c)} — joyiga qaytarish">${b.dataset.c === " " ? "" : esc(b.dataset.c)}</button>`).join("") : `<span class="ph">${esc(sp.placeholder)}</span>`;
+  const used = (Z && Z.ltUsed) || [], lock = !Z || Z.state === "next", bad = box.classList.contains("bad"), tgt = (Z && Z.ltTarget) || "";
+  box.classList.remove("out"); box.style.setProperty("--n", used.length);
+  box.innerHTML = used.length ? used.map((b, i) => `<button style="--i:${i}" class="${b.dataset.c === " " ? "sp" : ""}${ltNew && i === used.length - 1 ? " n" : ""}${bad && (tgt[i] || "").toLowerCase() === b.dataset.c.toLowerCase() ? " k" : ""}" data-k="${i}"${lock ? " disabled" : ""} aria-label="${b.dataset.c === " " ? "bo'sh joy" : esc(b.dataset.c)} — joyiga qaytarish">${b.dataset.c === " " ? "" : esc(b.dataset.c)}</button>`).join("") : `<span class="ph">${esc(sp.placeholder)}</span>`;
   box.querySelectorAll("button").forEach(x => x.onclick = () => ltBack(+x.dataset.k));
 }
 function bankLock() { $("#bank").querySelectorAll("button").forEach(b => b.disabled = true); $("#bank").classList.add("done"); }
@@ -3281,7 +3368,7 @@ function check() {
   const ok = cands.some(x => norm(x) === val);
   if (Z.retype) {
     if (ok) { bankLock(); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
-    else { buzz(false); sp.className = "spell bad"; if (useLetters()) setInputMode(Z.ltTarget); else sp.select(); }
+    else { buzz(false); sp.className = "spell bad"; if (useLetters()) { const tt = Z.ltTarget; ltFail(() => setInputMode(tt)); } else sp.select(); }
     return;
   }
   say(spoken(w));
@@ -3295,7 +3382,7 @@ function check() {
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
     feedback(false, `${Z.qmode === "listen" ? "<b>" + esc(w.w) + "</b> — " + esc(w.u) + "<br>" : ""}${rec(w.id) && rec(w.id).bad >= 3 ? "<b>Bu so'z " + rec(w.id).bad + "-marta xato bo'ldi — eslatgich yozing, bog'lanish yordam beradi.</b><br>" : ""}${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta ${useLetters() ? "tering" : "yozing"}.</span>`);
     Z.retype = true; sp.value = ""; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t;
-    if (useLetters()) setInputMode(t); else sp.focus();
+    if (useLetters()) ltFail(() => setInputMode(t)); else sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     $("#pts").textContent = "✓ " + Z.right;
   }
@@ -3521,7 +3608,7 @@ route(/^gapmashq$/, () => {
   const reveal = () => { $("#ans").classList.remove("hidden"); $("#r1").classList.add("hidden"); $("#r2").classList.remove("hidden"); say(p.w); };
   app.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => { listen(p.w, app.querySelector(".micout"), b); });
   $("#show").onclick = reveal;
-  $("#quit").onclick = () => { const b = G.back; G = null; location.hash = b; };
+  $("#quit").onclick = () => confirmQuit(G ? G.i : 0, G ? G.q.length : 0, () => { const b = G.back; G = null; location.hash = b; });
   const ans = ok => { grade(p, ok); if (ok) G.right++; else G.wrong.push(p); G.i++; if (G.i < G.q.length) render(); else phFinish(); };
   $("#yes").onclick = () => ans(true); $("#no").onclick = () => ans(false);
 });
@@ -3591,7 +3678,7 @@ route(/^tuzmashq$/, () => {
     <div class="fb hidden" id="tf"></div>
     <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="clr">Tozalash</button>`}<button class="btn${yoz ? "" : " hidden"}" id="chk" disabled>Tekshirish</button></div>
   </div>`;
-  $("#quit").onclick = () => { const b = T.back; T = null; location.hash = b; };
+  $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; location.hash = b; });
   let done = false;
   const show = (cls, html) => {
     $("#tf").className = "fb " + cls; buzz(cls === "ok");

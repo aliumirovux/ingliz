@@ -128,6 +128,32 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .steps .lock .tx b{color:var(--muted)}
 .steps .lock .min svg{width:16px;height:16px}
 .steps button:disabled{cursor:default}
+/* ayting */
+.mic{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 4px}
+.micbtn{width:84px;height:84px;border-radius:50%;border:0;background:var(--marker);color:var(--on-marker);display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 22px -10px var(--marker);transition:transform .15s}
+.micbtn svg{width:34px;height:34px}
+.micbtn:active{transform:scale(.95)}
+.micbtn.on{animation:micpulse 1.2s ease-in-out infinite}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 var(--hl)}50%{box-shadow:0 0 0 16px var(--hl)}}
+@media (prefers-reduced-motion:reduce){.micbtn.on{animation:none;outline:4px solid var(--hl)}}
+.micst{margin:0;text-align:center;font-size:15px;color:var(--muted);min-height:22px}
+.hl2{background:none;border:0;color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer;min-height:44px;padding:8px 6px;text-decoration:underline;text-underline-offset:3px}
+.wl li .del{margin-top:2px;color:var(--bad)}
+/* mening so'zlarim */
+.myf label{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
+.myf input{width:100%;font:inherit;font-size:16px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink);outline:none}
+.myf input:focus{border-color:var(--marker);box-shadow:0 0 0 4px var(--hl)}
+.myf details{margin-top:12px}
+.myf summary{cursor:pointer;color:var(--accent-text);font-weight:600;font-size:14px;min-height:44px;display:flex;align-items:center}
+.myf .btn{margin-top:16px}
+.myf #mymsg{margin:10px 0 0}
+/* eslab qolish */
+.ret .retn{font:700 44px/1 var(--font-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:2px 0 12px}
+.retbar{position:relative;height:10px;border-radius:99px;background:var(--surface-2);overflow:visible}
+.retbar i{display:block;height:100%;border-radius:99px;background:var(--marker)}
+.retbar b{position:absolute;top:-4px;width:2px;height:18px;background:var(--ink);border-radius:2px}
+.ret .muted{margin:12px 0 0;font-size:14px}
+.rettg{position:relative;height:18px}.rettg span{position:absolute;top:4px;transform:translateX(-50%);font-size:12px;color:var(--muted);white-space:nowrap}
 /* birinchi ochilish: kursdagi unitni tanlash */
 .ask-unit h2{font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:4px 0 6px}
 .ugrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 0}
@@ -1124,6 +1150,13 @@ const KEY = "ingliz-v1";
 let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
 S.hook = S.hook || {}; // eslatgichlar: so'z → o'zi yozgan bog'lanish
+S.my = S.my || []; // o'zi qo'shgan so'zlar (darsdan, ishdan): { id, w, u, p, e, t }
+/* o'z so'zlari umumiy WORDS ro'yxatiga «unit 0» bo'lib qo'shiladi — takrorlash, qidiruv va reja ularni ham ko'radi */
+function syncMyWords() {
+  for (let i = WORDS.length - 1; i >= 0; i--) if (WORDS[i].mine) WORDS.splice(i, 1);
+  (S.my || []).forEach(m => WORDS.push(Object.assign({ p: "", e: "", t: "", star: 0 }, m, { unit: 0, g: 0, a: [m.w], mine: true })));
+}
+syncMyWords();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} pushSoon(); };
 
 /* ---------- cloud sync: the viewer's own private record (db capability) ---------- */
@@ -1157,6 +1190,7 @@ function merge(a, b) {
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   out.hook = Object.assign({}, a.hook || {}, b.hook || {});
+  const my = new Map(); (a.my || []).concat(b.my || []).forEach(m => my.set(m.id, m)); out.my = [...my.values()];
   const al = a.log || {}, bl = b.log || {}; out.log = {};
   new Set(Object.keys(al).concat(Object.keys(bl))).forEach(k => { const x = al[k], y = bl[k]; out.log[k] = !x ? y : !y ? x : (y.a > x.a ? y : x); });
   return out;
@@ -1172,7 +1206,7 @@ async function initCloud() {
     const ref = db.doc("data/users/" + id + "/progress");
     const snap = await ref.get();
     if (snap.exists) {
-      try { S = merge(S, JSON.parse(snap.data().state)); } catch (e) {}
+      try { S = merge(S, JSON.parse(snap.data().state)); syncMyWords(); } catch (e) {}
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
     }
     cloud.ref = ref; setStatus("cloud");
@@ -1187,7 +1221,11 @@ const INT = [1, 1, 3, 7, 14, 30];
 const rec = id => S.srs[id];
 // So'z kamida bir marta xotiradan to'g'ri yozilmaguncha 2-qutidan yuqoriga chiqmaydi (r.sp — to'g'ri yozilganlar soni).
 function grade(w, ok, spelled) {
-  const r = S.srs[w.id] || { b: 0, due: today(), ok: 0, bad: 0 };
+  const prev = S.srs[w.id];
+  // eslab qolish: oldingi kunlarda ko'rilgan so'zning shu kundagi birinchi javobi
+  if (prev && (prev.ls ? prev.ls < today() : !isToday(prev.lt))) logRet(ok);
+  const r = prev || { b: 0, due: today(), ok: 0, bad: 0 };
+  r.ls = today();
   if (ok) { r.b = Math.min(r.b + 1, 5); r.ok++; if (spelled) r.sp = (r.sp || 0) + 1; else if (w.a && !r.sp) r.b = Math.min(r.b, 2); } else { r.b = 0; r.bad++; }
   r.due = addDays(INT[r.b]);
   S.srs[w.id] = r;
@@ -1212,10 +1250,11 @@ function logAns(ok, spelled) {
   // javoblar orasi 90 soniyadan uzun bo'lsa, tanaffus deb hisoblanadi
   L.t += lastAns && gap < 90 ? Math.round(gap) : 10; lastAns = now;
 }
+function logRet(ok) { const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 }); L.rv = (L.rv || 0) + 1; if (ok) L.rk = (L.rk || 0) + 1; }
 // off: 0 — shu hafta (Dushanbadan), 1 — o'tgan hafta
 function weekStat(off) {
-  const dow = (new Date().getDay() + 6) % 7, r = { a: 0, ok: 0, sw: 0, sp: 0, t: 0, days: 0 };
-  for (let i = 0; i < 7; i++) { const L = S.log[addDays(i - dow - 7 * off)]; if (!L || !L.a) continue; r.days++; ["a", "ok", "sw", "sp", "t"].forEach(k => r[k] += L[k] || 0); }
+  const dow = (new Date().getDay() + 6) % 7, r = { a: 0, ok: 0, sw: 0, sp: 0, t: 0, rv: 0, rk: 0, days: 0 };
+  for (let i = 0; i < 7; i++) { const L = S.log[addDays(i - dow - 7 * off)]; if (!L || !L.a) continue; r.days++; ["a", "ok", "sw", "sp", "t", "rv", "rk"].forEach(k => r[k] += L[k] || 0); }
   return r;
 }
 const pctOf = (x, n) => n ? Math.round(x / n * 100) : 0;
@@ -1261,6 +1300,7 @@ const buzzOn = () => { try { return localStorage.getItem("ingliz-vib") !== "0"; 
 function buzz(ok) { if (!canBuzz() || !buzzOn()) return; try { navigator.vibrate(ok ? 15 : [35, 70, 35]); } catch (e) {} }
 function say(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(text).replace(/[\[\]]/g, "")); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85; speechSynthesis.speak(u); } catch (e) {} }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
+const pr = w => w.p ? "[" + w.p + "]" : "";
 
 /* ---------- router ---------- */
 const routes = [];
@@ -1270,7 +1310,7 @@ function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
   const h = location.hash.replace(/^#/, "");
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  const tab = h === "" ? "home" : /^(unit|soz|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") ? "lugat" : "";
+  const tab = h === "" ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
@@ -1338,10 +1378,10 @@ const DAYS = ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "J
 function todayPlan(n) {
   const plan = [], mw = misWords(true).filter(w => w.unit <= n).slice(0, 5), ids = new Set(mw.map(w => w.id));
   if (mw.length) plan.push({ tag: "esla", t: "Esla: oldingi xatolar", s: mw.length + " ta so'z · xotiradan yozasiz", run: () => startQuiz(mw, "spell", "Esla", "#", "esla") });
-  const due = dueWords().filter(w => !ids.has(w.id)), unseen = byUnit(n).filter(w => !isSeen(w));
+  const due = dueWords().filter(w => !ids.has(w.id)), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
   if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z bugun qaytariladi", run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
   // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
-  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: "Unit " + n + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z · tanishuv va 3 bosqich", run: () => startLearn(unseen, "Unit " + n, "#", "new") });
+  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + n) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z · tanishuv va 3 bosqich", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + n, "#", "new") });
   if (!due.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
   const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
   if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
@@ -1424,7 +1464,7 @@ function readBackup(text) {
 }
 function restoreBackup(d) {
   const before = Object.keys(S.srs).length;
-  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {}, hook: {} }, merge(S, d)); save();
+  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {}, hook: {}, my: [] }, merge(S, d)); syncMyWords(); save();
   return Object.keys(S.srs).length - before;
 }
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
@@ -1566,18 +1606,61 @@ route(/^unit-(\d+)$/, n => {
 });
 
 /* ---------- LUG'AT: qidiruv ---------- */
+/* ---------- MENING SO'ZLARIM: kitobda yo'q, darsda yoki ishda kerak bo'lgan so'zlar ---------- */
+let MYPRE = "";
+route(/^mening$/, () => {
+  const mine = WORDS.filter(w => w.mine), fresh = mine.filter(w => !isSeen(w));
+  app.innerHTML = `<a class="back" href="#lugat">${ICON.back} Lug'at</a><h1>Mening so'zlarim</h1>
+  <p class="sub">Darsda doskaga yozilgan yoki ishda kerak bo'lgan so'zlar. Ular ham tanishuv kartasi va 3 bosqichdan o'tadi, keyin takrorlashga qo'shiladi.</p>
+  <div class="stack">
+    <form class="card myf" id="myf" novalidate>
+      <p class="label">Yangi so'z</p>
+      <label for="mw">Inglizcha</label><input id="mw" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="60" value="${esc(MYPRE)}" placeholder="Masalan: deadline">
+      <label for="mu">O'zbekcha</label><input id="mu" autocomplete="off" maxlength="80" placeholder="Masalan: oxirgi muddat">
+      <details${MYPRE ? "" : ""}><summary>Qo'shimcha: o'qilishi va misol gap</summary>
+        <label for="mp">O'qilishi</label><input id="mp" autocomplete="off" maxlength="40" placeholder="Masalan: DED-layn — bilmasangiz bo'sh qoldiring">
+        <label for="me">Misol gap</label><input id="me" autocomplete="off" maxlength="140" placeholder="Masalan: The deadline is on Friday.">
+        <label for="mt">Gapning tarjimasi</label><input id="mt" autocomplete="off" maxlength="140" placeholder="Masalan: Oxirgi muddat — juma.">
+      </details>
+      <button class="btn" type="submit">${ICON.plus} Qo'shish</button><p class="muted" id="mymsg" role="status"></p>
+    </form>
+    ${fresh.length ? `<button class="btn" id="mylearn">O'rganishni boshlash · ${Math.min(LEARN_N, fresh.length)} ta yangi so'z</button>` : ""}
+    ${mine.length ? `<div class="card"><p class="label">${mine.length} ta so'z</p><ul class="wl">${mine.slice().reverse().map(w => wordLi(w).replace("</li>", `<button class="hl2 del" data-del="${esc(w.id)}">O'chirish</button></li>`)).join("")}</ul></div>` : `<div class="card"><p class="muted" style="margin:0">Hozircha so'z yo'q. Birinchi so'zni yuqorida qo'shing.</p></div>`}
+  </div>`;
+  MYPRE = "";
+  bindSay(app);
+  const msg = $("#mymsg");
+  $("#myf").onsubmit = e => {
+    e.preventDefault();
+    const v = id => $(id).value.trim(), w = v("#mw").replace(/\s+/g, " "), u = v("#mu");
+    if (!w || !u) { msg.textContent = !w ? "Inglizcha so'zni yozing." : "O'zbekcha ma'nosini yozing."; (!w ? $("#mw") : $("#mu")).focus(); return; }
+    const book = WORDS.find(x => norm(spoken(x)) === norm(w) || norm(x.w) === norm(w));
+    if (book) { msg.innerHTML = book.mine ? "Bu so'z ro'yxatingizda bor." : `Bu so'z kitobda bor: <a href="#soz-${book.unit}">Unit ${book.unit}</a>. U rejaga o'zi tushadi.`; return; }
+    S.my.push({ id: "my|" + norm(w), w, u, p: v("#mp"), e: v("#me"), t: v("#mt") });
+    syncMyWords(); save(); render();
+    setTimeout(() => { const m = $("#mymsg"); if (m) m.textContent = "«" + w + "» qo'shildi ✓ Bugungi «Yangi so'zlar»da birinchi chiqadi."; const f = $("#mw"); if (f) f.focus(); }, 0);
+  };
+  const ml = $("#mylearn"); if (ml) ml.onclick = () => startLearn(fresh, "Mening so'zlarim", "#mening", null);
+  app.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    const id = b.dataset.del, w = WORDS.find(x => x.id === id); if (!w) return;
+    if (!confirm("«" + w.w + "» o'chirilsinmi? Shu so'zning natijasi ham o'chadi.")) return;
+    S.my = S.my.filter(m => m.id !== id); delete S.srs[id]; delete S.hook[id]; delete S.mis["w:" + id];
+    syncMyWords(); save(); render();
+  });
+});
 route(/^lugat$/, () => {
   app.innerHTML = `<h1>Lug'at</h1><p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
   <div class="stack"><input class="search" id="q" placeholder="Masalan: weekend yoki ofis" autocomplete="off">
   <div id="res"></div>
-  <div class="list" id="ul">${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
+  <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
   $("#q").oninput = e => {
     const q = norm(e.target.value);
     if (q.length < 2) { $("#res").innerHTML = ""; $("#ul").classList.remove("hidden"); return; }
     const hit = WORDS.filter(w => norm(w.w).includes(q) || norm(w.u).includes(q)).slice(0, 40);
     $("#ul").classList.add("hidden");
-    $("#res").innerHTML = `<div class="card">${hit.length ? `<ul class="wl">${hit.map(wordLi).join("")}</ul>` : `<p class="muted" style="margin:0">"${esc(e.target.value)}" topilmadi. Boshqacha yozib ko'ring.</p>`}</div>`;
+    $("#res").innerHTML = `<div class="card">${hit.length ? `<ul class="wl">${hit.map(wordLi).join("")}</ul>` : `<p class="muted" style="margin:0 0 12px">"${esc(e.target.value)}" topilmadi.</p><button class="btn ghost" id="addq">${ICON.plus} Mening so'zlarimga qo'shish</button>`}</div>`;
     bindSay($("#res"));
+    const aq = $("#addq"); if (aq) aq.onclick = () => { MYPRE = e.target.value.trim(); go("mening"); };
   };
 });
 
@@ -1595,6 +1678,7 @@ route(/^soz-(\d+)$/, n => {
       ${modeBtn("uz-en", "O'zbekcha → inglizcha", "4 ta variantdan inglizchasini tanlaysiz")}
       ${modeBtn("en-uz", "Inglizcha → o'zbekcha", "So'zni eshitib, ma'nosini tanlaysiz")}
       ${modeBtn("spell", "Yozish (imlo)", "O'zbekchasiga qarab inglizchasini yozasiz")}
+      ${canSpeak() ? modeBtn("say", "Ayting (gapirib)", "O'zbekchasiga qarab inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi") : ""}
     </div></div>
     <div><button class="btn" id="go">Testni boshlash</button><p class="gohint" id="gohint"></p></div>
     <div class="card"><p class="label">Lug'at ro'yxati</p>
@@ -1643,9 +1727,9 @@ const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot">
 function wordLi(w) {
   const r = rec(w.id);
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
-  return `<li><div class="h"><span class="w">${esc(w.w)}</span><span class="p">[${esc(w.p)}]</span>${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
+  return `<li><div class="h"><span class="w">${esc(w.w)}</span>${w.p ? `<span class="p">[${esc(w.p)}]</span>` : ""}${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
     <div class="u">${w.star ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
-    <div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>
+    ${w.e ? `<div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}
     ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}${S.hook[w.id] || isHard(w) ? hookBox(w) : ""}</li>`;
 }
 function bindSay(root) { root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say)); }
@@ -1683,7 +1767,7 @@ function learnResult(ok) {
 }
 function finishLearn() {
   const now = Date.now(), back = Z.back, tag = Z.tag, words = Z.words, title = Z.title, errs = Z.errs;
-  words.forEach(w => { if (!S.srs[w.id]) S.srs[w.id] = { b: 1, due: addDays(1), ok: 1, bad: errs[w.id] ? 1 : 0, lt: now }; });
+  words.forEach(w => { if (!S.srs[w.id]) S.srs[w.id] = { b: 1, due: addDays(1), ok: 1, bad: errs[w.id] ? 1 : 0, lt: now, ls: today() }; });
   touchStreak(); save(); if (tag) markDone(tag);
   const rest = (Z.pool || []).filter(w => !isSeen(w)), pct = Z.ans ? Math.round(Z.right / Z.ans * 100) : 0;
   app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · yangi so'zlar</p>
@@ -1716,6 +1800,51 @@ document.addEventListener("click", e => {
   else { box.outerHTML = hookBox(w, true); const inp = app.querySelector(".hook.edit .hin"); if (inp) inp.focus(); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("hin")) { e.preventDefault(); e.stopPropagation(); e.target.closest(".hook").querySelector("[data-hsave]").click(); } }, true);
+
+/* ---------- AYTING: o'zbekchasiga qarab inglizchasini ovoz chiqarib aytish (telefon Chrome'idagi nutqni tanish) ---------- */
+const canSpeak = () => !!(window.SpeechRecognition || window.webkitSpeechRecognition); // SR pastda, «Tayyor gaplar» bilan umumiy
+const spkOn = () => { try { return localStorage.getItem("ingliz-spk") !== "0"; } catch (e) { return true; } };
+let srObj = null;
+// solishtirish: katta-kichik harf, tire, tinish belgisi va boshidagi a/an/the/to farq qilmaydi
+const normSay = s => norm(s).replace(/[-.,!?']/g, " ").replace(/^(a|an|the|to) /, "").replace(/\s+/g, " ").trim();
+function hearWord(onres, onerr) {
+  let got = false;
+  try {
+    const r = new SR(); r.lang = "en-US"; r.interimResults = false; r.maxAlternatives = 5;
+    r.onresult = e => { got = true; onres([...e.results[0]].map(a => a.transcript)); };
+    r.onerror = e => { got = true; onerr(e.error); };
+    r.onend = () => { srObj = null; if (!got) onerr("no-speech"); };
+    srObj = r; r.start();
+  } catch (e) { srObj = null; onerr("start"); }
+}
+function askSay(w) {
+  Z.tries = 0;
+  $("#opts").innerHTML = `<div class="mic"><button class="micbtn" id="mic" aria-label="Bosing va inglizcha ayting">${ICON.mic}</button>
+    <p class="micst" id="micst" role="status">Bosing va inglizcha ayting</p>
+    <button class="hl2" id="totype">Ovoz chiqarib bo'lmaydimi? Yozib javob bering</button></div>`;
+  $("#totype").onclick = () => { if (srObj) srObj.abort(); Z.force = "spell"; ask(); };
+  $("#mic").onclick = () => {
+    if (Z.state !== "ask") return;
+    if (srObj) { srObj.stop(); return; }
+    const b = $("#mic"), st = $("#micst");
+    b.classList.add("on"); st.textContent = "Tinglayapman… ayting";
+    hearWord(alts => { b.classList.remove("on"); heard(w, alts); }, err => {
+      b.classList.remove("on");
+      st.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Mikrofonga ruxsat yo'q. Manzil satridagi belgini bosib, Mikrofon → Ruxsat bering." : err === "no-speech" ? "Hech narsa eshitilmadi. Yana bosing." : "Eshitib bo'lmadi. Yana bosing yoki yozib javob bering.";
+    });
+  };
+}
+function heard(w, alts) {
+  if (Z.state !== "ask" || Z.cur !== w) return;
+  const ok = alts.some(a => w.a.some(x => normSay(x) === normSay(a)) || normSay(spoken(w)) === normSay(a));
+  const h = esc(alts[0] || "");
+  if (ok) { result(true); buzz(true); $(".mic").classList.add("hidden"); feedback(true, `To'g'ri! Eshitildi: «${h}» → <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); return; }
+  Z.tries++; buzz(false);
+  if (Z.tries < 2) { $("#micst").innerHTML = `Eshitildi: «${h}». Yana bir bor, aniqroq ayting.`; return; }
+  result(false); say(spoken(w)); $(".mic").classList.add("hidden");
+  feedback(false, `Eshitildi: «${h}». To'g'risi: <b>${esc(w.w)}</b> ${esc(pr(w))} — tinglang va ovoz chiqarib 2 marta qaytaring.`);
+  toNext();
+}
 
 /* ---------- gapdagi bo'sh joy: mustahkam so'z misol gapning ichida, kontekstda yoziladi ---------- */
 function clozeOf(w) {
@@ -1757,9 +1886,9 @@ route(/^quiz$/, () => {
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazib yuborish</button><button class="btn" id="next">Tekshirish</button></div>
   </div>`;
-  $("#quit").onclick = () => { const b = Z.back; Z = null; location.hash = b; };
+  $("#quit").onclick = () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; location.hash = b; };
   $("#say").onclick = () => say(spoken(Z.cur));
-  $("#h1").onclick = () => { $("#hint").textContent = "O'qilishi: [" + Z.cur.p + "]"; };
+  $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
   $("#h2").onclick = () => { const t = Z.cur.a[0]; $("#hint").textContent = "1-harf: " + t[0].toUpperCase() + " · " + t.replace(/[ -]/g, "").length + " ta harf:  " + t[0] + " " + t.slice(1).replace(/[^ -]/g, "_ ").trim(); };
   $("#next").onclick = () => { if ((Z.qmode === "spell" || Z.qmode === "cloze") && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
@@ -1769,7 +1898,7 @@ route(/^quiz$/, () => {
 document.addEventListener("keydown", e => {
   if (!Z || !location.hash.startsWith("#quiz") || e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
   if (e.key === "Enter" && Z.state === "next") { e.preventDefault(); next(); }
-  if (Z.state === "ask" && Z.qmode !== "spell" && Z.qmode !== "cloze" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
+  if (Z.state === "ask" && Z.qmode !== "spell" && Z.qmode !== "cloze" && Z.qmode !== "say" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
 });
 /* Javob tekshirilgach maydon qulflanadi (disabled emas): fokus va klaviatura joyida qoladi, Enter keyingi so'zga o'tkazadi */
 document.addEventListener("beforeinput", e => { const t = e.target; if (t.classList && t.classList.contains("spell") && /^insert(LineBreak|Paragraph)$/.test(e.inputType)) { e.preventDefault(); t.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })); } }, true);
@@ -1824,7 +1953,8 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
   const r = rec(w.id); const b = r ? r.b : 0;
-  // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi
+  // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi, goh ovoz chiqarib aytiladi
+  if (b >= 2 && canSpeak() && spkOn() && Math.random() < .25) return "say";
   if (b >= 3 && clozeOf(w) && Math.random() < .5) return "cloze";
   return b === 0 ? "uz-en" : b === 1 ? "en-uz" : "spell";
 }
@@ -1837,7 +1967,7 @@ function distractors(w, f) {
 }
 function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
-  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.qmode = t ? LMODE[t.k] : qmodeFor(w);
+  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
   if (t) {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
@@ -1856,18 +1986,27 @@ function ask() {
   ["#fb", "#ex", "#skip", "#intro"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron";
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
   const sp = $("#spell");
-  $("#say").classList.toggle("hidden", Z.qmode === "cloze");
+  $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say");
   if (Z.qmode === "intro") {
     // tanishuv kartasi: so'z, o'qilishi, ovoz, ma'nosi, misol gap va eslatgich — keyin darhol 1-bosqich
     if (document.activeElement === sp) sp.blur();
     sp.className = "spell hidden"; delete sp.dataset.lock;
     setLabel(Z.title + " · tanishing, keyin eslab topasiz");
-    $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = "[" + w.p + "]";
+    $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = pr(w);
     $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
-    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div><div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>${hookBox(w, !S.hook[w.id])}`;
+    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div>${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
     $("#intro").classList.remove("hidden");
     say(spoken(w));
     Z.state = "next"; $("#next").classList.remove("hidden"); $("#next").innerHTML = "Tushundim " + ICON.arrow;
+    return;
+  }
+  if (Z.qmode === "say") {
+    if (document.activeElement === sp) sp.blur();
+    sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
+    setLabel(Z.title + " · inglizcha ovoz chiqarib ayting");
+    $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
+    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
+    askSay(w);
     return;
   }
   if (Z.qmode === "spell" || Z.qmode === "cloze") {
@@ -1885,7 +2024,7 @@ function ask() {
     const en = Z.qmode === "en-uz";
     setLabel(Z.title + (en ? " · ma'nosini tanlang" : " · inglizchasini tanlang"));
     $("#qword").textContent = en ? w.w : w.u; $("#qword").className = "q" + (!en && w.u.length > 28 ? " qsmall" : "");
-    $("#qpron").textContent = en ? "[" + w.p + "]" : "";
+    $("#qpron").textContent = en ? pr(w) : "";
     $("#tools").classList.toggle("hidden", !en); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
     if (en) say(spoken(w));
     const f = en ? "u" : "w";
@@ -1919,10 +2058,10 @@ function choose(btn, o, f) {
   if (!ok) btn.classList.add("bad");
   result(ok); buzz(ok);
   if (Z.qmode === "uz-en") say(spoken(w));
-  feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> [${esc(w.p)}] — ${esc(w.u)}`);
+  feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> ${esc(pr(w))} — ${esc(w.u)}`);
   toNext();
 }
-function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = esc(w.e) + "<small>" + esc(w.t) + "</small>" + (ok ? "" : hookBox(w)); $("#ex").classList.remove("hidden"); }
+function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
 function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
@@ -1950,7 +2089,7 @@ function check() {
     return;
   }
   say(spoken(w));
-  if (ok) { result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> [${esc(w.p)}]`); toNext(); }
+  if (ok) { result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); }
   else {
     result(false); buzz(false);
     // bir nechta to'g'ri variant bo'lsa, yozilganiga eng yaqini bilan solishtiramiz
@@ -1958,7 +2097,7 @@ function check() {
     const near = dist[best] === 1 && norm(t).length > 3;
     sp.className = "spell bad";
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
-    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>[${esc(w.p)}]${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta yozing.</span>`);
+    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta yozing.</span>`);
     Z.retype = true; sp.value = ""; sp.placeholder = "To'g'risini yozing: " + t; sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     $("#pts").textContent = "✓ " + Z.right;
@@ -2058,8 +2197,13 @@ route(/^natija$/, () => {
     const name = i === 0 ? "Bugun" : i === 1 ? "Kecha" : DAYS[dt.getDay()] + ", " + dt.getDate() + "-" + MONTHS[dt.getMonth()];
     days.push(`<div class="li"><span class="tx"><b>${name}</b><span>${L && L.a ? L.a + " ta javob · " + pctOf(L.ok, L.a) + "% to'g'ri" : "Mashq qilinmagan"}</span></span><span class="st">${L && L.a ? L.sp + " ta so'z · " + Math.max(1, Math.round(L.t / 60)) + " daq" : "—"}</span></div>`);
   }
-  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijalar</h1><p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: xotiradan to'g'ri yozilgan so'zlar.</p>
-  <section class="sec"><div class="list">
+  const ret = pctOf(r.rk, r.rv), pret = pctOf(p.rk, p.rv);
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Natijalar</h1><p class="sub">Shu hafta (Dushanbadan boshlab). Asosiy ko'rsatkich: oldingi kunlarda o'rganilgan so'zlarning qanchasi esda qolgani.</p>
+  <section class="sec"><div class="ret card"><p class="label">Esda qolgan so'zlar</p>
+    <div class="retn">${r.rv ? ret + "%" : "—"}</div>
+    <div class="retbar" role="img" aria-label="${r.rv ? ret + "% esda qolgan, maqsad 80%" : "Hali ma'lumot yo'q"}"><i style="width:${r.rv ? ret : 0}%"></i><b style="left:80%"></b></div><div class="rettg"><span style="left:80%">maqsad 80%</span></div>
+    <p class="muted">${r.rv ? `Ertasi va keyingi kunlardagi takrorlashda ${r.rv} ta javobdan ${r.rk} tasi birinchi urinishda to'g'ri. Maqsad: 80% va undan yuqori. ${ret >= 80 ? "Usul ishlayapti." : ret >= 65 ? "Yaxshi, lekin yangi so'zlarni kamaytirib, eslatgich yozib ko'ring." : "Ko'p unutilyapti: kechki takrorlashni qiling va yangi so'zlarni vaqtincha kamaytiring."}` : "Ertaga, bugungi so'zlar takrorlanganda paydo bo'ladi."}${p.rv ? " O'tgan hafta: " + pret + "%." : ""}</p></div>
+  <div class="list">
     ${row("Xotiradan yozilgan so'zlar", was(p.sp, p.a), r.sp, false)}
     ${row("Imlo aniqligi", "Maqsad: 80% va undan yuqori", r.sw ? acc + "%" : "—", r.sw && acc >= 80)}
     ${row("Faol kunlar", "Maqsad: haftada 5 kun", r.days + " / 7", r.days >= 5)}
@@ -2328,8 +2472,10 @@ route(/^sozlama$/, () => {
     <p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
     <div style="height:10px"></div><button class="btn ghost" id="cp">Nusxalash</button>
     <div style="height:16px"></div><p class="label">Boshqa qurilmadan kod</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button></details>
+  ${canSpeak() ? `<div class="card"><label class="sw"><span><b>Takrorlashda gapirish savollari</b><span class="muted">Ba'zan so'zni ovoz chiqarib aytasiz. Ofisda bo'lsangiz — «Yozib javob bering».</span></span><input type="checkbox" id="spk"${spkOn() ? " checked" : ""}></label></div>` : ""}
   ${canBuzz() ? `<div class="card"><label class="sw"><span><b>Javobda titrash</b><span class="muted">To'g'ri — bir marta, xato — ikki marta</span></span><input type="checkbox" id="vib"${buzzOn() ? " checked" : ""}></label></div>` : ""}</div>`;
   bindInstall();
+  const sk = $("#spk"); if (sk) sk.onchange = () => { try { localStorage.setItem("ingliz-spk", sk.checked ? "1" : "0"); } catch (e) {} };
   const vb = $("#vib"); if (vb) vb.onchange = () => { try { localStorage.setItem("ingliz-vib", vb.checked ? "1" : "0"); } catch (e) {} buzz(true); };
   $("#cp").onclick = () => {
     const t = $("#ex"), b = $("#cp"); t.select(); persist();

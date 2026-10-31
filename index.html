@@ -906,6 +906,16 @@ button.xm-t.tap{padding:14px 12px 12px}
 .opt.ok,.opt.bad{animation:opt-pick .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes opt-pick{0%{transform:scale(.97)}55%{transform:scale(1.02)}100%{transform:none}}
 @media (prefers-reduced-motion:reduce){.opt,.opt:active,.opt.prs{transform:none!important;animation:none}}
+/* «Noldan boshlash» va shu kabi taklif kartalari — umumiy karta uslubida */
+.nwb{gap:14px;min-height:72px;padding:14px 12px 14px 14px;border-radius:26px;background:var(--card);box-shadow:var(--card-shadow);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);transition:transform .4s cubic-bezier(.3,1.4,.5,1)}
+.nwb:active{transform:scale(.98);transition-duration:.12s}
+.nwb b{font-size:16px;color:var(--ink)}.nwb .tx span{display:block;font-size:13px;color:var(--muted);margin-top:1px}
+.nwb .pmi{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}
+.nwb .pmi svg{width:22px;height:22px}
+.nwb i{color:var(--accent-text)}
+.nwb .go{flex:none;display:flex;color:var(--muted)}.nwb .go svg{width:18px;height:18px}
+.nwr{position:relative;flex:none;width:40px;height:40px}.nwr .rg{position:absolute;inset:0}
+.nwr b{position:absolute;inset:0;display:grid;place-items:center;font:700 11px var(--font-display);color:var(--ink);font-variant-numeric:tabular-nums}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
@@ -2738,6 +2748,8 @@ function stepView(x) {
   if (x.tag === "esla") return { title: "Oldingi xatolar", sub, more: sub };
   return { title, sub: topic ? topic + " · " + sub : sub, more: x.d || (topic ? topic + " · " + sub : sub) };
 }
+/* qo'llanmalar progressi: kichik halqa ichida «0/8» */
+const nwRing = (d, n) => `<span class="nwr" role="img" aria-label="${n} tadan ${d} tasi o'rganilgan">${arcRing(40, 4, n ? d / n * 100 : 0, "")}<b>${d}/${n}</b></span>`;
 function lessonCard(cu, st, info, plan, done, left, mins) {
   const dn = plan.filter(x => done.includes(x.tag)).length, all = plan.length, next = left[0], lock = plan.find(x => x.lock && !done.includes(x.tag));
   const started = left.length < plan.filter(x => !x.lock).length;
@@ -2931,7 +2943,7 @@ route(/^yakun$/, () => {
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}
-  <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar</span></span><i>${GUIDES.length - guidesLeft()}/${GUIDES.length} ›</i></a>
+  <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar</span></span>${nwRing(GUIDES.length - guidesLeft(), GUIDES.length)}<span class="go">${ICON.chev}</span></a>
   <div class="qa" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.length} ta qolip</span></a>
     <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.length} ta gap</span></a>
@@ -3043,7 +3055,7 @@ function guidePool(g) {
 function guideCard(seen) {
   const left = guidesLeft(); if (!left || seen > 60) return "";
   const next = GUIDES.find(g => !guideDone(g));
-  return `<a class="nwb" href="#asos-${next.id}"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Keyingisi: ${esc(next.t)} · ${next.min} daq</span></span><i>${GUIDES.length - left}/${GUIDES.length} ›</i></a>`;
+  return `<a class="nwb" href="#asos-${next.id}"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Keyingisi: ${esc(next.t)} · ${next.min} daq</span></span>${nwRing(GUIDES.length - left, GUIDES.length)}<span class="go">${ICON.chev}</span></a>`;
 }
 /* «Noldan boshlash» darajasi tanlanganda Bugun sahifasidagi asosiy karta: keyingi qo'llanma va umumiy holat */
 function zeroCard() {

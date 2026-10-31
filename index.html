@@ -2431,6 +2431,7 @@ function setInputMode(target) {
   kb.setAttribute("aria-label", lt ? "Klaviatura bilan yozish" : "Harflardan terish");
   sp.readOnly = lt; if (lt) sp.setAttribute("inputmode", "none"); else sp.removeAttribute("inputmode");
   sp.classList.toggle("ltm", lt);
+  $("#next").classList.toggle("hidden", lt);
   if (!Z.retype) sp.placeholder = lt ? "Harflarni bosing…" : "Inglizcha yozing…";
   if (!lt) { bank.classList.add("hidden"); bank.innerHTML = ""; setTimeout(() => sp.focus(), 50); return; }
   if (document.activeElement === sp) sp.blur();
@@ -2445,6 +2446,8 @@ function ltTap(b) {
   const sp = $("#spell"); if (!Z || Z.state === "next" || b.disabled || b.classList.contains("used")) return;
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
   sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b);
+  // hamma harf terilgach o'zi tekshiradi (oxirgi harf ko'rinib turishi uchun qisqa pauza)
+  if (sp.value.length >= Z.ltTarget.length) { const q = Z.cur; setTimeout(() => { if (Z && Z.cur === q && Z.state === "ask" && sp.value.length >= Z.ltTarget.length) check(); }, 280); }
 }
 function ltUndo() {
   const sp = $("#spell"), b = Z && Z.ltUsed.pop(); if (!b || Z.state === "next") return;
@@ -2816,7 +2819,7 @@ route(/^tuzmashq$/, () => {
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
     : `<div class="answer" id="ans"></div><div class="tiles" id="bank"></div>`}
     <div class="fb hidden" id="tf"></div>
-    <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="clr">Tozalash</button>`}<button class="btn" id="chk" disabled>Tekshirish</button></div>
+    <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="clr">Tozalash</button>`}<button class="btn${yoz ? "" : " hidden"}" id="chk" disabled>Tekshirish</button></div>
   </div>`;
   $("#quit").onclick = () => { const b = T.back; T = null; location.hash = b; };
   let done = false;
@@ -2825,7 +2828,7 @@ route(/^tuzmashq$/, () => {
     $("#tf").innerHTML = html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
     bindSay($("#tf")); say(it.e);
     const c = $("#clr"); if (c) c.classList.add("hidden");
-    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi →" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
+    $("#chk").classList.remove("hidden"); $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi →" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
   };
   if (yoz) {
     const inp = $("#tin"), want = canon(it.e);
@@ -2856,8 +2859,9 @@ route(/^tuzmashq$/, () => {
     $("#ans").innerHTML = picked.length ? picked.map((k, j) => `<button class="tile" data-j="${j}">${esc(tiles[k])}</button>`).join("") : `<span class="muted">So'zlarni bosing…</span>`;
     $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}">${esc(t)}</button>`).join("");
     $("#ans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
-    $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw(); });
-    if (!done) $("#chk").disabled = !picked.length;
+    $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw();
+      if (picked.length === want.length) setTimeout(() => { if (!done && picked.length === want.length) $("#chk").onclick(); }, 350); });
+    if (!done) { $("#chk").disabled = !picked.length; $("#clr").disabled = !picked.length; }
   };
   $("#clr").onclick = () => { if (done) return; picked.length = 0; draw(); };
   $("#chk").onclick = () => {

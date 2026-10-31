@@ -684,6 +684,95 @@ a.nwb{text-decoration:none}
 .gplay svg{width:28px;height:28px}
 .gqr{margin:0 0 14px;font-size:16px}.gqr b{font-size:22px;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
+/* ===== Bosh sahifa: iliq shisha (aura fon + muzli kartalar + widgetlar) ===== */
+.home>*:not(.aura){position:relative;z-index:1}
+.home .aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.home .aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
+@keyframes au-dr{50%{transform:translate(-3%,3%) scale(1.05)}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home .aura{opacity:.2}}
+:root[data-theme="dark"] .home .aura{opacity:.2}
+.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--surface)}}
+.home .xm,.home .xm-t,.home .skc{border-radius:28px}
+/* dars: halqa va ixcham qadamlar */
+.dars .cnt{position:relative;width:58px;height:58px;padding:0;background:none;justify-content:center;margin:-4px -2px 0 0}
+.dars .cnt .rg{position:absolute;inset:0}
+.dars .cnt b{position:relative;font-size:14px;font-weight:700}
+.dars .cnt.ok b{color:var(--ok)}
+.rg{overflow:visible}.rg circle{fill:none}
+.rg .tk{stroke:var(--track)}.rg .p{stroke:var(--marker);stroke-linecap:round}
+.dars .cnt.ok .rg .p{stroke:var(--ok-strong)}
+.dars .tl{margin:14px 0}
+.dars .tl li{padding:0 0 2px}
+.dars .tl li:not(:last-child)::before{display:none}
+.dars .tl button{align-items:center;gap:0;border-radius:18px}
+.dars .tl .dot{width:28px;height:28px;margin:0 0 0 10px;font-size:13px;background:transparent;box-shadow:inset 0 0 0 2px var(--track)}
+.dars .tl .done .dot{box-shadow:none;background:var(--ok-strong)}
+.dars .tl .now .dot{background:var(--marker);color:var(--on-marker)}
+.dars .tl .now .dot{box-shadow:0 0 0 5px color-mix(in srgb,var(--marker) 16%,transparent)}
+.dars .tl .bx{padding:10px 12px;min-height:50px}
+.dars .tl .now button{background:linear-gradient(135deg,var(--marker-soft),color-mix(in srgb,var(--marker-soft) 45%,transparent))}
+.dars .tl .now .bx,.dars .tl .now button:hover .bx{background:none;padding:12px 12px}
+.dars .tl button:not(:disabled):hover .bx{background:none}
+.dars .tl button:not(:disabled):hover{background:var(--press)}
+.dars .tl li:not(.now):not(.lock) .tx span{display:none}
+.dars .tl .now .tx b{font-size:16px}
+.dars .tl .done .tx b{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.dars .tl .done .m{color:var(--muted)}
+/* xotira: gradient shkala */
+.xm-goal{font-size:15px;color:var(--muted);font-weight:500}
+.gsc{margin:26px 4px 2px}
+.gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,#EBD3C6,#F2A47C 45%,#D2552B 75%,#3F8A3B);box-shadow:inset 0 1px 2px rgba(0,0,0,.1)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}}
+:root[data-theme="dark"] .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}
+.gbar .goal{position:absolute;top:-7px;bottom:-7px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink);opacity:.55}
+.gbar .goal em{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font:600 11px var(--font-body);font-style:normal;color:var(--ok);white-space:nowrap}
+.gbar .h{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 0 0 5px #fff,inset 0 0 0 8px #D2552B}
+.gsl{display:flex;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+/* seriya kartasi */
+.skc{padding:16px}
+.skc .sh{display:flex;align-items:center;gap:12px}
+.skc .fl{color:#D2552B;display:flex}.skc .fl svg{width:28px;height:28px}
+.skc .tx b{display:block;font-size:18px;font-weight:700;line-height:1.25}
+.skc .tx>span{display:block;font-size:13px;color:var(--muted)}
+.skc .week{background:none;box-shadow:none;padding:14px 0 0;border-radius:0}
+.week i.on{background:radial-gradient(circle at 35% 30%,#F29068,var(--marker));box-shadow:0 3px 8px -3px rgba(23,23,27,.3)}
+.week i.now.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px #E8805C}
+.skc .week i.now.on{box-shadow:0 0 0 3px var(--surface),0 0 0 5px #E8805C}
+/* takrorlash va mustahkam */
+.xm-t.xg{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 12px}
+.xm-t.xg .xm-k{align-self:flex-start;display:flex;align-items:center;gap:6px;color:var(--ink);font-weight:600}
+.xm-t.xg .xm-k svg{width:18px;height:18px;color:var(--marker)}
+.gw{position:relative;width:128px;margin-top:10px}
+.gw .gauge{display:block;width:128px;height:72px;overflow:visible}
+.gauge path{fill:none;stroke-width:14;stroke-linecap:round}
+.gauge .tk{stroke:var(--track)}.gauge .p{stroke:var(--marker)}
+.gw b{position:absolute;left:0;right:0;bottom:0;font:700 26px/1 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.gw.gr{width:88px;height:88px}
+.gw.gr b{inset:0;display:grid;place-items:center;font-size:20px}
+.rg.mst .p{stroke:#6B57A8}.rg.mst .tk{stroke:color-mix(in srgb,#6B57A8 16%,transparent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .rg.mst .p{stroke:#9B87D8}}
+:root[data-theme="dark"] .rg.mst .p{stroke:#9B87D8}
+.xm-t.xg .xm-s{margin-top:8px}
+/* xatolar qatori */
+.xrow{display:flex;align-items:center;gap:12px;min-height:60px;padding:12px 14px;border-radius:22px;color:inherit;text-decoration:none}
+.xrow .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bad-bg);color:var(--bad-strong)}
+.xrow .ic svg{width:20px;height:20px}
+.xrow b{flex:1;font-size:15px;font-weight:600}
+.xrow .go{display:flex;color:var(--muted)}.xrow .go svg{width:18px;height:18px}
+.xrow:active{transform:scale(.99)}
+/* kirish: kartalar navbat bilan yumshoq ko'tariladi, halqa va shkala chiziladi */
+.home.hin .stack>*{animation:h-rise .7s cubic-bezier(.16,1,.3,1) both}
+.home.hin .stack>*:nth-child(1){animation-delay:40ms}.home.hin .stack>*:nth-child(2){animation-delay:100ms}.home.hin .stack>*:nth-child(3){animation-delay:160ms}
+.home.hin .stack>*:nth-child(4){animation-delay:220ms}.home.hin .stack>*:nth-child(5){animation-delay:280ms}.home.hin .stack>*:nth-child(n+6){animation-delay:340ms}
+@keyframes h-rise{from{opacity:0;transform:translateY(14px) scale(.985)}}
+.home.hin .rg .p,.home.hin .gauge .p{animation:h-draw 1.2s cubic-bezier(.16,1,.3,1) .3s both}
+@keyframes h-draw{from{stroke-dashoffset:100}}
+.home.hin .gbar .h{animation:h-slide 1.3s cubic-bezier(.16,1,.3,1) .35s both}
+@keyframes h-slide{from{left:0}}
+.home.hin .skc .week i.on{animation:m-pop .5s cubic-bezier(.34,1.56,.64,1) both}
+.home.hin .skc .week div:nth-child(2) i{animation-delay:.05s}.home.hin .skc .week div:nth-child(3) i{animation-delay:.1s}.home.hin .skc .week div:nth-child(4) i{animation-delay:.15s}
+.home.hin .skc .week div:nth-child(5) i{animation-delay:.2s}.home.hin .skc .week div:nth-child(6) i{animation-delay:.25s}.home.hin .skc .week div:nth-child(7) i{animation-delay:.3s}
 /* dars yakuni */
 .yk{padding-top:8px}
 .yk .done-h{margin:6px 0 6px}
@@ -2027,7 +2116,7 @@ const routes = [];
 const route = (re, fn) => routes.push([re, fn]);
 function go(h) { location.hash = h; }
 /* real ilovalardagidek: orqaga qaytilganda ro'yxat avvalgi joyida ochiladi; shu sahifaning o'zi yangilansa tepaga sakramaydi */
-const SCROLLS = {}, HIST = []; let curH = null;
+const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
   app.classList.remove("home");
@@ -2035,7 +2124,7 @@ function render() {
   if (curH !== null) SCROLLS[curH] = scrollY;
   let back = false;
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
-  curH = h;
+  prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig();
   const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
@@ -2251,7 +2340,8 @@ route(/^$/, () => {
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
-  app.classList.add("home"); app.innerHTML = `
+  /* kirish animatsiyasi faqat boshqa sahifadan kelganda (joyida qayta chizilganda emas) */
+  app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `<div class="aura" aria-hidden="true"></div>
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
     <a class="pill" href="#kurs" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + cu.n : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></a>
@@ -2269,10 +2359,10 @@ route(/^$/, () => {
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
     ${retCard()}
+    ${streakCard(streak)}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    <div class="week" aria-label="Shu hafta">${weekDays()}</div>
     ${backupCard(seen) || installCard()}
-    ${nm ? `<div class="facts"><a href="#xato"><b>${nm}</b> ta xato — qayta mashq</a></div>` : ""}
+    ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}
     <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
@@ -2283,7 +2373,17 @@ route(/^$/, () => {
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { S.level = "beginner"; save(); render(); };
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+  if (app.classList.contains("hin")) countUp(app);
 });
+/* sonlar 0 dan sanab chiqadi (faqat kirish animatsiyasida) */
+function countUp(root) {
+  root.querySelectorAll("[data-c]").forEach(el => { const to = +el.dataset.c, t0 = performance.now() + 220, d = 850; if (!(to > 0)) return;
+    const f = t => { if (!el.isConnected) return; const k = Math.min(1, Math.max(0, (t - t0) / d)), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(f); };
+    el.textContent = "0"; requestAnimationFrame(f); });
+}
+/* halqa/yoy: pathLength=100, to'ldirish = foiz */
+const arcRing = (size, sw, pct, cls, extra = "") => { const r = (size - sw) / 2, c = size / 2;
+  return `<svg class="rg ${cls}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" class="tk" stroke-width="${sw}"/><circle cx="${c}" cy="${c}" r="${r}" class="p" stroke-width="${sw}" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - Math.max(0, Math.min(100, pct))}" transform="rotate(-90 ${c} ${c})"/>${extra}</svg>`; };
 /* ---------- takrorlash tartibi va kunlik chegara: eng kechikkan va eng zaif so'z birinchi; qolgani keyingi kunlarga ---------- */
 const REV_CAP = 30;
 const revOrder = list => list.slice().sort((a, b) => { const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; });
@@ -2402,10 +2502,10 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
   const sub = !left.length ? (lock ? stepView(lock).sub : all + " qadam · hammasi bajarildi") : started ? mins + " daqiqa qoldi" : all + " qadam · " + mins + " daqiqa";
   const li = plan.map((x, i) => {
     const d = done.includes(x.tag), lk = x.lock && !d, now = x === next, v = stepView(x);
-    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : i + 1}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${d ? "bajarildi" : lk ? "" : x.min + " daq"}</span></span></button></li>`;
+    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : i + 1}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${lk ? "" : x.min + " daq"}</span></span></button></li>`;
   }).join("");
   return `<section class="lesson dars">
-    <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" aria-label="${dn} / ${all} qadam bajarildi">${dn}/${all}</span></div>
+    <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
     <ol class="tl">${li}</ol>
     ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>${miniPool().length >= 5 ? `<button class="mini" id="mini">${ICON.clock}Vaqt kam? 2 daqiqalik takrorlash</button>` : ""}` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${cu.n} · ${esc(info[0])}</b><span>${esc(info[1])} · ${bookPages(cu.n)}-betlar</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
@@ -2447,8 +2547,6 @@ const MSH = ["yan", "fev", "mar", "apr", "may", "iyun", "iyul", "avg", "sen", "o
 const DSH = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
 const tipA = t => `tabindex="0" role="button" aria-label="${esc(t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())}" data-tip="${t.replace(/"/g, "&quot;")}"`;
 /* grafik kengligi ekranga qarab: matn har doim 11px qoladi (keng ekranda kattalashib ketmaydi) */
-const appW = () => { const cs = getComputedStyle(app); return Math.max(280, Math.min(1000, app.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight))); };
-let xmW = 0; addEventListener("resize", () => { if (location.hash.replace("#", "") === "" && Math.abs(appW() - xmW) > 24) render(); });
 function retWeeks(n) {
   const out = [], dow = (new Date().getDay() + 6) % 7;
   for (let off = n - 1; off >= 0; off--) {
@@ -2457,56 +2555,31 @@ function retWeeks(n) {
   }
   return out;
 }
-function retChart(W) {
-  const w = Math.round(appW() - 32), h = 132, L = 30, R = 10, T = 14, B = 24, ph = h - T - B; xmW = appW();
-  const pts = W.filter(x => x.rv), lo = Math.min(40, Math.floor(Math.min(100, ...pts.map(x => x.p)) / 20) * 20);
-  const y = v => T + ph - (v - lo) / (100 - lo) * ph, step = (w - L - R - 16) / (W.length - 1), X = i => L + 8 + step * i;
-  let s = `<svg class="xm-ch" viewBox="0 0 ${w} ${h}" role="img" aria-label="${pts.length ? "Esda qolgan so'zlar, haftalar bo'yicha: " + pts.map(x => x.lab + " " + x.p + "%").join(", ") : "Esda qolgan so'zlar: hali ma'lumot yo'q"}">`;
-  for (let v = lo; v <= 100; v += 20) s += `<line x1="${L}" x2="${w - R}" y1="${y(v) + .5}" y2="${y(v) + .5}" stroke="var(--grid)"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
-  s += `<line x1="${L}" x2="${w - R}" y1="${y(80)}" y2="${y(80)}" stroke="var(--ok)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="${w - R}" y="${y(80) - 6}" text-anchor="end" style="fill:var(--ok);font-weight:600">maqsad 80%</text>`;
-  let d = "", pen = false;
-  W.forEach((x, i) => { if (x.rv) { d += (pen ? " L" : " M") + X(i) + " " + y(x.p); pen = true; } else pen = false; });
-  if (d) s += `<path d="${d}" fill="none" stroke="var(--marker)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
-  W.forEach((x, i) => {
-    const last = i === W.length - 1;
-    if (x.rv) s += `<circle cx="${X(i)}" cy="${y(x.p)}" r="${last ? 5 : 3.5}" fill="var(--marker)" stroke="var(--surface)" stroke-width="2"/>`;
-    s += `<text x="${X(i)}" y="${h - 6}" text-anchor="middle"${last ? ' class="now"' : ""}>${x.lab}</text>`;
-    s += `<rect class="hit" x="${X(i) - step / 2}" y="0" width="${step}" height="${h}" ${tipA(`<b>${x.long}: ${x.rv ? x.p + "%" : "—"}</b><br>${x.rv ? x.rv + " ta takrorlashdan " + x.rk + " tasi birinchi urinishda" : "Takrorlash bo'lmagan"}`)}/>`;
-  });
-  return s + "</svg>";
-}
 function retCard() {
   const W = retWeeks(6), cur = W[W.length - 1], prev = W.slice(0, -1).reverse().find(x => x.rv), any = W.some(x => x.rv);
   const head = `<div class="xm-h"><b>Esda qolgan so'zlar</b><a href="#natija">Batafsil${ICON.chev}</a></div>`;
-  if (!any) return `<section class="xm">${head}<p class="xm-sub">Takrorlashda birinchi urinishda topilgan so'zlar ulushi</p>${retChart(W)}
+  const lo = Math.min(40, Math.floor(Math.min(100, ...W.filter(x => x.rv).map(x => x.p)) / 20) * 20), at = v => ((v - lo) / (100 - lo) * 100).toFixed(1) + "%";
+  const scale = (v, aria) => `<div class="gsc"${aria ? ` role="img" aria-label="${aria}"` : ""}><span class="gbar"><i class="goal" style="left:${at(80)}"><em>maqsad</em></i>${v == null ? "" : `<i class="h" style="left:${at(v)}"></i>`}</span><span class="gsl">${[0, 1, 2, 3, 4].map(k => `<span>${Math.round(lo + (100 - lo) * k / 4)}</span>`).join("")}</span></div>`;
+  if (!any) return `<section class="xm">${head}<p class="xm-sub">Takrorlashda birinchi urinishda topilgan so'zlar ulushi</p>${scale(null, "Hali ma'lumot yo'q, maqsad 80%")}
     <div class="xm-empty">${ICON.info}<span><b>Ertaga paydo bo'ladi.</b> Bugun o'rgangan so'zlaringiz ertaga takrorlanganda, nechtasini birinchi urinishda topganingiz shu yerda chiziladi.</span></div></section>`;
   const dl = cur.rv && prev ? cur.p - prev.p : null;
   const delta = dl === null ? "" : `<span class="xm-delta${dl > 0 ? " up" : ""}">${dl > 0 ? ICON.up : dl < 0 ? ICON.down : ""}${dl ? Math.abs(dl) : "o'zgarmadi,"} o'tgan haftaga</span>`;
   const note = cur.rv ? `Oldingi kunlarda o'rgangan so'zlarni takrorlaganda <b>${cur.rv} tadan ${cur.rk} tasini</b> birinchi urinishda topdingiz. ${cur.p >= 80 ? "Maqsadga yetdingiz." : "Maqsadga " + (80 - cur.p) + " foiz qoldi."}${cur.rv < 15 ? " Takrorlash hali kam — foiz tez o'zgaradi." : ""}`
     : `Bu hafta hali takrorlash bo'lmadi. ${prev ? prev.long + ": <b>" + prev.p + "%</b>." : ""}`;
-  return `<section class="xm">${head}<div class="xm-hero"><span class="xm-n${cur.rv ? "" : " dim"}">${cur.rv ? cur.p + "%" : "—"}</span>${delta}</div>${retChart(W)}<p class="xm-note">${note}</p></section>`;
+  const v = cur.rv ? cur.p : prev ? prev.p : null;
+  return `<section class="xm">${head}<div class="xm-hero"><span class="xm-n${cur.rv ? "" : " dim"}">${cur.rv ? `<span data-c="${cur.p}">${cur.p}</span>%` : "—"}</span><span class="xm-goal">maqsad 80%</span>${delta}</div>${scale(v, v == null ? "" : "Esda qolgan " + v + "%, maqsad 80%")}<p class="xm-note">${note}</p></section>`;
 }
 function fcTile() {
   const t = today(), keys = [0, 1, 2, 3, 4, 5, 6].map(addDays), fc = [0, 0, 0, 0, 0, 0, 0];
   WORDS.forEach(w => { const r = rec(w.id); if (!r) return; if (r.due <= t) fc[0]++; else { const k = keys.indexOf(r.due); if (k > 0) fc[k]++; } });
-  const W = Math.round((appW() - 12) / 2 - 28), h = 74, bw = 12, cw = W / 7, base = h - 18, max = Math.max(1, ...fc), now = new Date().getDay();
-  let s = `<svg class="xm-ch" viewBox="0 0 ${W} ${h}" role="img" aria-label="Takrorlanadigan so'zlar: bugun ${fc[0]}, keyingi kunlar ${fc.slice(1).join(", ")}">`;
-  fc.forEach((v, i) => {
-    const cx = cw * i + cw / 2, x = cx - bw / 2, dn = (now + i) % 7;
-    if (v) { const bh = Math.max(5, Math.round(v / max * (base - 6))); s += `<path d="M${x} ${base} V${base - bh + 3} q0 -3 3 -3 h${bw - 6} q3 0 3 3 V${base} Z" fill="${i ? "var(--m2)" : "var(--marker)"}"/>`; }
-    else s += `<rect x="${x}" y="${base - 3}" width="${bw}" height="3" rx="1.5" fill="var(--track)"/>`;
-    s += `<text x="${cx}" y="${h - 4}" text-anchor="middle"${i ? "" : ' class="now"'}>${DSH[dn]}</text>`;
-    s += `<rect class="hit" x="${cw * i}" y="0" width="${cw}" height="${h}" ${tipA(`<b>${i ? i === 1 ? "Ertaga" : DAYS[dn] : "Bugun"}</b><br>${v ? v + " ta so'z takrorlanadi" : "Takrorlash yo'q"}`)}/>`;
-  });
-  s += "</svg>";
+  const L = S.log[t], did = L && L.rv || 0, tot = did + fc[0], pct = tot ? did / tot * 100 : 0;
+  const arc = `<svg class="gauge" viewBox="0 0 128 72" aria-hidden="true"><path class="tk" d="M12 64a52 52 0 0 1 104 0"/><path class="p" d="M12 64a52 52 0 0 1 104 0" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - pct}"/></svg>`;
   const wk = fc.reduce((a, b) => a + b, 0);
-  return `<div class="xm-t"><p class="xm-k">Takrorlash navbati</p><div class="xm-v">${fc[0]} <small>bugun</small></div>${s}<p class="xm-s">${fc[1] ? "Ertaga " + fc[1] + " ta · " : "Ertaga yo'q · "}7 kunda ${wk}</p></div>`;
+  return `<div class="xm-t xg"><p class="xm-k">${ICON.redo}Takrorlash</p><div class="gw" role="img" aria-label="Bugun ${fc[0]} ta so'z takrorlanadi${did ? ", " + did + " tasi takrorlandi" : ""}">${arc}<b data-c="${fc[0]}">${fc[0]}</b></div><p class="xm-s">${fc[0] ? "bugun" : did ? "bugungisi tugadi" : "bugun yo'q"} · ${fc[1] ? "ertaga " + fc[1] : "ertaga yo'q"}<br>7 kunda ${wk}</p></div>`;
 }
 function mastTile(seen, mast) {
   const k = WORDS.length, l = seen - mast;
-  return `<div class="xm-t"><p class="xm-k">Mustahkam so'zlar</p><div class="xm-v">${mast} <small>/ ${k}</small></div>
-  <div class="xm-stb" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${mast ? `<i style="flex:0 0 ${mast / k * 100}%"></i>` : ""}${l ? `<i class="m2" style="flex:0 0 ${l / k * 100}%"></i>` : ""}<i class="tr"></i></div>
-  <p class="xm-s">${l} tasi o'rganilmoqda</p></div>`;
+  return `<div class="xm-t xg"><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan · ${l} tasi o'rganilmoqda</p></div>`;
 }
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {
@@ -2519,6 +2592,12 @@ function mastTile(seen, mast) {
   document.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest("svg.xm-ch [data-tip]"); el ? show(el) : hide(); });
   addEventListener("scroll", hide, { passive: true }); addEventListener("hashchange", hide);
 })();
+/* seriya: olov + shu hafta */
+function streakCard(n) {
+  const did = S.streak && S.streak.last === today();
+  const sub = n ? did ? "Ertaga qaytsangiz — " + (n + 1) + " kun" : "Bugun darsni tugatsangiz — " + (n + 1) + " kun" : "Darsni oxirigacha qilgan kun olov yonadi";
+  return `<section class="skc"><div class="sh"><span class="fl">${ICON.flame}</span><span class="tx"><b>${n ? `<span data-c="${n}">${n}</span> kun ketma-ket` : "Seriyani boshlang"}</b><span>${sub}</span></span></div><div class="week" aria-label="Shu hafta">${weekDays()}</div></section>`;
+}
 /* haftalik qator: Dushanbadan boshlab, seriya kunlari belgilanadi */
 function weekDays() {
   const dow = (new Date().getDay() + 6) % 7, rest = new Set(S.rest || []);

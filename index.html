@@ -21,7 +21,7 @@
 /* Layout: iliq, tahririy (Busuu ruhida) — neytral ochiq fon, Onest Bold sarlavhalar, terrakota aksent; bitta ustun (640px gacha), pastda 4 bo'limli menyu */
 :root{
   --bg:#F3F4F1; --surface:#FFFFFF; --surface-2:#E9EAE5; --ink:#17171B; --muted:#5E5F67; --line:#E1E2DD; --line-strong:#CBCCC6;
-  --press:rgba(23,23,27,.05); --marker:#B9441F; --on-marker:#FFFFFF; --hl:#F8E4D9; --marker-soft:#F8E4D9; --accent-text:#9C3615;
+  --press:rgba(23,23,27,.05); --key:#E9EAE5; --marker:#B9441F; --on-marker:#FFFFFF; --hl:#F8E4D9; --marker-soft:#F8E4D9; --accent-text:#9C3615;
   --pron:#7A5A2B; --ok:#2C5E2A; --ok-strong:#3F8A3B; --ok-bg:#E5F2E4; --bad:#9A2B1C; --bad-strong:#C9452E; --bad-bg:#F9E3DD;
   --shadow:0 1px 2px rgba(23,23,27,.05), 0 10px 28px -14px rgba(23,23,27,.18);
   --glass:rgba(255,255,255,.72); --glass-solid:#FFFFFF; --glass-edge:rgba(255,255,255,.9); --glass-line:rgba(23,23,27,.08); --glass-shadow:0 10px 30px rgba(23,23,27,.14), 0 2px 6px rgba(23,23,27,.06); --lens:rgba(185,68,31,.13);
@@ -33,7 +33,7 @@
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --key:#34343C; --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -42,7 +42,7 @@
 }
 :root[data-theme="dark"]{
     --bg:#111113; --surface:#1A1A1E; --surface-2:#26262C; --ink:#EEEEE9; --muted:#A0A1A8; --line:#2A2B30; --line-strong:#3B3C42;
-    --press:rgba(255,255,255,.06); --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
+    --press:rgba(255,255,255,.06); --key:#34343C; --marker:#E27A4E; --on-marker:#1C1A16; --hl:#4A2A1C; --marker-soft:#2A2A31; --accent-text:#F09A72;
     --pron:#D9B27A; --ok:#8BCB86; --ok-strong:#5FA85A; --ok-bg:#1C2A1B; --bad:#FF9A85; --bad-strong:#E0644C; --bad-bg:#3A1D17;
     --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px -14px rgba(0,0,0,.6);
     --glass:rgba(38,38,44,.55); --glass-solid:#26262C; --glass-edge:rgba(255,255,255,.14); --glass-line:rgba(255,255,255,.06); --glass-shadow:0 12px 34px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3); --lens:rgba(226,122,78,.2);
@@ -790,6 +790,25 @@ a.nwb{text-decoration:none}
 .bank .lt.del svg{width:22px;height:22px}
 .bank .lt:active:not(:disabled){transform:scale(.94)}
 .bank .lt.used{opacity:0;pointer-events:none}
+/* harflar paneli: ekran pastida, bosh barmoq zonasida; ishlatilgan harf o'rnida punktir katak qoladi */
+.bank.dock{position:fixed;left:0;right:0;bottom:0;z-index:25;max-width:640px;margin:0 auto;padding:14px 12px calc(14px + env(safe-area-inset-bottom,0px));gap:10px;background:var(--surface);border-radius:28px 28px 0 0;box-shadow:0 -10px 30px -14px rgba(0,0,0,.4)}
+.bank.dock .lt{min-width:56px;height:60px;border-radius:16px;font-size:24px;background:var(--key);color:var(--ink);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.bank.dock .lt.spc{min-width:112px;font-size:15px}
+.bank.dock .lt.used{opacity:1;background:transparent;color:transparent;box-shadow:none;outline:1.5px dashed var(--edge);outline-offset:-2px}
+.bank.dock.done{display:none}
+body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + env(safe-area-inset-bottom,0px))}
+.spell[data-lt="1"]{display:none}
+.lans{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:64px;margin-top:16px;padding:8px;border-radius:16px;background:var(--surface);box-shadow:inset 0 0 0 2px var(--line)}
+.lans .ph{padding:0 8px;color:var(--muted);font-size:18px}
+.lans button{min-width:44px;height:48px;padding:0 10px;border:0;border-radius:12px;background:var(--key);color:var(--ink);font:600 22px/1 var(--font-body);cursor:pointer}
+.lans button.n{animation:lt-in .18s cubic-bezier(.16,1,.3,1)}
+.lans button.sp{min-width:22px;padding:0;background:transparent;box-shadow:inset 0 -2px 0 var(--line-strong);border-radius:4px}
+.lans button:active:not(:disabled){transform:scale(.92)}
+.lans button:disabled{cursor:default}
+.lans.ok{box-shadow:inset 0 0 0 2px var(--ok-strong)}.lans.ok button{background:var(--ok-bg);color:var(--ok)}
+.lans.bad{box-shadow:inset 0 0 0 2px var(--bad-strong)}
+@keyframes lt-in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.lans button.n{animation:none}}
 .bank .lt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 .bank.done .lt{opacity:.35}
 .bank.nudge{animation:nudge .3s}
@@ -2973,7 +2992,8 @@ route(/^quiz$/, () => {
     <div class="tools" id="tools"><button class="icon" id="say">${ICON.vol} Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
     <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
-    <div class="bank hidden" id="bank" role="group" aria-label="Harflar"></div>
+    <div class="lans hidden" id="lans" role="group" aria-label="Javobingiz — harfni bossangiz, joyiga qaytadi"></div>
+    <div class="bank dock hidden" id="bank" role="group" aria-label="Harflar"></div>
     <button class="kbt hidden" id="kbt"></button>
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazib yuborish</button><button class="btn" id="next">Tekshirish</button></div>
@@ -2985,6 +3005,7 @@ route(/^quiz$/, () => {
   $("#next").onclick = () => { if (typedQ() && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
+  new MutationObserver(ltDraw).observe($("#spell"), { attributes: true, attributeFilter: ["class", "data-lt"] });
   $("#kbt").onclick = () => { try { localStorage.setItem("ingliz-kbd", useLetters() ? "1" : "0"); } catch (er) {} setInputMode(Z.ltTarget); };
   ask();
 });
@@ -3156,28 +3177,48 @@ function setInputMode(target) {
   kb.classList.remove("hidden"); kb.innerHTML = lt ? ICON.kbd + "Klaviatura bilan yozish" : ICON.tiles + "Harflardan terish";
   kb.setAttribute("aria-label", lt ? "Klaviatura bilan yozish" : "Harflardan terish");
   sp.readOnly = lt; if (lt) sp.setAttribute("inputmode", "none"); else sp.removeAttribute("inputmode");
+  sp.dataset.lt = lt ? "1" : ""; bank.classList.remove("done");
   sp.classList.toggle("ltm", lt);
   $("#next").classList.toggle("hidden", lt);
   if (!Z.retype) sp.placeholder = lt ? "Harflarni bosing…" : "Inglizcha yozing…";
-  if (!lt) { bank.classList.add("hidden"); bank.innerHTML = ""; setTimeout(() => sp.focus(), 50); return; }
+  if (!lt) { bank.classList.add("hidden"); bank.innerHTML = ""; ltDraw(); setTimeout(() => sp.focus(), 50); return; }
   if (document.activeElement === sp) sp.blur();
   sp.value = "";
-  bank.innerHTML = bankLetters(target).map((c, i) => `<button class="lt${c === " " ? " spc" : ""}" data-i="${i}" data-c="${esc(c)}" aria-label="${c === " " ? "bo'sh joy" : esc(c)}">${c === " " ? "bo'sh joy" : esc(c)}</button>`).join("")
-    + `<button class="lt del" id="ltdel" aria-label="Oxirgi harfni o'chirish">${ICON.erase}</button>`;
+  bank.innerHTML = bankLetters(target).map((c, i) => `<button class="lt${c === " " ? " spc" : ""}" data-i="${i}" data-c="${esc(c)}" aria-label="${c === " " ? "bo'sh joy" : esc(c)}">${c === " " ? "bo'sh joy" : esc(c)}</button>`).join("");
   bank.classList.remove("hidden");
-  bank.querySelectorAll(".lt:not(.del)").forEach(b => b.onclick = () => ltTap(b));
-  $("#ltdel").onclick = ltUndo;
+  bank.querySelectorAll(".lt").forEach(b => b.onclick = () => ltTap(b));
+  ltDraw();
 }
 function ltTap(b) {
   const sp = $("#spell"); if (!Z || Z.state === "next" || b.disabled || b.classList.contains("used")) return;
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
-  sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b);
+  sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b); ltNew = true; ltDraw(); ltNew = false;
   // hamma harf terilgach o'zi tekshiradi (oxirgi harf ko'rinib turishi uchun qisqa pauza)
   if (sp.value.length >= Z.ltTarget.length) { const q = Z.cur; setTimeout(() => { if (location.hash === "#quiz" && sp.isConnected && Z && Z.cur === q && Z.state === "ask" && sp.value.length >= Z.ltTarget.length) check(); }, 280); }
 }
 function ltUndo() {
   const sp = $("#spell"), b = Z && Z.ltUsed.pop(); if (!b || Z.state === "next") return;
-  sp.value = sp.value.slice(0, -1); b.classList.remove("used"); b.disabled = false;
+  sp.value = sp.value.slice(0, -1); b.classList.remove("used"); b.disabled = false; ltDraw();
+}
+/* tepaga chiqqan harf bosilsa — o'sha harf pastdagi joyiga qaytadi (o'chirish tugmasi kerak emas) */
+let ltNew = false;
+function ltBack(k) {
+  const sp = $("#spell"); if (!Z || Z.state === "next" || !Z.ltUsed) return;
+  const b = Z.ltUsed.splice(k, 1)[0]; if (!b) return;
+  b.classList.remove("used"); b.disabled = false;
+  sp.value = Z.ltUsed.map(x => x.dataset.c).join("");
+  if (sp.classList.contains("bad")) sp.className = "spell ltm";
+  ltDraw();
+}
+/* javob qatori: terilgan harflar — har biri tugma; bo'sh bo'lsa ko'rsatma matni */
+function ltDraw() {
+  const sp = $("#spell"), box = $("#lans"); if (!sp || !box) return;
+  const show = sp.dataset.lt === "1" && !sp.classList.contains("hidden");
+  box.classList.toggle("hidden", !show); if (!show) return;
+  box.classList.toggle("ok", sp.classList.contains("ok")); box.classList.toggle("bad", sp.classList.contains("bad"));
+  const used = (Z && Z.ltUsed) || [], lock = !Z || Z.state === "next";
+  box.innerHTML = used.length ? used.map((b, i) => `<button class="${b.dataset.c === " " ? "sp" : ""}${ltNew && i === used.length - 1 ? " n" : ""}" data-k="${i}"${lock ? " disabled" : ""} aria-label="${b.dataset.c === " " ? "bo'sh joy" : esc(b.dataset.c)} — joyiga qaytarish">${b.dataset.c === " " ? "" : esc(b.dataset.c)}</button>`).join("") : `<span class="ph">${esc(sp.placeholder)}</span>`;
+  box.querySelectorAll("button").forEach(x => x.onclick = () => ltBack(+x.dataset.k));
 }
 function bankLock() { $("#bank").querySelectorAll("button").forEach(b => b.disabled = true); $("#bank").classList.add("done"); }
 function bankNudge() { const b = $("#bank"); b.classList.remove("nudge"); void b.offsetWidth; b.classList.add("nudge"); }
@@ -3187,7 +3228,7 @@ document.addEventListener("keydown", e => {
   const bank = $("#bank"); if (!bank || bank.classList.contains("hidden")) return;
   if (e.key === "Backspace") { e.preventDefault(); ltUndo(); return; }
   if (e.key === "Enter") { e.preventDefault(); check(); return; }
-  if (e.key.length === 1) { const k = e.key.toLowerCase(), b = [...bank.querySelectorAll(".lt:not(.del):not(.used)")].find(x => x.dataset.c === k); if (b) { e.preventDefault(); ltTap(b); } }
+  if (e.key.length === 1) { const k = e.key.toLowerCase(), b = [...bank.querySelectorAll(".lt:not(.used)")].find(x => x.dataset.c === k); if (b) { e.preventDefault(); ltTap(b); } }
 });
 function setLabel(t) { $("#qlabel").innerHTML = (Z.tag2 ? '<span class="qtag' + (Z.re ? " re" : "") + '">' + Z.tag2 + "</span>" : "") + '<span class="ltx">' + esc(t) + "</span>"; }
 function result(ok) {

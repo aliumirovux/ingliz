@@ -745,7 +745,7 @@ a.nwb{text-decoration:none}
 /* xotira: gradient shkala */
 .xm-goal{font-size:15px;color:var(--muted);font-weight:500}
 .gsc{margin:26px 4px 2px}
-.gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,#EBD3C6,#F2A47C 45%,#D2552B 75%,#3F8A3B);box-shadow:0 4px 14px -4px rgba(210,85,43,.5),inset 0 1px 2px rgba(0,0,0,.08)}
+.gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,#EBD3C6,#F2A47C 45%,#D2552B 75%,#3F8A3B);box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}}
 :root[data-theme="dark"] .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}
 .gbar .goal{position:absolute;top:-7px;bottom:-7px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink);opacity:.55}
@@ -840,6 +840,11 @@ small{font-size:13px}
 .qcard{-webkit-backdrop-filter:none;backdrop-filter:none}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--card:var(--surface)}}
 @media (prefers-reduced-transparency:reduce){:root{--card:var(--surface)}}
+/* Takrorlash widgeti — bosiladigan (2 daqiqalik takrorlash) */
+button.xm-t.tap{border:0;font:inherit;color:inherit;cursor:pointer;width:100%;transition:transform .4s cubic-bezier(.3,1.4,.5,1)}
+button.xm-t.tap:active{transform:scale(.97);transition-duration:.12s}
+button.xm-t.tap:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.mchip{display:inline-flex;align-items:center;margin-top:10px;height:32px;padding:0 14px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
 /* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
 .side{display:contents}
 .home .stack>.side>.skc{order:-1}
@@ -2650,7 +2655,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
   return `<section class="lesson dars">
     <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
     <ol class="tl">${li}</ol>
-    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>${miniPool().length >= 5 ? `<button class="mini" id="mini">Vaqt kam? 2 daqiqalik takrorlash</button>` : ""}` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
+    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${cu.n} · ${esc(info[0])}</b><span>${esc(info[1])} · ${bookPages(cu.n)}-betlar</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
   </section>`;
 }
@@ -2744,7 +2749,8 @@ function fcTile() {
   const L = S.log[t], did = L && L.rv || 0, tot = did + fc[0], pct = tot ? did / tot * 100 : 0;
   const arc = `<svg class="gauge" viewBox="0 0 128 72" aria-hidden="true"><defs><linearGradient id="gaugeg" x1="0" x2="1"><stop offset="0" stop-color="#F2A47C"/><stop offset="1" stop-color="#C9542A"/></linearGradient></defs><path class="tk" d="M12 64a52 52 0 0 1 104 0"/><path class="p" d="M12 64a52 52 0 0 1 104 0" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - pct}"/></svg>`;
   const wk = fc.reduce((a, b) => a + b, 0);
-  return `<div class="xm-t xg"><p class="xm-k">${ICON.redo}Takrorlash</p><div class="gw" role="img" aria-label="Bugun ${fc[0]} ta so'z takrorlanadi${did ? ", " + did + " tasi takrorlandi" : ""}">${arc}<b data-c="${fc[0]}">${fc[0]}</b></div><p class="xm-s">${fc[0] ? "bugun" : did ? "bugungisi tugadi" : "bugun yo'q"} · ${fc[1] ? "ertaga " + fc[1] : "ertaga yo'q"}<br>7 kunda ${wk}</p></div>`;
+  const mini = miniPool().length >= 5, tg = mini ? "button" : "div";
+  return `<${tg} class="xm-t xg${mini ? " tap" : ""}"${mini ? ' id="mini" aria-label="2 daqiqalik takrorlashni boshlash"' : ""}><p class="xm-k">${ICON.redo}Takrorlash</p><div class="gw" role="img" aria-label="Bugun ${fc[0]} ta so'z takrorlanadi${did ? ", " + did + " tasi takrorlandi" : ""}">${arc}<b data-c="${fc[0]}">${fc[0]}</b></div><p class="xm-s">${fc[0] ? "bugun" : did ? "bugungisi tugadi" : "bugun yo'q"} · ${fc[1] ? "ertaga " + fc[1] : "ertaga yo'q"}<br>7 kunda ${wk}</p>${mini ? `<span class="mchip">2 daqiqalik mashq</span>` : ""}</${tg}>`;
 }
 function mastTile(seen, mast) {
   const k = WORDS.length, l = seen - mast;
@@ -3137,7 +3143,7 @@ const gTitle = g => g.title.replace(/^\d+\.\s*/, "");
 route(/^soz-(\d+)$/, n => {
   n = +n; const u = unitOf(n); if (!u) return go("lugat");
   pick.groups = new Set(u.groups.map((_, i) => i));
-  app.innerHTML = `${nav(`#unit-${n}`, `Unit ${n}`, `So'zlar`)}<p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
+  app.innerHTML = `${nav(`#unit-${n}`, `Unit ${n}`, `So'zlar`)}
   <div class="stack">
     <div class="stack" id="ptop" style="gap:12px"></div>
     <div class="card"><div class="lh"><h2 id="glh">Qaysi so'zlar?</h2><button id="gall"></button></div><ul class="gl" id="chips" role="group" aria-labelledby="glh"></ul></div>

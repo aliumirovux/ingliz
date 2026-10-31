@@ -848,6 +848,11 @@ button.xm-t.tap:focus-visible{outline:2px solid var(--marker);outline-offset:2px
 /* chip karta chetidan uch tomonda bir xil (12px), radiusi karta radiusiga mos (30 − 12 = 18) */
 button.xm-t.tap{padding:14px 12px 12px}
 .mchip{display:flex;align-self:stretch;justify-content:center;align-items:center;margin-top:auto;height:36px;padding:0 12px;border-radius:18px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
+/* bosh sahifa tepasi: salomlashuvsiz — chapda daraja va unit, o'ngda sozlamalar */
+.hdate{margin:4px 0 8px;font-size:14px;color:var(--muted)}
+.hello.hbar{align-items:center;margin:0 0 16px}
+.hello.hbar .pills{margin:0}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
 .side{display:contents}
 .home .stack>.side>.skc{order:-1}
@@ -2488,14 +2493,13 @@ route(/^$/, () => {
   const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag) && !x.lock);
   const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
-  const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
   /* kirish animatsiyasi faqat boshqa sahifadan kelganda (joyida qayta chizilganda emas) */
   app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `
-  <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
-  <div class="pills">
+  <h1 class="sr-only">Bugun</h1><p class="date hdate">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p>
+  <div class="hello hbar"><div class="pills">
     <button class="pill" id="kursb" data-k="lvl" aria-haspopup="dialog" aria-label="Darajani o'zgartirish: ${esc(lv.t)}"><span>${esc(lv.t)}</span><span class="dn">${ICON.down}</span></button>${lvReady ? `<button class="pill" id="unitb" data-k="unit" aria-haspopup="dialog" aria-label="Unitni o'zgartirish"><span>${S.course ? "Unit " + cu.n : "Unitni tanlang"}</span><span class="dn">${ICON.down}</span></button>` : ""}
-  </div>
+  </div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="stack">
     ${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
     ${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">

@@ -438,7 +438,7 @@ body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
   .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)){padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
   .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)) > .card > .row:not(.hidden){position:fixed;z-index:20;left:0;right:0;bottom:0;max-width:640px;margin:0 auto!important;
     padding:20px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-    background:linear-gradient(to bottom,transparent,var(--bg) 40%);transform:translateY(calc(-1 * var(--kb, 0px)));transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+    background:none;transform:translateY(calc(-1 * var(--kb, 0px)));transition:transform .25s cubic-bezier(.2,.8,.2,1)}
   .typing .quizmode .wrap:has(.spell:not(.hidden):not(.ltm)) > .card > .row:not(.hidden){padding-bottom:12px}
 }
 nav.tabs .lens.still{transition:none}
@@ -696,7 +696,7 @@ a.nwb{text-decoration:none}
 @media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
 /* ===== Bosh sahifa: iliq shisha (aura fon + muzli kartalar + widgetlar) ===== */
 .stage{position:relative;z-index:1}
-.aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.aura{position:fixed;top:0;left:0;right:0;height:var(--auraH,100lvh);z-index:0;pointer-events:none;overflow:hidden}
 .aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
 @keyframes au-dr{50%{transform:translate(-3%,3%) scale(1.05)}}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aura{opacity:.32}}
@@ -2568,6 +2568,9 @@ route(/^$/, () => {
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
   if (app.classList.contains("hin")) countUp(app);
 });
+/* fon (aura) balandligi qotiriladi — klaviatura ochilib-yopilganda fon cho'zilib-qisqarmaydi */
+(() => { let mx = 0; const set = (reset) => { const h = innerHeight; if (reset) mx = 0; if (h > mx) { mx = h; document.documentElement.style.setProperty("--auraH", mx + "px"); } };
+  set(); addEventListener("resize", () => set(false)); addEventListener("orientationchange", () => setTimeout(() => set(true), 400)); })();
 /* tugmada barmoq tekkan nuqta — yumshoq nur shu yerdan tarqaladi */
 document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest(".btn"); if (!b) return; const r = b.getBoundingClientRect(); b.style.setProperty("--px", (e.clientX - r.left) + "px"); b.style.setProperty("--py", (e.clientY - r.top) + "px"); }, { passive: true });
 /* sonlar 0 dan sanab chiqadi (faqat kirish animatsiyasida) */
@@ -3498,8 +3501,19 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
   // fokusdagi maydonni qayta bosish focusin chiqarmaydi (klaviatura orqaga tugmasi bilan yopilgan bo'lsa) — bosishning o'zini ushlaymiz
   document.addEventListener("pointerdown", e => { if (isField(e.target) && e.target === document.activeElement && !root.classList.contains("typing")) arm(); }, true);
   document.addEventListener("focusout", e => { if (isField(e.target)) later(400); });
-  const kbVar = () => { const k = vv ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0; root.style.setProperty("--kb", k + "px"); };
-  if (vv) { vv.addEventListener("resize", kbVar); vv.addEventListener("scroll", kbVar); }
+  const kbVar = () => { const k = vv ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0; root.style.setProperty("--kb", k + "px"); return k; };
+  /* suzuvchi tugmalar qatori: ekran o'lchami o'zgarganda oldingi joyidan yangi joyiga yumshoq suriladi (sakramaydi) */
+  const bar = () => { const r = document.querySelector(".quizmode .card > .row:not(.hidden)"); return r && getComputedStyle(r).position === "fixed" ? r : null; };
+  // tugma ekran pastiga mahkamlangan: oyna balandligi qancha o'zgarsa, u shuncha siljiydi — shu farqdan boshlab 0 ga silliq olib kelamiz
+  let lastH = innerHeight, barAnim = null;
+  const glide = () => {
+    const h = innerHeight, d = h - lastH; lastH = h; const r = bar();
+    if (!r || Math.abs(d) < 3 || !r.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (barAnim) barAnim.cancel();
+    barAnim = r.animate([{ transform: `translateY(${-d}px)` }, { transform: "translateY(0)" }], { duration: 320, easing: "cubic-bezier(.2,.8,.2,1)", composite: "add" });
+  };
+  if (vv) { vv.addEventListener("resize", () => { kbVar(); glide(); }); vv.addEventListener("scroll", kbVar); }
+  else addEventListener("resize", glide);
   if (vv) vv.addEventListener("resize", () => { if (vv.height > full) full = vv.height; later(120); });
   addEventListener("orientationchange", () => setTimeout(() => { if (vv) full = vv.height; }, 500));
   addEventListener("hashchange", () => later(120));

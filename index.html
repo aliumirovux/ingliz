@@ -94,8 +94,23 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .icon:hover{filter:brightness(.96)}
 .icon svg{width:17px;height:17px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:0;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;min-height:36px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;cursor:pointer;min-height:44px}
 .chip.on{background:var(--marker-soft);color:var(--accent-text);box-shadow:inset 0 0 0 1.5px var(--marker);font-weight:600}
+.chip svg{width:16px;height:16px;flex:none;margin-left:-3px}
+.picked{margin:12px 0 0;font-size:14px;color:var(--muted)}
+.picked b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.gohint{margin:8px 2px 0;font-size:14px;color:var(--muted);text-align:center}
+/* takror savol yorlig'i (xato javob oxirida qayta so'raladi) */
+.qtag{display:inline-block;background:var(--marker-soft);color:var(--accent-text);font-weight:600;border-radius:999px;padding:2px 9px;margin-right:6px;font-size:12px}
+/* birinchi ochilish: kursdagi unitni tanlash */
+.ask-unit h2{font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:4px 0 6px}
+.ugrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 0}
+.ugrid button{display:flex;align-items:center;gap:10px;text-align:left;border:0;background:var(--surface-2);color:var(--ink);border-radius:16px;padding:10px 12px;min-height:58px;cursor:pointer;font:inherit}
+.ugrid button b{font-size:20px;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+.ugrid button span{font-size:13px;line-height:1.25;color:var(--muted)}
+.ugrid button.guess{box-shadow:inset 0 0 0 2px var(--marker);background:var(--marker-soft)}
+.ugrid button.guess span{color:var(--accent-text)}
+.ugrid button:active{transform:scale(.98)}
 
 /* surfaces */
 .card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
@@ -286,7 +301,12 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .install .tx{flex:1;min-width:0}
 .install .tx b{display:block;font-weight:600}
 .install .tx span{display:block;color:var(--muted);font-size:14px}
-.install .btn{width:auto;min-height:40px;padding:8px 14px;font-size:15px;flex:none}
+.install .btn{width:auto;min-height:44px;padding:8px 14px;font-size:15px;flex:none}
+.install.bak{flex-wrap:wrap;row-gap:12px}
+.install.bak .btn{order:3;flex:1 1 100%;margin-left:58px}
+details.card summary::marker{color:var(--muted)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+label.btn{position:relative}label.btn:focus-within{outline:2px solid var(--marker);outline-offset:2px}
 .install .x{flex:none;background:none;border:0;color:var(--muted);cursor:pointer;padding:6px;font-size:20px;line-height:1;min-width:48px;min-height:48px;margin:-8px -12px -8px -12px}
 
 /* nav: iOS uslubidagi suzuvchi shisha tab bar */
@@ -1340,17 +1360,46 @@ function installCard(force) {
   if (isIOS()) return card("Bosh ekranga qo'shing", "«Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)");
   return card("Bosh ekranga qo'shing", "Brauzer menyusi (⋮) → «Ilovani o'rnatish» yoki «Bosh ekranga qo'shish»");
 }
-/* zaxira eslatmasi: natijalar faqat shu brauzerda bo'lsa, 2 haftada bir zaxira kodni saqlashni eslatamiz («×» ham 2 haftaga kechiktiradi) */
+/* zaxira eslatmasi: natijalar faqat shu brauzerda bo'lsa, 8 ta so'z ko'rilgach va keyin haftada bir eslatamiz («×» ham bir haftaga kechiktiradi) */
+const BAK_DAYS = 7;
+const bakStale = seen => cloud.status !== "cloud" && seen >= 8 && Date.now() - bakAt() >= BAK_DAYS * 864e5;
+const bakWhen = () => { const t = bakAt(); if (!t) return "hali olinmagan"; const d = Math.floor((Date.now() - t) / 864e5); return d < 1 ? "bugun" : d === 1 ? "kecha" : d + " kun oldin"; };
+/* zaxira fayli: telefonda «Ulashish» oynasi ochiladi (Telegram «Saqlangan xabarlar»ga yuborish qulay), bo'lmasa fayl yuklab olinadi */
+async function saveBackup() {
+  persist();
+  const name = "ingliz-zaxira-" + today() + ".json";
+  const body = JSON.stringify({ app: "ingliz", v: 1, at: new Date().toISOString(), words: Object.keys(S.srs).length, state: S });
+  const file = new File([body], name, { type: "application/json" });
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Ingliz tili — zaxira" }); bakMark(); return "shared"; }
+  } catch (e) { if (e && e.name === "AbortError") return "cancel"; }
+  try { const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); bakMark(); return "saved"; } catch (e) { return "fail"; }
+}
+/* tiklash: fayl yoki eski kod. Ustiga yozmaydi — har so'z bo'yicha ko'proq ishlangan natija qoladi */
+function readBackup(text) {
+  text = String(text || "").trim(); let d;
+  try { d = JSON.parse(text); } catch (e) { d = JSON.parse(decodeURIComponent(escape(atob(text)))); }
+  if (d && d.state) d = d.state;
+  if (!d || !d.srs) throw new Error("bad");
+  return d;
+}
+function restoreBackup(d) {
+  const before = Object.keys(S.srs).length;
+  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} }, merge(S, d)); save();
+  return Object.keys(S.srs).length - before;
+}
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
 const bakMark = () => { try { localStorage.setItem("ingliz-bak", String(Date.now())); } catch (e) {} };
 // brauzer joy tanqisligida bu sayt ma'lumotini o'zi o'chirib yubormasin (Chrome so'ramasdan qaror qiladi, Firefox oyna chiqaradi — shuning uchun faqat o'rnatilgan ilovada yoki «Nusxalash» bosilganda)
 function persist() { try { const st = navigator.storage; if (st && st.persist) st.persisted().then(p => p || st.persist()).catch(() => {}); } catch (e) {} }
+const SHIELD = sv('<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>');
 function backupCard(seen) {
-  if (cloud.status === "cloud" || seen < 20 || Date.now() - bakAt() < 14 * 864e5) return "";
-  return `<div class="install"><span class="ic">${sv('<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>')}</span><a class="tx" href="#sozlama"><b>Natijalar faqat shu qurilmada</b><span>Brauzer tozalansa, yo'qoladi. Zaxira kodni saqlang ›</span></a><button class="x" id="bakhide" aria-label="Keyinroq eslatish">×</button></div>`;
+  if (!bakStale(seen)) return "";
+  return `<div class="install bak"><span class="ic">${SHIELD}</span><span class="tx"><b>${seen} ta so'z natijasi faqat shu telefonda</b><span>Oxirgi zaxira: ${bakWhen()}. Brauzer tozalansa, yo'qoladi.</span></span><button class="btn" id="baknow">Saqlash</button><button class="x" id="bakhide" aria-label="Keyinroq eslatish">×</button></div>`;
 }
 function bindInstall() {
   const bh = $("#bakhide"); if (bh) bh.onclick = () => { bakMark(); render(); };
+  const bn = $("#baknow"); if (bn) bn.onclick = async () => { bn.disabled = true; const r = await saveBackup(); if (r === "fail") { bn.disabled = false; bn.textContent = "Qayta urinish"; } else if (r === "cancel") bn.disabled = false; else render(); };
   const b = $("#inst"); if (b) b.onclick = async () => { const e = installEvt; if (!e) return; e.prompt(); try { await e.userChoice; } catch (er) {} installEvt = null; render(); };
   const x = $("#inhide"); if (x) x.onclick = () => { try { localStorage.setItem("ingliz-install-hide", "1"); } catch (e) {} render(); };
 }
@@ -1365,6 +1414,7 @@ route(/^$/, () => {
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
   const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
+  const askUnit = !S.course;
   app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
@@ -1373,21 +1423,27 @@ route(/^$/, () => {
     <span class="pill" title="Ketma-ket kunlar">${ICON.flame}${streak} kun</span>
   </div>
   <div class="stack">
-    <section class="lesson">
+    ${askUnit ? `<section class="lesson ask-unit">
+      <p class="meta">Birinchi qadam</p>
+      <h2>Kursda qaysi unitdasiz?</h2>
+      <p class="uz">Bugungi reja shu unit bo'yicha tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
+      <div class="ugrid">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
+    </section>` : `<section class="lesson">
       <p class="meta"><b>Unit ${cu.n}</b> · kitobda ${bookPages(cu.n)}-betlar · ${st.pct}%</p>
       <h2>${esc(info[0])}</h2>
       <p class="uz">${esc(info[1])}</p>
       <ul class="steps">${plan.map((x, i) => { const dn = done.includes(x.tag); return `<li><button class="${dn ? "done" : ""}" data-i="${i}"><span class="ic">${dn ? ICON.check : ICON[x.ic]}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="min">${dn ? "bajarildi" : x.min + " daq"}</span></button></li>`; }).join("")}</ul>
       <button class="btn" id="les"${left.length ? "" : " disabled"}>${cta}</button>
       ${left.length ? "" : `<div style="height:10px"></div><a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
-    </section>
+    </section>`}
     <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
     ${weekLine()}
     ${backupCard(seen) || installCard()}
     <div class="facts"><span><b>${seen}</b> / ${WORDS.length} so'z ko'rilgan</span><span><b>${mast}</b> mustahkam</span><span><b>${PATTERNS.length}</b> grammatika qolipi</span>${nm ? `<a href="#xato"><b>${nm}</b> ta xato</a>` : ""}</div>
-    <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira kod</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
+    <p class="foot"><span id="sync">${statusText()}</span> · <a href="#sozlama">Zaxira</a>${canOfferInstall() && installHidden() ? ` · <a href="#sozlama">Ilovani o'rnatish</a>` : ""}</p>
   </div>`;
-  $("#les").onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
+  const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
+  app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
   $("#course").onchange = e => { S.course = +e.target.value || 0; save(); render(); };
   bindInstall();
   app.querySelectorAll(".steps button").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
@@ -1414,7 +1470,9 @@ route(/^yakun$/, () => {
   app.innerHTML = `<div class="medal">${ICON.check}</div><h1 class="done-h">Bugungi dars tugadi</h1>
   <p class="sub" style="text-align:center;margin:0 auto 24px">Ertaga qaytsangiz, seriya davom etadi.</p>
   <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div>${L ? `<div class="li"><span class="tx"><b>Bugun xotiradan yozildi</b></span><span class="st">${L.sp} ta so'z</span></div><div class="li"><span class="tx"><b>Bugungi mashq</b></span><span class="st">${Math.max(1, Math.round(L.t / 60))} daq</span></div>` : ""}</div>
+  ${bakStale(WORDS.filter(isSeen).length) ? `<div style="height:16px"></div>${backupCard(WORDS.filter(isSeen).length)}` : ""}
   <div style="height:16px"></div><a class="btn" href="#">Bosh sahifa</a>`;
+  bindInstall();
 });
 
 /* ---------- UNITLAR ro\'yxati ---------- */
@@ -1492,27 +1550,33 @@ route(/^soz-(\d+)$/, n => {
   app.innerHTML = `<a class="back" href="#unit-${n}">${ICON.back} Unit ${n}</a>
   <h1>So'zlar</h1><p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
   <div class="stack">
-    <div class="card"><p class="label">1. Guruhlar</p><div class="chips" id="chips"></div></div>
+    <div class="card"><p class="label">1. Guruhlar</p><div class="chips" id="chips" role="group" aria-label="So'z guruhlari"></div><p class="picked" id="picked"></p></div>
     <div class="card"><p class="label">2. Test turi</p><div class="modes">
       ${modeBtn("uz-en", "O'zbekcha → inglizcha", "4 ta variantdan inglizchasini tanlaysiz")}
       ${modeBtn("en-uz", "Inglizcha → o'zbekcha", "So'zni eshitib, ma'nosini tanlaysiz")}
       ${modeBtn("spell", "Yozish (imlo)", "O'zbekchasiga qarab inglizchasini yozasiz")}
     </div></div>
-    <div class="row"><button class="btn" id="go">Testni boshlash</button></div>
+    <div><button class="btn" id="go">Testni boshlash</button><p class="gohint" id="gohint"></p></div>
     <div class="card"><p class="label">Lug'at ro'yxati</p>
       <div class="legend">So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.</div>
       <div id="list"></div></div>
   </div>`;
+  // «Hammasi» yoqilganda guruhlar neytral turadi; guruh bosilsa faqat o'sha tanlanadi, keyingilari qo'shiladi; oxirgisi olinsa yana «Hammasi»
+  const allIdx = () => new Set(u.groups.map((_, i) => i));
   const chips = () => {
-    $("#chips").innerHTML = `<button class="chip ${pick.groups.size === u.groups.length ? "on" : ""}" data-g="all">Hammasi</button>` +
-      u.groups.map((g, i) => `<button class="chip ${pick.groups.has(i) ? "on" : ""}" data-g="${i}">${esc(g.title)} · ${g.words.length}</button>`).join("");
+    const all = pick.groups.size === u.groups.length, chip = (on, g, t) => `<button class="chip${on ? " on" : ""}" data-g="${g}" aria-pressed="${on}">${on ? ICON.check : ""}${t}</button>`;
+    $("#chips").innerHTML = chip(all, "all", "Hammasi · " + byUnit(n).length) + u.groups.map((g, i) => chip(!all && pick.groups.has(i), i, esc(g.title) + " · " + g.words.length)).join("");
     $("#chips").querySelectorAll(".chip").forEach(c => c.onclick = () => {
-      const g = c.dataset.g;
-      if (g === "all") pick.groups = pick.groups.size === u.groups.length ? new Set() : new Set(u.groups.map((_, i) => i));
-      else { const i = +g; pick.groups.has(i) ? pick.groups.delete(i) : pick.groups.add(i); }
+      const g = c.dataset.g, i = +g;
+      if (g === "all") pick.groups = allIdx();
+      else if (pick.groups.size === u.groups.length) pick.groups = new Set([i]);
+      else { pick.groups.has(i) ? pick.groups.delete(i) : pick.groups.add(i); if (!pick.groups.size) pick.groups = allIdx(); }
       chips(); list();
     });
-    $("#go").disabled = !pick.groups.size;
+    const cnt = byUnit(n).filter(w => pick.groups.has(w.g)).length, k = Math.min(CHUNK, cnt);
+    $("#picked").innerHTML = all ? `Butun unit: <b>${cnt}</b> ta so'z` : `Tanlandi: <b>${pick.groups.size}</b> ta guruh · <b>${cnt}</b> ta so'z`;
+    $("#go").textContent = "Testni boshlash · " + k + " ta so'z";
+    $("#gohint").textContent = cnt > CHUNK ? CHUNK + " tadan bo'lib beriladi: avval xato va muddati kelganlar, keyin yangilari" : "";
   };
   const list = () => {
     const gs = u.groups.map((g, i) => [g, i]).filter(([, i]) => pick.groups.has(i));
@@ -1520,7 +1584,7 @@ route(/^soz-(\d+)$/, n => {
     bindSay($("#list"));
   };
   document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === pick.mode); b.onclick = () => { pick.mode = b.dataset.m; document.querySelectorAll(".mode").forEach(x => x.classList.toggle("on", x === b)); }; });
-  $("#go").onclick = () => startQuiz(byUnit(n).filter(w => pick.groups.has(w.g)), pick.mode, "Unit " + n);
+  $("#go").onclick = () => startChunk(byUnit(n).filter(w => pick.groups.has(w.g)), pick.mode, "Unit " + n, "#soz-" + n, new Set());
   chips(); list();
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
@@ -1536,9 +1600,24 @@ function bindSay(root) { root.querySelectorAll("[data-say]").forEach(b => b.oncl
 
 /* ---------- QUIZ engine ---------- */
 let Z = null; // session
+/* Katta ro'yxat (masalan, butun unit — 84 so'z) bitta seansda emas, 15 tadan beriladi.
+   Tartib: xato qilinganlar → muddati kelganlar → yangilar → qolganlari (eng uzoq ko'rilmagani birinchi). */
+const CHUNK = 15;
+function chunkOrder(list) {
+  const rank = w => { const r = rec(w.id); return !r ? 2 : r.b === 0 ? 0 : r.due <= today() ? 1 : 3; };
+  return shuffle(list).sort((a, b) => rank(a) - rank(b) || (rank(a) === 3 ? ((rec(a.id).due < rec(b.id).due) ? -1 : 1) : 0));
+}
+function startChunk(pool, mode, title, back, asked) {
+  const rest = chunkOrder(pool.filter(w => !asked.has(w.id))), part = rest.slice(0, CHUNK);
+  if (!part.length) return;
+  const done = new Set(asked); part.forEach(w => done.add(w.id));
+  startQuiz(part, mode, title, back);
+  Z.chunk = { pool, mode, title, back, asked: done, left: rest.length - part.length, n: Math.ceil(done.size / CHUNK), of: Math.ceil(pool.length / CHUNK) };
+}
 function startQuiz(list, mode, title, back, tag) {
   if (!list.length) return;
-  Z = { q: shuffle(list), i: 0, right: 0, wrong: [], done: new Set(), mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" };
+  const q = shuffle(list);
+  Z = { q, base: q.length, i: 0, right: 0, wrong: [], done: new Set(), mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" };
   if (location.hash === "#quiz") render(); else go("quiz");
 }
 route(/^quiz$/, () => {
@@ -1630,14 +1709,17 @@ function distractors(w, f) {
 }
 function ask() {
   const w = Z.cur = Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.qmode = qmodeFor(w);
-  $("#pos").textContent = (Z.i + 1) + " / " + Z.q.length;
+  // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
+  const re = Z.i >= Z.base;
+  Z.re = re;
+  $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + " / " + (Z.q.length - Z.base) : (Z.i + 1) + " / " + Z.base;
   $("#pts").textContent = "✓ " + Z.right;
-  $("#barfill").style.width = (Z.i / Z.q.length * 100) + "%";
+  $("#barfill").style.width = (re ? 100 : Z.i / Z.base * 100) + "%";
   ["#fb", "#ex", "#skip"].forEach(s => $(s).classList.add("hidden"));
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
   const sp = $("#spell");
   if (Z.qmode === "spell") {
-    $("#qlabel").textContent = Z.title + " · inglizcha yozing";
+    setLabel(Z.title + " · inglizcha yozing");
     $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
@@ -1647,7 +1729,7 @@ function ask() {
     if (document.activeElement === sp) sp.blur(); // tanlov savolida klaviatura yopilsin
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
     const en = Z.qmode === "en-uz";
-    $("#qlabel").textContent = Z.title + (en ? " · ma'nosini tanlang" : " · inglizchasini tanlang");
+    setLabel(Z.title + (en ? " · ma'nosini tanlang" : " · inglizchasini tanlang"));
     $("#qword").textContent = en ? w.w : w.u; $("#qword").className = "q" + (!en && w.u.length > 28 ? " qsmall" : "");
     $("#qpron").textContent = en ? "[" + w.p + "]" : "";
     $("#tools").classList.toggle("hidden", !en); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
@@ -1659,6 +1741,7 @@ function ask() {
     });
   }
 }
+function setLabel(t) { $("#qlabel").innerHTML = (Z.re ? '<span class="qtag">Yana bir bor</span>' : "") + esc(t); }
 function result(ok) {
   const w = Z.cur;
   if (Z.done.has(w.id)) return; // re-asked word: don't grade twice
@@ -1678,7 +1761,7 @@ function choose(btn, o, f) {
   toNext();
 }
 function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = esc(w.e) + "<small>" + esc(w.t) + "</small>"; $("#ex").classList.remove("hidden"); }
-function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? "Keyingisi →" : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -1722,16 +1805,18 @@ function next() { Z.i++; if (Z.i < Z.q.length) ask(); else finish(); }
 function finish() {
   const total = Z.q.length - Z.wrong.length, pct = total ? Math.round(Z.right / total * 100) : 0;
   const uniq = [...new Map(Z.wrong.map(w => [w.id, w])).values()];
-  if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title;
-  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p>
+  if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title, ch = Z.chunk;
+  const more = ch && ch.left > 0 ? `<button class="btn" id="more">Keyingi ${Math.min(CHUNK, ch.left)} ta so'z ${ICON.arrow}</button><p class="gohint">Unitda yana ${ch.left} ta so'z qoldi</p><div style="height:10px"></div>` : "";
+  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)}${ch && ch.of > 1 ? " · " + ch.n + "-bo'lak / " + ch.of : ""} · natija</p>
     <div class="score">${Z.right} / ${total}</div>
     <p class="muted">${pct === 100 ? "Zo'r! Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? pct + "% — yaxshi. Xatolar ertaga yana chiqadi." : pct + "% — xatolarni hozir yana bir marta ishlang."}</p></div>
     ${uniq.length ? `<div class="card"><p class="label">Xato qilingan so'zlar</p><ul class="wl">${uniq.map(wordLi).join("")}</ul></div>` : ""}
-    <div class="card">${lessonBtn(tag)}${uniq.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
+    <div class="card">${lessonBtn(tag)}${more}${uniq.length ? `<button class="btn${LES && tag || more ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   Z = null;
   const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back);
+  const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
   $("#barfill") && ($("#barfill").style.width = "100%");
 }
@@ -2065,10 +2150,18 @@ function tuzFinish() {
 /* ---------- SOZLAMA: export / import ---------- */
 route(/^sozlama$/, () => {
   app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Sozlamalar</h1>
-  <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Kodni nusxalab, xavfsiz joyga (masalan, Telegram «Saqlangan xabarlar»ga) qo'ying — boshqa qurilmada «Yuklash» orqali tiklaysiz."}</p>
-  <div class="stack">${installCard(true)}<div class="card"><p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
-  <div style="height:10px"></div><button class="btn" id="cp">Nusxalash</button></div>
-  <div class="card"><p class="label">Boshqa qurilmadan yuklash</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button><p class="muted" id="msg"></p></div>
+  <p class="sub">${cloud.status === "cloud" ? "Natijalar hisobingizda o'zi saqlanadi. Bu yerdagi kod — qo'shimcha zaxira: nusxalab qo'ying yoki boshqa joyga «Yuklash» orqali o'tkazing." : "Natijalar faqat shu brauzerda saqlanadi: brauzer tozalansa yoki telefon almashsa, yo'qoladi. Haftada bir zaxira faylini saqlang — boshqa qurilmada «Zaxiradan tiklash» orqali ochasiz."}</p>
+  <div class="stack">${installCard(true)}
+  <div class="card"><p class="label">Zaxira · oxirgisi: ${bakWhen()}</p>
+    <button class="btn" id="bk">${sv('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>')} Zaxira faylini saqlash</button>
+    <p class="gohint" style="text-align:left">Telefonda «Ulashish» oynasi ochiladi — Telegram «Saqlangan xabarlar»ga yuboring.</p><p class="muted" id="bkmsg" role="status"></p></div>
+  <div class="card"><p class="label">Zaxiradan tiklash</p>
+    <label class="btn ghost" for="bf">Faylni tanlash<input type="file" id="bf" class="vh" accept=".json,application/json,text/plain"></label>
+    <p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: har so'z bo'yicha ko'proq ishlangani qoladi.</p><p class="muted" id="msg" role="status"></p></div>
+  <details class="card"><summary class="label" style="cursor:pointer;margin:0">Kod orqali (eski usul)</summary><div style="height:12px"></div>
+    <p class="label">Mening kodim</p><textarea id="ex" rows="4" readonly>${esc(btoa(unescape(encodeURIComponent(JSON.stringify(S)))))}</textarea>
+    <div style="height:10px"></div><button class="btn ghost" id="cp">Nusxalash</button>
+    <div style="height:16px"></div><p class="label">Boshqa qurilmadan kod</p><textarea id="im" rows="4" placeholder="Kodni shu yerga qo'ying"></textarea><div style="height:10px"></div><button class="btn ghost" id="ld">Yuklash</button></details>
   ${canBuzz() ? `<div class="card"><label class="sw"><span><b>Javobda titrash</b><span class="muted">To'g'ri — bir marta, xato — ikki marta</span></span><input type="checkbox" id="vib"${buzzOn() ? " checked" : ""}></label></div>` : ""}</div>`;
   bindInstall();
   const vb = $("#vib"); if (vb) vb.onchange = () => { try { localStorage.setItem("ingliz-vib", vb.checked ? "1" : "0"); } catch (e) {} buzz(true); };
@@ -2078,7 +2171,10 @@ route(/^sozlama$/, () => {
     const old = () => { let r = false; try { r = document.execCommand("copy"); } catch (e) {} if (r) ok(); else b.textContent = "Kodni belgilab, o'zingiz nusxalang"; };
     try { navigator.clipboard.writeText(t.value).then(ok, old); } catch (e) { old(); }
   };
-  $("#ld").onclick = () => { try { const d = JSON.parse(decodeURIComponent(escape(atob($("#im").value.trim())))); if (!d.srs) throw 0; S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} }, d); save(); $("#msg").textContent = "Yuklandi ✓"; } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
+  const done = add => { $("#msg").textContent = "Tiklandi ✓" + (add > 0 ? " · " + add + " ta yangi so'z natijasi qo'shildi" : " · natijalar birlashtirildi"); };
+  $("#ld").onclick = () => { try { done(restoreBackup(readBackup($("#im").value))); } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
+  $("#bk").onclick = async () => { const b = $("#bk"); b.disabled = true; const r = await saveBackup(); b.disabled = false; $("#bkmsg").textContent = r === "fail" ? "Saqlab bo'lmadi. «Kod orqali» usulini ishlating." : r === "cancel" ? "" : "Saqlandi ✓"; };
+  $("#bf").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { done(restoreBackup(readBackup(t))); } catch (er) { $("#msg").textContent = "Bu fayl zaxira emas. «ingliz-zaxira-…json» faylini tanlang."; } }); e.target.value = ""; };
 });
 
 render();

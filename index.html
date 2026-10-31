@@ -684,6 +684,26 @@ a.nwb{text-decoration:none}
 .gplay svg{width:28px;height:28px}
 .gqr{margin:0 0 14px;font-size:16px}.gqr b{font-size:22px;font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.gt.hit,.gchip.hit,.grow2.hit{animation:none}}
+/* dars yakuni */
+.yk{padding-top:8px}
+.yk .done-h{margin:6px 0 6px}
+.yk-sub{text-align:center;margin:0 auto 18px;max-width:34ch}
+.masc{display:block;margin:0 auto;width:150px;height:150px;overflow:visible}
+.masc .bd{transform-origin:75px 130px;animation:m-pop .7s cubic-bezier(.34,1.56,.64,1) both,m-bob 3s ease-in-out .8s infinite}
+.masc .leaf{transform-origin:75px 47px;animation:m-sway 2.6s ease-in-out infinite}
+@keyframes m-pop{0%{transform:scale(.2)}60%{transform:scale(1.08,.94)}80%{transform:scale(.97,1.03)}100%{transform:none}}
+@keyframes m-bob{50%{transform:translateY(-5px)}}
+@keyframes m-sway{50%{transform:rotate(8deg)}}
+.ystreak{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:24px;padding:14px 16px}
+.ystreak .sflame{flex:none;width:44px;height:52px}
+.ystreak .tx b{display:block;font-size:17px}.ystreak .tx span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
+.yweek i.now.on{box-shadow:0 0 0 4px var(--marker-soft);animation:m-pop .6s cubic-bezier(.34,1.56,.64,1) .45s both}
+.ytiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ytiles div{background:var(--surface);border-radius:20px;padding:12px 8px;text-align:center}
+.ytiles b{display:block;font:700 22px/1.2 var(--font-display);font-variant-numeric:tabular-nums}.ytiles span{display:block;font-size:12px;color:var(--muted)}
+.cfetti{position:fixed;inset:0;z-index:70;pointer-events:none;overflow:hidden}
+.cfetti i{position:absolute;top:-20px;width:8px;height:12px;border-radius:2px;animation:cf-fall 1.9s cubic-bezier(.25,.7,.4,1) both}
+@keyframes cf-fall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),110vh) rotate(var(--r));opacity:0}}
 /* chiqishni tasdiqlash oynasi */
 .qsheet{position:fixed;inset:0;z-index:60}
 .qs-bd{position:absolute;inset:0;background:rgba(10,10,12,.45);opacity:0;transition:opacity .22s}
@@ -1612,7 +1632,7 @@ function fixState(o) {
   s.story = obj(o.story);
   s.guide = {}; Object.entries(obj(o.guide)).forEach(([k, v]) => { if (day(v)) s.guide[k] = v; });
   s.my = arr(o.my).filter(m => m && typeof m.w === "string" && m.w.trim() && typeof m.u === "string").map(m => Object.assign({}, m, { id: typeof m.id === "string" && m.id ? m.id : "my|" + m.w.trim().toLowerCase() }));
-  const st = obj(o.streak); s.streak = { last: day(st.last) ? st.last : "", n: Math.round(num(st.n)) };
+  const st = obj(o.streak); s.streak = { last: day(st.last) ? st.last : "", n: Math.round(num(st.n)), best: Math.round(num(st.best)) };
   s.rest = arr(o.rest).filter(day);
   if (o.cls !== undefined) s.cls = arr(o.cls).filter(n => Number.isInteger(n) && n >= 0 && n < 7);
   s.course = Number.isInteger(o.course) && o.course > 0 ? o.course : 0;
@@ -2509,16 +2529,46 @@ function weekDays() {
 }
 
 /* ---------- DARS YAKUNI ---------- */
+/* maskot «Donacha»: yumshoq terrakota qahramon, boshida nihol — dars oxiridagi quvonch lahzasi */
+const MASCOT = `<svg class="masc" viewBox="0 0 150 150" aria-hidden="true"><defs><radialGradient id="mascg" cx="36%" cy="28%" r="85%"><stop offset="0" stop-color="#FFD3BD"/><stop offset=".5" stop-color="#F29068"/><stop offset="1" stop-color="#D2552B"/></radialGradient></defs>
+<ellipse cx="75" cy="139" rx="40" ry="6" fill="#000" opacity=".12"/>
+<g class="bd"><ellipse cx="56" cy="131" rx="11" ry="6" fill="#D2552B"/><ellipse cx="94" cy="131" rx="11" ry="6" fill="#D2552B"/>
+<path d="M75 46c34 0 50 22 50 50 0 22-18 36-50 36S25 118 25 96c0-28 16-50 50-50Z" fill="url(#mascg)"/>
+<ellipse cx="54" cy="66" rx="13" ry="8" fill="#fff" opacity=".45" transform="rotate(-25 54 66)"/>
+<path d="M58 92q6-7 12 0M80 92q6-7 12 0" stroke="#3A1D12" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M66 105q9 8 18 0" stroke="#3A1D12" stroke-width="4" fill="none" stroke-linecap="round"/>
+<ellipse cx="52" cy="104" rx="7" ry="4.5" fill="#FF8E7A" opacity=".75"/><ellipse cx="98" cy="104" rx="7" ry="4.5" fill="#FF8E7A" opacity=".75"/>
+<g class="leaf"><path d="M75 47V30" stroke="#6E9E5F" stroke-width="3.5" stroke-linecap="round"/><path d="M75 34c2-10 10-15 20-14-2 10-10 15-20 14Z" fill="#79B26B"/><path d="M75 38c-2-9-9-13-17-12 1 9 8 13 17 12Z" fill="#8FC67F"/></g></g></svg>`;
+const FLAME = `<svg class="sflame" viewBox="0 0 96 112" aria-hidden="true"><defs><linearGradient id="sflg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7A86F"/><stop offset="1" stop-color="#D2552B"/></linearGradient></defs><path d="M48 6c6 20 34 30 34 62a34 34 0 0 1-68 0c0-16 8-26 16-34 2 10 6 15 12 18-2-18 0-32 6-46Z" fill="url(#sflg)"/><path d="M48 58c4 10 16 14 16 28a16 16 0 0 1-32 0c0-8 6-12 9-16 2 6 4 7 7 8-1-8-1-14 0-20Z" fill="#FFE2C8"/></svg>`;
+/* bir martalik yengil konfetti (2 soniya), harakat kamaytirilgan bo'lsa — yo'q */
+function confetti() {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = ["#B9441F", "#F4A27E", "#F2C14E", "#79B26B", "#E8805C"], box = document.createElement("div");
+  box.className = "cfetti"; box.setAttribute("aria-hidden", "true");
+  box.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${c[i % 5]};--dx:${(Math.random() - .5) * 140}px;--r:${(Math.random() - .5) * 720}deg;animation-delay:${Math.random() * .35}s${i % 3 ? "" : ";border-radius:50%;width:9px;height:9px"}"></i>`).join("");
+  document.body.appendChild(box); setTimeout(() => box.remove(), 2600);
+}
+/* ---------- DARS YAKUNI: maskot, yengil bayram, seriya va bugungi natija ---------- */
 route(/^yakun$/, () => {
   const streak = liveStreak(), cu = curUnit(), st = unitStat(cu.n), L = S.log[today()];
   const eb = earnBack(), wk = weekOf(today()), rl = restLeft(wk);
-  app.innerHTML = `<div class="medal">${ICON.check}</div><h1 class="done-h">Bugungi dars tugadi</h1>
-  <p class="sub" style="text-align:center;margin:0 auto 24px">${eb === "back" ? "Seriya qaytarildi! Endi " + liveStreak() + " kun ketma-ket." : eb === "step" ? "Seriyani qaytarishga yana 1 kun: ertaga ham darsni oxirigacha qiling." : "Ertaga qaytsangiz, seriya davom etadi." + (rl > 0 ? " Bu hafta yana " + rl + " ta dam olish kuni bor — o'tkazib yuborsangiz ham seriya uzilmaydi." : "")}</p>
-  <div class="list"><div class="li"><span class="tx"><b>Seriya</b></span><span class="st">${streak} kun</span></div><div class="li"><span class="tx"><b>Unit ${cu.n}</b></span><span class="st">${st.pct}%</span></div><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div>${L ? `<div class="li"><span class="tx"><b>Bugun xotiradan yozildi</b></span><span class="st">${L.sp} ta so'z</span></div><div class="li"><span class="tx"><b>Bugungi mashq</b></span><span class="st">${Math.max(1, Math.round(L.t / 60))} daq</span></div>` : ""}</div>
-  ${bakStale(WORDS.filter(isSeen).length) ? `<div style="height:16px"></div>${backupCard(WORDS.filter(isSeen).length)}` : ""}
-  ${remSet() ? "" : `<div style="height:16px"></div><a class="install" href="#sozlama" style="text-decoration:none;color:inherit"><span class="ic">${ICON.clock}</span><span class="tx"><b>Ertaga eslatib turaymi?</b><span>Kalendaringizga har kungi dars vaqtini qo'shing</span></span><span class="go">${ICON.chev}</span></a>`}
-  <div style="height:16px"></div><a class="btn" href="#">Bosh sahifa</a>`;
+  const prevBest = S.streak.best || 0; S.streak.best = Math.max(prevBest, streak); save();
+  const rec = prevBest > streak ? " Rekordingiz: " + prevBest + "." : prevBest && streak > prevBest ? " Yangi rekord!" : "";
+  const pct = L && L.a ? Math.round(L.ok / L.a * 100) : 0, mins = L ? Math.max(1, Math.round(L.t / 60)) : 0;
+  const line = eb === "back" ? "Seriya qaytarildi! Endi " + streak + " kun ketma-ket." : eb === "step" ? "Seriyani qaytarishga yana 1 kun: ertaga ham darsni oxirigacha qiling."
+    : !L || !L.a ? "Bugungi dars tugadi." : pct >= 85 ? `Ajoyib natija: ${L.ok} ta to'g'ri javob.` : pct >= 60 ? `Yaxshi ish: ${L.ok} ta to'g'ri javob. Xatolar ertaga yana so'raladi.` : "Muhimi — bugun ham mashq qildingiz. Xato so'zlar ertaga yana so'raladi.";
+  app.innerHTML = `<div class="yk">${MASCOT}<h1 class="done-h">Barakalla!</h1><p class="sub yk-sub">${line}</p>
+  <div class="stack">
+    <div class="ystreak">${FLAME}<span class="tx"><b>${streak ? streak + " kun ketma-ket" : "Seriya ertaga boshlanadi"}</b><span>${streak ? "Ertaga qaytsangiz — " + (streak + 1) + " kun." + rec : "Darsni oxirigacha qilgan har kun olovni yoqadi."}${rl > 0 ? " Bu hafta yana " + rl + " ta dam olish kuni bor." : ""}</span></span></div>
+    <div class="week yweek" aria-label="Shu hafta">${weekDays()}</div>
+    ${L && L.a ? `<div class="ytiles"><div><b>${L.a}</b><span>ta javob</span></div><div><b>${pct}%</b><span>to'g'ri</span></div><div><b>${mins}</b><span>daqiqa</span></div></div>` : ""}
+    <div class="list"><a class="li" href="#unit-${cu.n}"><span class="tx"><b>Unit ${cu.n}</b><span>${esc(UNIT_INFO[cu.n][0])}</span></span><span class="st">${st.pct}%</span><span class="go">${ICON.chev}</span></a><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div></div>
+    ${bakStale(WORDS.filter(isSeen).length) ? backupCard(WORDS.filter(isSeen).length) : ""}
+    ${remSet() ? "" : `<a class="install" href="#sozlama" style="text-decoration:none;color:inherit"><span class="ic">${ICON.clock}</span><span class="tx"><b>Ertaga eslatib turaymi?</b><span>Kalendaringizga har kungi dars vaqtini qo'shing</span></span><span class="go">${ICON.chev}</span></a>`}
+    <a class="btn" href="#">Davom etish</a>
+  </div></div>`;
   bindInstall();
+  confetti(); buzz(true);
 });
 
 /* ---------- UNITLAR ro\'yxati ---------- */

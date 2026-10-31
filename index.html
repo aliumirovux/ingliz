@@ -620,6 +620,16 @@ a.pill{text-decoration:none;color:var(--ink)}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
 
+/* ===== Unitlar: umumiy mashqlar ===== */
+.qa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}
+.qa a{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:96px;padding:12px;border-radius:20px;background:var(--surface);color:var(--ink);text-decoration:none}
+.qa .ic{width:36px;height:36px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center;margin-bottom:6px}
+.qa .ic svg{width:19px;height:19px}
+.qa b{font-size:15px;font-weight:600;line-height:1.25}
+.qa a>span:last-child{font-size:13px;color:var(--muted)}
+.qa a:active{transform:scale(.98)}
+.qa a:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+
 /* ===== qidiruv maydoni ===== */
 .sbox{position:relative}
 .sbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);pointer-events:none}
@@ -1967,12 +1977,13 @@ route(/^yakun$/, () => {
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}<p class="sub">Navigate Beginner kitobi bo'yicha. Har bir unitda so'zlar, grammatika va gap tuzish bor.</p>
+  <div class="qa" aria-label="Hamma unitlar bo'yicha">
+    <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.length} ta qolip</span></a>
+    <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.length} ta gap</span></a>
+    <a href="#gapir"><span class="ic">${ICON.mic}</span><b>Gapirish</b><span>${SPEAKING.length} ta topshiriq</span></a>
+  </div>
   <div class="units">${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="unit" href="#unit-${n}"><div class="urow ${n === cu.n ? "cur" : ""}"><span class="num">${n}</span><span class="tx"><b>${esc(info[0])}</b><span>${esc(info[1])}${n === cu.n ? " · hozir shu yerdasiz" : ""}</span></span><span class="pct">${st.pct}%</span></div><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div></a>`; }).join("")}</div>
-  <div class="sec"><div class="list">
-    <a class="li" href="#qolip"><span class="tx"><b>Barcha grammatika qoliplari</b><span>${PATTERNS.length} ta qolip, unit tartibida</span></span><span class="go">${ICON.chev}</span></a>
-    <a class="li" href="#tuz"><span class="tx"><b>Gap tuzish: aralash</b><span>${BLD.length} ta gap, hamma unitlardan</span></span><span class="go">${ICON.chev}</span></a>
-    <a class="li" href="#gapir"><span class="tx"><b>Gapirish topshiriqlari</b><span>${SPEAKING.map(t => t.task).join(", ")}</span></span><span class="go">${ICON.chev}</span></a>
-  </div></div>`;
+`;
 });
 
 /* ---------- UNIT sahifasi: hammasi bir joyda ---------- */
@@ -2756,7 +2767,7 @@ route(/^gap$/, () => {
   const due = phDue().length;
   app.innerHTML = `${nav(null, "", "Tayyor gaplar")}<p class="sub">Ish va kundalik muloqot uchun · ${PH.length} ta gap · eshiting, ayting, yodlang</p>
   <div class="stack">
-    <div class="card"><p class="label">Mashq qanday ishlaydi</p><p class="muted" style="margin:0">O'zbekchasi chiqadi. Inglizchasini o'zingiz ayting yoki «Aytib ko'rish» tugmasini bosing, keyin javobni oching. Bilmagan gaplaringiz ertaga yana chiqadi.</p></div>
+    ${PH.some(isSeen) ? "" : `<div class="card"><p class="label">Mashq qanday ishlaydi</p><p class="muted" style="margin:0">O'zbekchasi chiqadi. Inglizchasini o'zingiz ayting yoki «Aytib ko'rish» tugmasini bosing, keyin javobni oching. Bilmagan gaplaringiz ertaga yana chiqadi.</p></div>`}
     ${due ? `<button class="btn" id="phdue">Bugungi takrorlash (${due})</button>` : ""}
     <div class="units">${PHRASES.map(c => { const ps = PH.filter(p => p.cat === c.id), m = ps.filter(isMastered).length, s = ps.filter(isSeen).length; return `<a class="unit" href="#gap-${c.id}"><div class="t"><b>${esc(c.title)}</b><span class="n">${ps.length} gap · ${m} mustahkam</span></div><div class="muted" style="margin-top:2px">${esc(c.items[0].e)} · ${esc(c.items[1].e)} …</div><div class="pbar"><i class="m" style="width:${m / ps.length * 100}%"></i><i class="s" style="width:${(s - m) / ps.length * 100}%"></i></div></a>`; }).join("")}</div>
   </div>`;

@@ -778,6 +778,24 @@ a.nwb{text-decoration:none}
 .home.hin .skc .week i.on{animation:m-pop .5s cubic-bezier(.34,1.56,.64,1) both}
 .home.hin .skc .week div:nth-child(2) i{animation-delay:.05s}.home.hin .skc .week div:nth-child(3) i{animation-delay:.1s}.home.hin .skc .week div:nth-child(4) i{animation-delay:.15s}
 .home.hin .skc .week div:nth-child(5) i{animation-delay:.2s}.home.hin .skc .week div:nth-child(6) i{animation-delay:.25s}.home.hin .skc .week div:nth-child(7) i{animation-delay:.3s}
+/* gap tuzish: natija holatlari */
+.answer{position:relative}
+.answer .tile.g{background:var(--ok-bg);color:var(--ok)}
+.answer .tile.r{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px}
+.answer .tile:disabled{opacity:1;cursor:default}
+.answer.ok{box-shadow:inset 0 0 0 2px var(--ok-strong)}
+.answer.ok .tile{animation:lt-hop .45s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--j,0) * 60ms)}
+.answer.ok::after{content:"";position:absolute;right:-8px;top:-10px;width:30px;height:30px;border-radius:50%;background:var(--ok-strong) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/17px no-repeat;box-shadow:0 0 0 4px var(--bg);animation:lt-badge .45s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--n,1) * 60ms + 120ms)}
+.answer.bad{box-shadow:inset 0 0 0 2px var(--bad-strong);animation:lt-shake .45s cubic-bezier(.36,.07,.19,.97)}
+.tiles.done .tile{opacity:.35;pointer-events:none;transition:opacity .3s}
+.fb.tz{animation:lt-in .35s cubic-bezier(.16,1,.3,1) .12s both}
+.qcard .fb.tz.ok{background:var(--ok-bg);color:var(--ok)}
+.qcard .fb.tz.bad{background:var(--bad-bg);color:var(--bad)}
+.tzh{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;margin-bottom:6px}
+.tzh svg{width:22px;height:22px;padding:4px;border-radius:50%;color:#fff;box-sizing:content-box}
+.fb.ok .tzh svg{background:var(--ok-strong)}.fb.bad .tzh svg{background:var(--bad-strong)}
+.fb.ok .tzh svg{animation:lt-badge .45s cubic-bezier(.34,1.56,.64,1) .2s both}
+@media (prefers-reduced-motion:reduce){.answer.ok .tile,.answer.ok::after,.answer.bad,.fb.tz,.fb.ok .tzh svg{animation:none}}
 /* dars yakuni */
 .yk{padding-top:8px}
 .yk .done-h{margin:6px 0 6px}
@@ -3807,6 +3825,13 @@ const CONTR = [[/\b(do|does|did|is|are|was|were|have|has|could|would)nt\b/g, "$1
   [/\b(i|you|he|she|we|they)'d\b/g, "$1 would"], [/\b(i|you|he|she|we|they)'ll\b/g, "$1 will"]];
 const canon = s => { let t = norm(s).replace(/[.,?!"]/g, " "); CONTR.forEach(([re, to]) => { t = t.replace(re, to); }); return t.replace(/\s+/g, " ").trim().split(" ").filter(Boolean); };
 function lev(a, b) { const d = [...Array(a.length + 1)].map((_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j; for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; }
+/* eng uzun umumiy ketma-ketlik: to'g'ri tartibda turgan so'zlar (got indekslari) */
+function lcsKeep(got, want) {
+  const n = got.length, m = want.length, L = [...Array(n + 1)].map(() => Array(m + 1).fill(0)), keep = new Set(); let i = 0, j = 0;
+  for (let a = n - 1; a >= 0; a--) for (let b = m - 1; b >= 0; b--) L[a][b] = got[a] === want[b] ? L[a + 1][b + 1] + 1 : Math.max(L[a + 1][b], L[a][b + 1]);
+  while (i < n && j < m) { if (got[i] === want[j]) { keep.add(i); i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) i++; else j++; }
+  return keep;
+}
 function wordDiff(got, want) {
   const n = got.length, m = want.length, L = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
   for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = got[i] === want[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
@@ -3846,18 +3871,17 @@ route(/^tuzmashq$/, () => {
   <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p><div class="q qsmall">${esc(it.u)}</div>
     ${yoz ? `<textarea class="spell" id="tin" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…"></textarea>
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
-    : `<div class="answer" id="ans"></div><div class="tiles" id="bank"></div>`}
+    : `<div class="answer" id="ans" aria-live="polite"></div><div class="tiles" id="bank"></div>`}
     <div class="fb hidden" id="tf"></div>
-    <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="clr">Tozalash</button>`}<button class="btn${yoz ? "" : " hidden"}" id="chk" disabled>Tekshirish</button></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="chk" disabled>Tekshirish</button></div>
   </div>`;
   $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; location.hash = b; });
   let done = false;
   const show = (cls, html) => {
-    $("#tf").className = "fb " + cls; buzz(cls === "ok");
-    $("#tf").innerHTML = html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
+    $("#tf").className = "fb tz " + cls; buzz(cls === "ok");
+    $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : ICON.x + "Xato"}</div>` + html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
     bindSay($("#tf")); say(it.e);
-    const c = $("#clr"); if (c) c.classList.add("hidden");
-    $("#chk").classList.remove("hidden"); $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi →" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
+    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi →" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
   };
   if (yoz) {
     const inp = $("#tin"), want = canon(it.e);
@@ -3873,7 +3897,7 @@ route(/^tuzmashq$/, () => {
       const close = !exact && got.length === want.length && lev(got.join(" "), want.join(" ")) === 1 && want.join(" ").length > 8;
       const ok = exact || close; tuzResult(it, ok);
       inp.className = "spell " + (ok ? "ok" : "bad"); inp.style.fontSize = "19px";
-      if (exact) show("ok", `To'g'ri! <b>${esc(it.e)}</b>`);
+      if (exact) show("ok", `<b>${esc(it.e)}</b>`);
       else if (close) { const d = wordDiff(got, want); show("ok", `To'g'ri, faqat bitta harf xato: <div class="diff" style="font-size:18px">${d.want}</div>`); }
       else { const d = wordDiff(got, want); show("bad", `To'g'risi: <b>${esc(it.e)}</b>${d.want.includes('class="x"') ? `<div style="margin-top:8px">Qizil — xato yozilgan yoki tushib qolgan so'zlar:</div><div class="diff" style="font-size:18px">${d.want}</div>` : ""}${d.extra.length ? `<div>Ortiqcha: <s>${esc(d.extra.join(" "))}</s></div>` : ""}`); }
     };
@@ -3888,17 +3912,19 @@ route(/^tuzmashq$/, () => {
     $("#ans").innerHTML = picked.length ? picked.map((k, j) => `<button class="tile" data-j="${j}">${esc(tiles[k])}</button>`).join("") : `<span class="muted">So'zlarni bosing…</span>`;
     $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}">${esc(t)}</button>`).join("");
     $("#ans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
-    $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw();
-      if (picked.length === want.length) setTimeout(() => { const c = $("#chk"); if (!done && c && picked.length === want.length) c.onclick(); }, 350); });
-    if (!done) { $("#chk").disabled = !picked.length; $("#clr").disabled = !picked.length; }
+    $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw(); });
+    if (!done) $("#chk").disabled = !picked.length;
   };
-  $("#clr").onclick = () => { if (done) return; picked.length = 0; draw(); };
   $("#chk").onclick = () => {
     if (done) return tuzNext();
     done = true;
     const ok = picked.map(k => tiles[k].toLowerCase()).join(" ") === want.join(" ").toLowerCase();
     tuzResult(it, ok);
-    show(ok ? "ok" : "bad", (ok ? "To'g'ri! " : "To'g'risi: ") + `<b>${esc(it.e)}</b>`);
+    // javob qatori: to'g'ri tartibda turgan so'zlar — yashil, ortiqcha yoki joyi xato — qizil; to'g'ri bo'lsa to'lqin + belgi, xato bo'lsa silkinish
+    const A = $("#ans"), keep = lcsKeep(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()));
+    A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
+    A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
+    show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>` : `To'g'risi: <b>${esc(it.e)}</b>`);
   };
   draw();
 });

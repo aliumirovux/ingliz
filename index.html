@@ -840,6 +840,12 @@ small{font-size:13px}
 .qcard{-webkit-backdrop-filter:none;backdrop-filter:none}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--card:var(--surface)}}
 @media (prefers-reduced-transparency:reduce){:root{--card:var(--surface)}}
+/* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
+.side{display:contents}
+.home .stack>.side>.skc{order:-1}
+.home.hin .side>*{animation:h-rise .7s cubic-bezier(.16,1,.3,1) both;animation-delay:.22s}
+.home.hin .side>.skc{animation-delay:.04s}
+@media (min-width:980px){.home .stack>.side>.skc{order:0}}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
@@ -1011,9 +1017,12 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 @media (min-width:980px){
   .wrap.home{max-width:1040px}
   .wrap.home .stack{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start;grid-auto-flow:row dense}
-  .wrap.home .stack>*{grid-column:2}
-  .wrap.home .stack>.lesson{grid-column:1;grid-row:span 7}
-  .wrap.home .stack>.cls,.wrap.home .stack>.ms{grid-column:1 / -1}
+  .wrap.home .stack>*{grid-column:1 / -1}
+  /* dars (chapda) va o'ng ustun bir qatorda, balandligi teng — ortiqcha joyni widgetlar oladi */
+  .wrap.home .stack>.lesson,.wrap.home .stack>.zero{grid-column:1;align-self:stretch}
+  .wrap.home .stack>.side{grid-column:2;display:flex;flex-direction:column;gap:16px;align-self:stretch}
+  .wrap.home .side>.xm2{flex:1 1 auto}
+  .wrap.home .side .xm-t.xg{justify-content:space-between}
 }
 
 /* ===== Unitlar: umumiy mashqlar ===== */
@@ -2480,7 +2489,6 @@ route(/^$/, () => {
     <button class="pill" id="kursb" aria-haspopup="dialog" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + cu.n : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></button>
   </div>
   <div class="stack">
-    ${streakCard(streak)}
     ${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
     ${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
@@ -2489,12 +2497,13 @@ route(/^$/, () => {
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
     ${backupCard(seen) || installCard()}
-    ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}
+    ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });

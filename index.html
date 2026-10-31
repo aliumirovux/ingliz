@@ -715,23 +715,33 @@ a.nwb{text-decoration:none}
 .rg{overflow:visible}.rg circle{fill:none}
 .rg .tk{stroke:var(--track)}.rg .p{stroke:var(--marker);stroke-linecap:round}
 .dars .cnt.ok .rg .p{stroke:var(--ok-strong)}
-.dars .tl{margin:14px 0}
-.dars .tl li{padding:0 0 2px}
-.dars .tl li:not(:last-child)::before{display:none}
-.dars .tl button{align-items:center;gap:0;border-radius:18px}
-.dars .tl .dot{width:28px;height:28px;margin:0 0 0 10px;font-size:13px;background:transparent;box-shadow:inset 0 0 0 2px var(--track)}
-.dars .tl .done .dot{box-shadow:none;background:var(--ok-strong)}
-.dars .tl .now .dot{background:var(--marker);color:var(--on-marker)}
-.dars .tl .now .dot{box-shadow:0 0 0 5px color-mix(in srgb,var(--marker) 16%,transparent)}
-.dars .tl .bx{padding:10px 12px;min-height:50px}
-.dars .tl .now button{background:linear-gradient(135deg,var(--marker-soft),color-mix(in srgb,var(--marker-soft) 45%,transparent))}
-.dars .tl .now .bx,.dars .tl .now button:hover .bx{background:none;padding:12px 12px}
-.dars .tl button:not(:disabled):hover .bx{background:none}
-.dars .tl button:not(:disabled):hover{background:var(--press)}
+/* bugungi dars — stepper: doiralar chiziq bilan bog'langan, o'tilgan qism rangli; faol qadam — bo'rtiq terrakota doira va qalin sarlavha */
+.dars .tl{margin:16px 0 18px}
+.dars .tl li{padding:0}
+.dars .tl li:not(:last-child)::before{display:block;content:"";position:absolute;left:23px;top:42px;bottom:-6px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--track);z-index:0}
+.dars .tl li.done:not(:last-child)::before{background:var(--ok-strong)}
+.dars .tl li.done:has(+ li.now)::before,.dars .tl li.done:has(+ li.lock)::before{background:linear-gradient(var(--ok-strong),var(--marker))}
+.dars .tl button{align-items:center;gap:0;border-radius:18px;padding:6px 0}
+.dars .tl button:not(:disabled):hover{background:none}
+.dars .tl button:not(:disabled):hover .bx,.dars .tl .bx{background:none}
+:root{--dotbg:radial-gradient(circle at 35% 28%,#FFFFFF,#E9EAE5 70%);--dotsh:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -2px 4px rgba(23,23,27,.06),0 3px 8px -2px rgba(23,23,27,.18)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--dotbg:radial-gradient(circle at 35% 28%,#3A3A42,#24242A 72%);--dotsh:inset 0 1px 0 rgba(255,255,255,.1),0 3px 8px -2px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--dotbg:radial-gradient(circle at 35% 28%,#3A3A42,#24242A 72%);--dotsh:inset 0 1px 0 rgba(255,255,255,.1),0 3px 8px -2px rgba(0,0,0,.6)}
+.dars .tl .dot{width:36px;height:36px;margin:0 0 0 6px;font-size:13px;color:var(--muted);background:var(--dotbg);box-shadow:var(--dotsh)}
+.dars .tl .dot svg{width:17px;height:17px}
+.dars .tl .done .dot{color:#fff;background:radial-gradient(circle at 35% 28%,#7CC478,var(--ok-strong) 70%);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 3px 8px -2px rgba(63,138,59,.45)}
+.dars .tl .now .dot{width:44px;height:44px;margin:0 0 0 2px;color:#fff;background:radial-gradient(circle at 35% 28%,#F29068,var(--marker) 72%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.15),0 0 0 5px var(--marker-soft),0 8px 18px -6px rgba(185,68,31,.6)}
+.dars .tl .now .dot svg{width:20px;height:20px}
+.dars .tl .lock .dot{color:var(--muted);opacity:.75}
+.dars .tl .bx{padding:6px 4px 6px 14px;min-height:46px}
+.dars .tl .now .bx,.dars .tl .now button:hover .bx{padding:6px 4px 6px 12px}
+.dars .tl .tx b{font-size:16px;font-weight:600;color:var(--muted)}
+.dars .tl .now .tx b{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
 .dars .tl li:not(.now):not(.lock) .tx span{display:none}
-.dars .tl .now .tx b{font-size:16px}
 .dars .tl .done .tx b{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:color-mix(in srgb,var(--muted) 60%,transparent)}
 .dars .tl .done .m{color:var(--muted)}
+.home.hin .dars .tl .now .dot{animation:m-pop .6s cubic-bezier(.34,1.56,.64,1) .35s both}
 /* xotira: gradient shkala */
 .xm-goal{font-size:15px;color:var(--muted);font-weight:500}
 .gsc{margin:26px 4px 2px}
@@ -818,6 +828,9 @@ small{font-size:13px}
 .icon:active{transform:scale(.94);transition-duration:.1s}
 @media (prefers-reduced-motion:reduce){.btn:not(:disabled):active,.icon:active{transform:none}}
 /* so'z mashqi: so'z, o'qilishi, yordam tugmalari va ishora — markazda */
+#hint .hmask{font:600 20px/1.4 var(--font-display);letter-spacing:.08em;color:var(--ink);white-space:pre}
+#hint .hn{font-size:13px;color:var(--muted)}
+#tools .icon:disabled{opacity:.45;cursor:default}
 #qlabel,#qword,#qpron,#hint{text-align:center}
 #tools{justify-content:center}
 /* kartalar — yengil shisha: orqadagi iliq fon xira ko'rinib turadi */
@@ -2608,7 +2621,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
   const sub = !left.length ? (lock ? stepView(lock).sub : all + " qadam · hammasi bajarildi") : started ? mins + " daqiqa qoldi" : all + " qadam · " + mins + " daqiqa";
   const li = plan.map((x, i) => {
     const d = done.includes(x.tag), lk = x.lock && !d, now = x === next, v = stepView(x);
-    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : i + 1}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${lk ? "" : x.min + " daq"}</span></span></button></li>`;
+    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : (x.ic && ICON[x.ic] || i + 1)}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${lk ? "" : x.min + " daq"}</span></span></button></li>`;
   }).join("");
   return `<section class="lesson dars">
     <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
@@ -3329,19 +3342,24 @@ route(/^quiz$/, () => {
   if (!Z) return go("");
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i id="barfill"></i></div><span class="cnt" id="pos"></span><span id="pts" hidden></span></div>
   <div class="card qcard"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
-    <div class="tools" id="tools"><button class="icon" id="say">Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
+    <div class="tools" id="tools"><button class="icon" id="say">Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">Harf ochish</button></div>
     <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
     <div class="lans hidden" id="lans" role="group" aria-label="Javobingiz — harfni bossangiz, joyiga qaytadi"></div>
     <div class="bank dock hidden" id="bank" role="group" aria-label="Harflar"></div>
     <button class="kbt hidden" id="kbt"></button>
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
-    <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazish</button><button class="btn" id="next">Tekshirish</button></div>
+    <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="h3">Bilmayman</button><button class="btn ghost hidden" id="skip">O'tkazish</button><button class="btn" id="next">Tekshirish</button></div>
   </div>`;
   $("#quit").onclick = () => confirmQuit(Z ? Z.i + (Z.state === "next" ? 1 : 0) : 0, Z ? Math.max(Z.base || 0, Z.i + 1) : 0, () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; location.hash = b; });
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
-  $("#h2").onclick = () => { const t = Z.cur.a[0]; $("#hint").textContent = "1-harf: " + t[0].toUpperCase() + " · " + t.replace(/[ -]/g, "").length + " ta harf:  " + t[0] + " " + t.slice(1).replace(/[^ -]/g, "_ ").trim(); };
+  /* eslay olmasa: har bosishda yana bitta harf ochiladi; «Bilmayman» — javob ko'rsatiladi va bir marta yozdiriladi (xato hisoblanadi) */
+  const tgt = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
+  $("#h2").onclick = () => { if (!Z || Z.state === "next") return; const t = tgt(), n = t.replace(/[ -]/g, "").length; Z.hintN = Math.min((Z.hintN || 0) + 1, Math.max(1, n - 1)); let k = 0;
+    const mask = [...t].map(ch => /[ -]/.test(ch) ? (ch === " " ? "   " : "-") : (k++ < Z.hintN ? ch : "_")).join(" ");
+    $("#hint").innerHTML = `<span class="hmask">${esc(mask)}</span> <span class="hn">· ${n} ta harf</span>`; $("#h2").textContent = Z.hintN >= n - 1 ? "Harf ochish" : "Yana harf"; $("#h2").disabled = Z.hintN >= n - 1; };
+  $("#h3").onclick = () => giveUp();
   $("#next").onclick = () => { if (typedQ() && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
@@ -3446,7 +3464,7 @@ function ask() {
     $("#barfill").style.transform = "translateX(" + (re ? 0 : Z.i / Z.base - 1) * 100 + "%)";
   }
   ["#fb", "#ex", "#skip", "#intro"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron";
-  $("#hint").textContent = ""; $("#opts").innerHTML = "";
+  $("#hint").textContent = ""; $("#opts").innerHTML = ""; Z.hintN = 0; $("#h2").textContent = "Harf ochish"; $("#h2").disabled = false;
   $("#bank").innerHTML = ""; $("#bank").classList.add("hidden"); $("#kbt").classList.add("hidden");
   const sp = $("#spell"); sp.readOnly = false; sp.removeAttribute("inputmode");
   $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say" || Z.qmode === "listen");
@@ -3456,7 +3474,7 @@ function ask() {
     sp.className = "spell hidden"; delete sp.dataset.lock;
     setLabel(Z.title + " · tanishing, keyin eslab topasiz");
     $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = pr(w);
-    $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
+    $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden"); $("#h3").classList.add("hidden");
     $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div>${myEx(w)}${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
     $("#intro").classList.remove("hidden");
     say(spoken(w));
@@ -3468,7 +3486,7 @@ function ask() {
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
     setLabel(Z.title + " · inglizcha ovoz chiqarib ayting");
     $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
-    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
+    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.remove("hidden");
     askSay(w);
     return;
   }
@@ -3478,7 +3496,7 @@ function ask() {
     if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
     else if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
     else { $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = ""; }
-    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
+    $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
     $("#next").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     setInputMode(cz ? cz.word : w.a[0]);
@@ -3489,7 +3507,7 @@ function ask() {
     setLabel(Z.title + (en ? " · ma'nosini tanlang" : " · inglizchasini tanlang"));
     $("#qword").textContent = en ? w.w : w.u; $("#qword").className = "q" + (!en && w.u.length > 28 ? " qsmall" : "");
     $("#qpron").textContent = en ? pr(w) : "";
-    $("#tools").classList.toggle("hidden", !en); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
+    $("#tools").classList.toggle("hidden", !en); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden"); $("#h3").classList.add("hidden");
     if (en) say(spoken(w));
     const f = en ? "u" : "w";
     shuffle([w].concat(distractors(w, f))).forEach(o => {
@@ -3606,7 +3624,7 @@ function choose(btn, o, f) {
   toNext();
 }
 function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
-function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function toNext() { Z.state = "next"; const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -3620,6 +3638,16 @@ function diffHTML(typed, target) {
   }
   let h = ""; for (let k = 0; k < m; k++) { const ch = target[k] === " " ? "&nbsp;" : esc(target[k]); h += bad[k] ? '<span class="x">' + ch + "</span>" : ch; }
   return { html: h, extra };
+}
+function giveUp() {
+  if (!Z || Z.state === "next" || Z.retype) return;
+  const sp = $("#spell"), w = Z.cur, t = Z.qmode === "cloze" && Z.cz ? Z.cz : w.a[0];
+  result(false); buzz(false); say(spoken(w));
+  feedback(false, `To'g'risi: <div class="diff">${esc(t)}</div><span>${esc(pr(w))}. Endi uni bir marta ${useLetters() ? "tering" : "yozing"} — keyingi safar yana so'raladi.</span>`);
+  Z.retype = true; sp.value = ""; sp.className = "spell"; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t;
+  $("#hint").textContent = ""; $("#h2").disabled = true; $("#h3").classList.add("hidden");
+  if (useLetters()) setInputMode(t); else sp.focus();
+  $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish"; $("#pts").textContent = "✓ " + Z.right;
 }
 function check() {
   const sp = $("#spell"), w = Z.cur, val = norm(sp.value);
@@ -3642,7 +3670,7 @@ function check() {
     sp.className = "spell bad";
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
     feedback(false, `${Z.qmode === "listen" ? "<b>" + esc(w.w) + "</b> — " + esc(w.u) + "<br>" : ""}${rec(w.id) && rec(w.id).bad >= 3 ? "<b>Bu so'z " + rec(w.id).bad + "-marta xato bo'ldi — eslatgich yozing, bog'lanish yordam beradi.</b><br>" : ""}${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta ${useLetters() ? "tering" : "yozing"}.</span>`);
-    Z.retype = true; sp.value = ""; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t;
+    Z.retype = true; sp.value = ""; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t; $("#h3").classList.add("hidden");
     if (useLetters()) ltFail(() => setInputMode(t)); else sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     $("#pts").textContent = "✓ " + Z.right;

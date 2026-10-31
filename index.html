@@ -619,6 +619,26 @@ a.pill{text-decoration:none;color:var(--ink)}
 .nb + .sub,.nb + .pg-h{margin-top:8px}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
+
+/* ===== yozish: harflar banki ===== */
+.bank{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+.bank .lt{flex:none;min-width:48px;height:52px;padding:0 10px;border:0;border-radius:14px;background:var(--surface);color:var(--ink);font:600 22px/1 var(--font-body);cursor:pointer;touch-action:manipulation;transition:transform .08s,opacity .15s}
+.bank .lt.spc{font-size:14px;font-weight:500;color:var(--muted);min-width:96px}
+.bank .lt.del{color:var(--muted);background:var(--surface-2)}
+.bank .lt.del svg{width:22px;height:22px}
+.bank .lt:active:not(:disabled){transform:scale(.94)}
+.bank .lt.used{opacity:0;pointer-events:none}
+.bank .lt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.bank.done .lt{opacity:.35}
+.bank.nudge{animation:nudge .3s}
+@keyframes nudge{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.kbt{display:flex;align-items:center;gap:6px;margin:12px auto 0;min-height:44px;padding:0 14px;border:0;border-radius:999px;background:none;color:var(--muted);font:500 14px var(--font-body);cursor:pointer}
+.kbt svg{width:18px;height:18px}
+.kbt:hover{color:var(--ink)}
+.kbt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.spell.ltm{caret-color:transparent;cursor:default;letter-spacing:.06em}
+.spell.ltm:focus{box-shadow:none}
+@media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
 </style>
 <div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -1353,7 +1373,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -2236,6 +2256,8 @@ route(/^quiz$/, () => {
     <div class="tools" id="tools"><button class="icon" id="say">${ICON.vol} Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
     <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+    <div class="bank hidden" id="bank" role="group" aria-label="Harflar"></div>
+    <button class="kbt hidden" id="kbt"></button>
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazib yuborish</button><button class="btn" id="next">Tekshirish</button></div>
   </div>`;
@@ -2246,6 +2268,7 @@ route(/^quiz$/, () => {
   $("#next").onclick = () => { if ((Z.qmode === "spell" || Z.qmode === "cloze") && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
+  $("#kbt").onclick = () => { try { localStorage.setItem("ingliz-kbd", useLetters() ? "1" : "0"); } catch (er) {} setInputMode(Z.ltTarget); };
   ask();
 });
 document.addEventListener("keydown", e => {
@@ -2338,7 +2361,8 @@ function ask() {
   }
   ["#fb", "#ex", "#skip", "#intro"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron";
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
-  const sp = $("#spell");
+  $("#bank").innerHTML = ""; $("#bank").classList.add("hidden"); $("#kbt").classList.add("hidden");
+  const sp = $("#spell"); sp.readOnly = false; sp.removeAttribute("inputmode");
   $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say");
   if (Z.qmode === "intro") {
     // tanishuv kartasi: so'z, o'qilishi, ovoz, ma'nosi, misol gap va eslatgich — keyin darhol 1-bosqich
@@ -2370,7 +2394,7 @@ function ask() {
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
     $("#next").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
-    setTimeout(() => sp.focus(), 50);
+    setInputMode(cz ? cz.word : w.a[0]);
   } else {
     if (document.activeElement === sp) sp.blur(); // tanlov savolida klaviatura yopilsin
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
@@ -2387,6 +2411,55 @@ function ask() {
     });
   }
 }
+/* ---------- yozish: klaviaturasiz harflar banki ----------
+   so'z harflari aralashtiriladi + 2–5 ta chalg'ituvchi harf (o'xshash tovushlar: a/e, c/k/s, b/p…). Klaviatura tugmasi bilan odatiy yozishga o'tiladi */
+const useLetters = () => { try { return localStorage.getItem("ingliz-kbd") !== "1"; } catch (e) { return true; } };
+const LT_CONF = { a: "eo", e: "ai", i: "ey", o: "ua", u: "oa", y: "ie", c: "ks", k: "c", s: "cz", z: "s", b: "pd", p: "b", d: "tb", t: "d", g: "jk", j: "g", v: "wf", w: "v", m: "n", n: "m", l: "r", r: "l", f: "v", h: "e", q: "k", x: "s" };
+function bankLetters(t) {
+  const chars = [...t.toLowerCase()], letters = chars.filter(c => /[a-z]/.test(c));
+  const n = Math.min(5, Math.max(2, Math.round(letters.length * .4))), extra = [];
+  for (let k = 0; k < 30 && extra.length < n; k++) {
+    const c = letters[Math.floor(Math.random() * letters.length)] || "e", o = LT_CONF[c] || "aeiou";
+    extra.push(o[Math.floor(Math.random() * o.length)]);
+  }
+  return shuffle(chars.concat(extra));
+}
+function setInputMode(target) {
+  const sp = $("#spell"), bank = $("#bank"), lt = useLetters(), kb = $("#kbt");
+  Z.ltTarget = target; Z.ltUsed = [];
+  kb.classList.remove("hidden"); kb.innerHTML = lt ? ICON.kbd + "Klaviatura bilan yozish" : ICON.tiles + "Harflardan terish";
+  kb.setAttribute("aria-label", lt ? "Klaviatura bilan yozish" : "Harflardan terish");
+  sp.readOnly = lt; if (lt) sp.setAttribute("inputmode", "none"); else sp.removeAttribute("inputmode");
+  sp.classList.toggle("ltm", lt);
+  if (!Z.retype) sp.placeholder = lt ? "Harflarni bosing…" : "Inglizcha yozing…";
+  if (!lt) { bank.classList.add("hidden"); bank.innerHTML = ""; setTimeout(() => sp.focus(), 50); return; }
+  if (document.activeElement === sp) sp.blur();
+  sp.value = "";
+  bank.innerHTML = bankLetters(target).map((c, i) => `<button class="lt${c === " " ? " spc" : ""}" data-i="${i}" data-c="${esc(c)}" aria-label="${c === " " ? "bo'sh joy" : esc(c)}">${c === " " ? "bo'sh joy" : esc(c)}</button>`).join("")
+    + `<button class="lt del" id="ltdel" aria-label="Oxirgi harfni o'chirish">${ICON.erase}</button>`;
+  bank.classList.remove("hidden");
+  bank.querySelectorAll(".lt:not(.del)").forEach(b => b.onclick = () => ltTap(b));
+  $("#ltdel").onclick = ltUndo;
+}
+function ltTap(b) {
+  const sp = $("#spell"); if (!Z || Z.state === "next" || b.disabled || b.classList.contains("used")) return;
+  if (sp.classList.contains("bad")) sp.className = "spell ltm";
+  sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b);
+}
+function ltUndo() {
+  const sp = $("#spell"), b = Z && Z.ltUsed.pop(); if (!b || Z.state === "next") return;
+  sp.value = sp.value.slice(0, -1); b.classList.remove("used"); b.disabled = false;
+}
+function bankLock() { $("#bank").querySelectorAll("button").forEach(b => b.disabled = true); $("#bank").classList.add("done"); }
+function bankNudge() { const b = $("#bank"); b.classList.remove("nudge"); void b.offsetWidth; b.classList.add("nudge"); }
+/* kompyuterda: harflar rejimida ham klaviaturadan terish mumkin */
+document.addEventListener("keydown", e => {
+  if (!Z || !location.hash.startsWith("#quiz") || !useLetters() || (Z.qmode !== "spell" && Z.qmode !== "cloze") || Z.state !== "ask" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const bank = $("#bank"); if (!bank || bank.classList.contains("hidden")) return;
+  if (e.key === "Backspace") { e.preventDefault(); ltUndo(); return; }
+  if (e.key === "Enter") { e.preventDefault(); check(); return; }
+  if (e.key.length === 1) { const k = e.key.toLowerCase(), b = [...bank.querySelectorAll(".lt:not(.del):not(.used)")].find(x => x.dataset.c === k); if (b) { e.preventDefault(); ltTap(b); } }
+});
 function setLabel(t) { $("#qlabel").innerHTML = (Z.tag2 ? '<span class="qtag' + (Z.re ? " re" : "") + '">' + Z.tag2 + "</span>" : "") + '<span class="ltx">' + esc(t) + "</span>"; }
 function result(ok) {
   const w = Z.cur;
@@ -2433,16 +2506,16 @@ function diffHTML(typed, target) {
 function check() {
   const sp = $("#spell"), w = Z.cur, val = norm(sp.value);
   if (Z.state === "next") return next();
-  if (!val) return sp.focus();
+  if (!val) return useLetters() ? bankNudge() : sp.focus();
   const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
   const ok = cands.some(x => norm(x) === val);
   if (Z.retype) {
-    if (ok) { buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
-    else { buzz(false); sp.className = "spell bad"; sp.select(); }
+    if (ok) { bankLock(); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
+    else { buzz(false); sp.className = "spell bad"; if (useLetters()) setInputMode(Z.ltTarget); else sp.select(); }
     return;
   }
   say(spoken(w));
-  if (ok) { result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); }
+  if (ok) { bankLock(); result(true); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}`); toNext(); }
   else {
     result(false); buzz(false);
     // bir nechta to'g'ri variant bo'lsa, yozilganiga eng yaqini bilan solishtiramiz
@@ -2450,8 +2523,9 @@ function check() {
     const near = dist[best] === 1 && norm(t).length > 3;
     sp.className = "spell bad";
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
-    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta yozing.</span>`);
-    Z.retype = true; sp.value = ""; sp.placeholder = "To'g'risini yozing: " + t; sp.focus();
+    feedback(false, `${near ? "<b>Deyarli to'g'ri — faqat bitta harf xato.</b><br>" : ""}Siz yozdingiz: <s>${you}</s><div class="diff">${df.html}</div><span>${esc(pr(w))}${df.extra ? " · ortiqcha harf bor" : ""}${df.html.includes('class="x"') ? (near ? " — qizil harfga" : " — qizil harflarga") + " e'tibor bering" : ""}. Endi to'g'risini bir marta ${useLetters() ? "tering" : "yozing"}.</span>`);
+    Z.retype = true; sp.value = ""; sp.placeholder = (useLetters() ? "To'g'risini tering: " : "To'g'risini yozing: ") + t;
+    if (useLetters()) setInputMode(t); else sp.focus();
     $("#skip").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     $("#pts").textContent = "✓ " + Z.right;
   }

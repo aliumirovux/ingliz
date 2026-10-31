@@ -2781,7 +2781,7 @@ route(/^yakun$/, () => {
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}
-  <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar · ${GUIDES.length} ta qo'llanma</span></span><i>${GUIDES.length - guidesLeft()}/${GUIDES.length} ›</i></a>
+  <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar</span></span><i>${GUIDES.length - guidesLeft()}/${GUIDES.length} ›</i></a>
   <div class="qa" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.length} ta qolip</span></a>
     <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.length} ta gap</span></a>

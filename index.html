@@ -544,6 +544,68 @@ svg.xm-ch .hit:focus-visible{stroke:var(--marker);stroke-width:2}
 #xmtip.on{opacity:1}
 #xmtip b{font-weight:700}
 @media (prefers-reduced-motion:reduce){#xmtip{transition:none}}
+
+/* ===== Bugungi dars: qadamlar yo'li ===== */
+.dars .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dars .dh h2{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:0}
+.dars .dh p{margin:3px 0 0;color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.dars .cnt{flex:none;display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;background:var(--surface-2);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.dars .cnt.ok{background:var(--ok-bg);color:var(--ok)}
+.tl{list-style:none;margin:16px 0;padding:0}
+.tl li{position:relative;padding:0 0 4px}
+.tl li:not(:last-child)::before{content:"";position:absolute;left:15px;top:42px;bottom:-6px;width:2px;border-radius:1px;background:var(--track)}
+.tl li.done:not(:last-child)::before{background:var(--ok-strong)}
+.tl button{display:flex;gap:12px;align-items:flex-start;width:100%;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer;border-radius:16px}
+.tl button:disabled{cursor:default}
+.tl button:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.tl .dot{flex:none;width:32px;height:32px;margin-top:8px;border-radius:50%;display:grid;place-items:center;font:600 14px var(--font-body);font-variant-numeric:tabular-nums;background:var(--surface-2);color:var(--muted);position:relative;z-index:1}
+.tl .dot svg{width:16px;height:16px}
+.tl .done .dot{background:var(--ok-strong);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tl .done .dot{color:#0F1A0E}}
+:root[data-theme="dark"] .tl .done .dot{color:#0F1A0E}
+.tl .now .dot{background:var(--marker);color:var(--on-marker)}
+.tl .lock .dot{background:var(--surface);box-shadow:inset 0 0 0 2px var(--track)}
+.tl .bx{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;min-height:48px;transition:background-color .15s}
+.tl button:not(:disabled):hover .bx{background:var(--surface-2)}
+.tl .now .bx,.tl .now button:hover .bx{background:var(--marker-soft);padding:12px 14px}
+.tl .tx{flex:1;min-width:0}
+.tl .tx b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.tl .tx span{display:block;font-size:13px;color:var(--muted);line-height:1.35}
+.tl .now .tx b{font-size:17px}
+.tl .now .tx span{color:var(--ink);opacity:.8}
+.tl .done .tx b,.tl .lock .tx b{color:var(--muted)}
+.tl .m{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl .now .m{color:var(--accent-text);font-weight:600}
+.tl .done .m{color:var(--ok)}
+.tl button:active .bx{transform:scale(.99)}
+.dars .btn svg{width:20px;height:20px}
+.dars .btn{width:100%}
+.unitrow{display:flex;align-items:center;gap:12px;margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--line);color:inherit;text-decoration:none;min-height:60px}
+.unitrow .ub{flex:none;width:40px;height:40px;border-radius:14px;background:var(--surface-2);color:var(--muted);display:grid;place-items:center}
+.unitrow .ub svg{width:19px;height:19px}
+.unitrow .tx{flex:1;min-width:0}
+.unitrow .tx b{display:block;font-size:15px;font-weight:600;line-height:1.3}
+.unitrow .tx span{display:block;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+a.pill{text-decoration:none;color:var(--ink)}
+.unitrow .ubar{height:6px;border-radius:3px;background:var(--track);margin-top:6px;overflow:hidden}
+.unitrow .ubar i{display:block;height:100%;background:var(--marker);border-radius:3px}
+.unitrow .pc{flex:none;align-self:flex-start;margin-top:1px;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.unitrow .chev{flex:none;color:var(--muted);display:flex}.unitrow .chev svg{width:18px;height:18px}
+.unitrow:focus-visible{outline:2px solid var(--marker);outline-offset:4px;border-radius:12px}
+/* daraja tanlash */
+.pick-l{margin:16px 0 8px;font-size:14px;font-weight:600;color:var(--muted)}
+.card .pick-l:first-child{margin-top:0}
+.lvl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lvl button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:58px;padding:10px 12px;border:0;border-radius:18px;background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.lvl button b{font-size:15px;font-weight:600;line-height:1.25}
+.lvl button span{font-size:13px;color:var(--muted)}
+.lvl button.on{background:var(--marker-soft);box-shadow:inset 0 0 0 2px var(--marker)}
+.lvl button.on span{color:var(--accent-text)}
+.lvl button:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.lvl button:active{transform:scale(.98)}
+.ask-unit .ugrid{margin-top:0}
+.lv-empty{margin:12px 0 16px;color:var(--muted);font-size:15px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){.tl .bx{transition:none}}
 </style>
 <div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -1330,6 +1392,7 @@ function merge(a, b) {
   const sa = a.streak || {}, sb = b.streak || {};
   out.streak = (sb.last || "") > (sa.last || "") ? sb : (sa.last ? sa : out.streak);
   out.course = Math.max(a.course || 0, b.course || 0);
+  out.level = b.level || a.level || "";
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
@@ -1454,7 +1517,7 @@ function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
   const h = location.hash.replace(/^#/, "");
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  const tab = h === "" ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
+  const tab = h === "" || h === "kurs" ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
@@ -1484,6 +1547,15 @@ function pageIn(tab) {
 window.addEventListener("resize", () => moveLens(lastTab, true));
 
 /* ---------- UNITLAR: kitobdagi nomlar va progress ---------- */
+/* Navigate (Oxford) darajalari. Hozircha faqat Beginner kontenti bor; qolganlari uchun kitob sahifalari yuborilganda qo'shiladi */
+const LEVELS = [
+  { id: "beginner", t: "Beginner", cefr: "A1", ready: true },
+  { id: "elementary", t: "Elementary", cefr: "A2" },
+  { id: "pre", t: "Pre-intermediate", cefr: "B1" },
+  { id: "inter", t: "Intermediate", cefr: "B1+" },
+  { id: "upper", t: "Upper-intermediate", cefr: "B2" },
+  { id: "adv", t: "Advanced", cefr: "C1" }];
+const curLevel = () => LEVELS.find(l => l.id === S.level) || LEVELS[0];
 const UNIT_INFO = [null,
   ["First meetings", "Tanishuv"], ["Questions", "Savollar"], ["People and possessions", "Odamlar va narsalar"],
   ["My life", "Mening hayotim"], ["Style and design", "Uslub va dizayn"], ["Places and facilities", "Joylar va qulayliklar"],
@@ -1525,7 +1597,7 @@ function todayPlan(n) {
   const due = dueWords().filter(w => !ids.has(w.id)), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
   if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z bugun qaytariladi", run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
   // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
-  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + n) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z · tanishuv va 3 bosqich", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + n, "#", "new") });
+  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + n) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z", d: Math.min(LEARN_N, unseen.length) + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + n, "#", "new") });
   if (!due.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
   const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
   if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
@@ -1636,29 +1708,21 @@ route(/^$/, () => {
   const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
-  const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.filter(x => !x.lock).length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
-  const askUnit = !S.course;
+  const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
   app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
-    <label class="pill">${ICON.book}<span>${S.course ? "Kursda: Unit " + S.course : "Kursdagi unitni tanlang"}</span><span class="dn">${ICON.down}</span>
-      <select id="course" aria-label="Kursda qaysi unitdasiz"><option value="">tanlang</option>${UNIT_INFO.slice(1).map((x, i) => `<option value="${i + 1}"${S.course === i + 1 ? " selected" : ""}>Unit ${i + 1} · ${esc(x[0])}</option>`).join("")}</select></label>
+    <a class="pill" href="#kurs" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + S.course : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></a>
     <span class="streak" title="Ketma-ket kunlar">${ICON.flame}${streak ? `<b>${streak}</b> kun ketma-ket` : "Seriyani boshlang"}</span>
   </div>
   <div class="stack">
-    ${askUnit ? `<section class="lesson ask-unit">
-      <p class="meta">Birinchi qadam</p>
-      <h2>Kursda qaysi unitdasiz?</h2>
-      <p class="uz">Bugungi reja shu unit bo'yicha tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
-      <div class="ugrid">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
-    </section>` : `<section class="lesson">
-      <p class="meta"><b>Unit ${cu.n}</b> · kitobda ${bookPages(cu.n)}-betlar · ${st.pct}%</p>
-      <h2>${esc(info[0])}</h2>
-      <p class="uz">${esc(info[1])}</p>
-      <ul class="steps">${plan.map((x, i) => { const dn = done.includes(x.tag), lk = x.lock && !dn; return `<li><button class="${dn ? "done" : lk ? "lock" : ""}" data-i="${i}"${lk ? " disabled" : ""}><span class="ic">${dn ? ICON.check : ICON[x.ic]}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="min">${dn ? "bajarildi" : lk ? ICON.lock : x.min + " daq"}</span></button></li>`; }).join("")}</ul>
-      <button class="btn" id="les"${left.length ? "" : " disabled"}>${cta}</button>
-      ${left.length ? "" : `<div style="height:10px"></div><a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
-    </section>`}
+    ${!lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
+      <h2>Kursingizni tanlang</h2>
+      <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
+      ${levelPicker()}
+      <p class="pick-l" id="ul">Unit</p>
+      <div class="ugrid" role="group" aria-labelledby="ul">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}"${!cu.fresh && cu.n === i + 1 ? ' class="guess"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>
+    </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
     <div class="week" aria-label="Shu hafta">${weekDays(streak)}</div>
@@ -1668,9 +1732,61 @@ route(/^$/, () => {
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
-  $("#course").onchange = e => { S.course = +e.target.value || 0; save(); render(); };
+  bindLevelPicker();
+  const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   bindInstall();
-  app.querySelectorAll(".steps button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+  app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+});
+/* ---------- Bugungi dars: qadamlar yo'li ---------- */
+function stepView(x) {
+  const m = /^([^:]+):\s*(.+)$/.exec(x.t), title = m ? m[1] : x.t, topic = m ? m[2] : "";
+  const sub = x.s.replace(/^Unit \d+ · /, "");
+  if (x.tag === "esla") return { title: "Oldingi xatolar", sub, more: sub };
+  return { title, sub: topic ? topic + " · " + sub : sub, more: x.d || (topic ? topic + " · " + sub : sub) };
+}
+function lessonCard(cu, st, info, plan, done, left, mins) {
+  const dn = plan.filter(x => done.includes(x.tag)).length, all = plan.length, next = left[0], lock = plan.find(x => x.lock && !done.includes(x.tag));
+  const started = left.length < plan.filter(x => !x.lock).length;
+  const sub = !left.length ? (lock ? stepView(lock).sub : all + " qadam · hammasi bajarildi") : started ? mins + " daqiqa qoldi" : all + " qadam · " + mins + " daqiqa";
+  const li = plan.map((x, i) => {
+    const d = done.includes(x.tag), lk = x.lock && !d, now = x === next, v = stepView(x);
+    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : i + 1}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${d ? "bajarildi" : lk ? "" : x.min + " daq"}</span></span></button></li>`;
+  }).join("");
+  return `<section class="lesson dars">
+    <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" aria-label="${dn} / ${all} qadam bajarildi">${dn}/${all}</span></div>
+    <ol class="tl">${li}</ol>
+    ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
+    <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${cu.n} · ${esc(info[0])}</b><span>${esc(info[1])} · ${bookPages(cu.n)}-betlar</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
+  </section>`;
+}
+/* daraja tanlash (Bugun kartasida va #kurs sahifasida) */
+function levelPicker() {
+  const cur = curLevel();
+  return `<p class="pick-l" id="lvl">Daraja · Navigate</p><div class="lvl" role="radiogroup" aria-labelledby="lvl">${LEVELS.map(l => `<button role="radio" aria-checked="${l === cur}" class="${l === cur ? "on" : ""}" data-l="${l.id}"><b>${l.t}</b><span>${l.cefr}${l.ready ? "" : " · tez orada"}</span></button>`).join("")}</div>`;
+}
+function bindLevelPicker() {
+  app.querySelectorAll(".lvl button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); render(); });
+}
+function emptyLevelCard(lv) {
+  const due = dueWords().length;
+  return `<section class="lesson dars">
+    <div class="dh"><div><h2>${lv.t}</h2><p>Navigate · ${lv.cefr}</p></div></div>
+    <p class="lv-empty">Bu daraja uchun so'zlar va grammatika hali qo'shilmagan. Kitob oxiridagi so'zlar ro'yxati (Word list) sahifalarini suratga olib Claude'ga yuboring — shu yerga qo'shiladi.</p>
+    ${due ? `<button class="btn" id="erev">Takrorlash · ${due} ta so'z ${ICON.arrow}</button><div style="height:10px"></div>` : ""}
+    <a class="btn ghost" href="#kurs">Darajani o'zgartirish</a>
+  </section>`;
+}
+
+/* ---------- KURS: daraja va unit ---------- */
+route(/^kurs$/, () => {
+  const lv = curLevel(), cu = curUnit();
+  app.innerHTML = `<a class="back" href="#">${ICON.back} Bugun</a><h1>Kurs va daraja</h1><p class="sub">Navigate (Oxford) seriyasi. Bugungi reja tanlangan daraja va unit bo'yicha tuziladi.</p>
+  <section class="sec"><div class="card">${levelPicker()}</div></section>
+  <section class="sec"><div class="sec-h"><h2>Kursda qaysi unitdasiz?</h2></div>
+  ${lv.ready ? `<div class="card"><div class="ugrid" style="margin:0">${UNIT_INFO.slice(1).map((x, i) => `<button data-u="${i + 1}" class="${S.course === i + 1 ? "guess" : ""}"${S.course === i + 1 ? ' aria-current="true"' : ""}><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div></div>`
+    : `<div class="card"><p class="lv-empty" style="margin:0">${lv.t} uchun unitlar hali qo'shilmagan. Kitob oxiridagi so'zlar ro'yxati sahifalarini Claude'ga yuboring — shu yerga qo'shiladi.</p></div>`}</section>`;
+  bindLevelPicker();
+  app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); go(""); });
 });
 /* ---------- Bugun: xotira ko'rsatkichi ----------
    asosiy son — takrorlashda birinchi urinishda topilgan so'zlar ulushi (log.rv / log.rk), haftalik, maqsad 80% */

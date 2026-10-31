@@ -2494,7 +2494,7 @@ route(/^$/, () => {
   app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
   <div class="pills">
-    <button class="pill" id="kursb" aria-haspopup="dialog" aria-label="Kurs, daraja va unitni o'zgartirish">${ICON.book}<span>${lvReady && S.course ? lv.t + " · Unit " + cu.n : lvReady ? "Kursni tanlang" : lv.t}</span><span class="dn">${ICON.down}</span></button>
+    <button class="pill" id="kursb" data-k="lvl" aria-haspopup="dialog" aria-label="Darajani o'zgartirish: ${esc(lv.t)}"><span>${esc(lv.t)}</span><span class="dn">${ICON.down}</span></button>${lvReady ? `<button class="pill" id="unitb" data-k="unit" aria-haspopup="dialog" aria-label="Unitni o'zgartirish"><span>${S.course ? "Unit " + cu.n : "Unitni tanlang"}</span><span class="dn">${ICON.down}</span></button>` : ""}
   </div>
   <div class="stack">
     ${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
@@ -2516,8 +2516,9 @@ route(/^$/, () => {
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
   bindLevelPicker(); bindHomeCards(); bindClass(cu);
-  const kb = $("#kursb"); if (kb) kb.onclick = courseSheet;
+  app.querySelectorAll("#kursb,#unitb").forEach(b => b.onclick = () => courseSheet(b.dataset.k));
   const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
+  const ms = $("#mast"); if (ms) ms.onclick = () => startQuiz(mastPool(), "auto", "Mustahkamlash", "#");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { S.level = "beginner"; save(); render(); };
   bindInstall();
@@ -2538,6 +2539,8 @@ const arcRing = (size, sw, pct, cls, extra = "") => { const r = (size - sw) / 2,
 /* ---------- takrorlash tartibi va kunlik chegara: eng kechikkan va eng zaif so'z birinchi; qolgani keyingi kunlarga ---------- */
 const REV_CAP = 30;
 const revOrder = list => list.slice().sort((a, b) => { const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; });
+/* «Mustahkamlash»: o'rganilayotgan (hali mustahkam emas) so'zlar — eng zaifi birinchi, 10 ta */
+const mastPool = () => shuffle(WORDS.filter(w => isSeen(w) && !isMastered(w))).sort((a, b) => rec(a.id).b - rec(b.id).b).slice(0, 10);
 /* «2 daqiqa»: charchagan kuni — 10 ta so'z, seriya saqlanadi */
 const miniPool = () => { const d = revOrder(dueWords()); return (d.length >= 5 ? d : d.concat(shuffle(WORDS.filter(w => isSeen(w) && !isDue(w))).sort((a, b) => rec(a.id).b - rec(b.id).b))).slice(0, 10); };
 const myEx = w => w.pe ? `<div class="ex pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : "";
@@ -2684,19 +2687,20 @@ function emptyLevelCard(lv) {
 /* eski #kurs havolasi: bosh sahifa + pastki oyna */
 route(/^kurs$/, () => { history.replaceState(null, "", location.pathname + location.search); curH = ""; routes.find(r => r[0].test(""))[1](); setTimeout(courseSheet, 60); });
 /* ---------- KURS: daraja va unit — pastki oyna (bottom sheet) ---------- */
-function courseSheet() {
+/* kind: "lvl" — faqat daraja, "unit" — faqat unit, bo'sh — ikkalasi (eski #kurs havolasi) */
+function courseSheet(kind) {
   if (document.getElementById("ksheet")) return;
   const wrap = document.createElement("div"); wrap.id = "ksheet"; wrap.className = "qsheet ksheet";
-  wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs ks" role="dialog" aria-modal="true" aria-labelledby="ksh"><div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="ksh">Kurs va daraja</h2><button class="ks-x" data-x aria-label="Yopish">${ICON.x}</button></div></div><div class="ks-body"></div></div>`;
+  wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs ks" role="dialog" aria-modal="true" aria-labelledby="ksh"><div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="ksh">${kind === "lvl" ? "Daraja" : kind === "unit" ? "Kursda qaysi unitdasiz?" : "Kurs va daraja"}</h2><button class="ks-x" data-x aria-label="Yopish">${ICON.x}</button></div></div><div class="ks-body"></div></div>`;
   document.body.appendChild(wrap);
   const body = wrap.querySelector(".ks-body"), sheet = wrap.querySelector(".ks"), prev = document.activeElement;
   const fill = () => {
     const lv = curLevel(), cu = curUnit();
-    body.innerHTML = `${levelPicker().replace(/<p class="pick-l" id="lvl">[^<]*<\/p>/, "").replace('aria-labelledby="lvl"', 'aria-labelledby="ksh"')}
-    ${lv.ready ? `<p class="pick-l" id="ul2">Kursda qaysi unitdasiz?</p><div class="ugrid" role="radiogroup" aria-labelledby="ul2" style="margin:0">${UNIT_INFO.slice(1).map((x, i) => `<button role="radio" data-u="${i + 1}" aria-checked="${S.course === i + 1}" class="${S.course === i + 1 ? "guess" : ""}"><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>`
+    body.innerHTML = `${kind === "unit" ? "" : levelPicker().replace(/<p class="pick-l" id="lvl">[^<]*<\/p>/, "").replace('aria-labelledby="lvl"', 'aria-labelledby="ksh"')}
+    ${kind === "lvl" ? "" : lv.ready ? `${kind === "unit" ? "" : `<p class="pick-l" id="ul2">Kursda qaysi unitdasiz?</p>`}<div class="ugrid" role="radiogroup" aria-labelledby="${kind === "unit" ? "ksh" : "ul2"}" style="margin:0">${UNIT_INFO.slice(1).map((x, i) => `<button role="radio" data-u="${i + 1}" aria-checked="${S.course === i + 1}" class="${S.course === i + 1 ? "guess" : ""}"><b>${i + 1}</b><span>${esc(x[1])}</span></button>`).join("")}</div>`
       : lv.zero ? `<p class="lv-empty">Bu darajada unit yo'q: avval ${GUIDES.length} ta qisqa qo'llanma — alifbo, tovushlar, sonlar va darsdagi gaplar. Tugagach, Beginner (A1) ga o'tasiz.</p><button class="btn" id="ksasos">Qo'llanmalarni ochish</button>`
       : `<p class="lv-empty">${lv.t} uchun unitlar hali qo'shilmagan. Kitob oxiridagi so'zlar ro'yxati sahifalarini Claude'ga yuboring — shu yerga qo'shiladi.</p>`}`;
-    body.querySelectorAll(".lvl button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); fill(); render(); });
+    body.querySelectorAll(".lvl button").forEach(b => b.onclick = () => { S.level = b.dataset.l; save(); if (kind === "lvl") { close(); render(); toast(curLevel().t + " tanlandi"); } else { fill(); render(); } });
     body.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); close(); render(); toast("Unit " + b.dataset.u + " tanlandi — bugungi reja yangilandi"); });
     const a = body.querySelector("#ksasos"); if (a) a.onclick = () => { close(); go("asos"); };
   };
@@ -2757,7 +2761,8 @@ function fcTile() {
 }
 function mastTile(seen, mast) {
   const k = WORDS.length, l = seen - mast;
-  return `<div class="xm-t xg"><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan</p></div>`;
+  const go = l > 0, tg = go ? "button" : "div";
+  return `<${tg} class="xm-t xg${go ? " tap" : ""}"${go ? ' id="mast" aria-label="O\'rganilayotgan so\'zlarni mustahkamlash"' : ""}><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan</p>${go ? `<span class="mchip">Mustahkamlash</span>` : ""}</${tg}>`;
 }
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {

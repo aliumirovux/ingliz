@@ -620,6 +620,21 @@ a.pill{text-decoration:none;color:var(--ink)}
 .pg-h{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:8px 0 4px;text-wrap:balance}
 @media (prefers-reduced-motion:reduce){.nb{transition:none}}
 
+/* ===== qidiruv maydoni ===== */
+.sbox{position:relative}
+.sbox>svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;color:var(--muted);pointer-events:none}
+.sbox input.search{padding-left:44px;padding-right:48px}
+.sbox input.search::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.sclr{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;background:none;color:var(--muted);display:grid;place-items:center;border-radius:50%;cursor:pointer}
+.sclr svg{width:18px;height:18px}
+.sclr:focus-visible{outline:2px solid var(--marker)}
+/* ===== qisqa xabar ===== */
+.toast{position:fixed;z-index:90;left:50%;bottom:calc(var(--nav-h) + 28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);opacity:0;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 32px);min-height:48px;padding:6px 6px 6px 16px;border-radius:16px;background:#17171B;color:#fff;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .2s,transform .2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.toast button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:rgba(255,255,255,.12);color:#F2B08F;font:600 15px var(--font-body);cursor:pointer}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+
 /* ===== yozish: harflar banki ===== */
 .bank{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
 .bank .lt{flex:none;min-width:48px;height:52px;padding:0 10px;border:0;border-radius:14px;background:var(--surface);color:var(--ink);font:600 22px/1 var(--font-body);cursor:pointer;touch-action:manipulation;transition:transform .08s,opacity .15s}
@@ -1373,7 +1388,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1544,27 +1559,48 @@ const pr = w => w.p ? "[" + w.p + "]" : "";
 
 /* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
 function nav(back, label, title) {
-  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}<span>${esc(label)}</span></a>` : "<span></span>"}<h1 class="nb-t">${title}</h1><span></span></header>`;
+  const long = String(title).replace(/<[^>]+>/g, "").length + String(label).length > 26;
+  return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}">${ICON.back}${long ? "" : `<span>${esc(label)}</span>`}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1><span></span></header>`;
 }
 const navScroll = () => { const n = document.querySelector(".nb"); if (n) n.classList.toggle("on", scrollY > 2); };
 addEventListener("scroll", navScroll, { passive: true });
+
+/* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
+function toast(msg, act, fn) {
+  let t = document.getElementById("toast"); if (t) t.remove();
+  t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status");
+  t.innerHTML = `<span>${esc(msg)}</span>${act ? `<button>${esc(act)}</button>` : ""}`;
+  document.body.appendChild(t); requestAnimationFrame(() => t.classList.add("on"));
+  const close = () => { t.classList.remove("on"); setTimeout(() => t.remove(), 250); };
+  if (act) t.querySelector("button").onclick = () => { close(); fn(); };
+  setTimeout(close, 6000);
+}
 
 /* ---------- router ---------- */
 const routes = [];
 const route = (re, fn) => routes.push([re, fn]);
 function go(h) { location.hash = h; }
+/* real ilovalardagidek: orqaga qaytilganda ro'yxat avvalgi joyida ochiladi; shu sahifaning o'zi yangilansa tepaga sakramaydi */
+const SCROLLS = {}, HIST = []; let curH = null;
 function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
-  const h = location.hash.replace(/^#/, "");
+  const h = location.hash.replace(/^#/, ""), same = h === curH, quizy = /^(quiz|gapmashq|tuzmashq)/.test(h);
+  if (curH !== null) SCROLLS[curH] = scrollY;
+  let back = false;
+  if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
+  curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navScroll();
-  const tab = h === "" || h === "kurs" ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
-  moveLens(tab, lastTab === null); pageIn(tab); lastTab = tab;
+  moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
-  if (!(h === "tuzmashq" && document.documentElement.classList.contains("typing"))) window.scrollTo(0, 0);
+  if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
+  const keep = !quizy && (same || back) && SCROLLS[h] != null ? SCROLLS[h] : 0;
+  window.scrollTo(0, keep); if (keep) requestAnimationFrame(() => window.scrollTo(0, keep));
+  navScroll();
 }
 window.addEventListener("hashchange", render);
 /* tab bar linzasi va sahifa animatsiyasi */
@@ -2016,17 +2052,23 @@ route(/^mening$/, () => {
   const ml = $("#mylearn"); if (ml) ml.onclick = () => startLearn(fresh, "Mening so'zlarim", "#mening", null);
   app.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
     const id = b.dataset.del, w = WORDS.find(x => x.id === id); if (!w) return;
-    if (!confirm("«" + w.w + "» o'chirilsinmi? Shu so'zning natijasi ham o'chadi.")) return;
+    const snap = { my: S.my.slice(), srs: S.srs[id], hook: S.hook[id], mis: S.mis["w:" + id] };
     S.my = S.my.filter(m => m.id !== id); delete S.srs[id]; delete S.hook[id]; delete S.mis["w:" + id];
     syncMyWords(); save(); render();
+    toast("«" + w.w + "» o'chirildi", "Qaytarish", () => {
+      S.my = snap.my; if (snap.srs) S.srs[id] = snap.srs; if (snap.hook) S.hook[id] = snap.hook; if (snap.mis) S.mis["w:" + id] = snap.mis;
+      syncMyWords(); save(); if (location.hash === "#mening") render();
+    });
   });
 });
 route(/^lugat$/, () => {
   app.innerHTML = `${nav(null, "", "Lug'at")}<p class="sub">${WORDS.length} ta so'z. Inglizcha yoki o'zbekcha yozib qidiring.</p>
-  <div class="stack"><input class="search" id="q" placeholder="Masalan: weekend yoki ofis" autocomplete="off">
+  <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="Masalan: weekend yoki ofis" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
+  $("#qclr").onclick = () => { const i = $("#q"); i.value = ""; i.dispatchEvent(new Event("input")); i.focus(); };
   $("#q").oninput = e => {
+    LQ = e.target.value; $("#qclr").classList.toggle("hidden", !LQ);
     const q = norm(e.target.value);
     if (q.length < 2) { $("#res").innerHTML = ""; $("#ul").classList.remove("hidden"); return; }
     const hit = WORDS.filter(w => norm(w.w).includes(q) || norm(w.u).includes(q)).slice(0, 40);
@@ -2035,7 +2077,9 @@ route(/^lugat$/, () => {
     bindSay($("#res"));
     const aq = $("#addq"); if (aq) aq.onclick = () => { MYPRE = e.target.value.trim(); go("mening"); };
   };
+  if (LQ) { $("#q").value = LQ; $("#q").dispatchEvent(new Event("input")); }
 });
+let LQ = "";
 
 /* ---------- UNIT page ---------- */
 let pick = { groups: null, mode: "uz-en" };
@@ -2348,7 +2392,7 @@ function ask() {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
     const stp = Z.words.reduce((a, x) => a + (Z.fin.has(x.id) ? 3 : Z.lv[x.id] || 0), 0), all = Z.words.length * 3;
-    $("#pos").textContent = stp + "/" + all;
+    $("#pos").textContent = Math.min(stp + 1, all) + "/" + all;
     $("#pts").textContent = "✓ " + Z.right;
     $("#barfill").style.width = (stp / all * 100) + "%";
   } else {

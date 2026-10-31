@@ -417,8 +417,8 @@ nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-wid
 
 /* ===== TONAL elementlar (1-variant): chegarasiz, yuzalar rang toni bilan ajraladi. Ranglar, tuzilma va pastki menyu o'zgarmaydi ===== */
 :root{--track:#E2E3DE;--edge:#8C8D86;--rr:24px}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78}}
-:root[data-theme="dark"]{--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}}
+:root[data-theme="dark"]{--surface:#1D1D22;--surface-2:#2A2A31;--track:#2E2E35;--edge:#6E6F78;--seg-on:#44444D}
 /* yuzalar: soya o'rniga ton */
 .card,.list,.lesson,.week,.install,.unit,.hero{box-shadow:none}
 .card,.list,.install,.unit{border-radius:var(--rr)}
@@ -475,6 +475,34 @@ input[type=checkbox]::after{content:"";position:absolute;left:6px;top:6px;width:
 input[type=checkbox]:checked{background:var(--marker);box-shadow:none}
 input[type=checkbox]:checked::after{left:26px;top:4px;width:24px;height:24px;background:var(--on-marker)}
 input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offset:3px}
+/* test ekrani: kartasiz, yuqorida ✕ + progress + hisob */
+.top{justify-content:flex-start;gap:12px;margin:2px 0 18px}
+.top .bar{flex:1;margin:0;height:10px}
+.top .cnt{flex:none;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
+.top .icon#quit{flex:none}
+.qcard{background:none;padding:0;border-radius:0}
+.qcard > .label{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
+.qcard > .label:not(#qlabel),.qcard #qlabel .ltx{display:inline-flex;align-items:center;width:max-content;max-width:100%;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;border-radius:999px;padding:4px 12px}
+.qcard #qlabel{display:flex;flex-wrap:wrap;gap:6px}
+.qcard #qlabel .qtag{margin:0;font-size:13px;padding:4px 12px}
+.qcard .opts{margin-top:22px}
+.qcard .opt,.qcard .tile,.qcard .spell,.qcard textarea,.qcard .intro .ex,.qcard .hook.edit{background:var(--surface)}
+.qcard .spell:focus,.qcard textarea:focus{background:var(--surface)}
+.qcard .fb{border-radius:20px;padding:14px 16px;margin-top:16px}
+.qcard .fb.ok{background:var(--surface);color:var(--ink)}
+.fbh{font-weight:700}.fb.ok .fbh{color:var(--ok)}
+.qcard .fb.ok + .ex:not(.hidden){background:var(--surface);border-radius:0 0 20px 20px;margin-top:0;padding:0 16px 14px}
+.qcard .fb.ok:has(+ .ex:not(.hidden)){border-radius:20px 20px 0 0;padding-bottom:10px}
+.qcard .fb.bad + .ex{background:var(--surface);border-radius:20px;padding:14px 16px;margin-top:8px}
+.qcard .row{margin-top:18px!important}
+/* segmentli tanlov */
+.seg{display:flex;gap:4px;background:var(--surface-2);border-radius:16px;padding:4px}
+.seg .mode{flex:1 1 auto;min-width:0;justify-content:center;align-items:center;min-height:44px;padding:0 6px;border-radius:12px;background:transparent;box-shadow:none;color:var(--muted);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg:has(.mode:nth-child(5)) .mode{font-size:13px;padding:0 4px}
+.seg .mode.on{background:var(--seg-on,var(--surface));color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.lic{flex:none;width:40px;height:40px;border-radius:14px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center}
+.lic svg{width:20px;height:20px}
+.segd{margin:10px 2px 0;font-size:14px;color:var(--muted);min-height:21px}
 @media (prefers-reduced-motion:reduce){input[type=checkbox],input[type=checkbox]::after{transition:none}}
 .sw{min-height:56px}
 </style>
@@ -1211,7 +1239,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1664,20 +1692,20 @@ route(/^unit-(\d+)$/, n => {
 
   ${pats.length ? `<section class="sec">
     <div class="sec-h"><h2>Grammatika</h2><span class="n">${pats.filter(p => patFrac(p) === 1).length} / ${pats.length} to'liq</span></div>
-    <div class="list">${pats.map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="tx"><b>${esc(p.title)}</b><span>${p.drill.length} ta mashq</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div>
+    <div class="list">${pats.map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="lic">${ICON.bulb}</span><span class="tx"><b>${esc(p.title)}</b><span>${p.drill.length} ta mashq</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div>
   </section>` : ""}
 
   ${bl.length ? `<section class="sec">
     <div class="sec-h"><h2>Gap tuzish</h2><span class="n">${bl.length} ta gap</span></div>
     <div class="list">
-      <button class="li" data-tz="tile"><span class="tx"><b>So'zlardan yig'aman</b><span>So'zlarni tartib bilan bosasiz, orasida tuzoq so'zlar bor</span></span><span class="st">${best("tuz-" + n)}</span><span class="go">${ICON.chev}</span></button>
-      <button class="li" data-tz="yoz"><span class="tx"><b>O'zim yozaman</b><span>Gapni klaviaturada to'liq yozasiz</span></span><span class="st">${best("tuzy-" + n)}</span><span class="go">${ICON.chev}</span></button>
+      <button class="li" data-tz="tile"><span class="lic">${ICON.tiles}</span><span class="tx"><b>So'zlardan yig'aman</b><span>So'zlarni tartib bilan bosasiz, orasida tuzoq so'zlar bor</span></span><span class="st">${best("tuz-" + n)}</span><span class="go">${ICON.chev}</span></button>
+      <button class="li" data-tz="yoz"><span class="lic">${ICON.pen}</span><span class="tx"><b>O'zim yozaman</b><span>Gapni klaviaturada to'liq yozasiz</span></span><span class="st">${best("tuzy-" + n)}</span><span class="go">${ICON.chev}</span></button>
     </div>
   </section>` : ""}
 
   ${sp.length ? `<section class="sec">
     <div class="sec-h"><h2>Gapirish</h2><span class="n">${sp.length} ta topshiriq</span></div>
-    <div class="list">${sp.map(t => `<a class="li" href="#gapir-${n}"><span class="tx"><b>${esc(t.task)} · ${esc(t.title)}</b><span>${t.items.length} ta savol va tayyor javoblar</span></span><span class="go">${ICON.chev}</span></a>`).join("")}</div>
+    <div class="list">${sp.map(t => `<a class="li" href="#gapir-${n}"><span class="lic">${ICON.mic}</span><span class="tx"><b>${esc(t.task)} · ${esc(t.title)}</b><span>${t.items.length} ta savol va tayyor javoblar</span></span><span class="go">${ICON.chev}</span></a>`).join("")}</div>
   </section>` : ""}`;
   $("#sozgo").onclick = () => go("soz-" + n);
   app.querySelectorAll("[data-tz]").forEach(b => b.onclick = () => { tuzMode = b.dataset.tz; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} startTuz(bl, "Unit " + n, (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n); });
@@ -1751,13 +1779,13 @@ route(/^soz-(\d+)$/, n => {
   <h1>So'zlar</h1><p class="sub">${byUnit(n).length} so'z · ${u.pages ? "kitob oxiri, " + (u.pages[0] - 2) + "–" + (u.pages[u.pages.length - 1] - 2) + "-bet" : ""}</p>
   <div class="stack">
     <div class="card"><p class="label">1. Guruhlar</p><div class="chips" id="chips" role="group" aria-label="So'z guruhlari"></div><p class="picked" id="picked"></p></div>
-    <div class="card"><p class="label">2. Test turi</p><div class="modes">
-      ${byUnit(n).some(w => !isSeen(w)) ? modeBtn("learn", "Yangi so'zlarni o'rganish", "Avval so'z bilan tanishasiz, keyin 3 bosqich: tanlash → eshitish → yozish") : ""}
-      ${modeBtn("uz-en", "O'zbekcha → inglizcha", "4 ta variantdan inglizchasini tanlaysiz")}
-      ${modeBtn("en-uz", "Inglizcha → o'zbekcha", "So'zni eshitib, ma'nosini tanlaysiz")}
-      ${modeBtn("spell", "Yozish (imlo)", "O'zbekchasiga qarab inglizchasini yozasiz")}
-      ${canSpeak() ? modeBtn("say", "Ayting (gapirib)", "O'zbekchasiga qarab inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi") : ""}
-    </div></div>
+    <div class="card"><p class="label" id="segl">2. Test turi</p><div class="modes seg" role="radiogroup" aria-labelledby="segl">
+      ${byUnit(n).some(w => !isSeen(w)) ? segBtn("learn", "Yangi", "Yangi so'zlar: avval tanishasiz, keyin 3 bosqich — tanlash, eshitish, yozish") : ""}
+      ${segBtn("uz-en", "Tanlash", "O'zbekchasi chiqadi — 4 ta variantdan inglizchasini tanlaysiz")}
+      ${segBtn("en-uz", "Eshitish", "So'zni eshitasiz — o'zbekcha ma'nosini tanlaysiz")}
+      ${segBtn("spell", "Yozish", "O'zbekchasiga qarab inglizchasini xotiradan yozasiz")}
+      ${canSpeak() ? segBtn("say", "Ayting", "O'zbekchasiga qarab inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi") : ""}
+    </div><p class="segd" id="segd" aria-live="polite"></p></div>
     <div><button class="btn" id="go">Testni boshlash</button><p class="gohint" id="gohint"></p></div>
     <div class="card"><p class="label">Lug'at ro'yxati</p>
       <div class="legend">So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.</div>
@@ -1797,11 +1825,13 @@ route(/^soz-(\d+)$/, n => {
     bindSay($("#list"));
   };
   if (pick.mode === "learn" && !byUnit(n).some(w => !isSeen(w))) pick.mode = "uz-en";
-  document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === pick.mode); b.onclick = () => { pick.mode = b.dataset.m; document.querySelectorAll(".mode").forEach(x => x.classList.toggle("on", x === b)); goLabel(); }; });
+  const segSel = b => { document.querySelectorAll(".mode").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); }); $("#segd").textContent = b.dataset.s || ""; };
+  document.querySelectorAll(".mode").forEach(b => { if (b.dataset.m === pick.mode) segSel(b); b.onclick = () => { pick.mode = b.dataset.m; segSel(b); goLabel(); }; });
   $("#go").onclick = () => { const sel = byUnit(n).filter(w => pick.groups.has(w.g)); if (pick.mode === "learn") startLearn(sel.filter(w => !isSeen(w)), "Unit " + n, "#soz-" + n, null); else startChunk(sel, pick.mode, "Unit " + n, "#soz-" + n, new Set()); };
   chips(); list();
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
+const segBtn = (m, t, s) => `<button class="mode" data-m="${m}" data-s="${esc(s)}" role="radio">${t}</button>`;
 function wordLi(w) {
   const r = rec(w.id);
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
@@ -1955,9 +1985,8 @@ function startQuiz(list, mode, title, back, tag, opts) {
 }
 route(/^quiz$/, () => {
   if (!Z) return go("");
-  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><span id="pos"></span><span id="pts"></span></div>
-  <div class="bar"><i id="barfill"></i></div>
-  <div class="card"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i id="barfill"></i></div><span class="cnt" id="pos"></span><span id="pts" hidden></span></div>
+  <div class="card qcard"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
     <div class="tools" id="tools"><button class="icon" id="say">${ICON.vol} Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
     <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
@@ -2050,14 +2079,14 @@ function ask() {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
     const stp = Z.words.reduce((a, x) => a + (Z.fin.has(x.id) ? 3 : Z.lv[x.id] || 0), 0), all = Z.words.length * 3;
-    $("#pos").textContent = "Bosqich " + stp + " / " + all;
+    $("#pos").textContent = stp + "/" + all;
     $("#pts").textContent = "✓ " + Z.right;
     $("#barfill").style.width = (stp / all * 100) + "%";
   } else {
     // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
     const re = Z.i >= Z.base;
     Z.re = re; Z.tag2 = re ? "Yana bir bor" : "";
-    $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + " / " + (Z.q.length - Z.base) : (Z.i + 1) + " / " + Z.base;
+    $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + "/" + (Z.q.length - Z.base) : (Z.i + 1) + "/" + Z.base;
     $("#pts").textContent = "✓ " + Z.right;
     $("#barfill").style.width = (re ? 100 : Z.i / Z.base * 100) + "%";
   }
@@ -2112,7 +2141,7 @@ function ask() {
     });
   }
 }
-function setLabel(t) { $("#qlabel").innerHTML = (Z.tag2 ? '<span class="qtag' + (Z.re ? " re" : "") + '">' + Z.tag2 + "</span>" : "") + esc(t); }
+function setLabel(t) { $("#qlabel").innerHTML = (Z.tag2 ? '<span class="qtag' + (Z.re ? " re" : "") + '">' + Z.tag2 + "</span>" : "") + '<span class="ltx">' + esc(t) + "</span>"; }
 function result(ok) {
   const w = Z.cur;
   if (Z.learn) return learnResult(ok);
@@ -2139,7 +2168,7 @@ function choose(btn, o, f) {
   feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> ${esc(pr(w))} — ${esc(w.u)}`);
   toNext();
 }
-function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
+function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
 function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
@@ -2387,9 +2416,8 @@ function startPh(list, title, tag) {
 route(/^gapmashq$/, () => {
   if (!G) return go("gap");
   const p = G.q[G.i];
-  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><span>${G.i + 1} / ${G.q.length}</span><span>✓ ${G.right}</span></div>
-  <div class="bar"><i style="width:${G.i / G.q.length * 100}%"></i></div>
-  <div class="card" data-micbox><p class="label">${esc(G.title)} · inglizchasini ayting</p><div class="q qsmall">${esc(p.u)}</div>
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${G.i / G.q.length * 100}%"></i></div><span class="cnt">${G.i + 1}/${G.q.length}</span></div>
+  <div class="card qcard" data-micbox><p class="label">${esc(G.title)} · inglizchasini ayting</p><div class="q qsmall">${esc(p.u)}</div>
     <div class="tools">${micBtn(p.w)}</div><div class="micout hidden"></div>
     <div id="ans" class="hidden" style="margin-top:14px"><div class="q qsmall" style="margin:0">${esc(p.w)}</div><div class="pron">[${esc(p.p)}]</div>
       <div class="tools"><button class="icon" data-say="${esc(p.w)}">${ICON.vol} Eshitish</button></div></div>
@@ -2462,9 +2490,8 @@ function tuzNext() { T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 route(/^tuzmashq$/, () => {
   if (!T) return go("tuz");
   const it = T.q[T.i], yoz = T.mode === "yoz";
-  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><span>${T.i + 1} / ${T.q.length}</span><span>✓ ${T.right}</span></div>
-  <div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div>
-  <div class="card"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p><div class="q qsmall">${esc(it.u)}</div>
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
+  <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p><div class="q qsmall">${esc(it.u)}</div>
     ${yoz ? `<textarea class="spell" id="tin" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…"></textarea>
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
     : `<div class="answer" id="ans"></div><div class="tiles" id="bank"></div>`}

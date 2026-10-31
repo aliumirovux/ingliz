@@ -101,7 +101,33 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .picked b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
 .gohint{margin:8px 2px 0;font-size:14px;color:var(--muted);text-align:center}
 /* takror savol yorlig'i (xato javob oxirida qayta so'raladi) */
-.qtag{display:inline-block;background:var(--marker-soft);color:var(--accent-text);font-weight:600;border-radius:999px;padding:2px 9px;margin-right:6px;font-size:12px}
+.qtag{display:inline-block;background:var(--surface-2);color:var(--ink);font-weight:600;border-radius:999px;padding:2px 9px;margin-right:6px;font-size:12px}
+.qtag.re{background:var(--marker-soft);color:var(--accent-text)}
+.qbig{font-size:34px}
+.pron.tr{color:var(--muted);font-family:inherit;font-style:italic}
+.q .gap{color:var(--accent-text);letter-spacing:.06em}
+.intro .iu{font:600 19px/1.35 var(--font-display);margin-top:14px}
+.intro .ex{background:var(--surface-2);border-radius:14px;padding:12px 14px}
+/* eslatgich */
+.hook{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--hl);color:var(--ink);font-size:15px;font-style:normal}
+.hook .hi{flex:none;color:var(--accent-text);display:flex}.hook .hi svg{width:18px;height:18px}
+.hook .ht{flex:1;min-width:0}.hook .ht b{display:block;font-size:12px;font-weight:600;color:var(--accent-text);margin-bottom:2px}
+.hook .hl{flex:none;background:none;border:0;color:var(--accent-text);font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:12px 4px;margin:-12px -4px;text-decoration:underline;text-underline-offset:3px}
+.hook:has(.hadd){background:none;padding:0}
+.hadd{display:inline-flex;align-items:center;gap:6px;min-height:44px;border:0;border-radius:999px;padding:8px 14px;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.hadd svg{width:16px;height:16px}
+.hook.edit{display:block;background:var(--surface-2)}
+.hook.edit .label{margin-bottom:8px}
+.hrow{display:flex;gap:8px;align-items:center}
+.hrow .hin{flex:1;min-width:0;font:inherit;font-size:16px;padding:11px 12px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);outline:none}
+.hrow .hin:focus{border-color:var(--marker);box-shadow:0 0 0 4px var(--hl)}
+.hrow .icon{min-height:44px;flex:none}
+.hhelp{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.box.hard{background:var(--bad-bg);color:var(--bad)}
+.steps .lock .ic{background:var(--surface-2);color:var(--muted)}
+.steps .lock .tx b{color:var(--muted)}
+.steps .lock .min svg{width:16px;height:16px}
+.steps button:disabled{cursor:default}
 /* birinchi ochilish: kursdagi unitni tanlash */
 .ask-unit h2{font-size:26px;line-height:1.15;letter-spacing:-.02em;margin:4px 0 6px}
 .ugrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 0}
@@ -1082,7 +1108,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>')};
+const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -1097,6 +1123,7 @@ const unitOf = n => UNITS.find(u => u.unit === n);
 const KEY = "ingliz-v1";
 let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+S.hook = S.hook || {}; // eslatgichlar: so'z → o'zi yozgan bog'lanish
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} pushSoon(); };
 
 /* ---------- cloud sync: the viewer's own private record (db capability) ---------- */
@@ -1129,6 +1156,7 @@ function merge(a, b) {
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
+  out.hook = Object.assign({}, a.hook || {}, b.hook || {});
   const al = a.log || {}, bl = b.log || {}; out.log = {};
   new Set(Object.keys(al).concat(Object.keys(bl))).forEach(k => { const x = al[k], y = bl[k]; out.log[k] = !x ? y : !y ? x : (y.a > x.a ? y : x); });
   return out;
@@ -1164,10 +1192,17 @@ function grade(w, ok, spelled) {
   r.due = addDays(INT[r.b]);
   S.srs[w.id] = r;
   logAns(ok, spelled);
-  const t = today();
-  if (S.streak.last !== t) { S.streak.n = (S.streak.last === addDays(-1)) ? S.streak.n + 1 : 1; S.streak.last = t; }
+  touchStreak();
   save();
 }
+function touchStreak() { const t = today(); if (S.streak.last !== t) { S.streak.n = (S.streak.last === addDays(-1)) ? S.streak.n + 1 : 1; S.streak.last = t; } }
+/* ---------- kechki takrorlash: bugun o'rganilgan so'zlar 3 soatdan keyin, uxlashdan oldin bir marta xotiradan yoziladi ---------- */
+const KECH_H = 3;
+const isToday = ts => ts && new Date(ts).toDateString() === new Date().toDateString();
+const learnedToday = () => WORDS.filter(w => { const r = rec(w.id); return r && isToday(r.lt) && r.ev !== today(); });
+const hhmm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+/* qiyin so'z: 3 va undan ko'p marta xato qilingan va hali mustahkam emas */
+const isHard = w => { const r = rec(w.id); return r && r.bad >= 3 && !isMastered(w); };
 /* ---------- kunlik jurnal: javoblar, xotiradan yozilgan so'zlar va faol vaqt (soniya) ---------- */
 // a — javoblar, ok — to'g'ri, sw — yozib javob berilgan so'zlar, sp — shundan to'g'ri, t — faol vaqt
 let lastAns = 0;
@@ -1305,8 +1340,12 @@ function todayPlan(n) {
   if (mw.length) plan.push({ tag: "esla", t: "Esla: oldingi xatolar", s: mw.length + " ta so'z · xotiradan yozasiz", run: () => startQuiz(mw, "spell", "Esla", "#", "esla") });
   const due = dueWords().filter(w => !ids.has(w.id)), unseen = byUnit(n).filter(w => !isSeen(w));
   if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z bugun qaytariladi", run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
-  else if (unseen.length) plan.push({ tag: "rev", t: "Yangi so'zlar", s: "Unit " + n + " · " + Math.min(8, unseen.length) + " ta yangi so'z", run: () => startQuiz(unseen.slice(0, 8), "uz-en", "Unit " + n, "#", "rev") });
-  else plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
+  // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
+  if (unseen.length && due.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: "Unit " + n + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z · tanishuv va 3 bosqich", run: () => startLearn(unseen, "Unit " + n, "#", "new") });
+  if (!due.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + n + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + n, "#", "rev") });
+  const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
+  if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
+  else if (lt.length) plan.push({ tag: "kech", lock: true, t: "Kechki takrorlash", s: "Soat " + hhmm(Math.min(...lt.map(w => rec(w.id).lt)) + KECH_H * 36e5) + " dan keyin ochiladi · uxlashdan oldin qiling", run: () => {} });
   const pats = unitPats(n), p = pats.find(x => patFrac(x) < 1), rv = gramReview(n, p && p.id, p ? 3 : 6), plus = rv.length ? " · +" + rv.length + " ta takrorlash" : "";
   if (p) plan.push({ tag: "gram", t: "Grammatika: " + p.title, s: (S.pat[p.id] != null ? "Eng yaxshi natija: " + S.pat[p.id] + "/" + p.drill.length : "Qoida va " + p.drill.length + " ta mashq") + plus, min: rv.length ? 4 : 3, run: () => { GX = rv; go("qolip-" + p.id); } });
   else if (rv.length) plan.push({ tag: "gram", t: "Grammatika: takrorlash", s: rv.length + " ta savol, o'tilgan qoliplardan", run: () => { GX = rv; go("gtakror"); } });
@@ -1322,13 +1361,13 @@ function todayPlan(n) {
   plan.forEach(x => { x.min = x.min || STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
-const STEP_MIN = { esla: 2, rev: 4, gram: 3, tuz: 3, gap: 2 }, STEP_IC = { esla: "redo", rev: "book", gram: "bulb", tuz: "tiles", gap: "chat" }, STEP_NAME = { esla: "Esla", rev: "So'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar" };
+const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon" }, STEP_NAME = { esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
 let GX = null; // rejadan kelgan grammatika takrorlash savollari
 
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
    Har bir mashq natijasida keyingi qadam tugmasi chiqadi; bosh sahifaga qaytilsa seans tugaydi. */
 let LES = false;
-const nextStep = () => { const done = dayDone(); return todayPlan(curUnit().n).find(x => !done.includes(x.tag)); };
+const nextStep = () => { const done = dayDone(); return todayPlan(curUnit().n).find(x => !done.includes(x.tag) && !x.lock); };
 function lessonBtn(tag) {
   if (!LES || !tag) return "";
   const nx = nextStep();
@@ -1385,7 +1424,7 @@ function readBackup(text) {
 }
 function restoreBackup(d) {
   const before = Object.keys(S.srs).length;
-  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} }, merge(S, d)); save();
+  S = Object.assign({ srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {}, hook: {} }, merge(S, d)); save();
   return Object.keys(S.srs).length - before;
 }
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
@@ -1409,11 +1448,11 @@ route(/^$/, () => {
   LES = false;
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = (S.streak.last === today() || S.streak.last === addDays(-1)) ? S.streak.n : 0;
-  const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag));
+  const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag) && !x.lock);
   const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const h = d.getHours(), hello = h < 12 ? "Xayrli tong" : h < 18 ? "Xayrli kun" : "Xayrli kech";
-  const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
+  const cta = !left.length ? "Bugungi dars tugadi" : (left.length < plan.filter(x => !x.lock).length ? "Davom etish" : "Darsni boshlash") + " · " + mins + " daq";
   const askUnit = !S.course;
   app.innerHTML = `
   <div class="hello"><div><p class="date">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p><h1>${hello}</h1></div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
@@ -1432,7 +1471,7 @@ route(/^$/, () => {
       <p class="meta"><b>Unit ${cu.n}</b> · kitobda ${bookPages(cu.n)}-betlar · ${st.pct}%</p>
       <h2>${esc(info[0])}</h2>
       <p class="uz">${esc(info[1])}</p>
-      <ul class="steps">${plan.map((x, i) => { const dn = done.includes(x.tag); return `<li><button class="${dn ? "done" : ""}" data-i="${i}"><span class="ic">${dn ? ICON.check : ICON[x.ic]}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="min">${dn ? "bajarildi" : x.min + " daq"}</span></button></li>`; }).join("")}</ul>
+      <ul class="steps">${plan.map((x, i) => { const dn = done.includes(x.tag), lk = x.lock && !dn; return `<li><button class="${dn ? "done" : lk ? "lock" : ""}" data-i="${i}"${lk ? " disabled" : ""}><span class="ic">${dn ? ICON.check : ICON[x.ic]}</span><span class="tx"><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><span class="min">${dn ? "bajarildi" : lk ? ICON.lock : x.min + " daq"}</span></button></li>`; }).join("")}</ul>
       <button class="btn" id="les"${left.length ? "" : " disabled"}>${cta}</button>
       ${left.length ? "" : `<div style="height:10px"></div><a class="btn ghost" href="#unit-${cu.n}">Unit ${cu.n} da yana mashq qilish</a>`}
     </section>`}
@@ -1446,7 +1485,7 @@ route(/^$/, () => {
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
   $("#course").onchange = e => { S.course = +e.target.value || 0; save(); render(); };
   bindInstall();
-  app.querySelectorAll(".steps button").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+  app.querySelectorAll(".steps button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
 });
 /* haftalik natija: «Natijalar» sahifasiga havola; hali mashq bo'lmagan bo'lsa ko'rinmaydi */
 function weekLine() {
@@ -1552,6 +1591,7 @@ route(/^soz-(\d+)$/, n => {
   <div class="stack">
     <div class="card"><p class="label">1. Guruhlar</p><div class="chips" id="chips" role="group" aria-label="So'z guruhlari"></div><p class="picked" id="picked"></p></div>
     <div class="card"><p class="label">2. Test turi</p><div class="modes">
+      ${byUnit(n).some(w => !isSeen(w)) ? modeBtn("learn", "Yangi so'zlarni o'rganish", "Avval so'z bilan tanishasiz, keyin 3 bosqich: tanlash → eshitish → yozish") : ""}
       ${modeBtn("uz-en", "O'zbekcha → inglizcha", "4 ta variantdan inglizchasini tanlaysiz")}
       ${modeBtn("en-uz", "Inglizcha → o'zbekcha", "So'zni eshitib, ma'nosini tanlaysiz")}
       ${modeBtn("spell", "Yozish (imlo)", "O'zbekchasiga qarab inglizchasini yozasiz")}
@@ -1573,30 +1613,116 @@ route(/^soz-(\d+)$/, n => {
       else { pick.groups.has(i) ? pick.groups.delete(i) : pick.groups.add(i); if (!pick.groups.size) pick.groups = allIdx(); }
       chips(); list();
     });
-    const cnt = byUnit(n).filter(w => pick.groups.has(w.g)).length, k = Math.min(CHUNK, cnt);
+    const cnt = byUnit(n).filter(w => pick.groups.has(w.g)).length;
     $("#picked").innerHTML = all ? `Butun unit: <b>${cnt}</b> ta so'z` : `Tanlandi: <b>${pick.groups.size}</b> ta guruh · <b>${cnt}</b> ta so'z`;
-    $("#go").textContent = "Testni boshlash · " + k + " ta so'z";
-    $("#gohint").textContent = cnt > CHUNK ? CHUNK + " tadan bo'lib beriladi: avval xato va muddati kelganlar, keyin yangilari" : "";
+    goLabel();
+  };
+  const goLabel = () => {
+    const sel = byUnit(n).filter(w => pick.groups.has(w.g)), cnt = sel.length, nu = sel.filter(w => !isSeen(w)).length, go = $("#go");
+    if (pick.mode === "learn") {
+      go.disabled = !nu;
+      go.textContent = nu ? "O'rganishni boshlash · " + Math.min(LEARN_N, nu) + " ta yangi so'z" : "Bu guruhlarda yangi so'z qolmadi";
+      $("#gohint").textContent = nu > LEARN_N ? "Bir martada " + LEARN_N + " ta — yaxshi o'rnashishi uchun. Tanlangan guruhlarda " + nu + " ta yangi so'z bor" : "";
+    } else {
+      go.disabled = false;
+      go.textContent = "Testni boshlash · " + Math.min(CHUNK, cnt) + " ta so'z";
+      $("#gohint").textContent = cnt > CHUNK ? CHUNK + " tadan bo'lib beriladi: avval xato va muddati kelganlar, keyin yangilari" : "";
+    }
   };
   const list = () => {
     const gs = u.groups.map((g, i) => [g, i]).filter(([, i]) => pick.groups.has(i));
     $("#list").innerHTML = gs.map(([g, i]) => `<h2 style="margin-top:16px">${esc(g.title)}</h2><ul class="wl">${byUnit(n).filter(w => w.g === i).map(wordLi).join("")}</ul>`).join("");
     bindSay($("#list"));
   };
-  document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === pick.mode); b.onclick = () => { pick.mode = b.dataset.m; document.querySelectorAll(".mode").forEach(x => x.classList.toggle("on", x === b)); }; });
-  $("#go").onclick = () => startChunk(byUnit(n).filter(w => pick.groups.has(w.g)), pick.mode, "Unit " + n, "#soz-" + n, new Set());
+  if (pick.mode === "learn" && !byUnit(n).some(w => !isSeen(w))) pick.mode = "uz-en";
+  document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === pick.mode); b.onclick = () => { pick.mode = b.dataset.m; document.querySelectorAll(".mode").forEach(x => x.classList.toggle("on", x === b)); goLabel(); }; });
+  $("#go").onclick = () => { const sel = byUnit(n).filter(w => pick.groups.has(w.g)); if (pick.mode === "learn") startLearn(sel.filter(w => !isSeen(w)), "Unit " + n, "#soz-" + n, null); else startChunk(sel, pick.mode, "Unit " + n, "#soz-" + n, new Set()); };
   chips(); list();
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
 function wordLi(w) {
   const r = rec(w.id);
-  const m = isMastered(w), badge = r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "";
+  const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
   return `<li><div class="h"><span class="w">${esc(w.w)}</span><span class="p">[${esc(w.p)}]</span>${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
     <div class="u">${w.star ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
     <div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>
-    ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}</li>`;
+    ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}${S.hook[w.id] || isHard(w) ? hookBox(w) : ""}</li>`;
 }
 function bindSay(root) { root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say)); }
+
+/* ---------- O'RGANISH: yangi so'z avval ko'rsatiladi, keyin seansning o'zida 3 marta eslab topiladi ----------
+   1 — o'zbekchasiga qarab inglizchasini tanlash, 2 — eshitib ma'nosini tanlash, 3 — xotiradan yozish.
+   Bir vaqtda ko'pi bilan 3 ta so'z «ochiq» turadi; har bosqich orasiga boshqa so'zlar tushadi (oraliq). Xato bo'lsa — shu bosqich 2 savoldan keyin yana. */
+const LEARN_N = 5, ACTIVE = 3, LMODE = ["intro", "uz-en", "en-uz", "spell"];
+function startLearn(list, title, back, tag) {
+  const words = list.slice(0, LEARN_N); if (!words.length) return;
+  Z = { learn: true, words, pool: list, lv: {}, errs: {}, fin: new Set(), intro: 0, q: [], i: 0, right: 0, ans: 0, wrong: [], done: new Set(), mode: "learn", title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#", base: 0 };
+  refill();
+  if (location.hash === "#quiz") render(); else go("quiz");
+}
+function refill() {
+  while (Z.intro < Z.words.length && Z.intro - Z.fin.size < ACTIVE && Z.q.length - Z.i < 3) {
+    const w = Z.words[Z.intro++]; Z.lv[w.id] = 0; Z.errs[w.id] = 0;
+    Z.q.push({ w, k: 0 }, { w, k: 1 });
+  }
+}
+const learnAt = (t, gap) => Z.q.splice(Math.min(Z.i + 1 + gap, Z.q.length), 0, t);
+function learnResult(ok) {
+  const t = Z.q[Z.i], w = t.w;
+  Z.ans++; logAns(ok, t.k === 3);
+  if (ok) {
+    if (!t.re) Z.right++;
+    Z.lv[w.id] = Math.max(Z.lv[w.id], t.k);
+    if (t.k === 3) Z.fin.add(w.id); else learnAt({ w, k: t.k + 1 }, 2);
+  } else {
+    Z.errs[w.id]++;
+    if (Z.errs[w.id] > 4) Z.fin.add(w.id); // juda ko'p xato: seansni cho'zmaymiz, so'z ertaga yana chiqadi
+    else learnAt({ w, k: t.k, re: true }, 2);
+  }
+  refill();
+}
+function finishLearn() {
+  const now = Date.now(), back = Z.back, tag = Z.tag, words = Z.words, title = Z.title, errs = Z.errs;
+  words.forEach(w => { if (!S.srs[w.id]) S.srs[w.id] = { b: 1, due: addDays(1), ok: 1, bad: errs[w.id] ? 1 : 0, lt: now }; });
+  touchStreak(); save(); if (tag) markDone(tag);
+  const rest = (Z.pool || []).filter(w => !isSeen(w)), pct = Z.ans ? Math.round(Z.right / Z.ans * 100) : 0;
+  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · yangi so'zlar</p>
+    <div class="score">${words.length} ta</div>
+    <p class="muted">so'z o'rganildi: har biri 3 bosqichdan o'tdi. Javoblarning ${pct}% i birinchi urinishda to'g'ri.</p></div>
+    <div class="install"><span class="ic">${ICON.moon}</span><span class="tx"><b>Kechqurun, soat ${hhmm(now + KECH_H * 36e5)} dan keyin</b><span>2 daqiqalik takrorlash ochiladi. Uxlashdan oldin takrorlangan so'z yaxshiroq esda qoladi. Ertaga — yana.</span></span></div>
+    <div class="card"><p class="label">Bugungi so'zlar</p><ul class="wl">${words.map(wordLi).join("")}</ul></div>
+    <div class="card">${lessonBtn(tag)}${!tag && rest.length ? `<button class="btn" id="more">Keyingi ${Math.min(LEARN_N, rest.length)} ta yangi so'z ${ICON.arrow}</button><div style="height:10px"></div>` : ""}
+    <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
+  bindSay(app); bindLesson();
+  const pool = Z.pool; Z = null;
+  const mo = $("#more"); if (mo) mo.onclick = () => startLearn(rest, title, back, null);
+  $("#back").onclick = () => { location.hash = back; };
+}
+
+/* ---------- ESLATGICH: so'zni o'zi tanish tovush yoki rasm bilan bog'lash (keyword usuli). O'quvchining o'zi yozadi ---------- */
+function hookBox(w, edit) {
+  const h = S.hook[w.id];
+  if (!edit && h) return `<div class="hook" data-hw="${esc(w.id)}"><span class="hi">${ICON.bulb}</span><span class="ht"><b>Eslatgich</b>${esc(h)}</span><button class="hl" data-hedit>O'zgartirish</button></div>`;
+  if (!edit) return `<div class="hook" data-hw="${esc(w.id)}"><button class="hadd" data-hedit>${ICON.plus} Eslatgich yozish${isHard(w) ? " — bu so'z qiyin bo'lyapti" : ""}</button></div>`;
+  return `<div class="hook edit" data-hw="${esc(w.id)}"><label class="label" for="hk">Eslatgich (ixtiyoriy)</label>
+    <div class="hrow"><input id="hk" class="hin" maxlength="140" value="${esc(h || "")}" placeholder="Nimaga o'xshaydi?" enterkeyhint="done" autocomplete="off"><button class="icon" data-hsave>Saqlash</button></div>
+    <p class="hhelp">Masalan: <i>safe [seyf] — «seyf»: pul turadigan temir quti</i>. O'zingiz o'ylagan bog'lanish yaxshiroq eslanadi.</p></div>`;
+}
+const saveHook = box => { const v = box.querySelector(".hin").value.trim(), id = box.dataset.hw; if (v) S.hook[id] = v; else delete S.hook[id]; save(); };
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-hedit],[data-hsave]"); if (!b) return;
+  const box = b.closest(".hook"), w = WORDS.find(x => x.id === box.dataset.hw); if (!w) return;
+  if (b.hasAttribute("data-hsave")) { saveHook(box); box.outerHTML = hookBox(w); }
+  else { box.outerHTML = hookBox(w, true); const inp = app.querySelector(".hook.edit .hin"); if (inp) inp.focus(); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("hin")) { e.preventDefault(); e.stopPropagation(); e.target.closest(".hook").querySelector("[data-hsave]").click(); } }, true);
+
+/* ---------- gapdagi bo'sh joy: mustahkam so'z misol gapning ichida, kontekstda yoziladi ---------- */
+function clozeOf(w) {
+  const s = spoken(w); if (!w.e || !s) return null;
+  const m = w.e.match(new RegExp("\\b(" + s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:s|es|ed|d|ing)?)\\b", "i"));
+  return m ? { before: w.e.slice(0, m.index), word: m[1], after: w.e.slice(m.index + m[1].length) } : null;
+}
 
 /* ---------- QUIZ engine ---------- */
 let Z = null; // session
@@ -1614,10 +1740,10 @@ function startChunk(pool, mode, title, back, asked) {
   startQuiz(part, mode, title, back);
   Z.chunk = { pool, mode, title, back, asked: done, left: rest.length - part.length, n: Math.ceil(done.size / CHUNK), of: Math.ceil(pool.length / CHUNK) };
 }
-function startQuiz(list, mode, title, back, tag) {
+function startQuiz(list, mode, title, back, tag, opts) {
   if (!list.length) return;
   const q = shuffle(list);
-  Z = { q, base: q.length, i: 0, right: 0, wrong: [], done: new Set(), mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" };
+  Z = Object.assign({ q, base: q.length, i: 0, right: 0, wrong: [], done: new Set(), rq: {}, mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" }, opts || {});
   if (location.hash === "#quiz") render(); else go("quiz");
 }
 route(/^quiz$/, () => {
@@ -1626,7 +1752,7 @@ route(/^quiz$/, () => {
   <div class="bar"><i id="barfill"></i></div>
   <div class="card"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
     <div class="tools" id="tools"><button class="icon" id="say">${ICON.vol} Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">1-harf</button></div>
-    <div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
+    <div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="skip">O'tkazib yuborish</button><button class="btn" id="next">Tekshirish</button></div>
@@ -1635,7 +1761,7 @@ route(/^quiz$/, () => {
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = "O'qilishi: [" + Z.cur.p + "]"; };
   $("#h2").onclick = () => { const t = Z.cur.a[0]; $("#hint").textContent = "1-harf: " + t[0].toUpperCase() + " · " + t.replace(/[ -]/g, "").length + " ta harf:  " + t[0] + " " + t.slice(1).replace(/[^ -]/g, "_ ").trim(); };
-  $("#next").onclick = () => { if (Z.qmode === "spell" && Z.state !== "next") check(); else next(); };
+  $("#next").onclick = () => { if ((Z.qmode === "spell" || Z.qmode === "cloze") && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => next();
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
   ask();
@@ -1643,7 +1769,7 @@ route(/^quiz$/, () => {
 document.addEventListener("keydown", e => {
   if (!Z || !location.hash.startsWith("#quiz") || e.target.tagName === "BUTTON" || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
   if (e.key === "Enter" && Z.state === "next") { e.preventDefault(); next(); }
-  if (Z.state === "ask" && Z.qmode !== "spell" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
+  if (Z.state === "ask" && Z.qmode !== "spell" && Z.qmode !== "cloze" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
 });
 /* Javob tekshirilgach maydon qulflanadi (disabled emas): fokus va klaviatura joyida qoladi, Enter keyingi so'zga o'tkazadi */
 document.addEventListener("beforeinput", e => { const t = e.target; if (t.classList && t.classList.contains("spell") && /^insert(LineBreak|Paragraph)$/.test(e.inputType)) { e.preventDefault(); t.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })); } }, true);
@@ -1698,6 +1824,8 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
   const r = rec(w.id); const b = r ? r.b : 0;
+  // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi
+  if (b >= 3 && clozeOf(w) && Math.random() < .5) return "cloze";
   return b === 0 ? "uz-en" : b === 1 ? "en-uz" : "spell";
 }
 function pool(w) { const same = WORDS.filter(x => x.unit === w.unit && x.id !== w.id); return same.length >= 3 ? same : WORDS.filter(x => x.id !== w.id); }
@@ -1708,19 +1836,45 @@ function distractors(w, f) {
   return out;
 }
 function ask() {
-  const w = Z.cur = Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.qmode = qmodeFor(w);
-  // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
-  const re = Z.i >= Z.base;
-  Z.re = re;
-  $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + " / " + (Z.q.length - Z.base) : (Z.i + 1) + " / " + Z.base;
-  $("#pts").textContent = "✓ " + Z.right;
-  $("#barfill").style.width = (re ? 100 : Z.i / Z.base * 100) + "%";
-  ["#fb", "#ex", "#skip"].forEach(s => $(s).classList.add("hidden"));
+  const t = Z.learn ? Z.q[Z.i] : null;
+  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.qmode = t ? LMODE[t.k] : qmodeFor(w);
+  if (t) {
+    // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
+    Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
+    const stp = Z.words.reduce((a, x) => a + (Z.fin.has(x.id) ? 3 : Z.lv[x.id] || 0), 0), all = Z.words.length * 3;
+    $("#pos").textContent = "Bosqich " + stp + " / " + all;
+    $("#pts").textContent = "✓ " + Z.right;
+    $("#barfill").style.width = (stp / all * 100) + "%";
+  } else {
+    // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
+    const re = Z.i >= Z.base;
+    Z.re = re; Z.tag2 = re ? "Yana bir bor" : "";
+    $("#pos").textContent = re ? "Takror " + (Z.i - Z.base + 1) + " / " + (Z.q.length - Z.base) : (Z.i + 1) + " / " + Z.base;
+    $("#pts").textContent = "✓ " + Z.right;
+    $("#barfill").style.width = (re ? 100 : Z.i / Z.base * 100) + "%";
+  }
+  ["#fb", "#ex", "#skip", "#intro"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron";
   $("#hint").textContent = ""; $("#opts").innerHTML = "";
   const sp = $("#spell");
-  if (Z.qmode === "spell") {
-    setLabel(Z.title + " · inglizcha yozing");
-    $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
+  $("#say").classList.toggle("hidden", Z.qmode === "cloze");
+  if (Z.qmode === "intro") {
+    // tanishuv kartasi: so'z, o'qilishi, ovoz, ma'nosi, misol gap va eslatgich — keyin darhol 1-bosqich
+    if (document.activeElement === sp) sp.blur();
+    sp.className = "spell hidden"; delete sp.dataset.lock;
+    setLabel(Z.title + " · tanishing, keyin eslab topasiz");
+    $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = "[" + w.p + "]";
+    $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden");
+    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div><div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>${hookBox(w, !S.hook[w.id])}`;
+    $("#intro").classList.remove("hidden");
+    say(spoken(w));
+    Z.state = "next"; $("#next").classList.remove("hidden"); $("#next").innerHTML = "Tushundim " + ICON.arrow;
+    return;
+  }
+  if (Z.qmode === "spell" || Z.qmode === "cloze") {
+    const cz = Z.qmode === "cloze" ? clozeOf(w) : null; Z.cz = cz && cz.word;
+    setLabel(Z.title + (cz ? " · gapni to'ldiring" : " · inglizcha yozing"));
+    if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
+    else { $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = ""; }
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
     $("#next").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
@@ -1741,11 +1895,19 @@ function ask() {
     });
   }
 }
-function setLabel(t) { $("#qlabel").innerHTML = (Z.re ? '<span class="qtag">Yana bir bor</span>' : "") + esc(t); }
+function setLabel(t) { $("#qlabel").innerHTML = (Z.tag2 ? '<span class="qtag' + (Z.re ? " re" : "") + '">' + Z.tag2 + "</span>" : "") + esc(t); }
 function result(ok) {
   const w = Z.cur;
-  if (Z.done.has(w.id)) return; // re-asked word: don't grade twice
-  const spelled = Z.qmode === "spell";
+  if (Z.learn) return learnResult(ok);
+  // qayta so'ralgan so'z ikkinchi marta baholanmaydi; yana xato bo'lsa, to'g'ri topilguncha (3 martagacha) qaytadi
+  if (Z.done.has(w.id)) { if (!ok && (Z.rq[w.id] = (Z.rq[w.id] || 0) + 1) < 3) Z.q.push(w); return; }
+  const spelled = Z.qmode === "spell" || Z.qmode === "cloze";
+  if (Z.kech) {
+    // kechki takrorlash qutini o'zgartirmaydi; faqat xato bo'lsa so'z ertaga boshidan qaytadi
+    const r = rec(w.id); logAns(ok, true); r.ev = today();
+    if (ok) Z.right++; else { r.b = 0; r.bad++; r.due = addDays(1); misAdd("w:" + w.id); Z.wrong.push(w); Z.q.push(w); Z.done.add(w.id); }
+    save(); return;
+  }
   if (!ok) misAdd("w:" + w.id); else if (spelled) misDel("w:" + w.id);
   grade(w, ok, spelled);
   if (ok) Z.right++; else { Z.wrong.push(w); Z.q.push(w); Z.done.add(w.id); }
@@ -1760,8 +1922,8 @@ function choose(btn, o, f) {
   feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> [${esc(w.p)}] — ${esc(w.u)}`);
   toNext();
 }
-function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = esc(w.e) + "<small>" + esc(w.t) + "</small>"; $("#ex").classList.remove("hidden"); }
-function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html; const w = Z.cur; $("#ex").innerHTML = esc(w.e) + "<small>" + esc(w.t) + "</small>" + (ok ? "" : hookBox(w)); $("#ex").classList.remove("hidden"); }
+function toNext() { Z.state = "next"; $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && Z.i + 1 === Z.base ? "Xatolarni takrorlash →" : "Keyingisi →") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -1780,7 +1942,8 @@ function check() {
   const sp = $("#spell"), w = Z.cur, val = norm(sp.value);
   if (Z.state === "next") return next();
   if (!val) return sp.focus();
-  const ok = w.a.some(x => norm(x) === val);
+  const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
+  const ok = cands.some(x => norm(x) === val);
   if (Z.retype) {
     if (ok) { buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w)); $("#fb").className = "fb ok"; $("#fb").innerHTML = "Endi to'g'ri! <b>" + esc(w.w) + "</b>"; $("#skip").classList.add("hidden"); toNext(); }
     else { buzz(false); sp.className = "spell bad"; sp.select(); }
@@ -1791,7 +1954,7 @@ function check() {
   else {
     result(false); buzz(false);
     // bir nechta to'g'ri variant bo'lsa, yozilganiga eng yaqini bilan solishtiramiz
-    const dist = w.a.map(x => lev(val, norm(x))), best = dist.indexOf(Math.min(...dist)), t = w.a[best], df = diffHTML(sp.value, t);
+    const dist = cands.map(x => lev(val, norm(x))), best = dist.indexOf(Math.min(...dist)), t = cands[best], df = diffHTML(sp.value, t);
     const near = dist[best] === 1 && norm(t).length > 3;
     sp.className = "spell bad";
     const you = df.extra ? diffHTML(t, sp.value.trim()).html : esc(sp.value.trim()); // ortiqcha harf yozilgan so'zda qizil bo'ladi
@@ -1801,9 +1964,12 @@ function check() {
     $("#pts").textContent = "✓ " + Z.right;
   }
 }
-function next() { Z.i++; if (Z.i < Z.q.length) ask(); else finish(); }
+function next() {
+  const hb = app.querySelector(".hook.edit"); if (hb && hb.querySelector(".hin").value.trim()) saveHook(hb); // «Saqlash»siz yozilgan eslatgich ham saqlanadi
+  Z.i++; if (Z.i < Z.q.length) ask(); else if (Z.learn) finishLearn(); else finish();
+}
 function finish() {
-  const total = Z.q.length - Z.wrong.length, pct = total ? Math.round(Z.right / total * 100) : 0;
+  const total = Z.base, pct = total ? Math.round(Z.right / total * 100) : 0;
   const uniq = [...new Map(Z.wrong.map(w => [w.id, w])).values()];
   if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title, ch = Z.chunk;
   const more = ch && ch.left > 0 ? `<button class="btn" id="more">Keyingi ${Math.min(CHUNK, ch.left)} ta so'z ${ICON.arrow}</button><p class="gohint">Unitda yana ${ch.left} ta so'z qoldi</p><div style="height:10px"></div>` : "";

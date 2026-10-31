@@ -916,6 +916,10 @@ button.xm-t.tap{padding:14px 12px 12px}
 .nwb .go{flex:none;display:flex;color:var(--muted)}.nwb .go svg{width:18px;height:18px}
 .nwr{position:relative;flex:none;width:40px;height:40px}.nwr .rg{position:absolute;inset:0}
 .nwr b{position:absolute;inset:0;display:grid;place-items:center;font:700 11px var(--font-display);color:var(--ink);font-variant-numeric:tabular-nums}
+/* ilovadek: matnni belgilab nusxalab bo'lmaydi, uzoq bosishda menyu chiqmaydi; yozish maydonlari bundan mustasno */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,svg{-webkit-user-drag:none}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
@@ -2620,6 +2624,11 @@ route(/^$/, () => {
 /* fon (aura) balandligi qotiriladi — klaviatura ochilib-yopilganda fon cho'zilib-qisqarmaydi */
 (() => { let mx = 0; const set = (reset) => { const h = innerHeight; if (reset) mx = 0; if (h > mx) { mx = h; document.documentElement.style.setProperty("--auraH", mx + "px"); } };
   set(); addEventListener("resize", () => set(false)); addEventListener("orientationchange", () => setTimeout(() => set(true), 400)); })();
+/* nusxalash/kesish faqat yozish maydonlarida (zaxira kodi «Nusxalash» tugmasi ishlayveradi); telefonda uzoq bosish menyusi o'chirilgan */
+const inField = el => !!(el && el.closest && el.closest("input,textarea,[contenteditable='true']"));
+["copy", "cut"].forEach(ev => document.addEventListener(ev, e => { if (!inField(document.activeElement) && !inField(e.target)) e.preventDefault(); }));
+document.addEventListener("contextmenu", e => { if (matchMedia("(pointer:coarse)").matches && !inField(e.target)) e.preventDefault(); });
+document.addEventListener("dragstart", e => { if (!inField(e.target)) e.preventDefault(); });
 /* telefonda bosilish holati: iOS :active'ni yoqadi; variantga qisqa «prs» sinfi — tez teginishda ham botish ko'rinadi */
 document.addEventListener("touchstart", () => {}, { passive: true });
 document.addEventListener("pointerdown", e => { const o = e.target.closest && e.target.closest(".opt:not(:disabled)"); if (!o) return; o.classList.add("prs"); const off = () => setTimeout(() => o.classList.remove("prs"), 90); addEventListener("pointerup", off, { once: true }); addEventListener("pointercancel", off, { once: true }); }, { passive: true });

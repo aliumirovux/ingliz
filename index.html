@@ -4013,7 +4013,7 @@ PHRASES.forEach(c => c.items.forEach(it => PH.push({ id: "gap|" + it.e, w: it.e,
 const phDue = () => PH.filter(isDue);
 route(/^gap$/, () => {
   const due = phDue().length;
-  app.innerHTML = `${nav(null, "", "Tayyor gaplar")}<p class="sub">${PH.length} ta gap · ish va kundalik muloqot</p>
+  app.innerHTML = `${nav(null, "", "Tayyor gaplar")}
   <div class="stack">
     ${PH.some(isSeen) ? "" : `<div class="card"><p class="label">Mashq qanday ishlaydi</p><p class="muted" style="margin:0">O'zbekchasi chiqadi. Inglizchasini o'zingiz ayting yoki «Aytib ko'rish» tugmasini bosing, keyin javobni oching. Bilmagan gaplaringiz ertaga yana chiqadi.</p></div>`}
     ${due ? `<button class="btn" id="phdue">Bugungi takrorlash (${due})</button>` : ""}
@@ -4099,7 +4099,7 @@ let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
 route(/^tuz$/, () => {
   const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-";
-  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}<p class="sub">${BLD.length} ta gap · o'zbekchadan inglizchaga</p>
+  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}
   <div class="stack">
     <div class="card"><p class="label">Mashq turi</p><div class="modes">
       ${modeBtn("tile", "So'zlardan yig'aman", "So'zlarni to'g'ri tartibda bosasiz. Orasida tuzoq so'zlar ham bor (am, do).")}

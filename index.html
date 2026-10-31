@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#EFF5F5" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#061013" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#EFF5F5;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#061013;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ingliz tili Beginner</title>
 <script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
 (function () {
@@ -691,14 +691,13 @@ a.nwb{text-decoration:none}
 /* ===== Bosh sahifa: iliq shisha (aura fon + muzli kartalar + widgetlar) ===== */
 .stage{position:relative;z-index:1}
 .aura{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.aura::before{content:"";position:absolute;inset:-12%;background:radial-gradient(38% 30% at 88% 6%,rgba(247,201,174,.85),transparent 70%),radial-gradient(36% 26% at 4% 50%,rgba(216,230,207,.85),transparent 70%),radial-gradient(34% 26% at 92% 96%,rgba(243,221,180,.8),transparent 70%);animation:au-dr 18s ease-in-out infinite}
+.aura::before{content:"";position:absolute;inset:-12%;background:var(--aura);animation:au-dr 18s ease-in-out infinite}
 @keyframes au-dr{50%{transform:translate(-3%,3%) scale(1.05)}}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aura{opacity:.2}}
-:root[data-theme="dark"] .aura{opacity:.2}
+
 /* mashq paytida fon tinchroq */
 .quizmode .aura{opacity:.45}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .quizmode .aura{opacity:.1}}
-:root[data-theme="dark"] .quizmode .aura{opacity:.1}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .quizmode .aura{opacity:.6}}
+:root[data-theme="dark"] .quizmode .aura{opacity:.6}
 /* kichik kartalar ham soyali */
 .qa a,.ystreak,.ytiles div,.cls,.xm,.xm-t{box-shadow:var(--card-shadow)}
 .home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
@@ -734,12 +733,10 @@ a.nwb{text-decoration:none}
 /* xotira: gradient shkala */
 .xm-goal{font-size:15px;color:var(--muted);font-weight:500}
 .gsc{margin:26px 4px 2px}
-.gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,#EBD3C6,#F2A47C 45%,#D2552B 75%,#3F8A3B);box-shadow:0 4px 14px -4px rgba(210,85,43,.5),inset 0 1px 2px rgba(0,0,0,.08)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}}
-:root[data-theme="dark"] .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}
+.gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--m2) 50%,var(--marker));box-shadow:0 4px 14px -4px var(--glowc),inset 0 1px 2px rgba(0,0,0,.08)}
 .gbar .goal{position:absolute;top:-7px;bottom:-7px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink);opacity:.55}
 .gbar .goal em{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font:600 11px var(--font-body);font-style:normal;color:var(--ok);white-space:nowrap}
-.gbar .h{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 0 0 5px #fff,inset 0 0 0 8px #D2552B}
+.gbar .h{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 0 0 5px #fff,inset 0 0 0 8px var(--marker)}
 .gsl{display:flex;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 /* seriya kartasi */
 .skc{padding:16px}
@@ -748,11 +745,11 @@ a.nwb{text-decoration:none}
 .skc .tx b{display:block;font-size:18px;font-weight:700;line-height:1.25}
 .skc .tx>span{display:block;font-size:13px;color:var(--muted)}
 .skc .week{background:none;box-shadow:none;padding:14px 0 0;border-radius:0}
-.week i.on{background:radial-gradient(circle at 35% 30%,#F29068,#C9542A);color:#fff;box-shadow:0 4px 10px -3px rgba(201,84,42,.6)}
-.week i.now.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px #E8805C,0 4px 10px -3px rgba(201,84,42,.6)}
-.skc .week i{width:34px;height:34px;box-shadow:inset 0 1px 3px rgba(23,23,27,.08)}.skc .week i.on{box-shadow:0 4px 10px -3px rgba(201,84,42,.6)}.skc .week i.now.on{box-shadow:0 0 0 3px #1B1B20,0 0 0 5px #E8805C,0 4px 10px -3px rgba(201,84,42,.6)}
-:root:not([data-theme="dark"]) .skc .week i.now.on{box-shadow:0 0 0 3px #fff,0 0 0 5px #E8805C,0 4px 10px -3px rgba(201,84,42,.6)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .skc .week i.now.on{box-shadow:0 0 0 3px #1B1B20,0 0 0 5px #E8805C,0 4px 10px -3px rgba(201,84,42,.6)}}
+.week i.on{background:var(--marker);color:var(--on-marker);box-shadow:0 0 12px -2px var(--glowc)}
+.week i.now.on{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--marker),0 0 14px -2px var(--glowc)}
+.skc .week i{width:34px;height:34px;box-shadow:inset 0 1px 3px rgba(23,23,27,.08)}.skc .week i.on{box-shadow:0 0 12px -2px var(--glowc)}.skc .week i.now.on{box-shadow:0 0 0 3px #1B1B20,0 0 0 5px var(--marker),0 0 14px -2px var(--glowc)}
+:root:not([data-theme="dark"]) .skc .week i.now.on{box-shadow:0 0 0 3px #fff,0 0 0 5px var(--marker),0 0 14px -2px var(--glowc)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .skc .week i.now.on{box-shadow:0 0 0 3px #1B1B20,0 0 0 5px var(--marker),0 0 14px -2px var(--glowc)}}
 .skc .week div.now{color:var(--ink);font-weight:700}
 /* takrorlash va mustahkam */
 .xm-t.xg{display:flex;flex-direction:column;align-items:center;text-align:center;padding:14px 12px}
@@ -762,6 +759,7 @@ a.nwb{text-decoration:none}
 .gw .gauge{display:block;width:128px;height:72px;overflow:visible}
 .gauge path{fill:none;stroke-width:14;stroke-linecap:round}
 .gauge .tk{stroke:var(--surface-2)}.gauge .p{stroke:url(#gaugeg)}
+#gaugeg stop:first-child{stop-color:var(--m2)}#gaugeg stop:last-child{stop-color:var(--marker)}
 .gw b{position:absolute;left:0;right:0;bottom:0;font:700 26px/1 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .gw.gr{width:88px;height:88px}
 .gw.gr b{inset:0;display:grid;place-items:center;font-size:20px}
@@ -821,7 +819,7 @@ small{font-size:13px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
 .rh-ring{position:relative;width:132px;height:132px;margin:14px auto 4px}
 .rh-ring .rg{position:absolute;inset:0}
-.rh-ring .rg .p{stroke:var(--marker)}.rh.hi .rh-ring .rg .p{stroke:var(--ok-strong)}
+.rh-ring .rg .p{stroke:var(--marker)}
 .rh-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 34px/1 var(--font-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .rh-stars{display:flex;justify-content:center;gap:4px;margin:2px 0 4px}
 .rh-stars span{display:flex;color:var(--track)}.rh-stars span:nth-child(2){transform:translateY(-6px)}
@@ -1054,6 +1052,25 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 .spell.ltm{caret-color:transparent;cursor:default;letter-spacing:.06em}
 .spell.ltm:focus{box-shadow:none}
 @media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
+/* ===== Brend: «Zangori tun» — to'q dengiz-zangori fon, tepadan petrol nur, mint/feruza aksent (yashil «to'g'ri», qizil «xato»dan ajraladi) ===== */
+:root{--bg:#EFF5F5;--surface-2:#E3ECEC;--line:#DCE6E6;--line-strong:#C3D2D2;--key:#E3ECEC;--track:#DCE6E6;
+  --marker:#0F766E;--on-marker:#FFFFFF;--hl:#D7F0EC;--marker-soft:#D7F0EC;--accent-text:#0D665F;--lens:rgba(15,118,110,.13);--m2:#7CC7BE;--g0:#DCEFEC;--btn-fill:#0F766E;--glowc:rgba(15,118,110,.28);
+  --aura:radial-gradient(60% 30% at 50% 0%,rgba(45,212,191,.3),transparent 70%),radial-gradient(40% 30% at 100% 70%,rgba(190,230,225,.6),transparent 70%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#061013;--surface:#0F1E23;--surface-2:#182A30;--line:#1C2E34;--line-strong:#2A3E44;--key:#22363C;--track:#1C3036;--muted:#9AABAF;--edge:#5E7479;--seg-on:#2A4249;--grid:#16282D;
+  --marker:#2DD4BF;--on-marker:#021412;--hl:#0E3A37;--marker-soft:rgba(45,212,191,.14);--accent-text:#5EEAD4;--lens:rgba(45,212,191,.18);--m2:#155E59;--g0:#10262A;--btn-fill:#2DD4BF;--glowc:rgba(45,212,191,.5);
+  --card:linear-gradient(180deg,#112227,#0B171A);--glass:rgba(14,32,38,.6);--glass-solid:#10232A;
+  --aura:radial-gradient(75% 40% at 50% 0%,rgba(16,90,105,.6),transparent 72%),radial-gradient(40% 30% at 0% 100%,rgba(16,80,90,.3),transparent 70%)}}
+:root[data-theme="dark"]{--bg:#061013;--surface:#0F1E23;--surface-2:#182A30;--line:#1C2E34;--line-strong:#2A3E44;--key:#22363C;--track:#1C3036;--muted:#9AABAF;--edge:#5E7479;--seg-on:#2A4249;--grid:#16282D;
+  --marker:#2DD4BF;--on-marker:#021412;--hl:#0E3A37;--marker-soft:rgba(45,212,191,.14);--accent-text:#5EEAD4;--lens:rgba(45,212,191,.18);--m2:#155E59;--g0:#10262A;--btn-fill:#2DD4BF;--glowc:rgba(45,212,191,.5);
+  --card:linear-gradient(180deg,#112227,#0B171A);--glass:rgba(14,32,38,.6);--glass-solid:#10232A;
+  --aura:radial-gradient(75% 40% at 50% 0%,rgba(16,90,105,.6),transparent 72%),radial-gradient(40% 30% at 0% 100%,rgba(16,80,90,.3),transparent 70%)}
+.btn:not(.ghost):not(:disabled){color:var(--on-marker)}
+.dars .tl .now button{background:linear-gradient(135deg,var(--marker-soft),transparent)}
+.gbar .goal em{color:var(--accent-text)}
+/* qorong'ida halqa, yoy va asosiy tugma yumshoq porlaydi */
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) :is(.rg .p,.gauge .p){filter:drop-shadow(0 0 5px var(--glowc))}:root:not([data-theme="light"]) .btn:not(.ghost):not(:disabled){box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 22px -6px var(--glowc)}}
+:root[data-theme="dark"] :is(.rg .p,.gauge .p){filter:drop-shadow(0 0 5px var(--glowc))}
+:root[data-theme="dark"] .btn:not(.ghost):not(:disabled){box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 22px -6px var(--glowc)}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -2744,7 +2761,7 @@ const FLAME = `<svg class="sflame" viewBox="0 0 96 112" aria-hidden="true"><defs
 /* bir martalik yengil konfetti (2 soniya), harakat kamaytirilgan bo'lsa — yo'q */
 function confetti() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const c = ["#B9441F", "#F4A27E", "#F2C14E", "#79B26B", "#E8805C"], box = document.createElement("div");
+  const c = ["#2DD4BF", "#5EEAD4", "#F2C14E", "#0F766E", "#99F6E4"], box = document.createElement("div");
   box.className = "cfetti"; box.setAttribute("aria-hidden", "true");
   box.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${c[i % 5]};--dx:${(Math.random() - .5) * 140}px;--r:${(Math.random() - .5) * 720}deg;animation-delay:${Math.random() * .35}s${i % 3 ? "" : ";border-radius:50%;width:9px;height:9px"}"></i>`).join("");
   document.body.appendChild(box); setTimeout(() => box.remove(), 2600);

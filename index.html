@@ -819,6 +819,27 @@ small{font-size:13px}
 .icon{transition:transform .4s cubic-bezier(.3,1.5,.5,1),background-color .2s;touch-action:manipulation}
 .icon:active{transform:scale(.94);transition-duration:.1s}
 @media (prefers-reduced-motion:reduce){.btn:not(:disabled):active,.icon:active{transform:none}}
+/* mashq natijasi */
+.rh{text-align:center;padding:6px 0 4px}
+.rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
+.rh-ring{position:relative;width:132px;height:132px;margin:14px auto 4px}
+.rh-ring .rg{position:absolute;inset:0}
+.rh-ring .rg .p{stroke:var(--marker)}.rh.hi .rh-ring .rg .p{stroke:var(--ok-strong)}
+.rh-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 34px/1 var(--font-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.rh-stars{display:flex;justify-content:center;gap:4px;margin:2px 0 4px}
+.rh-stars span{display:flex;color:var(--track)}.rh-stars span:nth-child(2){transform:translateY(-6px)}
+.rh-stars svg{width:30px;height:30px}.rh-stars span:nth-child(2) svg{width:36px;height:36px}
+.rh-stars span.on{color:#F2B33D}
+.rh-h{font-size:26px;margin:4px 0 0}
+.rh-chips{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.rc{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+.rc svg{width:15px;height:15px}
+.rc.ok{background:var(--ok-bg);color:var(--ok)}.rc.bad{background:var(--bad-bg);color:var(--bad)}
+.rh-m{text-align:center;margin:12px auto 0;max-width:34ch}
+.rh-ring .rg .p{animation:h-draw 1.2s cubic-bezier(.16,1,.3,1) .15s both}
+.rh-stars span.on svg{animation:m-pop .55s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(.75s + var(--d) * .16s)}
+.rh-h,.rh-chips{animation:lt-in .5s cubic-bezier(.16,1,.3,1) both}.rh-h{animation-delay:.35s}.rh-chips{animation-delay:.5s}
+@media (prefers-reduced-motion:reduce){.rh-ring .rg .p,.rh-stars span.on svg,.rh-h,.rh-chips{animation:none}}
 /* gap tuzish: natija holatlari */
 .answer{position:relative}
 .answer .tile.g{background:var(--ok-bg);color:var(--ok)}
@@ -3624,14 +3645,26 @@ function next() {
   const hb = app.querySelector(".hook.edit"); if (hb && hb.querySelector(".hin").value.trim()) saveHook(hb); // «Saqlash»siz yozilgan eslatgich ham saqlanadi
   Z.i++; if (Z.i < Z.q.length) ask(); else if (Z.learn) finishLearn(); else finish();
 }
+/* ---------- mashq natijasi: halqa, yulduzlar, sarlavha — yutuq hissi ball bilan mos ---------- */
+const STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>`;
+function resultHero(label, right, total) {
+  const pct = total ? Math.round(right / total * 100) : 0, wrong = total - right;
+  const stars = pct === 100 ? 3 : pct >= 80 ? 2 : pct >= 50 ? 1 : 0;
+  const head = pct === 100 ? "Mukammal!" : pct >= 80 ? "Barakalla!" : pct >= 50 ? "Yaxshi harakat" : "Davom etamiz";
+  setTimeout(() => { if (pct === 100) confetti(); if (pct >= 80) buzz(true); countUp(app); }, 0);
+  return `<div class="rh${pct >= 80 ? " hi" : ""}"><p class="rh-l">${esc(label)}</p>
+    <div class="rh-ring" role="img" aria-label="${right} / ${total} to'g'ri, ${pct}%">${arcRing(132, 10, pct, "")}<b><span data-c="${pct}">${pct}</span>%</b></div>
+    <div class="rh-stars" aria-hidden="true">${[0, 1, 2].map(i => `<span class="${i < stars ? "on" : ""}" style="--d:${i}">${STAR}</span>`).join("")}</div>
+    <h2 class="rh-h">${head}</h2>
+    <div class="rh-chips"><span class="rc ok">${ICON.check}${right} to'g'ri</span>${wrong ? `<span class="rc bad">${ICON.x}${wrong} xato</span>` : ""}</div></div>`;
+}
 function finish() {
   const total = Z.base, pct = total ? Math.round(Z.right / total * 100) : 0;
   const uniq = [...new Map(Z.wrong.map(w => [w.id, w])).values()];
   if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title, ch = Z.chunk;
   const more = ch && ch.left > 0 ? `<button class="btn" id="more">Keyingi ${Math.min(CHUNK, ch.left)} ta so'z ${ICON.arrow}</button><p class="gohint">Unitda yana ${ch.left} ta so'z qoldi</p><div style="height:10px"></div>` : "";
-  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)}${ch && ch.of > 1 ? " · " + ch.n + "-bo'lak / " + ch.of : ""} · natija</p>
-    <div class="score">${Z.right} / ${total}</div>
-    ${tag === "mini" ? `<p class="muted" style="margin:0 0 6px"><b>Seriya saqlandi ✓</b> Ertaga to'liq darsni qilasiz.</p>` : ""}<p class="muted">${pct === 100 ? "Zo'r! Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? pct + "% — yaxshi. Xatolar ertaga yana chiqadi." : pct + "% — xatolarni hozir yana bir marta ishlang."}</p></div>
+  app.innerHTML = `<div class="stack"><div class="card">${resultHero(title + (ch && ch.of > 1 ? " · " + ch.n + "-bo'lak / " + ch.of : ""), Z.right, total)}
+    ${tag === "mini" ? `<p class="muted rh-m"><b>Seriya saqlandi ✓</b> Ertaga to'liq darsni qilasiz.</p>` : ""}<p class="muted rh-m">${pct === 100 ? "Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? "Xatolar ertaga yana chiqadi." : "Xatolarni hozir yana bir marta ishlang."}</p></div>
     ${uniq.length ? `<div class="card"><p class="label">Xato qilingan so'zlar</p><ul class="wl">${uniq.map(wordLi).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${more}${uniq.length ? `<button class="btn${LES && tag || more ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
@@ -3659,7 +3692,7 @@ route(/^qolip-([\w-]+)$/, id => {
   const run = () => runDrill($("#drill"), own().concat(extra), res => {
     const mine = res.filter(r => r.it.pid === p.id), right = mine.filter(r => r.ok).length, rv = res.filter(r => r.it.pid !== p.id);
     S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); gradePat(p, right >= mine.length * .8); gradeReview(rv); save(); markDone("gram");
-    $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${mine.length}</div>${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
+    $("#drill").innerHTML = `${resultHero(p.title, right, mine.length)}${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
     bindLesson(); $("#re").onclick = () => runAgain();
   }, p.id);
   const runAgain = () => { extra.length = 0; run(); };
@@ -3697,7 +3730,7 @@ route(/^gtakror$/, () => {
   runDrill($("#drill"), items, res => {
     gradeReview(res); save(); markDone("gram");
     const right = res.filter(r => r.ok).length;
-    $("#drill").innerHTML = `<p class="label">Natija</p><div class="score" style="text-align:center">${right} / ${res.length}</div><p class="muted" style="text-align:center;margin:0 0 14px">${right === res.length ? "Zo'r! Bu qoliplar keyinroq yana chiqadi." : "Xatolar ertaga yana so'raladi."}</p>${lessonBtn("gram")}<a class="btn${LES ? " ghost" : ""}" href="#">Bugun</a>`;
+    $("#drill").innerHTML = `${resultHero("Grammatika takrorlash", right, res.length)}<p class="muted" style="text-align:center;margin:0 0 14px">${right === res.length ? "Zo'r! Bu qoliplar keyinroq yana chiqadi." : "Xatolar ertaga yana so'raladi."}</p>${lessonBtn("gram")}<a class="btn${LES ? " ghost" : ""}" href="#">Bugun</a>`;
     bindLesson();
   });
 });
@@ -3847,8 +3880,8 @@ route(/^gapmashq$/, () => {
 });
 function phFinish() {
   if (G.tag) markDone(G.tag); const wrong = G.wrong.slice(), title = G.title, back = G.back, right = G.right, total = G.q.length, tag = G.tag; G = null;
-  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p><div class="score">${right} / ${total}</div>
-    <p class="muted">${wrong.length ? "Bilmagan gaplaringiz ertaga yana chiqadi." : "Zo'r! Hammasini bildingiz."}</p></div>
+  app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
+    <p class="muted rh-m">${wrong.length ? "Bilmagan gaplaringiz ertaga yana chiqadi." : "Hammasini bildingiz."}</p></div>
     ${wrong.length ? `<div class="card"><p class="label">Bilmagan gaplar</p><ul class="wl">${wrong.map(p => `<li><div class="h"><span class="w">${esc(p.w)}</span><button class="icon say" data-say="${esc(p.w)}">${ICON.vol}</button></div><div class="p">[${esc(p.p)}]</div><div class="u">${esc(p.u)}</div></li>`).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Bilmaganlarni qayta ishlash</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
@@ -3975,8 +4008,8 @@ function tuzFinish() {
   if (T.tag) markDone(T.tag);
   const { right, total, wrong, title, key, back, tag } = T; T = null;
   if (key) { S.pat[key] = Math.max(S.pat[key] || 0, right); save(); }
-  app.innerHTML = `<div class="stack"><div class="card" style="text-align:center"><p class="label">${esc(title)} · natija</p><div class="score">${right} / ${total}</div>
-    <p class="muted">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Zo'r! Hamma gap birinchi urinishda to'g'ri."}</p></div>
+  app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
+    <p class="muted rh-m">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Hamma gap birinchi urinishda to'g'ri."}</p></div>
     ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl">${wrong.map(it => `<li><div class="h"><span class="w">${esc(it.e)}</span><button class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div><div class="e"><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta tuzish</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();

@@ -920,6 +920,41 @@ button.xm-t.tap{padding:14px 12px 12px}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img,svg{-webkit-user-drag:none}
+/* so'z boyligi */
+.vbs{display:flex;flex-direction:column;min-height:calc(100dvh - 220px)}
+.vb-l{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.vb-seg{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--btn-glass)}
+.vb-seg button{flex:1;min-height:44px;border:0;border-radius:999px;background:none;color:var(--muted);font:600 15px var(--font-body);cursor:pointer;transition:background-color .2s,color .2s}
+.vb-seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.vb-desc{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin:10px 0 22px;padding:12px 14px;border-radius:18px;background:var(--card);box-shadow:var(--card-sm);font-size:14px;color:var(--muted)}
+.vb-desc a{color:var(--accent-text);font-weight:600;text-decoration:none}
+.vb-chips{display:flex;gap:8px;flex-wrap:wrap}
+.vb-chips button{min-width:60px;min-height:52px;padding:0 14px;border:0;border-radius:18px;background:var(--card);box-shadow:var(--card-sm);color:var(--ink);font:700 19px var(--font-display);cursor:pointer;font-variant-numeric:tabular-nums;transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+.vb-chips button:active{transform:scale(.95)}
+.vb-chips button.on{background:var(--btn-fill);color:#fff;box-shadow:none}
+.vb-hint{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.vb-warn{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;padding:12px 14px;border-radius:18px;background:#FBF0D9;color:#7A5410;font-size:14px;line-height:1.45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .vb-warn{background:#2E2410;color:#E9C46A}}
+:root[data-theme="dark"] .vb-warn{background:#2E2410;color:#E9C46A}
+.vb-warn svg{flex:none;width:20px;height:20px;margin-top:1px}
+.vb-act{margin-top:auto;padding-top:24px;display:grid;gap:10px}
+.vb-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vb-stats.c3{grid-template-columns:repeat(3,1fr)}
+.vb-stats .xm-t b{display:block;font:700 28px/1.1 var(--font-display);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.vb-stats .xm-t span{font-size:13px;color:var(--muted)}
+.vb-th{display:flex;justify-content:space-between;font-size:15px;font-variant-numeric:tabular-nums}
+.vb-bar{display:block;flex:1;height:8px;border-radius:4px;background:var(--track);overflow:hidden;margin-top:10px}
+.vb-bar i{display:block;height:100%;border-radius:4px;background:var(--marker);transition:width .5s cubic-bezier(.16,1,.3,1)}
+.vb-btns{display:grid;gap:10px}
+.vb-btns a.btn{text-decoration:none}
+.vb-list .li{width:100%;min-height:60px}
+.vb-cb{flex:none;width:28px;height:28px;border-radius:9px;box-shadow:inset 0 0 0 2px var(--track);display:grid;place-items:center;color:#fff;transition:background-color .15s,box-shadow .15s}
+.vb-cb.on{background:var(--ok-strong);box-shadow:none}.vb-cb svg{width:17px;height:17px}
+.vb-prog{display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.vb-prog .vb-bar{margin:0}
+.vb-idk{color:var(--muted)}
+#vbnext{position:sticky;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+@media (min-width:700px){.vb-stats{grid-template-columns:repeat(4,1fr)}}
+.rh-chips .rc:not(.ok):not(.bad){background:var(--accent-soft,rgba(184,68,34,.1));color:var(--accent-text)}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
 .rh-l{margin:0;font-size:14px;color:var(--muted);font-weight:500}
@@ -1912,6 +1947,9 @@ window.BUILD = [
 ]}
 ];
 </script>
+<script>// So'z boyligi — qo'shimcha lug'at (NGSL/umumiy chastota ro'yxati asosida tanlangan so'zlar): [so'z, o'qilishi, o'zbekcha, misol, misol tarjimasi]
+window.VOCAB = {"easy": [["borrow", "BO-rou", "qarzga olmoq", "Can I borrow your pen?", "Ruchkangizni olib tursam bo'ladimi?"], ["lend", "lend", "qarzga bermoq", "She lent me some money.", "U menga biroz pul qarz berdi."], ["build", "bild", "qurmoq", "They are building a new school.", "Ular yangi maktab qurishyapti."], ["climb", "klaym", "chiqmoq, tirmashmoq", "We climbed the mountain.", "Biz toqqa chiqdik."], ["collect", "ka-LEKT", "yig'moq, to'plamoq", "He collects old coins.", "U eski tangalarni yig'adi."], ["cost", "kost", "turmoq (narx)", "How much does it cost?", "Bu qancha turadi?"], ["decide", "di-SAYD", "qaror qilmoq", "I decided to stay at home.", "Uyda qolishga qaror qildim."], ["explain", "iks-PLEYN", "tushuntirmoq", "Can you explain this word?", "Bu so'zni tushuntirib bera olasizmi?"], ["forget", "fa-GET", "unutmoq", "Don't forget your keys.", "Kalitlaringizni unutmang."], ["guess", "ges", "taxmin qilmoq", "Guess how old I am.", "Necha yoshdaligimni taxmin qiling."], ["hope", "houp", "umid qilmoq", "I hope you feel better.", "Tuzalib ketasiz deb umid qilaman."], ["hurry", "HA-ri", "shoshilmoq", "Hurry up, we are late!", "Shoshiling, kechikyapmiz!"], ["invite", "in-VAYT", "taklif qilmoq", "We invited them to dinner.", "Ularni kechki ovqatga taklif qildik."], ["join", "joyn", "qo'shilmoq", "Can I join you?", "Sizlarga qo'shilsam bo'ladimi?"], ["lose", "luuz", "yo'qotmoq", "I lost my phone yesterday.", "Kecha telefonimni yo'qotib qo'ydim."], ["mention", "MEN-shn", "eslatib o'tmoq", "He mentioned your name.", "U ismingizni tilga oldi."], ["prefer", "pri-FYO", "afzal ko'rmoq", "I prefer tea to coffee.", "Men qahvadan ko'ra choyni afzal ko'raman."], ["promise", "PRO-mis", "va'da bermoq", "I promise to call you.", "Sizga qo'ng'iroq qilishga va'da beraman."], ["remember", "ri-MEM-ba", "eslamoq, yodda tutmoq", "I remember his face.", "Uning yuzini eslayman."], ["repair", "ri-PEA", "ta'mirlamoq", "He repaired my car.", "U mashinamni tuzatdi."], ["share", "shea", "bo'lishmoq", "Let's share the cake.", "Tortni bo'lishaylik."], ["smell", "smel", "hid; hidlamoq", "The flowers smell nice.", "Gullar yoqimli hidlaydi."], ["taste", "teyst", "ta'm; tatib ko'rmoq", "This soup tastes great.", "Bu sho'rva juda mazali."], ["throw", "throu", "otmoq, uloqtirmoq", "Throw the ball to me.", "To'pni menga ot."], ["wish", "wish", "tilamoq, xohlamoq", "I wish you good luck.", "Sizga omad tilayman."], ["worry", "WA-ri", "xavotirlanmoq", "Don't worry about it.", "Bu haqda xavotir olmang."], ["angry", "EN-gri", "jahldor, g'azablangan", "My boss was angry.", "Boshlig'im jahli chiqqan edi."], ["bored", "bood", "zerikkan", "I'm bored at home.", "Uyda zerikyapman."], ["careful", "KEA-ful", "ehtiyotkor", "Be careful on the road.", "Yo'lda ehtiyot bo'ling."], ["comfortable", "KAMF-ta-bl", "qulay", "This chair is very comfortable.", "Bu stul juda qulay."], ["dangerous", "DEYN-ja-ras", "xavfli", "Swimming here is dangerous.", "Bu yerda suzish xavfli."], ["dirty", "DYO-ti", "iflos", "My shoes are dirty.", "Oyoq kiyimim iflos."], ["empty", "EMP-ti", "bo'sh", "The fridge is empty.", "Muzlatgich bo'm-bo'sh."], ["famous", "FEY-mas", "mashhur", "She is a famous singer.", "U mashhur qo'shiqchi."], ["friendly", "FREND-li", "do'stona, xushmuomala", "Our neighbours are friendly.", "Qo'shnilarimiz xushmuomala."], ["funny", "FA-ni", "kulgili", "That film was really funny.", "U film juda kulgili edi."], ["heavy", "HE-vi", "og'ir", "This bag is too heavy.", "Bu sumka juda og'ir."], ["lazy", "LEY-zi", "dangasa", "Don't be lazy, get up!", "Dangasalik qilma, tur!"], ["loud", "laud", "baland (ovoz)", "The music is too loud.", "Musiqa juda baland."], ["lucky", "LA-ki", "omadli", "You are so lucky!", "Siz juda omadlisiz!"], ["polite", "pa-LAYT", "xushmuomala, odobli", "He is always polite.", "U doim odobli."], ["quiet", "KWAY-at", "jim, sokin", "The library is quiet.", "Kutubxona sokin."], ["safe", "seyf", "xavfsiz", "Is this area safe?", "Bu hudud xavfsizmi?"], ["simple", "SIM-pl", "oddiy, sodda", "The answer is simple.", "Javob oddiy."], ["strange", "streynj", "g'alati", "I heard a strange noise.", "G'alati ovoz eshitdim."], ["thirsty", "THYOS-ti", "chanqagan", "I'm thirsty. Is there water?", "Chanqadim. Suv bormi?"], ["advice", "ad-VAYS", "maslahat", "Can you give me some advice?", "Menga maslahat bera olasizmi?"], ["bill", "bil", "hisob (to'lov)", "Can we have the bill, please?", "Hisobni olib kelsangiz."], ["bottle", "BO-tl", "shisha, butilka", "A bottle of water, please.", "Bir shisha suv, iltimos."], ["choice", "chooys", "tanlov", "You have no choice.", "Sizda tanlov yo'q."], ["corner", "KOO-na", "burchak", "The shop is on the corner.", "Do'kon burchakda."], ["crowd", "kraud", "olomon", "There was a big crowd.", "Katta olomon bor edi."], ["dream", "driim", "tush; orzu", "My dream is to visit Japan.", "Orzuim — Yaponiyaga borish."], ["experience", "iks-PII-ri-ans", "tajriba", "She has a lot of experience.", "Uning tajribasi katta."], ["furniture", "FYO-ni-cha", "mebel", "We bought new furniture.", "Yangi mebel sotib oldik."], ["gift", "gift", "sovg'a", "Thank you for the gift.", "Sovg'a uchun rahmat."], ["guest", "gest", "mehmon", "We have guests tonight.", "Bugun kechqurun mehmonlarimiz bor."], ["habit", "HE-bit", "odat", "Reading is a good habit.", "Kitob o'qish — yaxshi odat."], ["health", "helth", "sog'liq", "Sport is good for your health.", "Sport sog'liqqa foydali."], ["journey", "JYO-ni", "safar, yo'l", "The journey took five hours.", "Yo'l besh soat davom etdi."], ["luggage", "LA-gij", "yuk, bagaj", "Where is my luggage?", "Bagajim qayerda?"], ["meal", "miil", "ovqat (taom vaqti)", "We had a nice meal.", "Yaxshi ovqatlandik."], ["medicine", "MED-sin", "dori", "Take this medicine twice a day.", "Bu dorini kuniga ikki marta iching."], ["mistake", "mis-TEYK", "xato", "Everyone makes mistakes.", "Hamma xato qiladi."], ["neighbour", "NEY-ba", "qo'shni", "My neighbour is a doctor.", "Qo'shnim shifokor."], ["noise", "noyz", "shovqin", "Stop making noise!", "Shovqin qilmang!"], ["opinion", "a-PI-nyan", "fikr", "What's your opinion?", "Sizning fikringiz qanday?"], ["pain", "peyn", "og'riq", "I have a pain in my back.", "Belim og'riyapti."], ["price", "prays", "narx", "The price is too high.", "Narx juda baland."], ["reason", "RII-zn", "sabab", "What's the reason?", "Sababi nima?"], ["rule", "ruul", "qoida", "You must follow the rules.", "Qoidalarga amal qilish kerak."], ["salary", "SE-la-ri", "maosh, oylik", "He gets a good salary.", "U yaxshi maosh oladi."], ["sign", "sayn", "belgi; imzolamoq", "Please sign here.", "Shu yerga imzo qo'ying."], ["stranger", "STREYN-ja", "notanish odam", "Don't talk to strangers.", "Notanish odamlar bilan gaplashma."], ["traffic", "TRE-fik", "tirbandlik, transport oqimi", "There was a lot of traffic.", "Tirbandlik juda ko'p edi."], ["wallet", "WO-lit", "hamyon", "I left my wallet at home.", "Hamyonimni uyda qoldirdim."], ["weight", "weyt", "vazn, og'irlik", "What is your weight?", "Vazningiz qancha?"], ["afraid", "a-FREYD", "qo'rqqan", "I'm afraid of dogs.", "Men itlardan qo'rqaman."], ["almost", "OOL-moust", "deyarli", "I'm almost ready.", "Deyarli tayyorman."], ["already", "ool-RE-di", "allaqachon", "I have already eaten.", "Allaqachon ovqatlandim."], ["anyway", "E-ni-wey", "baribir, nima bo'lganda ham", "Thanks anyway.", "Baribir rahmat."], ["enough", "i-NAF", "yetarli", "Do we have enough time?", "Vaqtimiz yetarlimi?"], ["instead", "in-STED", "o'rniga", "Let's walk instead.", "Buning o'rniga piyoda boraylik."], ["maybe", "MEY-bi", "balki", "Maybe tomorrow.", "Balki ertaga."], ["nearly", "NII-li", "deyarli", "It's nearly five o'clock.", "Soat deyarli besh."], ["probably", "PRO-ba-bli", "ehtimol", "He will probably come.", "U ehtimol keladi."], ["suddenly", "SA-dn-li", "to'satdan", "Suddenly it started to rain.", "To'satdan yomg'ir yog'a boshladi."], ["together", "ta-GE-dha", "birga", "Let's go together.", "Birga boraylik."], ["until", "an-TIL", "...gacha", "Wait until five.", "Beshgacha kuting."], ["arrive", "a-RAYV", "yetib kelmoq", "What time does the train arrive?", "Poyezd soat nechada keladi?"], ["belong", "bi-LONG", "tegishli bo'lmoq", "This bag belongs to me.", "Bu sumka meniki."], ["check", "chek", "tekshirmoq", "Please check your email.", "Elektron pochtangizni tekshiring."], ["choose", "chuuz", "tanlamoq", "Choose one colour.", "Bitta rang tanlang."], ["count", "kaunt", "sanamoq", "Count to ten.", "O'ngacha sanang."], ["deliver", "di-LI-va", "yetkazib bermoq", "They deliver food at night.", "Ular kechasi ovqat yetkazib berishadi."], ["fail", "feyl", "muvaffaqiyatsiz bo'lmoq, yiqilmoq (imtihon)", "He failed the exam.", "U imtihondan o'ta olmadi."], ["fill", "fil", "to'ldirmoq", "Fill the glass with water.", "Stakanni suv bilan to'ldiring."], ["hate", "heyt", "yomon ko'rmoq", "I hate waiting.", "Kutishni yomon ko'raman."], ["hide", "hayd", "yashirmoq", "Where did you hide the keys?", "Kalitlarni qayerga yashirding?"], ["improve", "im-PRUUV", "yaxshilamoq", "I want to improve my English.", "Ingliz tilimni yaxshilamoqchiman."]], "mid": [["achieve", "a-CHIIV", "erishmoq", "She achieved her goal.", "U maqsadiga erishdi."], ["approach", "a-PROUCH", "yondashuv", "We need a new approach.", "Bizga yangi yondashuv kerak."], ["available", "a-VEY-la-bl", "bo'sh, mavjud", "Are you available tomorrow?", "Ertaga bo'shmisiz?"], ["avoid", "a-VOYD", "qochmoq, chetlab o'tmoq", "Try to avoid sugar.", "Shakardan qochishga harakat qiling."], ["aware", "a-WEA", "xabardor", "Are you aware of the risk?", "Xavfdan xabardormisiz?"], ["benefit", "BE-ne-fit", "foyda", "What are the benefits?", "Foydasi nimada?"], ["complain", "kam-PLEYN", "shikoyat qilmoq", "He always complains about work.", "U doim ishdan shikoyat qiladi."], ["confident", "KON-fi-dant", "o'ziga ishongan", "She feels confident today.", "U bugun o'ziga ishonadi."], ["consider", "kan-SI-da", "o'ylab ko'rmoq", "Please consider my offer.", "Taklifimni o'ylab ko'ring."], ["deadline", "DED-layn", "oxirgi muddat", "The deadline is Friday.", "Oxirgi muddat — juma."], ["deal", "diil", "kelishuv, bitim", "It's a deal!", "Kelishdik!"], ["delay", "di-LEY", "kechikish; kechiktirmoq", "The flight was delayed.", "Reys kechiktirildi."], ["depend", "di-PEND", "bog'liq bo'lmoq", "It depends on the weather.", "Bu ob-havoga bog'liq."], ["describe", "dis-KRAYB", "tasvirlamoq", "Describe your room.", "Xonangizni tasvirlab bering."], ["develop", "di-VE-lap", "rivojlantirmoq", "We develop mobile apps.", "Biz mobil ilovalar yaratamiz."], ["efficient", "i-FI-shnt", "samarali", "This method is more efficient.", "Bu usul samaraliroq."], ["encourage", "in-KA-rij", "ruhlantirmoq", "My parents encouraged me.", "Ota-onam meni ruhlantirdi."], ["estimate", "ES-ti-meyt", "taxminiy hisob; baholamoq", "Can you estimate the cost?", "Narxini taxminan hisoblay olasizmi?"], ["expect", "iks-PEKT", "kutmoq (umid qilib)", "I didn't expect that.", "Buni kutmagan edim."], ["feature", "FII-cha", "xususiyat, imkoniyat", "This app has a new feature.", "Bu ilovada yangi imkoniyat bor."], ["figure out", "FI-ga aut", "tushunib olmoq, hal qilmoq", "I can't figure out this problem.", "Bu muammoni tushunolmayapman."], ["goal", "goul", "maqsad", "What is your goal?", "Maqsadingiz nima?"], ["handle", "HEN-dl", "uddalamoq, hal qilmoq", "Can you handle this task?", "Bu vazifani uddalay olasizmi?"], ["however", "hau-E-va", "biroq, ammo", "It's cheap. However, it's slow.", "U arzon. Biroq sekin."], ["include", "in-KLUUD", "o'z ichiga olmoq", "The price includes breakfast.", "Narxga nonushta kiradi."], ["increase", "in-KRIIS", "oshmoq, oshirmoq", "Prices increased last year.", "O'tgan yili narxlar oshdi."], ["influence", "IN-flu-ans", "ta'sir", "He has a big influence on me.", "U menga katta ta'sir qiladi."], ["issue", "I-shu", "masala, muammo", "We have an issue with the server.", "Serverda muammo bor."], ["manage", "ME-nij", "boshqarmoq; uddalamoq", "She manages a small team.", "U kichik jamoani boshqaradi."], ["negotiate", "ni-GOU-shi-eyt", "muzokara qilmoq", "We need to negotiate the price.", "Narx bo'yicha muzokara qilishimiz kerak."], ["opportunity", "o-pa-TYUU-ni-ti", "imkoniyat", "This is a great opportunity.", "Bu ajoyib imkoniyat."], ["purpose", "PYO-pas", "maqsad, vazifa", "What is the purpose of this meeting?", "Bu uchrashuvning maqsadi nima?"], ["quality", "KWO-li-ti", "sifat", "The quality is very good.", "Sifati juda yaxshi."], ["realise", "RII-a-layz", "anglamoq, tushunib yetmoq", "I realised my mistake.", "Xatoimni angladim."], ["recommend", "re-ka-MEND", "tavsiya qilmoq", "Can you recommend a restaurant?", "Restoran tavsiya qila olasizmi?"], ["reduce", "ri-DYUUS", "kamaytirmoq", "We need to reduce costs.", "Xarajatlarni kamaytirishimiz kerak."], ["reliable", "ri-LAY-a-bl", "ishonchli", "She is a reliable colleague.", "U ishonchli hamkasb."], ["require", "ri-KWAYA", "talab qilmoq", "This job requires experience.", "Bu ish tajriba talab qiladi."], ["responsible", "ris-PON-si-bl", "mas'ul", "Who is responsible for this?", "Bunga kim mas'ul?"], ["result", "ri-ZALT", "natija", "The results were good.", "Natijalar yaxshi edi."], ["schedule", "SHE-dyuul", "jadval", "What's your schedule today?", "Bugungi jadvalingiz qanday?"], ["solution", "sa-LUU-shn", "yechim", "We found a solution.", "Biz yechim topdik."], ["suggest", "sa-JEST", "taklif qilmoq", "I suggest we start now.", "Hozir boshlashni taklif qilaman."], ["support", "sa-POOT", "qo'llab-quvvatlamoq", "Thank you for your support.", "Qo'llab-quvvatlaganingiz uchun rahmat."], ["task", "taask", "vazifa", "I have three tasks today.", "Bugun uchta vazifam bor."], ["update", "ap-DEYT", "yangilamoq; yangilanish", "Please update the app.", "Ilovani yangilang."], ["apply", "a-PLAY", "ariza bermoq", "I applied for the job.", "Ishga ariza topshirdim."], ["argue", "AA-gyuu", "bahslashmoq", "They argue all the time.", "Ular doim bahslashadi."], ["attend", "a-TEND", "qatnashmoq", "Did you attend the meeting?", "Uchrashuvda qatnashdingizmi?"], ["attitude", "E-ti-tyuud", "munosabat, kayfiyat", "He has a positive attitude.", "Uning munosabati ijobiy."], ["average", "E-va-rij", "o'rtacha", "The average age is 30.", "O'rtacha yosh — 30."], ["cancel", "KEN-sl", "bekor qilmoq", "The meeting was cancelled.", "Uchrashuv bekor qilindi."], ["certain", "SYO-tn", "aniq, ishonchli", "Are you certain?", "Aniq bilasizmi?"], ["challenge", "CHE-linj", "qiyin vazifa, sinov", "This project is a real challenge.", "Bu loyiha haqiqiy sinov."], ["compare", "kam-PEA", "solishtirmoq", "Compare these two prices.", "Bu ikki narxni solishtiring."], ["condition", "kan-DI-shn", "holat; shart", "The car is in good condition.", "Mashina yaxshi holatda."], ["convince", "kan-VINS", "ishontirmoq", "She convinced me to come.", "U meni kelishga ko'ndirdi."], ["customer", "KAS-ta-ma", "mijoz", "The customer is always right.", "Mijoz doim haq."], ["damage", "DE-mij", "zarar; shikastlamoq", "The storm caused damage.", "Bo'ron zarar yetkazdi."], ["decrease", "di-KRIIS", "kamaymoq", "Sales decreased this month.", "Bu oy sotuvlar kamaydi."], ["demand", "di-MAAND", "talab", "There is high demand for it.", "Unga talab yuqori."], ["disappointed", "di-sa-POYN-tid", "hafsalasi pir bo'lgan", "I was disappointed with the film.", "Filmdan hafsalam pir bo'ldi."], ["effort", "E-fat", "harakat, kuch", "Thanks for your effort.", "Harakatingiz uchun rahmat."], ["environment", "in-VAY-ran-mant", "atrof-muhit", "We must protect the environment.", "Atrof-muhitni asrashimiz kerak."], ["equipment", "i-KWIP-mant", "jihozlar", "The office needs new equipment.", "Ofisga yangi jihozlar kerak."], ["exactly", "ig-ZEKT-li", "aynan, roppa-rosa", "That's exactly what I mean.", "Men aynan shuni nazarda tutyapman."], ["familiar", "fa-MI-lya", "tanish", "This place looks familiar.", "Bu joy tanish ko'rinadi."], ["flexible", "FLEK-si-bl", "moslashuvchan", "My hours are flexible.", "Ish vaqtim moslashuvchan."], ["generous", "JE-na-ras", "saxiy", "He is very generous.", "U juda saxiy."], ["knowledge", "NO-lij", "bilim", "She has good knowledge of IT.", "Uning IT bo'yicha bilimi yaxshi."], ["limit", "LI-mit", "chegara", "There is a time limit.", "Vaqt chegarasi bor."], ["measure", "ME-zha", "o'lchamoq", "Measure the room first.", "Avval xonani o'lchang."], ["method", "ME-thad", "usul", "This is the best method.", "Bu eng yaxshi usul."], ["obvious", "OB-vi-as", "aniq, ko'rinib turgan", "The answer is obvious.", "Javob ko'rinib turibdi."], ["patient", "PEY-shnt", "sabrli; bemor", "Be patient, please.", "Iltimos, sabrli bo'ling."], ["permission", "pa-MI-shn", "ruxsat", "Do you have permission?", "Ruxsatingiz bormi?"], ["prepare", "pri-PEA", "tayyorlamoq", "I need to prepare for the meeting.", "Uchrashuvga tayyorlanishim kerak."], ["prove", "pruuv", "isbotlamoq", "Can you prove it?", "Buni isbotlay olasizmi?"], ["quit", "kwit", "tashlamoq (ish, odat)", "He quit his job.", "U ishidan bo'shadi."], ["range", "reynj", "qator, diapazon", "We offer a wide range of products.", "Keng turdagi mahsulotlar taklif qilamiz."], ["rarely", "REA-li", "kamdan-kam", "I rarely watch TV.", "Kamdan-kam televizor ko'raman."], ["refuse", "ri-FYUUZ", "rad etmoq", "She refused to help.", "U yordam berishdan bosh tortdi."], ["relationship", "ri-LEY-shn-ship", "munosabat", "They have a good relationship.", "Ularning munosabati yaxshi."], ["reply", "ri-PLAY", "javob bermoq", "Please reply by email.", "Iltimos, pochta orqali javob bering."], ["review", "ri-VYUU", "ko'rib chiqmoq; sharh", "Can you review my design?", "Dizaynimni ko'rib chiqa olasizmi?"], ["skill", "skil", "ko'nikma, mahorat", "Communication is an important skill.", "Muloqot — muhim ko'nikma."], ["specific", "spa-SI-fik", "aniq, muayyan", "Can you be more specific?", "Aniqroq ayta olasizmi?"]], "hard": [["accomplish", "a-KOM-plish", "amalga oshirmoq", "We accomplished a lot this year.", "Bu yil ko'p ishni amalga oshirdik."], ["accurate", "E-kyu-rat", "aniq, xatosiz", "The data must be accurate.", "Ma'lumotlar aniq bo'lishi kerak."], ["acknowledge", "ak-NO-lij", "tan olmoq", "He acknowledged his mistake.", "U xatosini tan oldi."], ["adequate", "E-di-kwat", "yetarli, munosib", "The salary is adequate.", "Maosh yetarli."], ["advocate", "ED-va-keyt", "qo'llab-quvvatlamoq, tarafdori bo'lmoq", "She advocates for remote work.", "U masofaviy ish tarafdori."], ["ambiguous", "em-BI-gyu-as", "noaniq, ikki ma'noli", "The message was ambiguous.", "Xabar noaniq edi."], ["anticipate", "en-TI-si-peyt", "oldindan ko'rmoq, kutmoq", "We anticipate some problems.", "Ba'zi muammolarni kutyapmiz."], ["apparent", "a-PE-rant", "ko'rinib turgan, aniq", "It became apparent that he was wrong.", "Uning nohaqligi ayon bo'ldi."], ["assess", "a-SES", "baholamoq", "We need to assess the risk.", "Xavfni baholashimiz kerak."], ["assume", "a-SYUUM", "taxmin qilmoq, faraz qilmoq", "I assume you agree.", "Rozisiz deb taxmin qilaman."], ["bias", "BAY-as", "tarafkashlik", "The report shows bias.", "Hisobotda tarafkashlik bor."], ["comprehensive", "kom-pri-HEN-siv", "keng qamrovli", "We need a comprehensive plan.", "Bizga keng qamrovli reja kerak."], ["consequence", "KON-si-kwans", "oqibat", "Think about the consequences.", "Oqibatlari haqida o'ylang."], ["consistent", "kan-SIS-tant", "izchil, barqaror", "The design must be consistent.", "Dizayn izchil bo'lishi kerak."], ["constraint", "kan-STREYNT", "cheklov", "We have budget constraints.", "Byudjet cheklovlarimiz bor."], ["contribute", "kan-TRI-byuut", "hissa qo'shmoq", "Everyone contributed to the project.", "Hamma loyihaga hissa qo'shdi."], ["controversial", "kon-tra-VYO-shl", "munozarali", "It's a controversial decision.", "Bu munozarali qaror."], ["convey", "kan-VEY", "yetkazmoq (fikr)", "Colours convey emotion.", "Ranglar his-tuyg'uni yetkazadi."], ["crucial", "KRUU-shl", "hal qiluvchi, juda muhim", "This step is crucial.", "Bu qadam hal qiluvchi."], ["deliberately", "di-LI-ba-rat-li", "ataylab", "He did it deliberately.", "U buni ataylab qildi."], ["demonstrate", "DE-man-streyt", "ko'rsatib bermoq", "Let me demonstrate the app.", "Ilovani ko'rsatib beray."], ["diminish", "di-MI-nish", "kamaymoq, susaymoq", "The pain diminished.", "Og'riq susaydi."], ["distinguish", "dis-TING-gwish", "farqlamoq", "Can you distinguish the two colours?", "Ikki rangni farqlay olasizmi?"], ["elaborate", "i-LE-ba-reyt", "batafsil tushuntirmoq", "Could you elaborate on that?", "Buni batafsilroq tushuntira olasizmi?"], ["eliminate", "i-LI-mi-neyt", "yo'q qilmoq, chiqarib tashlamoq", "We eliminated two steps.", "Ikki qadamni olib tashladik."], ["emphasise", "EM-fa-sayz", "urg'u bermoq", "I want to emphasise this point.", "Shu fikrga urg'u bermoqchiman."], ["enhance", "in-HAANS", "yaxshilamoq, kuchaytirmoq", "Good lighting enhances the photo.", "Yaxshi yorug'lik suratni boyitadi."], ["evaluate", "i-VE-lyu-eyt", "baholamoq", "We will evaluate the results.", "Natijalarni baholaymiz."], ["evident", "E-vi-dant", "ravshan, aniq", "It's evident that users like it.", "Foydalanuvchilarga yoqqani ravshan."], ["explicit", "iks-PLI-sit", "ochiq-oydin, aniq", "Give explicit instructions.", "Aniq ko'rsatma bering."], ["facilitate", "fa-SI-li-teyt", "osonlashtirmoq", "The tool facilitates teamwork.", "Vosita jamoaviy ishni osonlashtiradi."], ["feasible", "FII-za-bl", "amalga oshirish mumkin", "Is this plan feasible?", "Bu rejani amalga oshirsa bo'ladimi?"], ["fluctuate", "FLAK-chu-eyt", "o'zgarib turmoq", "Prices fluctuate every day.", "Narxlar har kuni o'zgarib turadi."], ["genuine", "JE-nyu-in", "haqiqiy, samimiy", "She showed genuine interest.", "U samimiy qiziqish bildirdi."], ["hesitate", "HE-zi-teyt", "ikkilanmoq", "Don't hesitate to ask.", "So'rashdan tortinmang."], ["hypothesis", "hay-PO-tha-sis", "faraz", "Let's test this hypothesis.", "Bu farazni sinab ko'raylik."], ["implement", "IM-pli-ment", "joriy qilmoq", "We will implement the changes.", "O'zgarishlarni joriy qilamiz."], ["imply", "im-PLAY", "nazarda tutmoq, ishora qilmoq", "What are you implying?", "Nimaga ishora qilyapsiz?"], ["inevitable", "i-NE-vi-ta-bl", "muqarrar", "Change is inevitable.", "O'zgarish muqarrar."], ["insight", "IN-sayt", "chuqur tushuncha", "The research gave us new insights.", "Tadqiqot bizga yangi tushunchalar berdi."], ["intention", "in-TEN-shn", "niyat", "I had no intention of hurting you.", "Sizni xafa qilish niyatim yo'q edi."], ["justify", "JAS-ti-fay", "asoslamoq", "Can you justify this decision?", "Bu qarorni asoslay olasizmi?"], ["leverage", "LII-va-rij", "foydalanmoq (ustunlik sifatida)", "We can leverage our data.", "Ma'lumotlarimizdan foydalanishimiz mumkin."], ["maintain", "meyn-TEYN", "saqlamoq, qo'llab turmoq", "It's hard to maintain quality.", "Sifatni saqlab turish qiyin."], ["mutual", "MYUU-chu-al", "o'zaro", "It's a mutual decision.", "Bu o'zaro qaror."], ["negligible", "NEG-li-ji-bl", "arzimas", "The difference is negligible.", "Farq arzimas."], ["notion", "NOU-shn", "tushuncha, g'oya", "I have no notion of what he means.", "U nima demoqchiligini umuman tushunmayman."], ["obstacle", "OB-sta-kl", "to'siq", "Money is the main obstacle.", "Asosiy to'siq — pul."], ["obtain", "ab-TEYN", "qo'lga kiritmoq", "You need to obtain a visa.", "Viza olishingiz kerak."], ["outcome", "AUT-kam", "natija, oqibat", "We are happy with the outcome.", "Natijadan mamnunmiz."], ["overwhelming", "ou-va-WEL-ming", "haddan tashqari, bosib ketadigan", "The amount of work is overwhelming.", "Ish hajmi haddan tashqari ko'p."], ["perceive", "pa-SIIV", "idrok etmoq, qabul qilmoq", "How do users perceive the brand?", "Foydalanuvchilar brendni qanday qabul qiladi?"], ["persuade", "pa-SWEYD", "ko'ndirmoq", "She persuaded him to stay.", "U uni qolishga ko'ndirdi."], ["precise", "pri-SAYS", "aniq", "Be precise with numbers.", "Raqamlarda aniq bo'ling."], ["predominantly", "pri-DO-mi-nant-li", "asosan", "Our users are predominantly young.", "Foydalanuvchilarimiz asosan yoshlar."], ["prioritise", "pray-O-ri-tayz", "ustuvor qilmoq", "We need to prioritise this task.", "Bu vazifani birinchi o'ringa qo'yishimiz kerak."], ["pursue", "pa-SYUU", "intilmoq, davom ettirmoq", "She pursued a career in design.", "U dizayn sohasida martaba qurdi."], ["reluctant", "ri-LAK-tant", "istamay, ikkilanib", "He was reluctant to answer.", "U javob berishni istamadi."], ["resilient", "ri-ZI-li-ant", "chidamli, tez tiklanadigan", "Children are very resilient.", "Bolalar juda chidamli."], ["scope", "skoup", "qamrov", "What is the scope of the project?", "Loyiha qamrovi qanday?"], ["significant", "sig-NI-fi-kant", "sezilarli, muhim", "There is a significant difference.", "Sezilarli farq bor."], ["subtle", "SA-tl", "nozik, sezilar-sezilmas", "The change is subtle.", "O'zgarish sezilar-sezilmas."], ["sufficient", "sa-FI-shnt", "yetarli", "We have sufficient time.", "Vaqtimiz yetarli."], ["sustainable", "sa-STEY-na-bl", "barqaror", "We need sustainable growth.", "Bizga barqaror o'sish kerak."], ["tedious", "TII-di-as", "zerikarli, mashaqqatli", "The task was tedious.", "Vazifa zerikarli edi."], ["tendency", "TEN-dan-si", "moyillik", "He has a tendency to be late.", "Unda kechikishga moyillik bor."], ["thorough", "THA-ra", "puxta, batafsil", "We did a thorough check.", "Puxta tekshiruv o'tkazdik."], ["undermine", "an-da-MAYN", "putur yetkazmoq", "This could undermine trust.", "Bu ishonchga putur yetkazishi mumkin."], ["unprecedented", "an-PRE-si-den-tid", "misli ko'rilmagan", "The growth was unprecedented.", "O'sish misli ko'rilmagan edi."], ["viable", "VAY-a-bl", "hayotiy, amalga oshsa bo'ladigan", "Is this a viable business?", "Bu hayotiy biznesmi?"], ["vulnerable", "VAL-na-ra-bl", "zaif, himoyasiz", "Old systems are vulnerable.", "Eski tizimlar zaif."], ["widespread", "WAYD-spred", "keng tarqalgan", "The problem is widespread.", "Muammo keng tarqalgan."], ["allocate", "E-la-keyt", "ajratmoq (mablag', vaqt)", "We allocated more time to testing.", "Sinovga ko'proq vaqt ajratdik."], ["coherent", "kou-HII-rant", "izchil, mantiqiy", "Her argument was coherent.", "Uning dalillari mantiqiy edi."], ["compromise", "KOM-pra-mayz", "murosa", "We reached a compromise.", "Biz murosaga keldik."], ["deteriorate", "di-TII-ri-a-reyt", "yomonlashmoq", "His health deteriorated.", "Uning sog'lig'i yomonlashdi."], ["discrepancy", "dis-KRE-pan-si", "nomuvofiqlik, farq", "There's a discrepancy in the numbers.", "Raqamlarda nomuvofiqlik bor."], ["emerge", "i-MYOJ", "paydo bo'lmoq", "New problems emerged.", "Yangi muammolar paydo bo'ldi."], ["endorse", "in-DOOS", "ma'qullamoq", "The manager endorsed the plan.", "Rahbar rejani ma'qulladi."], ["exceed", "ik-SIID", "oshib ketmoq", "Sales exceeded our expectations.", "Sotuvlar kutganimizdan oshdi."], ["inherent", "in-HE-rant", "xos, ichki", "There are inherent risks.", "O'ziga xos xavflar bor."], ["mitigate", "MI-ti-geyt", "yumshatmoq, kamaytirmoq", "How can we mitigate the risk?", "Xavfni qanday kamaytirsa bo'ladi?"]]};
+</script>
 <script>/* Ingliz tili — Navigate Beginner mashq sayti.
    Ma'lumotlar: data/units.js (window.UNITS), data/patterns.js (window.PATTERNS), data/speaking.js (window.SPEAKING).
    Natijalar faqat shu brauzerda saqlanadi (localStorage). */
@@ -1956,6 +1994,10 @@ function fixState(o) {
   if (o.cls !== undefined) s.cls = arr(o.cls).filter(n => Number.isInteger(n) && n >= 0 && n < 7);
   s.course = Number.isInteger(o.course) && o.course > 0 ? o.course : 0;
   s.level = typeof o.level === "string" ? o.level : "";
+  { const v = obj(o.vb), kn = {}; Object.entries(obj(v.known)).forEach(([k, d]) => { if (typeof k === "string" && k && day(d)) kn[k] = d; });
+    const dd = obj(v.day);
+    s.vb = { lvl: ["easy", "mid", "hard"].includes(v.lvl) ? v.lvl : "", goal: [5, 10, 15, 25, 50].includes(+v.goal) ? +v.goal : 10, known: kn,
+      learn: [...new Set(arr(v.learn).filter(x => typeof x === "string" && x && !kn[x]))], day: day(dd.d) ? { d: dd.d, n: Math.round(num(dd.n)) } : { d: "", n: 0 } }; }
   s.ms = num(o.ms);
   if (o.lost && (typeof o.lost !== "object" || !day(o.lost.d))) delete s.lost;
   return s;
@@ -1970,6 +2012,17 @@ function syncMyWords() {
   (S.my || []).forEach(m => WORDS.push(Object.assign({ p: "", e: "", t: "", star: 0 }, m, { unit: 0, g: 0, a: [m.w], mine: true })));
 }
 syncMyWords();
+/* ---------- SO'Z BOYLIGI: qo'shimcha lug'at bazasi (kitobdagi so'zlar chiqarib tashlanadi) ---------- */
+const VB_BOOK = new Set(WORDS.filter(w => !w.mine).map(w => norm(w.w)));
+const VBANK = {}; ["easy", "mid", "hard"].forEach(l => { VBANK[l] = ((window.VOCAB || {})[l] || []).filter(r => !VB_BOOK.has(norm(r[0]))).map(r => ({ w: r[0], p: r[1], u: r[2], e: r[3], t: r[4], lvl: l })); });
+const VB_ALL = new Map(); Object.values(VBANK).forEach(a => a.forEach(x => VB_ALL.set(x.w, x)));
+if (!S.vb) S.vb = fixState({ vb: {} }).vb;
+/* o'rganilayotgan so'zlar umumiy WORDS'ga qo'shiladi — o'rganish, takrorlash va reja ularni ham ko'radi */
+function syncVbWords() {
+  for (let i = WORDS.length - 1; i >= 0; i--) if (WORDS[i].vb) WORDS.splice(i, 1);
+  S.vb.learn.forEach(k => { const x = VB_ALL.get(k); if (x) WORDS.push({ id: "vb|" + x.w, w: x.w, a: [x.w], p: x.p, u: x.u, e: x.e, t: x.t, unit: 0, g: 0, star: 0, vb: true, lvl: x.lvl }); });
+}
+syncVbWords();
 /* ---------- unit hikoyalari: o'sha unit so'zlari bilan 6 gap (o'qib tushunish) ---------- */
 const STORIES = {
   1: { t: "Hello, I'm Aziz", u: "Salom, men Azizman", s: [
@@ -2152,6 +2205,8 @@ function merge(a, b) {
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   out.hook = Object.assign({}, a.hook || {}, b.hook || {});
   const my = new Map(); (a.my || []).concat(b.my || []).forEach(m => my.set(m.id, m)); out.my = [...my.values()];
+  { const va = a.vb || {}, vb = b.vb || {}, kn = Object.assign({}, va.known || {}, vb.known || {});
+    out.vb = { lvl: vb.lvl || va.lvl || "", goal: vb.goal || va.goal || 10, known: kn, learn: [...new Set((va.learn || []).concat(vb.learn || []))].filter(x => !kn[x]), day: (vb.day && va.day && (vb.day.d || "") >= (va.day.d || "")) ? vb.day : va.day || vb.day }; }
   const al = a.log || {}, bl = b.log || {}; out.log = {};
   new Set(Object.keys(al).concat(Object.keys(bl))).forEach(k => { const x = al[k], y = bl[k]; out.log[k] = !x ? y : !y ? x : (y.a > x.a ? y : x); });
   return out;
@@ -2167,7 +2222,7 @@ async function initCloud() {
     const ref = db.doc("data/users/" + id + "/progress");
     const snap = await ref.get();
     if (snap.exists) {
-      try { S = fixState(merge(S, fixState(JSON.parse(snap.data().state)))); fixCourse(); syncMyWords(); } catch (e) {}
+      try { S = fixState(merge(S, fixState(JSON.parse(snap.data().state)))); fixCourse(); syncMyWords(); syncVbWords(); } catch (e) {}
       try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
     }
     cloud.ref = ref; setStatus("cloud");
@@ -2361,7 +2416,7 @@ function toast(msg, act, fn, o = {}) {
 /* ---------- router ---------- */
 const routes = [];
 const route = (re, fn) => routes.push([re, fn]);
-function go(h) { location.hash = h; }
+function go(h) { if (location.hash.slice(1) === String(h).replace(/^#/, "")) render(); else location.hash = h; }
 /* real ilovalardagidek: orqaga qaytilganda ro'yxat avvalgi joyida ochiladi; shu sahifaning o'zi yangilansa tepaga sakramaydi */
 const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
@@ -2374,7 +2429,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
@@ -2558,7 +2613,7 @@ function readBackup(text) {
 }
 function restoreBackup(d) {
   const before = Object.keys(S.srs).length;
-  S = fixState(merge(S, fixState(d))); fixCourse(); syncMyWords(); save();
+  S = fixState(merge(S, fixState(d))); fixCourse(); syncMyWords(); syncVbWords(); save();
   return Object.keys(S.srs).length - before;
 }
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
@@ -3238,10 +3293,166 @@ route(/^mening$/, () => {
     }, { type: "warn", sub: "Natijalari ham o'chdi" });
   });
 });
+/* ---------- SO'Z BOYLIGI: daraja + kunlik maqsad → ro'yxatda saralash → «bilaman» tekshiruvi → o'rganish (mavjud tizim) ---------- */
+const VB_LV = { easy: ["Oson", "A1–A2", "Kundalik so'zlar: uy, ish, ovqat, his-tuyg'u"], mid: ["O'rta", "B1", "Ish, uchrashuvlar, fikr bildirish"], hard: ["Qiyin", "B2+", "Ishbilarmonlik, mavhum tushunchalar"] };
+const VB_GOALS = [5, 10, 15, 25, 50], VB_RECHECK = 60, VB_BATCH = 10;
+const vbMin = n => Math.max(3, Math.round(n * .8));
+const vbToday = () => S.vb.day.d === today() ? S.vb.day.n : 0;
+const vbWords = () => WORDS.filter(w => w.vb);
+const vbLeft = () => (VBANK[S.vb.lvl] || []).filter(x => !S.vb.known[x.w] && !S.vb.learn.includes(x.w));
+const vbRecheck = () => Object.entries(S.vb.known).filter(([, d]) => d <= addDays(-VB_RECHECK)).map(([k]) => VB_ALL.get(k)).filter(Boolean);
+const vbW = k => WORDS.find(w => w.id === "vb|" + k);
+let VBT = null; // joriy saralash / tekshiruv
+function vbSetup(first) {
+  const lv = S.vb.lvl || "mid", g = S.vb.goal || 10;
+  app.innerHTML = `${nav("#lugat", "Lug'at", "So'z boyligi")}
+  <div class="vbs"><p class="vb-l">Daraja</p>
+  <div class="vb-seg" role="radiogroup" aria-label="Daraja">${Object.entries(VB_LV).map(([k, v]) => `<button role="radio" aria-checked="${k === lv}" class="${k === lv ? "on" : ""}" data-l="${k}">${v[0]}</button>`).join("")}</div>
+  <div class="vb-desc"><span id="vbd">${VB_LV[lv][1]} · ${VB_LV[lv][2]}</span><a href="#boylik-test">Darajamni aniqla ›</a></div>
+  <p class="vb-l">Kuniga yangi so'z</p>
+  <div class="vb-chips" role="radiogroup" aria-label="Kuniga yangi so'z">${VB_GOALS.map(n => `<button role="radio" aria-checked="${n === g}" class="${n === g ? "on" : ""}" data-g="${n}">${n}</button>`).join("")}</div>
+  <p class="vb-hint" id="vbh"></p><div id="vbw"></div>
+  <div class="vb-act"><button class="btn" id="vbgo">${first ? "Boshlash" : "Saqlash"}</button><button class="btn ghost hidden" id="vb25">25 ta qilish</button></div></div>`;
+  let L = lv, G = g;
+  const upd = () => {
+    app.querySelectorAll(".vb-seg button").forEach(b => { const on = b.dataset.l === L; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+    app.querySelectorAll(".vb-chips button").forEach(b => { const on = +b.dataset.g === G; b.classList.toggle("on", on); b.setAttribute("aria-checked", on); });
+    $("#vbd").textContent = VB_LV[L][1] + " · " + VB_LV[L][2];
+    $("#vbh").textContent = `${G} ta ≈ ${vbMin(G)} daqiqa kuniga · 1 oyda ~${G * 30} so'z`;
+    const big = G >= 50;
+    $("#vbw").innerHTML = big ? `<div class="vb-warn" role="note">${ICON.info}<span><b>50 ta — juda ko'p.</b> 2 haftadan keyin kuniga ~250 ta takrorlash yig'iladi (~40 daqiqa). 15–25 tavsiya qilinadi.</span></div>` : "";
+    $("#vbgo").textContent = big ? "Baribir 50 ta" : first ? "Boshlash" : "Saqlash"; $("#vb25").classList.toggle("hidden", !big);
+  };
+  app.querySelectorAll(".vb-seg button").forEach(b => b.onclick = () => { L = b.dataset.l; upd(); });
+  app.querySelectorAll(".vb-chips button").forEach(b => b.onclick = () => { G = +b.dataset.g; upd(); });
+  const done = () => { S.vb.lvl = L; S.vb.goal = G; save(); go("boylik"); };
+  $("#vbgo").onclick = done; $("#vb25").onclick = () => { G = 25; done(); };
+  upd();
+}
+route(/^boylik$/, () => {
+  if (!S.vb.lvl) return vbSetup(true);
+  const known = Object.keys(S.vb.known).length, vw = vbWords(), learning = vw.filter(w => !isMastered(w)).length;
+  const due = vw.filter(isDue), rc = vbRecheck(), unseen = vw.filter(w => !isSeen(w)), n = vbToday(), goal = S.vb.goal, need = Math.max(0, goal - n), left = vbLeft().length;
+  const lv = VB_LV[S.vb.lvl];
+  app.innerHTML = `${nav("#lugat", "Lug'at", "So'z boyligi", { href: "#boylik-sozla", label: "Sozlash", icon: ICON.gear })}
+  <p class="sub">${lv[0]} · ${lv[1]} · kuniga ${goal} ta</p>
+  <div class="stack">
+    <div class="vb-stats">
+      <div class="xm-t"><b data-c="${known}">${known}</b><span>bilgan so'zlar</span></div>
+      <div class="xm-t"><b>${learning}</b><span>o'rganilmoqda</span></div>
+      <div class="xm-t"><b>${due.length}</b><span>bugun takrorlash</span></div>
+      <div class="xm-t"><b>${rc.length}</b><span>2 oylik tekshiruv</span></div>
+    </div>
+    <div class="xm vb-today"><div class="vb-th"><b>Bugun</b><span>${Math.min(n, goal)} / ${goal}</span></div><div class="vb-bar"><i style="width:${Math.min(100, n / goal * 100)}%"></i></div>
+      <p class="xm-s">${need ? `Yana ${need} ta yangi so'z` : "Bugungi maqsad bajarildi ✓"}${left ? "" : " · bu darajadagi so'zlar tugadi"}</p></div>
+    <div class="vb-btns">
+      ${unseen.length ? `<button class="btn" id="vbcont">O'rganishni davom ettirish · ${unseen.length} ta</button>` : need && left ? `<a class="btn" href="#boylik-sar">Yangi so'zlar · ${Math.min(need, left)} ta</a>` : left ? `<a class="btn ghost" href="#boylik-sar">Yana so'z qo'shish</a>` : `<a class="btn ghost" href="#boylik-sozla">Keyingi darajani tanlash</a>`}
+      ${due.length ? `<button class="btn${unseen.length || (need && left) ? " ghost" : ""}" id="vbrev">Takrorlash · ${due.length} ta</button>` : ""}
+      ${rc.length ? `<button class="btn ghost" id="vbrc">2 oylik tekshiruv · ${rc.length} ta</button>` : ""}
+    </div>
+    ${vw.length ? `<div class="card"><p class="label">O'rganilayotgan so'zlar</p><ul class="wl">${vw.slice(-12).reverse().map(wordLi).join("")}</ul></div>` : ""}
+  </div>`;
+  bindSay(app);
+  const c = $("#vbcont"); if (c) c.onclick = () => startLearn(unseen, "So'z boyligi", "#boylik");
+  const r = $("#vbrev"); if (r) r.onclick = () => startQuiz(revOrder(due), "auto", "So'z boyligi", "#boylik");
+  const k = $("#vbrc"); if (k) k.onclick = () => { VBT = { recheck: true, q: shuffle(rc).slice(0, 10), i: 0, res: [] }; go("boylik-sar"); };
+});
+route(/^boylik-sozla$/, () => vbSetup(!S.vb.lvl));
+/* saralash: ro'yxatda bilganlarini belgilaydi → faqat ular 4 variant bilan tekshiriladi */
+route(/^boylik-sar$/, () => {
+  if (!S.vb.lvl) return go("boylik");
+  if (!VBT || VBT.done) { const need = Math.max(1, S.vb.goal - vbToday()); VBT = { list: vbLeft().slice(0, Math.max(5, Math.min(VB_BATCH, need + 3))), picked: new Set(), need }; }
+  if (VBT.q) return vbCheck();
+  if (!VBT.list.length) { VBT = null; return go("boylik"); }
+  const draw = () => {
+    app.innerHTML = `${nav("#boylik", "So'z boyligi", "Saralash")}<h2 class="pg-h">Qaysilarini bilasiz?</h2><p class="sub">Bilganlaringizni belgilang — qolganini o'rganamiz</p>
+    <div class="stack"><div class="list vb-list" role="group" aria-label="So'zlar">${VBT.list.map((x, i) => { const on = VBT.picked.has(x.w);
+      return `<button class="li" role="checkbox" aria-checked="${on}" data-i="${i}"><span class="vb-cb${on ? " on" : ""}">${on ? ICON.check : ""}</span><span class="tx"><b>${esc(x.w)}</b><span>${esc(x.u)}</span></span></button>`; }).join("")}</div>
+    <button class="btn" id="vbnext">${VBT.picked.size ? VBT.picked.size + " tasini tekshirish" : "Hech birini bilmayman — o'rganish"}</button></div>`;
+    app.querySelectorAll(".vb-list .li").forEach(b => b.onclick = () => { const w = VBT.list[+b.dataset.i].w; VBT.picked.has(w) ? VBT.picked.delete(w) : VBT.picked.add(w); const y = scrollY; draw(); scrollTo(0, y); });
+    $("#vbnext").onclick = () => { VBT.q = VBT.list.filter(x => VBT.picked.has(x.w)); VBT.i = 0; VBT.res = []; if (VBT.q.length) vbCheck(); else vbApply(); };
+  };
+  draw();
+});
+function vbCheck() {
+  const x = VBT.q[VBT.i]; if (!x) return vbApply();
+  const pool = shuffle((VBANK[x.lvl] || []).filter(y => y.w !== x.w && y.u !== x.u)).slice(0, 3), opts = shuffle(pool.concat([x]));
+  app.innerHTML = `${nav(VBT.recheck ? "#boylik" : "#boylik", "So'z boyligi", VBT.recheck ? "2 oylik tekshiruv" : "Tekshiruv")}
+  <div class="vb-prog"><span class="vb-bar"><i style="width:${VBT.i / VBT.q.length * 100}%"></i></span><span>${VBT.i + 1}/${VBT.q.length}</span></div>
+  <p class="sub" style="margin:14px 0 4px">${VBT.recheck ? "Hali ham esingizdami?" : "Bilsangiz, bu so'z o'rganishga qo'shilmaydi"}</p>
+  <div class="q" id="vbq">${esc(x.w)}</div><div class="pron">[${esc(x.p)}]</div>
+  <div class="opts" id="vbo" style="margin-top:16px">${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o.u)}</button>`).join("")}</div>
+  <div class="fb hidden" id="vbf"></div><div class="row hidden" id="vbr" style="margin-top:14px"><button class="btn" id="vbn">${VBT.i + 1 < VBT.q.length ? "Keyingisi" : "Yakunlash"}</button></div>`;
+  say(x.w);
+  app.querySelectorAll("#vbo .opt").forEach(b => b.onclick = () => {
+    const o = opts[+b.dataset.i], ok = o === x; VBT.res.push({ x, ok }); buzz(ok);
+    app.querySelectorAll("#vbo .opt").forEach((c, i) => { c.disabled = true; if (opts[i] === x) c.classList.add("ok"); else if (c === b) c.classList.add("bad"); });
+    const f = $("#vbf"); f.className = "fb tz " + (ok ? "ok" : "bad");
+    f.innerHTML = ok ? `<div class="tzh">${ICON.check}Bilar ekansiz!</div>${VBT.recheck ? "Yana 2 oydan keyin so'raladi." : "«" + esc(x.w) + "» bilgan so'zlaringizga qo'shildi. 2 oydan keyin bir marta so'raladi."}`
+      : `<div class="tzh">${ICON.x}Unchalik emas</div><b>${esc(x.w)}</b> — ${esc(x.u)}. Bu so'zni o'rganamiz.`;
+    $("#vbr").classList.remove("hidden"); $("#vbn").focus();
+  });
+  $("#vbn").onclick = () => { VBT.i++; vbCheck(); };
+}
+function vbApply() {
+  const added = [], knownNow = [];
+  if (VBT.recheck) {
+    VBT.res.forEach(({ x, ok }) => { if (ok) { S.vb.known[x.w] = today(); knownNow.push(x); } else { delete S.vb.known[x.w]; delete S.srs["vb|" + x.w]; if (!S.vb.learn.includes(x.w)) S.vb.learn.push(x.w); added.push(x); } });
+  } else {
+    const okSet = new Set(VBT.res.filter(r => r.ok).map(r => r.x.w));
+    okSet.forEach(w => { S.vb.known[w] = today(); knownNow.push(VB_ALL.get(w)); });
+    VBT.list.filter(x => !okSet.has(x.w)).slice(0, VBT.need).forEach(x => { if (!S.vb.learn.includes(x.w)) { S.vb.learn.push(x.w); added.push(x); } });
+    const n = vbToday(); S.vb.day = { d: today(), n: n + added.length };
+  }
+  syncVbWords(); save(); VBT.done = true;
+  const lw = added.map(x => vbW(x.w)).filter(Boolean);
+  const hd = VBT.recheck ? (added.length ? `${knownNow.length} tasi esda, ${added.length} tasi qayta o'rganiladi` : "Hammasi esingizda") : added.length ? `${added.length} ta yangi so'z` : "Hammasini bilar ekansiz";
+  if (knownNow.length && !added.length) setTimeout(() => { confetti(); buzz(true); }, 0);
+  app.innerHTML = `${nav("#boylik", "So'z boyligi", "Natija")}<div class="stack"><div class="card"><div class="rh"><p class="rh-l">${VBT.recheck ? "2 oylik tekshiruv" : "Saralash"}</p><h2 class="rh-h">${hd}</h2>
+    <div class="rh-chips">${knownNow.length ? `<span class="rc ok">${ICON.check}${knownNow.length} ta bilasiz</span>` : ""}${added.length ? `<span class="rc">${ICON.spark}${added.length} ta o'rganiladi</span>` : ""}</div></div>
+    <p class="muted rh-m">${added.length ? "Har biri 3 bosqichdan o'tadi, keyin takrorlashga qo'shiladi." : VBT.recheck ? "Keyingi tekshiruv 2 oydan keyin." : "Bilgan so'zlaringiz qayta chiqmaydi, 2 oydan keyin bir marta so'raladi."}</p></div>
+    ${lw.length ? `<div class="card"><p class="label">O'rganiladigan so'zlar</p><ul class="wl">${lw.map(wordLi).join("")}</ul></div>` : ""}
+    ${lw.length ? `<button class="btn" id="vbl">O'rganishni boshlash</button>` : ""}<a class="btn ghost" href="#boylik">So'z boyligiga qaytish</a></div>`;
+  bindSay(app);
+  const b = $("#vbl"); if (b) b.onclick = () => startLearn(lw, "So'z boyligi", "#boylik");
+}
+/* darajani aniqlash: har darajadan 5 tadan, 15 savol; to'g'ri topilganlar bilgan so'zlarga qo'shiladi */
+let VBP = null;
+route(/^boylik-test$/, () => {
+  if (!VBP || VBP.done) VBP = { q: ["easy", "mid", "hard"].flatMap(l => shuffle(VBANK[l].slice()).slice(0, 5)), i: 0, ok: { easy: 0, mid: 0, hard: 0 }, kn: [] };
+  const x = VBP.q[VBP.i];
+  if (!x) {
+    const o = VBP.ok, rec = o.easy < 4 ? "easy" : o.mid < 4 ? "mid" : "hard"; VBP.done = true;
+    app.innerHTML = `${nav("#boylik-sozla", "Sozlash", "Darajangiz")}<div class="stack"><div class="card"><div class="rh"><p class="rh-l">Darajani aniqlash</p><h2 class="rh-h">Tavsiya: ${VB_LV[rec][0]} · ${VB_LV[rec][1]}</h2></div>
+      <div class="vb-stats c3" style="margin-top:14px">${Object.entries(o).map(([l, v]) => `<div class="xm-t"><b>${v}/5</b><span>${VB_LV[l][0]}</span></div>`).join("")}</div>
+      <p class="muted rh-m">To'g'ri topgan ${VBP.kn.length} ta so'zingiz bilgan so'zlarga qo'shildi.</p></div>
+      <button class="btn" id="vbpick">${VB_LV[rec][0]} darajani tanlash</button><a class="btn ghost" href="#boylik-sozla">O'zim tanlayman</a></div>`;
+    $("#vbpick").onclick = () => { S.vb.lvl = rec; save(); go(S.vb.goal ? "boylik" : "boylik-sozla"); };
+    return;
+  }
+  const opts = shuffle(shuffle(VBANK[x.lvl].filter(y => y.w !== x.w && y.u !== x.u)).slice(0, 3).concat([x]));
+  app.innerHTML = `${nav("#boylik-sozla", "Sozlash", "Darajani aniqlash")}
+  <div class="vb-prog"><span class="vb-bar"><i style="width:${VBP.i / VBP.q.length * 100}%"></i></span><span>${VBP.i + 1}/${VBP.q.length}</span></div>
+  <div class="q" style="margin-top:18px">${esc(x.w)}</div><div class="pron">[${esc(x.p)}]</div>
+  <div class="opts" style="margin-top:16px">${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o.u)}</button>`).join("")}<button class="opt vb-idk" data-i="-1">Bilmayman</button></div>`;
+  app.querySelectorAll(".opts .opt").forEach(b => b.onclick = () => {
+    const i = +b.dataset.i, ok = i >= 0 && opts[i] === x;
+    if (ok) { VBP.ok[x.lvl]++; VBP.kn.push(x.w); S.vb.known[x.w] = today(); save(); }
+    b.classList.add(ok ? "ok" : "bad"); buzz(ok); app.querySelectorAll(".opts .opt").forEach(c => c.disabled = true);
+    setTimeout(() => { VBP.i++; render(); }, 450);
+  });
+});
+/* lug'at sahifasidagi kirish kartasi */
+function vbCard() {
+  if (!S.vb.lvl) return `<a class="nwb vb-entry" href="#boylik"><span class="pmi">${ICON.spark}</span><span class="tx"><b>So'z boyligi</b><span>Kuniga 5–25 ta yangi so'z · bilganlaringiz qaytmaydi</span></span><span class="go">${ICON.chev}</span></a>`;
+  const n = vbToday(), g = S.vb.goal, k = Object.keys(S.vb.known).length;
+  return `<a class="nwb vb-entry" href="#boylik"><span class="pmi">${ICON.spark}</span><span class="tx"><b>So'z boyligi</b><span>${k} ta bilgan so'z · ${S.vb.learn.length} ta o'rganilmoqda</span></span>${nwRing(Math.min(n, g), g)}<span class="go">${ICON.chev}</span></a>`;
+}
 route(/^lugat$/, () => {
   app.innerHTML = `${nav(null, "", "Lug'at", { href: "#mening", label: "So'z qo'shish", icon: ICON.plus })}
   <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="${WORDS.length} ta so'zdan qidiring" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
+  ${vbCard()}
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${UNIT_INFO.slice(1).map((info, i) => { const n = i + 1, st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${n} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
   $("#qclr").onclick = () => { const i = $("#q"); i.value = ""; i.dispatchEvent(new Event("input")); i.focus(); };
   $("#q").oninput = e => {

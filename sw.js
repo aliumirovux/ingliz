@@ -1,6 +1,7 @@
 // Ingliz tili — oflayn ishlash uchun service worker.
 // Sahifa: avval internetdan (push qilingan yangi versiya darrov ko'rinadi); internet sekin bo'lsa (2,5 s) yoki yo'q bo'lsa — keshdan.
 // Shriftlar: keshdan, bo'lmasa internetdan olinib keshga qo'yiladi.
+// Ovozlar (ingliz-ovoz-*) sahifaning o'zi keshlaydi — bu yerda ularni o'chirmaymiz.
 const CACHE = "ingliz-v2";
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png"];
 
@@ -9,7 +10,7 @@ self.addEventListener("install", e => {
 });
 
 self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE && !k.startsWith("ingliz-ovoz")).map(k => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
 self.addEventListener("fetch", e => {

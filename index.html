@@ -2705,7 +2705,58 @@ try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
 const canBuzz = () => typeof navigator.vibrate === "function" && matchMedia("(pointer:coarse)").matches;
 const buzzOn = () => { try { return localStorage.getItem("ingliz-vib") !== "0"; } catch (e) { return true; } };
 function buzz(ok) { if (!canBuzz() || !buzzOn()) return; try { navigator.vibrate(ok ? 15 : [35, 70, 35]); } catch (e) {} }
-function say(text) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(String(text).replace(/[\[\]]/g, "")); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85; speechSynthesis.speak(u); } catch (e) {} }
+/* ---------- OVOZ: so'z va gaplar Apollo (Deepgram Aura 2) ovozida oldindan yozilgan (Cloudflare Worker «ingliz-ovoz»).
+   Har kuni bepul limit ichida yangilari qo'shiladi; hali yozilmagan yoki internet yo'q bo'lsa — telefonning o'z ovozi. */
+const OVOZ = "https://ingliz-ovoz.aliumirov-me.workers.dev";
+const h53 = (s, seed = 0) => { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, c; i < s.length; i++) { c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507); h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507); h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); };
+const voiceId = t => h53(String(t).replace(/[\[\]]/g, "").toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim()).toString(36);
+let OVM = null; // { set: tayyor ovoz id lari, at: qachon olingan }
+try { const c = JSON.parse(localStorage.getItem("ingliz-ovoz") || "null"); if (c && typeof c.ids === "string") OVM = { set: new Set(c.ids.split(",")), at: +c.at || 0 }; } catch (e) {}
+function ovozSync() {
+  if (OVM && Date.now() - OVM.at < 3 * 3600e3) return;
+  fetch(OVOZ + "/m").then(r => r.ok ? r.json() : null).then(d => {
+    if (!d || typeof d.ids !== "string") return;
+    OVM = { set: new Set(d.ids.split(",").filter(Boolean)), at: Date.now() };
+    try { localStorage.setItem("ingliz-ovoz", JSON.stringify({ ids: d.ids, at: OVM.at })); } catch (e) {}
+  }).catch(() => {});
+}
+let VG = 0, VBUSY = false; // VG: har to'xtatishda oshadi — eski zanjir (sayAll) davom etmasin
+const ACACHE = "ingliz-ovoz-a1", BLOBS = new Map();
+const SILENT = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAABQAAAqAAbW1tbW1tbW1tbW1tbW1tbW1tbZKSkpKSkpKSkpKSkpKSkpKSkpKStra2tra2tra2tra2tra2tra2trbb29vb29vb29vb29vb29vb29vb2///////////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQEUAAAAAAAAAKgvT9A1gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+/* bitta doimiy audio element: iPhone birinchi bosishda uni «ochadi», keyin ovoz kechikib (internetdan) kelsa ham chala oladi */
+const AEL = typeof Audio === "function" ? new Audio() : null; let AEL_OK = false;
+if (AEL) document.addEventListener("pointerdown", () => {
+  if (AEL_OK || VBUSY) return; AEL_OK = true; AEL.src = SILENT;
+  const p = AEL.play(); if (p && p.then) p.then(() => { if (AEL.src === SILENT) AEL.pause(); }).catch(() => { AEL_OK = false; });
+}, { capture: true, passive: true });
+async function audioUrl(id) {
+  if (BLOBS.has(id)) return BLOBS.get(id);
+  const url = OVOZ + "/a/" + id + ".mp3"; let c = null, r = null;
+  try { c = await caches.open(ACACHE); r = await c.match(url); } catch (e) {}
+  if (!r) { r = await fetch(url); if (!r.ok) throw new Error("ovoz " + r.status); if (c) c.put(url, r.clone()).catch(() => {}); }
+  const u = URL.createObjectURL(await r.blob()); BLOBS.set(id, u);
+  if (BLOBS.size > 300) { const [k, v] = BLOBS.entries().next().value; BLOBS.delete(k); try { URL.revokeObjectURL(v); } catch (e) {} }
+  return u;
+}
+function voiceBusy() { if (VBUSY) return true; try { return speechSynthesis.speaking; } catch (e) { return false; } }
+function stopVoice() { VG++; VBUSY = false; if (AEL) { AEL.onended = AEL.onerror = null; try { AEL.pause(); } catch (e) {} } try { speechSynthesis.cancel(); } catch (e) {} }
+function synth(text, done) {
+  try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85; if (done) u.onend = done; speechSynthesis.speak(u); } catch (e) {}
+}
+function speakOne(text, done) {
+  text = String(text).replace(/[\[\]]/g, "");
+  const id = AEL && OVM && OVM.set.has(voiceId(text)) ? voiceId(text) : null;
+  if (!id) return synth(text, done);
+  const g = VG; let fell = false; VBUSY = true;
+  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; synth(text, done); }; // fayl ochilmasa — telefon ovozi
+  audioUrl(id).then(u => {
+    if (g !== VG) return;
+    AEL.onended = () => { if (g !== VG) return; VBUSY = false; if (done) done(); };
+    AEL.onerror = back; AEL.src = u;
+    const p = AEL.play(); if (p && p.catch) p.catch(back);
+  }).catch(back);
+}
+function say(text) { stopVoice(); speakOne(text); }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 const pr = w => w.p ? "[" + w.p + "]" : "";
 
@@ -2778,7 +2829,7 @@ function go(h) { if (location.hash.slice(1) === String(h).replace(/^#/, "")) ren
 /* real ilovalardagidek: orqaga qaytilganda ro'yxat avvalgi joyida ochiladi; shu sahifaning o'zi yangilansa tepaga sakramaydi */
 const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
-  try { speechSynthesis.cancel(); } catch (e) {}
+  stopVoice(); ovozSync();
   app.classList.remove("home"); document.body.classList.remove("welcome"); SYW = false;
   const h = location.hash.replace(/^#/, ""), same = h === curH, quizy = /^(quiz|gapmashq|tuzmashq)/.test(h);
   if (curH !== null) SCROLLS[curH] = scrollY;
@@ -3114,10 +3165,11 @@ const myEx = w => w.pe ? `<div class="ex pex"><span class="metag">Siz haqingizda
 function storyLine(en, vocab) {
   return en.split(/(\s+)/).map(t => { const k = t.toLowerCase().replace(/[^a-z'-]/g, ""); return k.length > 1 && vocab.has(k) ? "<b>" + esc(t) + "</b>" : esc(t); }).join("");
 }
-function sayAll(lines, i = 0, done) {
+function sayAll(lines, i = 0, done, g) {
+  if (i === 0) { stopVoice(); g = VG; }
+  if (g !== VG) return;
   if (i >= lines.length) { if (done) done(); return; }
-  try { if (i === 0) speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(lines[i]); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85;
-    u.onend = () => sayAll(lines, i + 1, done); speechSynthesis.speak(u); } catch (e) {}
+  speakOne(lines[i], () => { if (g === VG) setTimeout(() => sayAll(lines, i + 1, done, g), 250); });
 }
 route(/^hikoya-(\d+)$/, n => {
   n = +n; const st = STORIES[n]; if (!st) return go("unitlar");
@@ -4117,7 +4169,7 @@ function askSay(w) {
     }, v => micAnim && micAnim.act(v));
   };
   // seansda bir marta bosilgandan keyin keyingi «Ayting» savollarida mikrofon o'zi yoqiladi (ovoz tugashini kutib — o'z ovozini eshitmasin)
-  if (Z.micAuto) { const q = Z.cur, t0 = Date.now(); const wait = () => { if (!Z || Z.cur !== q || Z.state !== "ask" || location.hash !== "#quiz" || srObj || Z.micUsed) return; let busy = false; try { busy = speechSynthesis.speaking; } catch (e) {} if (busy && Date.now() - t0 < 6000) return setTimeout(wait, 200); setTimeout(() => { const m = $("#mic"); if (m && Z && Z.cur === q && Z.state === "ask" && !srObj && !Z.micUsed) m.click(); }, 450); }; setTimeout(wait, 300); }
+  if (Z.micAuto) { const q = Z.cur, t0 = Date.now(); const wait = () => { if (!Z || Z.cur !== q || Z.state !== "ask" || location.hash !== "#quiz" || srObj || Z.micUsed) return; const busy = voiceBusy(); if (busy && Date.now() - t0 < 6000) return setTimeout(wait, 200); setTimeout(() => { const m = $("#mic"); if (m && Z && Z.cur === q && Z.state === "ask" && !srObj && !Z.micUsed) m.click(); }, 450); }; setTimeout(wait, 300); }
 }
 function heard(w, alts) {
   if (Z.state !== "ask" || Z.cur !== w) return;

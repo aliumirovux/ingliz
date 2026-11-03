@@ -4104,12 +4104,26 @@ route(/^qolip-([\w-]+)$/, id => {
   const run = () => runDrill($("#drill"), own().concat(extra), res => {
     const mine = res.filter(r => r.it.pid === p.id), right = mine.filter(r => r.ok).length, rv = res.filter(r => r.it.pid !== p.id);
     S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); gradePat(p, right >= mine.length * .8); gradeReview(rv); save(); markDone("gram");
-    $("#drill").innerHTML = `${resultHero(p.title, right, mine.length)}${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}<button class="btn${LES ? " ghost" : ""}" id="re">Qaytadan</button>`;
+    const nx = LES ? null : patNext(p), weak = right < mine.length / 2; // yarmidan kam bo'lsa avval «Qaytadan»
+    $("#drill").innerHTML = `${resultHero(p.title, right, mine.length)}${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}${nx && !weak ? `<button class="btn" id="pnx">${esc(nx.label)}</button><div style="height:10px"></div>` : ""}<button class="btn${LES || (nx && !weak) ? " ghost" : ""}" id="re">Qaytadan</button>${nx && weak ? `<div style="height:10px"></div><button class="btn ghost" id="pnx">${esc(nx.label)}</button>` : ""}`;
     bindLesson(); $("#re").onclick = () => runAgain();
+    const nb = $("#pnx"); if (nb) nb.onclick = nx.run;
+    const dr = $("#drill"), top = dr.getBoundingClientRect().top;
+    if (top < 70 || top > innerHeight * .4) scrollTo({ top: scrollY + top - 76, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   }, p.id);
   const runAgain = () => { extra.length = 0; run(); };
   run();
 });
+/* qolip mashqidan keyin: unitdagi keyingi qolip → Gap tuzish → Hikoya → Gapirish (unit sahifasidagi tartib) */
+function patNext(p) {
+  const n = p.unit, ps = unitPats(n), i = ps.indexOf(p);
+  if (i >= 0 && i < ps.length - 1) { const q = ps[i + 1]; return { label: "Keyingisi: " + q.title, run: () => go("qolip-" + q.id) }; }
+  const bl = unitBuild(n);
+  if (bl.length) return { label: "Keyingisi: Gap tuzish", run: () => startTuz(bl, "Unit " + n, (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n) };
+  if (STORIES[n]) return { label: "Keyingisi: Hikoya", run: () => go("hikoya-" + n) };
+  if (SPEAKING.some(t => t.unit === n)) return { label: "Keyingisi: Gapirish", run: () => go("gapir-" + n) };
+  return { label: "Unit " + n + " ga qaytish", run: () => go("unit-" + n) };
+}
 /* takrorlash: har bir qolip uchun hamma savoli to'g'ri bo'lsa keyingi quti */
 function gradeReview(res) {
   const by = {}; res.forEach(r => { by[r.it.pid] = (by[r.it.pid] !== false) && r.ok; });

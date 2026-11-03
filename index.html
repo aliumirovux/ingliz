@@ -2723,7 +2723,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611032335";
+const APP_V = "202611032340";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3634,7 +3634,7 @@ function finishLearn() {
     <div class="card">${lessonBtn(tag)}${!tag && rest.length ? `<button class="btn" id="more">Keyingi ${Math.min(LEARN_N, rest.length)} ta yangi so'z ${ICON.arrow}</button><div style="height:10px"></div>` : ""}
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
-  const pool = Z.pool; Z = null;
+  const pool = Z.pool; Z = null; zSave();
   const mo = $("#more"); if (mo) mo.onclick = () => startLearn(rest, title, back, null);
   $("#back").onclick = () => { location.hash = back; };
 }
@@ -3741,6 +3741,30 @@ function clozeOf(w) {
 
 /* ---------- QUIZ engine ---------- */
 let Z = null; // session
+/* mashq seansi sahifa yangilansa ham davom etadi: Z (so'zlar — id, Set — ro'yxat) 6 soatgacha saqlanadi */
+const ZKEY = "ingliz-quiz", Z_SKIP = new Set(["cur", "state", "ph", "cvT", "cvTyped", "cvN", "att", "hintN", "ltTarget", "ltUsed", "ltWait", "cz", "qmode", "force", "retype", "re", "tag2"]);
+function zSave() {
+  try {
+    if (!Z) return localStorage.removeItem(ZKEY);
+    const enc = v => v instanceof Set ? { $s: [...v].map(enc) } : Array.isArray(v) ? v.map(enc)
+      : v && typeof v === "object" ? (typeof v.id === "string" && typeof v.w === "string" ? { $w: v.id } : Object.fromEntries(Object.entries(v).filter(([k, x]) => !Z_SKIP.has(k) && typeof x !== "function").map(([k, x]) => [k, enc(x)]))) : v;
+    const o = enc(Z); if (Z.state === "next") o.i = Z.i + 1; // javob berilgan savol qayta so'ralmaydi
+    localStorage.setItem(ZKEY, JSON.stringify({ t: Date.now(), les: LES, z: o }));
+  } catch (e) {}
+}
+function zLoad() {
+  try {
+    const d = JSON.parse(localStorage.getItem(ZKEY) || "null"); if (!d || Date.now() - d.t > 6 * 36e5) return false;
+    const by = new Map(WORDS.map(w => [w.id, w])); let miss = false;
+    const dec = v => Array.isArray(v) ? v.map(dec) : v && typeof v === "object" ? ("$w" in v ? (by.get(v.$w) || (miss = true, null)) : "$s" in v ? new Set(v.$s.map(dec)) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, dec(x)]))) : v;
+    const z = dec(d.z);
+    const clean = a => a.filter(x => x && (!("w" in x) || x.w)); // o'chirilgan so'zlar tushib qoladi
+    z.q = clean(z.q || []); if (z.wrong) z.wrong = clean(z.wrong); if (z.words) z.words = clean(z.words); if (z.pool) z.pool = clean(z.pool);
+    if (z.chunk && z.chunk.pool) z.chunk.pool = clean(z.chunk.pool);
+    if (!z.q.length || z.i > z.q.length) return false;
+    Z = Object.assign(z, { state: "ask", cur: null }); LES = !!d.les; return true;
+  } catch (e) { return false; }
+}
 /* Katta ro'yxat (masalan, butun unit — 84 so'z) bitta seansda emas, 15 tadan beriladi.
    Tartib: xato qilinganlar → muddati kelganlar → yangilar → qolganlari (eng uzoq ko'rilmagani birinchi). */
 const CHUNK = 15;
@@ -3762,7 +3786,8 @@ function startQuiz(list, mode, title, back, tag, opts) {
   if (location.hash === "#quiz") render(); else go("quiz");
 }
 route(/^quiz$/, () => {
-  if (!Z) return go("");
+  if (!Z && !zLoad()) return go("");
+  if (Z.i >= Z.q.length) { if (Z.learn) { app.innerHTML = ""; return finishLearn(); } app.innerHTML = ""; return finish(); }
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i id="barfill"></i></div><span class="cnt" id="pos"></span><span id="pts" hidden></span></div>
   <div class="card qcard"><p class="label" id="qlabel"></p><div class="q" id="qword"></div><div class="pron" id="qpron"></div>
     <div class="tools" id="tools"><button class="icon" id="say">Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">Harf ochish</button></div>
@@ -3774,7 +3799,7 @@ route(/^quiz$/, () => {
     <div class="fb hidden" id="fb"></div><div class="ex hidden" id="ex"></div>
     <div class="row" style="margin-top:14px"><button class="btn ghost hidden" id="h3">Bilmayman</button><button class="btn ghost hidden" id="skip">O'tkazish</button><button class="btn" id="next">Tekshirish</button></div>
   </div>`;
-  $("#quit").onclick = () => confirmQuit(Z ? (Z.learn ? Z.i + (Z.state === "next" ? 1 : 0) : Math.min(Z.mainN || 0, Z.base)) : 0, Z ? Math.max(Z.base || 0, Z.learn ? Z.i + 1 : 0) : 0, () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; location.hash = b; });
+  $("#quit").onclick = () => confirmQuit(Z ? (Z.learn ? Z.i + (Z.state === "next" ? 1 : 0) : Math.min(Z.mainN || 0, Z.base)) : 0, Z ? Math.max(Z.base || 0, Z.learn ? Z.i + 1 : 0) : 0, () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; zSave(); location.hash = b; });
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
   /* eslay olmasa: har bosishda yana bitta harf ochiladi; «Bilmayman» — javob ko'rsatiladi va bir marta yozdiriladi (xato hisoblanadi) */
@@ -3881,7 +3906,7 @@ function distractors(w, f) {
 }
 function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
-  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
+  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; zSave(); Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
   if (t) {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
@@ -4066,7 +4091,7 @@ function choose(btn, o, f) {
   toNext();
 }
 function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
-function toNext() { Z.state = "next"; const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && (Z.mainN || 0) >= Z.base && !Z.done.has(Z.cur.id) && Z.done.has(Z.q[Z.i + 1].id) ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function toNext() { Z.state = "next"; zSave(); const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && (Z.mainN || 0) >= Z.base && !Z.done.has(Z.cur.id) && Z.done.has(Z.q[Z.i + 1].id) ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -4212,7 +4237,7 @@ function finish() {
     <div class="card">${lessonBtn(tag)}${more}${uniq.length ? `<button class="btn${LES && tag || more ? " ghost" : ""}" id="again">Xatolarni qayta ishlash</button><div style="height:10px"></div>` : ""}
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
-  Z = null;
+  Z = null; zSave();
   const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch ? { chunk: ch } : null); // xatolardan keyin ham «Keyingi N ta so'z» qoladi
   const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
@@ -4490,6 +4515,22 @@ route(/^tuz$/, () => {
   document.querySelectorAll("[data-tu]").forEach(b => b.onclick = () => { const n = +b.dataset.tu; startTuz(BLD.filter(x => x.unit === n), "Unit " + un(n), kp + n); });
 });
 let T = null;
+/* gap tuzish seansi ham yangilanishda davom etadi: gaplar indeks bilan saqlanadi (again/wrong — o'sha obyektlar) */
+const TKEY = "ingliz-tuz";
+function tSave() {
+  try {
+    if (!T) return localStorage.removeItem(TKEY);
+    const U = [...new Set(T.q)], ix = x => U.indexOf(x);
+    localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), les: LES, u: U, q: T.q.map(ix), w: T.wrong.map(ix), a: [...T.again].map(ix), o: { i: T.i, right: T.right, total: T.total, title: T.title, key: T.key, tag: T.tag, mode: T.mode, back: T.back } }));
+  } catch (e) {}
+}
+function tLoad() {
+  try {
+    const d = JSON.parse(localStorage.getItem(TKEY) || "null"); if (!d || Date.now() - d.t > 6 * 36e5 || !d.u || d.o.i >= d.q.length) return false;
+    const it = k => d.u[k];
+    T = Object.assign({}, d.o, { q: d.q.map(it), wrong: d.w.map(it), again: new Set(d.a.map(it)) }); LES = !!d.les; return true;
+  } catch (e) { return false; }
+}
 function startTuz(list, title, key, tag) {
   if (!list.length) return;
   T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
@@ -4498,7 +4539,8 @@ function startTuz(list, title, key, tag) {
 function tuzResult(it, ok) { if (!T.again.has(it)) { logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 function tuzNext() { T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 route(/^tuzmashq$/, () => {
-  if (!T) return go("tuz");
+  if (!T && !tLoad()) return go("tuz");
+  tSave();
   const it = T.q[T.i], yoz = T.mode === "yoz";
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
   <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p><div class="q qsmall">${esc(it.u)}</div>
@@ -4508,7 +4550,7 @@ route(/^tuzmashq$/, () => {
     <div class="fb hidden" id="tf"></div>
     <div class="row" style="margin-top:14px"><button class="btn" id="chk" disabled>Tekshirish</button></div>
   </div>`;
-  $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; location.hash = b; });
+  $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; tSave(); location.hash = b; });
   let done = false;
   const show = (cls, html) => {
     $("#tf").className = "fb tz " + cls; buzz(cls === "ok");
@@ -4563,7 +4605,7 @@ route(/^tuzmashq$/, () => {
 });
 function tuzFinish() {
   if (T.tag) markDone(T.tag);
-  const { right, total, wrong, title, key, back, tag } = T; T = null;
+  const { right, total, wrong, title, key, back, tag } = T; T = null; tSave();
   if (key) { S.pat[key] = Math.max(S.pat[key] || 0, right); save(); }
   app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
     <p class="muted rh-m">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Hamma gap birinchi urinishda to'g'ri."}</p></div>

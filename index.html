@@ -520,6 +520,13 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .top .bar{flex:1;margin:0;height:10px}
 .top .cnt{flex:none;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
 .top .icon#quit{flex:none}
+/* mashq headeri: yopishqoq, aylantirilganda shisha fon (.nb kabi) */
+#app > .top{position:sticky;top:0;z-index:30;margin:calc(-20px - env(safe-area-inset-top,0px)) calc(50% - 50vw) 12px;padding:calc(env(safe-area-inset-top,0px) + 18px) calc(50vw - 50%) 10px;transition:background-color .2s,box-shadow .2s}
+#app > .top.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
+.bar.seg{display:flex;gap:3px;background:none;overflow:visible}
+#app > .top .bar.seg i,.bar.seg i{flex:1;width:auto;height:6px;align-self:center;transform:none;background:var(--track);border-radius:99px;transition:background-color .3s,flex-grow .3s}
+#app > .top .bar.seg i.ok{background:var(--ok-strong)}#app > .top .bar.seg i.bad{background:var(--bad-strong)}#app > .top .bar.seg i.now{background:color-mix(in srgb,var(--ink) 60%,transparent);flex:1.8}
+@media (prefers-reduced-motion:reduce){.bar.seg i{transition:none}}
 .qcard{background:none;padding:0;border-radius:0;box-shadow:none}
 .qcard > .label{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}
 .qcard > .label:not(#qlabel),.qcard #qlabel .ltx{display:inline-flex;align-items:center;width:max-content;max-width:100%;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;border-radius:999px;padding:4px 12px}
@@ -2383,6 +2390,7 @@ function nav(back, label, title, act) {
   return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}" title="${esc(label)}">${ICON.back}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1>${act ? `<a class="nb-act" href="${act.href}" aria-label="${esc(act.label)}">${act.icon}</a>` : "<span></span>"}</header>`;
 }
 const navScroll = () => {
+  const q = document.querySelector("#app > .top"); if (q) q.classList.toggle("on", scrollY > 2);
   const n = document.querySelector(".nb"); if (!n) return;
   n.classList.toggle("on", scrollY > 2);
   const h = n.classList.contains("big") && document.querySelector(".pg-h");
@@ -2723,7 +2731,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611032340";
+const APP_V = "202611040010";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3741,6 +3749,16 @@ function clozeOf(w) {
 
 /* ---------- QUIZ engine ---------- */
 let Z = null; // session
+/* mashq progressi: har savol alohida bo'lak (to'g'ri — yashil, xato — qizil, hozirgisi — brand); 20 tadan ko'p savolda oddiy chiziq */
+function segBar(bar, total, res, cur) {
+  if (!bar) return false; const seg = total > 1 && total <= 20; bar.classList.toggle("seg", seg);
+  if (!seg) return false;
+  const got = res.filter(x => x != null).length;
+  bar.setAttribute("role", "img"); bar.setAttribute("aria-label", `${total} tadan ${got} ta savol: ${res.filter(x => x === true).length} to'g'ri, ${res.filter(x => x === false).length} xato`);
+  bar.innerHTML = Array.from({ length: total }, (_, k) => `<i class="${res[k] === true ? "ok" : res[k] === false ? "bad" : k === cur ? "now" : ""}"></i>`).join("");
+  return true;
+}
+const quizBar = () => { if (Z && !Z.learn) segBar(document.querySelector("#app > .top .bar"), Z.base, Z.res || [], Z.done.has(Z.cur && Z.cur.id) ? -1 : Math.min(Z.mainN || 0, Z.base)); };
 /* mashq seansi sahifa yangilansa ham davom etadi: Z (so'zlar — id, Set — ro'yxat) 6 soatgacha saqlanadi */
 const ZKEY = "ingliz-quiz", Z_SKIP = new Set(["cur", "state", "ph", "cvT", "cvTyped", "cvN", "att", "hintN", "ltTarget", "ltUsed", "ltWait", "cz", "qmode", "force", "retype", "re", "tag2"]);
 function zSave() {
@@ -3836,7 +3854,8 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
     const btn = card.querySelector(".row .btn:not(.hidden)") || el;
     // javob chiqqach maydon va izoh muhimroq; savol paytida esa so'z tepadan chiqib ketmasin
     const anchor = card.querySelector(".fb:not(.hidden)") ? el : card;
-    const room = anchor.getBoundingClientRect().top - 8 - top;       // shuncha pastga surish mumkin
+    const hd = document.querySelector("#app > .top"), hb = hd ? Math.max(0, hd.getBoundingClientRect().bottom - top) : 0;
+    const room = anchor.getBoundingClientRect().top - 8 - hb - top;  // shuncha pastga surish mumkin (yopishqoq header ostida qolmasin)
     const over = btn.getBoundingClientRect().bottom + 12 - (top + h);  // tugma ko'rinishi uchun shuncha surish kerak
     const dy = over > room ? room : over > 0 ? over : room < 0 ? room : 0;
     if (Math.abs(dy) > 2) scrollTo({ top: scrollY + dy, behavior: motion() }); // mutlaq nishon: ketma-ket chaqiruvlar bir-birini oshirib yubormaydi
@@ -3921,7 +3940,7 @@ function ask() {
     Z.re = re; Z.tag2 = re ? "Yana bir bor" : "";
     $("#pos").textContent = re ? "Takror" : Math.min(mn + 1, Z.base) + "/" + Z.base;
     $("#pts").textContent = "✓ " + Z.right;
-    $("#barfill").style.transform = "translateX(" + (Math.min(mn, Z.base) / Z.base - 1) * 100 + "%)";
+    if (!segBar(document.querySelector("#app > .top .bar"), Z.base, Z.res || [], re ? -1 : Math.min(mn, Z.base))) { const bf = $("#barfill"); if (bf) bf.style.transform = "translateX(" + (Math.min(mn, Z.base) / Z.base - 1) * 100 + "%)"; }
   }
   ["#fb", "#ex", "#skip", "#intro", "#cv", "#rl"].forEach(s => $(s).classList.add("hidden")); $("#qpron").className = "pron"; $("#skip").textContent = "O'tkazish";
   $("#hint").textContent = ""; $("#opts").innerHTML = ""; Z.hintN = 0; $("#h2").textContent = "Harf ochish"; $("#h2").disabled = false;
@@ -4068,7 +4087,7 @@ function result(ok, hinted) {
     if (Z.need[w.id] > 0) reAsk(ok ? 5 : 3);
     return;
   }
-  Z.mainN = (Z.mainN || 0) + 1;
+  Z.mainN = (Z.mainN || 0) + 1; Z.res = Z.res || []; Z.res[Z.mainN - 1] = !!ok;
   const spelled = typedQ();
   if (Z.kech) {
     // kechki takrorlash qutini o'zgartirmaydi; faqat xato bo'lsa so'z ertaga boshidan qaytadi
@@ -4091,7 +4110,7 @@ function choose(btn, o, f) {
   toNext();
 }
 function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
-function toNext() { Z.state = "next"; zSave(); const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && (Z.mainN || 0) >= Z.base && !Z.done.has(Z.cur.id) && Z.done.has(Z.q[Z.i + 1].id) ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
+function toNext() { Z.state = "next"; zSave(); quizBar(); const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && (Z.mainN || 0) >= Z.base && !Z.done.has(Z.cur.id) && Z.done.has(Z.q[Z.i + 1].id) ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
   const d = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -4521,7 +4540,7 @@ function tSave() {
   try {
     if (!T) return localStorage.removeItem(TKEY);
     const U = [...new Set(T.q)], ix = x => U.indexOf(x);
-    localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), les: LES, u: U, q: T.q.map(ix), w: T.wrong.map(ix), a: [...T.again].map(ix), o: { i: T.i, right: T.right, total: T.total, title: T.title, key: T.key, tag: T.tag, mode: T.mode, back: T.back } }));
+    localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), les: LES, u: U, q: T.q.map(ix), w: T.wrong.map(ix), a: [...T.again].map(ix), o: { i: T.i, right: T.right, total: T.total, res: T.res || [], title: T.title, key: T.key, tag: T.tag, mode: T.mode, back: T.back } }));
   } catch (e) {}
 }
 function tLoad() {
@@ -4536,7 +4555,7 @@ function startTuz(list, title, key, tag) {
   T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
-function tuzResult(it, ok) { if (!T.again.has(it)) { logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
+function tuzResult(it, ok) { if (!T.again.has(it)) { (T.res = T.res || []).push(!!ok); segBar(document.querySelector("#app > .top .bar"), T.total, T.res, -1); logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 function tuzNext() { T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 route(/^tuzmashq$/, () => {
   if (!T && !tLoad()) return go("tuz");
@@ -4550,6 +4569,7 @@ route(/^tuzmashq$/, () => {
     <div class="fb hidden" id="tf"></div>
     <div class="row" style="margin-top:14px"><button class="btn" id="chk" disabled>Tekshirish</button></div>
   </div>`;
+  segBar(document.querySelector("#app > .top .bar"), T.total, T.res || [], T.i < T.total && !T.again.has(T.q[T.i]) ? (T.res || []).length : -1);
   $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; tSave(); location.hash = b; });
   let done = false;
   const show = (cls, html) => {

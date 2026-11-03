@@ -3837,7 +3837,7 @@ function distractors(w, f) {
 }
 function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
-  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; clearTimeout(Z.cvT); Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
+  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
   if (t) {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
@@ -4038,10 +4038,10 @@ function diffHTML(typed, target) {
   return { html: h, extra };
 }
 /* ---------- yozishda xato: «To'liq sikl» ----------
-   1) zinapoyali yordam (Finn & Metcalfe, 2010): javob darrov ko'rsatilmaydi — yana urinasiz, har xatoda bitta harf ochiladi (ko'pi bilan 2 ta);
-   2) topilmasa yoki «Bilmayman» — ko'r → yop → yoz (Cover-Copy-Compare): so'z 3 soniya ko'rinadi, yopiladi, xotiradan yoziladi;
+   1) javob darrov ko'rsatilmaydi: 1- va 2-xatoda hech narsa ochilmaydi, faqat qayta urinasiz (o'zingiz eslash — eng foydali qism);
+   2) 3-xatoda yoki «Bilmayman» — ko'r → yop → yoz (Cover-Copy-Compare): so'z 3 soniya ko'rinadi, yopiladi, xotiradan yoziladi;
    3) xato so'z 3 savoldan keyin qaytadi va bugun 2 marta yordamsiz yozilguncha qaytib turadi (Rawson & Dunlosky, successive relearning). */
-const SCAF_MAX = 2, CV_MS = 3000;
+const SCAF_MAX = 3, CV_MS = 3000; // SCAF_MAX — nechanchi xatoda so'z ko'rsatiladi
 const spTarget = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
 function drawMask() {
   const t = spTarget(), n = t.replace(/[ -]/g, "").length; let k = 0;
@@ -4065,7 +4065,7 @@ function spRetry(t) {
 function scafFb(typed, again) {
   const t = spTarget(), near = lev(norm(typed), norm(t)) === 1 && norm(t).length > 3;
   const fb = $("#fb"); fb.className = "fb bad";
-  fb.innerHTML = `<span class="fbh">${near ? "Deyarli to'g'ri" : again ? "Yaqin qoldi" : "Hali emas"}</span> Yana urinib ko'ring — ${again ? "yana bitta" : "birinchi"} harf ochildi.<span class="you">Siz yozdingiz: <s>${esc(typed.trim())}</s></span>`;
+  fb.innerHTML = `<span class="fbh">${near ? "Deyarli to'g'ri" : "Hali emas"}</span> ${near ? "Bitta harf xato. " : ""}${again ? "Oxirgi urinish — keyin to'g'risini ko'rsataman." : "Yana urinib ko'ring."}<span class="you">Siz yozdingiz: <s>${esc(typed.trim())}</s></span>`;
   $("#ex").classList.add("hidden");
 }
 function spWin(head) {
@@ -4119,10 +4119,11 @@ function check() {
   const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
   const ok = cands.some(x => norm(x) === val), t = spTarget(), n = t.replace(/[ -]/g, "").length;
   if (Z.ph === "scaf" || Z.ph === "cover") {
-    if (ok) return spWin(Z.ph === "scaf" ? `To'g'ri! <span class="htag">${Z.hintN} harf yordamida</span>` : `<span class="fbh">Endi to'g'ri!</span>`);
+    if (ok) return spWin(Z.ph === "scaf" ? `To'g'ri! <span class="htag">${Z.hintN ? Z.hintN + " harf yordamida" : Z.att + 1 + "-urinishda"}</span>` : `<span class="fbh">Endi to'g'ri!</span>`);
     buzz(false); sp.className = "spell bad"; Z.cvTyped = sp.value;
-    if (Z.ph === "cover" || Z.hintN >= SCAF_MAX || Z.hintN >= n - 1) { const q = w, tp = sp.value; return useLetters() ? ltFail(() => { if (Z && Z.cur === q) coverShow(tp); }) : setTimeout(() => { if (Z && Z.cur === q) coverShow(tp); }, 600); }
-    Z.hintN++; drawMask(); scafFb(sp.value, true); return spRetry(t);
+    Z.att = (Z.att || 1) + 1;
+    if (Z.ph === "cover" || Z.att >= SCAF_MAX) { const q = w, tp = sp.value; return useLetters() ? ltFail(() => { if (Z && Z.cur === q) coverShow(tp); }) : setTimeout(() => { if (Z && Z.cur === q) coverShow(tp); }, 600); }
+    scafFb(sp.value, true); return spRetry(t);
   }
   if (ok) {
     const h = Z.hintN > 0;
@@ -4134,8 +4135,9 @@ function check() {
     rlDraw(); toNext(); return;
   }
   result(false); buzz(false); sp.className = "spell bad"; Z.cvTyped = sp.value;
-  if (Z.hintN >= SCAF_MAX || Z.hintN >= n - 1) { const q = w, tp = sp.value; return useLetters() ? ltFail(() => { if (Z && Z.cur === q) coverShow(tp); }) : setTimeout(() => { if (Z && Z.cur === q) coverShow(tp); }, 600); }
-  Z.ph = "scaf"; Z.hintN++; drawMask(); scafFb(sp.value, false); spRetry(t);
+  Z.att = 1;
+  if (SCAF_MAX <= 1) { const q = w, tp = sp.value; return useLetters() ? ltFail(() => { if (Z && Z.cur === q) coverShow(tp); }) : setTimeout(() => { if (Z && Z.cur === q) coverShow(tp); }, 600); }
+  Z.ph = "scaf"; scafFb(sp.value, false); spRetry(t);
   $("#pts").textContent = "✓ " + Z.right;
 }
 function next() {

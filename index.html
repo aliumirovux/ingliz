@@ -409,6 +409,13 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .sy .sy-st::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .sy .sy-st[data-s=cloud]::before{background:var(--ok-strong)}.sy .sy-st[data-s=pending]::before{background:#E9A23B}.sy .sy-st[data-s=relogin]::before{background:var(--bad-strong)}
 .sy .sy-h .sy-em{font-style:normal;font-weight:600;color:var(--ink);word-break:break-all}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;padding:0 18px;border-radius:999px;border:1px solid #747775;background:#fff;color:#1F1F1F;font:inherit;font-size:16px;font-weight:600;cursor:pointer;touch-action:manipulation}
+.gbtn:active{transform:scale(.98)}.gbtn:disabled{opacity:.7;cursor:default}.gbtn:focus-visible{outline:2px solid var(--marker);outline-offset:3px}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .gbtn{background:#131314;color:#E3E3E3;border-color:#8E918F}}
+:root[data-theme=dark] .gbtn{background:#131314;color:#E3E3E3;border-color:#8E918F}
+.sy-or{display:flex;align-items:center;gap:12px;margin:16px 0 12px;font-size:13px;color:var(--muted)}.sy-or::before,.sy-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.wel-spin{width:28px;height:28px;margin:8px auto;border-radius:50%;border:3px solid var(--line);border-top-color:var(--marker);animation:wspin .9s linear infinite}
+@keyframes wspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.wel-spin{animation-duration:3s}}
 .sy .sy-me{margin:0 0 4px;font-size:15px;word-break:break-all}.sy .sy-me b{font-weight:600}
 .sw b{display:block;font-weight:600}
 .sw input{flex:none;width:24px;height:24px;margin:0;accent-color:var(--marker)}
@@ -2277,6 +2284,36 @@ const authSave = a => { AUTH = a; try { a ? localStorage.setItem(AUTHKEY, JSON.s
 const syGet = () => { try { const o = JSON.parse(localStorage.getItem(SYNCKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } };
 const sySet = p => { try { localStorage.setItem(SYNCKEY, JSON.stringify(Object.assign(syGet(), p))); } catch (e) {} };
 if (syGet().ok) cloud.at = syGet().ok;
+/* Google bilan kirish: Supabase Google'dan keyin saytga #access_token=…&refresh_token=… bilan qaytaradi (yoki #error=…).
+   Bu qatorlar router'dan oldin o'qiladi va manzildan o'chiriladi — tarixda ham, ulashilgan havolada ham token qolmaydi. */
+let OAUTH = null;
+(function () {
+  const hs = location.hash || "";
+  if (!/(^#|&)(access_token|error)=/.test(hs)) return;
+  const q = new URLSearchParams(hs.slice(1));
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  const at = q.get("access_token");
+  if (at) {
+    let pl = {}; try { pl = JSON.parse(atob(at.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))); } catch (e) {}
+    const s = { at, rt: q.get("refresh_token"), exp: (+q.get("expires_at") || 0) * 1000 || Date.now() + (+q.get("expires_in") || 3600) * 1000, uid: pl.sub, email: pl.email || "", via: "google" };
+    if (!s.rt || !s.uid) { OAUTH = { err: "bad" }; return; }
+    if (syGet().uid !== s.uid) { try { localStorage.setItem(SYNCKEY, JSON.stringify({ uid: s.uid })); } catch (e) {} }
+    sySet({ dirty: 1 }); authSave(s);
+    try { localStorage.setItem("ingliz-welcome", "in"); localStorage.removeItem("ingliz-sy"); } catch (e) {}
+    OAUTH = { wait: true };
+    cloud.first = (n, err) => {
+      OAUTH = null; if (!location.hash || location.hash === "#" || location.hash === "#sozlama") render();
+      if (err) toast("Kirdingiz", null, null, { type: "warn", sub: "Hozir sinxronlab bo'lmadi — internet qaytganda o'zi qiladi." });
+      else toast("Google bilan kirdingiz", null, null, { sub: n > 0 ? n + " ta so'z natijasi boshqa qurilmadan qo'shildi" : "Natijalar hisobingizga saqlandi" });
+    };
+    setTimeout(() => { if (OAUTH && OAUTH.wait) { OAUTH = null; if (!location.hash || location.hash === "#") render(); } }, 12000);
+  } else OAUTH = { err: q.get("error") || "error" };
+})();
+function googleLogin() {
+  if (navigator.onLine === false) { SY.err = "Internet yo'q. Ulanib, qayta urinib ko'ring."; syRedraw(); return; }
+  SY.err = ""; SY.goog = true; syRedraw();
+  location.href = SB.url + "/auth/v1/authorize?provider=google&redirect_to=" + encodeURIComponent(location.origin + location.pathname);
+}
 
 /* o'chirishlar ham sinxron bo'lsin: «tomb» — o'chirilgan vaqt (+ms), qayta qo'shilsa — (−ms). Kim keyin harakat qilgan bo'lsa, o'sha yutadi */
 const tomb = k => { (S.del || (S.del = {}))[k] = Date.now(); };
@@ -2362,7 +2399,7 @@ async function sbToken() {
   if (!AUTH) throw Object.assign(new Error("no auth"), { status: 401 });
   if (AUTH.exp - Date.now() > 60e3) return AUTH.at;
   if (!refreshing) refreshing = sbFetch("/auth/v1/token?grant_type=refresh_token", { method: "POST", body: JSON.stringify({ refresh_token: AUTH.rt }) })
-    .then(b => { authSave(Object.assign(sessionFrom(b), { uid: (b.user && b.user.id) || AUTH.uid, email: (b.user && b.user.email) || AUTH.email })); return AUTH.at; })
+    .then(b => { authSave(Object.assign(sessionFrom(b), { uid: (b.user && b.user.id) || AUTH.uid, email: (b.user && b.user.email) || AUTH.email, via: AUTH.via })); return AUTH.at; })
     .catch(e => { if (e.status >= 400 && e.status < 500) { cloud.ref = null; setStatus("relogin"); } throw e; })
     .finally(() => { refreshing = null; });
   return refreshing;
@@ -2433,7 +2470,7 @@ window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = 
 const sbSend = email => sbFetch("/auth/v1/otp", { method: "POST", body: JSON.stringify({ email, create_user: true }) });
 async function sbVerify(email, code) {
   const b = await sbFetch("/auth/v1/verify", { method: "POST", body: JSON.stringify({ type: "email", email, token: code }) });
-  const s = sessionFrom(b); if (!s.at || !s.uid) throw Object.assign(new Error("no session"), { status: 500 });
+  const s = Object.assign(sessionFrom(b), { via: "email" }); if (!s.at || !s.uid) throw Object.assign(new Error("no session"), { status: 500 });
   if (syGet().uid !== s.uid) { try { localStorage.setItem(SYNCKEY, JSON.stringify({ uid: s.uid, dirty: 1 })); } catch (e) {} }
   authSave(s); cloud.retry = 0;
   return new Promise(res => { cloud.first = (n, err) => res({ n, err }); cloud.dirty = true; startSb(); });
@@ -2933,6 +2970,7 @@ function bindInstall() {
 
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
+  if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
   LES = false;
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
@@ -4942,9 +4980,12 @@ function tuzFinish() {
 /* ---------- SINXRONLASH: email → kod → kirgan holat ----------
    Kod bosqichi 15 daqiqa eslab qolinadi: pochtaga o'tib qaytganda telefon ilovani qayta ochsa ham, kod maydoni o'sha joyda turadi. */
 const SYK = "ingliz-sy";
+window.addEventListener("pageshow", e => { if (e.persisted && SY.goog) { SY.goog = false; syRedraw(); } });
 const SY = (() => { let o = {}; try { o = JSON.parse(localStorage.getItem(SYK) || "{}") || {}; } catch (e) {} return o.step === "code" && Date.now() - (o.t || 0) < 15 * 6e4 ? { step: "code", email: o.email || "", until: o.until || 0, err: "", busy: false } : { step: "email", email: o.email || "", until: 0, err: "", busy: false }; })();
 const syKeep = () => { try { localStorage.setItem(SYK, JSON.stringify({ step: SY.step, email: SY.email, until: SY.until, t: Date.now() })); } catch (e) {} };
 const ICON_SYNC = sv('<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.7 8.1 4.5 4.5 0 0 1 17 17"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5"/><path d="M12 11v8"/>');
+const G_LOGO = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+const googleBtn = () => `<button class="gbtn" id="sygoo" type="button"${SY.goog ? " disabled" : ""}>${G_LOGO}<span>${SY.goog ? "Google ochilmoqda…" : "Google bilan kirish"}</span></button><div class="sy-or"><span>yoki email orqali</span></div>`;
 const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 function syErr(e, stage) {
   const c = (e && e.code) || "", s = e && e.status;
@@ -4974,7 +5015,7 @@ function syncCardInner() {
     <div class="sy-row"><button class="tlink" id="syback">Emailni o'zgartirish</button><button class="tlink" id="syre2"${left ? " disabled" : ""}>${left ? "Qayta yuborish · " + left + " s" : "Kodni qayta yuborish"}</button></div>`;
   }
   return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
-    <form id="syf1" novalidate><label class="sr-only" for="syem">Email</label>
+    ${googleBtn()}<form id="syf1" novalidate><label class="sr-only" for="syem">Email</label>
       <input class="search" id="syem" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Email manzilingiz" value="${esc(SY.email)}">
       <p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>
       <button class="btn" id="sysend" type="submit"${SY.busy ? " disabled" : ""}>${SY.busy ? "Yuborilmoqda…" : "Kod yuborish"}</button></form>
@@ -4985,6 +5026,10 @@ let syTick = 0, SYW = false;
 const WKEY = "ingliz-welcome";
 const fresh = () => !Object.keys(S.srs).length && !S.course && !(S.my || []).length && !Object.keys(S.log || {}).length && !Object.keys(S.vb.known || {}).length;
 const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { if (localStorage.getItem(WKEY)) return false; } catch (e) { return false; } return fresh(); };
+function loadingPage() {
+  document.body.classList.add("welcome");
+  app.innerHTML = `<div class="wel"><div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p role="status">Progress yuklanmoqda…</p></div><div class="wel-spin" aria-hidden="true"></div></div>`;
+}
 function welcomePage() {
   SYW = true; document.body.classList.add("welcome");
   app.innerHTML = `<div class="wel">
@@ -5007,6 +5052,7 @@ async function sySendCode() {
 }
 function bindSync() {
   clearInterval(syTick);
+  const gb = $("#sygoo"); if (gb) gb.onclick = googleLogin;
   const f1 = $("#syf1");
   if (f1) {
     const em = $("#syem");
@@ -5046,7 +5092,7 @@ function bindSync() {
   }
   const now = $("#synow"); if (now) now.onclick = () => { lastWake = 0; cloud.ref = sbRef; cloud.kind = "sb"; now.disabled = true; sbSync().then(() => { const b = $("#synow"); if (b) b.disabled = false; }); };
   const out = $("#syout"); if (out) out.onclick = async () => { await sbLogout(); SY.step = "email"; syRedraw("#syem"); toast("Hisobdan chiqdingiz", null, null, { type: "info", sub: "Natijalar shu qurilmada qoldi" }); };
-  const re = $("#syre"); if (re) re.onclick = () => { SY.email = (AUTH && AUTH.email) || SY.email; authSave(null); cloud.status = "local"; sySendCode(); };
+  const re = $("#syre"); if (re) re.onclick = () => { const via = AUTH && AUTH.via; SY.email = (AUTH && AUTH.email) || SY.email; authSave(null); cloud.status = "local"; if (via === "google") googleLogin(); else sySendCode(); };
 }
 
 /* ---------- SOZLAMA: export / import ---------- */
@@ -5081,6 +5127,7 @@ route(/^sozlama$/, () => {
 });
 
 render();
+if (OAUTH && OAUTH.err) { const c = OAUTH.err === "access_denied"; OAUTH = null; toast(c ? "Google bilan kirish bekor qilindi" : "Google orqali kirib bo'lmadi", null, null, { type: c ? "info" : "err", sub: c ? "Xohlasangiz, email orqali kiring yoki mehmon bo'lib davom eting." : "Qayta urinib ko'ring yoki email orqali kiring." }); }
 initCloud();
 if (isStandalone() && Object.keys(S.srs).length >= 10) persist();
 })();

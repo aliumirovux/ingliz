@@ -439,6 +439,11 @@ nav.tabs{transition:opacity .22s ease, transform .32s cubic-bezier(.16,1,.3,1), 
 .typing nav.tabs{opacity:0;transform:translateY(calc(100% + 16px));visibility:hidden;pointer-events:none;transition:none}
 /* dars va test — alohida rejim: pastki menyu yo'q, chiqish «Chiqish» tugmasi orqali */
 .quizmode nav.tabs{display:none}
+.welcome nav.tabs{display:none}body.welcome{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
+.wel{max-width:440px;margin:0 auto;padding-top:clamp(24px,8vh,72px)}
+.wel-hero{text-align:center;margin-bottom:24px}.wel-hero img{width:72px;height:72px;border-radius:20px;display:block;margin:0 auto 16px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.wel-hero h1{margin:0;font-size:28px;font-weight:700;letter-spacing:-.02em}.wel-hero p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.wel-guest{margin-top:16px}.wel-guest .btn{width:100%}.wel-guest .gohint{margin-top:10px}
 body.quizmode{padding-bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
 /* telefonda javob tugmalari va «Keyingisi» bosh barmoq yetadigan pastki qismda (yozish maydoni ochiq bo'lsa — yo'q, u yerda joyni klaviatura oladi) */
 @media (pointer:coarse) and (max-width:640px){
@@ -2688,7 +2693,7 @@ function go(h) { if (location.hash.slice(1) === String(h).replace(/^#/, "")) ren
 const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
   try { speechSynthesis.cancel(); } catch (e) {}
-  app.classList.remove("home");
+  app.classList.remove("home"); document.body.classList.remove("welcome"); SYW = false;
   const h = location.hash.replace(/^#/, ""), same = h === curH, quizy = /^(quiz|gapmashq|tuzmashq)/.test(h);
   if (curH !== null) SCROLLS[curH] = scrollY;
   let back = false;
@@ -2917,7 +2922,7 @@ function syncWarnCard() {
 }
 function backupCard(seen) {
   if (!bakStale(seen)) return "";
-  return `<div class="install bak"><span class="ic">${SHIELD}</span><span class="tx"><b>${seen} ta so'z natijasi faqat shu telefonda</b><span>Oxirgi zaxira: ${bakWhen()}. Brauzer tozalansa, yo'qoladi.</span></span><button class="btn" id="baknow">Saqlash</button><button class="x" id="bakhide" aria-label="Keyinroq eslatish">×</button></div>`;
+  return `<div class="install bak"><span class="ic">${SHIELD}</span><span class="tx"><b>${seen} ta so'z natijasi faqat shu qurilmada</b><span>Hisobga kirsangiz, boshqa qurilmada ham ko'rinadi va brauzer tozalansa ham yo'qolmaydi.</span></span><a class="btn" href="#sozlama">Kirish</a><button class="x" id="bakhide" aria-label="Keyinroq eslatish">×</button></div>`;
 }
 function bindInstall() {
   const bh = $("#bakhide"); if (bh) bh.onclick = () => { bakMark(); render(); };
@@ -2928,6 +2933,7 @@ function bindInstall() {
 
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
+  if (needWelcome()) return welcomePage();
   LES = false;
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
@@ -4967,14 +4973,28 @@ function syncCardInner() {
       <button class="btn" id="syin" type="submit" disabled>${SY.busy ? "Tekshirilmoqda…" : "Kirish"}</button></form>
     <div class="sy-row"><button class="tlink" id="syback">Emailni o'zgartirish</button><button class="tlink" id="syre2"${left ? " disabled" : ""}>${left ? "Qayta yuborish · " + left + " s" : "Kodni qayta yuborish"}</button></div>`;
   }
-  return `${head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
+  return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
     <form id="syf1" novalidate><label class="sr-only" for="syem">Email</label>
       <input class="search" id="syem" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Email manzilingiz" value="${esc(SY.email)}">
       <p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>
       <button class="btn" id="sysend" type="submit"${SY.busy ? " disabled" : ""}>${SY.busy ? "Yuborilmoqda…" : "Kod yuborish"}</button></form>
-    <p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: kirgach, ikki qurilmadagisi birlashtiriladi.</p>`;
+    ${SYW ? "" : `<p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: kirgach, ikki qurilmadagisi birlashtiriladi.</p>`}`;
 }
-let syTick = 0;
+let syTick = 0, SYW = false;
+/* birinchi ochilish: progress ham, hisob ham yo'q, ekran oldin yopilmagan bo'lsa (telefondagi mavjud tarix bor qurilmada chiqmaydi) */
+const WKEY = "ingliz-welcome";
+const fresh = () => !Object.keys(S.srs).length && !S.course && !(S.my || []).length && !Object.keys(S.log || {}).length && !Object.keys(S.vb.known || {}).length;
+const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { if (localStorage.getItem(WKEY)) return false; } catch (e) { return false; } return fresh(); };
+function welcomePage() {
+  SYW = true; document.body.classList.add("welcome");
+  app.innerHTML = `<div class="wel">
+    <div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p>Navigate Beginner bo'yicha kunlik mashq</p></div>
+    <div class="card sy" id="sycard">${syncCardInner()}</div>
+    <div class="wel-guest"><button class="btn ghost" id="guest">Mehmon sifatida davom etish</button>
+    <p class="gohint">Natijalar faqat shu qurilmada saqlanadi. Keyin kirsangiz, yo'qolmaydi — hisobingizga qo'shiladi.</p></div></div>`;
+  bindSync();
+  $("#guest").onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; render(); };
+}
 function syRedraw(focus) {
   const c = $("#sycard"); if (!c) return;
   c.innerHTML = syncCardInner(); bindSync();
@@ -5006,13 +5026,15 @@ function bindSync() {
     f2.onsubmit = async e => {
       e.preventDefault(); if (btn.disabled) return;
       SY.busy = true; btn.disabled = true; btn.textContent = "Tekshirilmoqda…";
+      const slow = setTimeout(() => { if (SY.busy && $("#syin")) $("#syin").textContent = "Progress yuklanmoqda…"; }, 1200);
       try {
-        const { n, err } = await sbVerify(SY.email, ci.value);
-        SY.busy = false; SY.step = "email"; SY.err = ""; try { localStorage.removeItem(SYK); } catch (er) {}
-        if (location.hash === "#sozlama") render();
+        const { n, err } = await sbVerify(SY.email, ci.value); clearTimeout(slow);
+        SY.busy = false; SY.step = "email"; SY.err = ""; try { localStorage.removeItem(SYK); localStorage.setItem(WKEY, "in"); } catch (er) {}
+        const wasW = SYW; SYW = false;
+        if (wasW || location.hash === "#sozlama") render();
         if (err) toast("Kirdingiz", null, null, { type: "warn", sub: "Hozir sinxronlab bo'lmadi — internet qaytganda o'zi qiladi." });
         else toast("Sinxron yoqildi", null, null, { sub: n > 0 ? n + " ta so'z natijasi boshqa qurilmadan qo'shildi" : "Natijalar hisobingizga saqlandi" });
-      } catch (er) { SY.busy = false; SY.err = syErr(er, "verify"); syRedraw("#sycode"); }
+      } catch (er) { clearTimeout(slow); SY.busy = false; SY.err = syErr(er, "verify"); syRedraw("#sycode"); }
     };
     const back = $("#syback"); if (back) back.onclick = () => { SY.step = "email"; SY.err = ""; syKeep(); syRedraw("#syem"); };
     const re = $("#syre2"); if (re) re.onclick = () => sySendCode();

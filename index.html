@@ -2436,7 +2436,7 @@ function toast(msg, act, fn, o = {}) {
   t.addEventListener("pointermove", e => { if (y0 === null) return; const d = Math.min(0, e.clientY - y0); t.style.transform = `translate(-50%, ${d}px)`; });
   const up = e => { if (y0 === null) return; const d = e.clientY - y0; y0 = null; t.style.transition = ""; t.style.transform = ""; if (d < -30) close(); };
   t.addEventListener("pointerup", up); t.addEventListener("pointercancel", up);
-  tm = setTimeout(close, act ? 6000 : 4500);
+  tm = setTimeout(close, o.ms || (act ? 6000 : 4500));
 }
 
 /* ---------- router ---------- */
@@ -2721,6 +2721,20 @@ route(/^$/, () => {
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
   if (app.classList.contains("hin")) countUp(app);
 });
+/* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
+   saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
+const APP_V = "202611032335";
+let updAt = 0, updShown = false;
+function checkUpdate() {
+  if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
+  fetch("./index.html?v=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.text() : "").then(t => {
+    const m = t.match(/const APP_V = "(\d+)"/); if (!m || m[1] <= APP_V) return;
+    const put = "caches" in window ? caches.open("ingliz-v2").then(c => Promise.all(["./", "./index.html"].map(u => c.put(u, new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }))))).catch(() => {}) : Promise.resolve();
+    put.then(() => { updShown = true; toast("Yangi versiya", "Yangilash", () => location.reload(), { type: "info", sub: "Sayt yangilandi", ms: 15000 }); });
+  }).catch(() => {});
+}
+setTimeout(checkUpdate, 4000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });
 /* fon (aura) balandligi qotiriladi — klaviatura ochilib-yopilganda fon cho'zilib-qisqarmaydi */
 (() => { let mx = 0; const set = (reset) => { const h = innerHeight; if (reset) mx = 0; if (h > mx) { mx = h; document.documentElement.style.setProperty("--auraH", mx + "px"); } };
   set(); addEventListener("resize", () => set(false)); addEventListener("orientationchange", () => setTimeout(() => set(true), 400)); })();

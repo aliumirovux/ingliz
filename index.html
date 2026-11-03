@@ -580,6 +580,19 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .hnav{display:grid;gap:12px}.hnav:empty{display:none}
+.xmt{position:relative}
+.xmt-a{position:absolute;inset:0;border-radius:inherit;z-index:0;-webkit-tap-highlight-color:transparent}
+.xmt-a:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.xmt > :not(.xmt-a){position:relative;pointer-events:none}.xmt > .mchip{pointer-events:auto;z-index:1}
+.xmt .xm-k{width:100%}.xmt-go{display:flex;margin-left:auto;color:var(--muted)}.xmt-go svg{width:16px!important;height:16px!important;color:var(--muted)!important}
+.xmt:has(.xmt-a:active){transform:scale(.98)}.xmt{transition:transform .4s cubic-bezier(.16,1,.3,1)}
+.xm-r{font-weight:600;color:var(--ink)}.xm-r.bd{color:var(--bad)}.xm-r.wk{color:#A87512}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xm-r.wk{color:#E9C46A}}
+:root[data-theme="dark"] .xm-r.wk{color:#E9C46A}
+.xm-ach .vb-th b{font-size:17px}
+.xm-ach .vb-bar i{background:#6B57A8}.xm-ach .vb-bar{background:color-mix(in srgb,#6B57A8 16%,transparent)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xm-ach .vb-bar i{background:#9B87D8}}
+:root[data-theme="dark"] .xm-ach .vb-bar i{background:#9B87D8}
 .xm-t{background:var(--card);border-radius:24px;padding:14px 14px 12px;min-width:0}
 .xm-k{font-size:14px;color:var(--muted);font-weight:500;margin:0}
 .xm-v{font:700 30px/1.1 var(--font-display);letter-spacing:-.02em;margin:4px 0 2px;font-variant-numeric:tabular-nums}
@@ -881,7 +894,8 @@ button.xm-t.tap:active{transform:scale(.97);transition-duration:.12s}
 button.xm-t.tap:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 /* chip karta chetidan uch tomonda bir xil (12px), radiusi karta radiusiga mos (30 − 12 = 18) */
 button.xm-t.tap{padding:14px 12px 12px}
-.mchip{display:flex;align-self:stretch;justify-content:center;align-items:center;margin-top:auto;height:36px;padding:0 12px;border-radius:18px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
+.mchip{display:flex;align-self:stretch;justify-content:center;align-items:center;margin-top:auto;height:40px;padding:0 12px;border-radius:20px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600;white-space:nowrap}
+button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}button.mchip:active{transform:scale(.96)}button.mchip:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 /* daraja oynasi — zinapoya: CEFR doiralar chiziq bilan bog'langan, o'tilgan qism rangli, joriy daraja katta */
 .ks .lad{position:relative}
 .ks .st{position:relative;display:flex;align-items:center;gap:14px;width:100%;padding:8px 6px;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:18px;transition:background-color .15s}
@@ -2379,7 +2393,8 @@ const isSeen = w => !!rec(w.id);
 const dueWords = () => WORDS.filter(isDue);
 /* ---------- XOTIRA: so'zning hozir esda qolish ehtimoli (FSRS egri chizig'i) ----------
    R(t) = (1 + 19/81 · t / S)^-0.5 — S: rejalashtirilgan oraliq (oxirgi takrorlash → due; shu kuni R ≈ 90%), t: oxirgi takrorlashdan beri kunlar.
-   Holat: mustahkam R ≥ 90% (va quti ≥ 2), zaif 80–90%, unutilmoqda < 80%. Yaqinda xato qilingan (quti 0–1) so'z mustahkam hisoblanmaydi. */
+   Holat: esda R ≥ 90% (va quti ≥ 2), zaif 80–90%, unutilmoqda < 80%. Yaqinda xato qilingan (quti 0–1) so'z «esda» hisoblanmaydi.
+   «Mustahkam» (isMastered) — boshqa narsa: uzoq muddatli xotiraga o'tgan so'z (yutuq). Ekranda bu ikki so'z aralashmaydi. */
 const dnum = d => Math.round(Date.parse(d + "T00:00:00") / 864e5);
 function recall(w) {
   const r = rec(w.id); if (!r || !r.due) return null;
@@ -2769,7 +2784,7 @@ route(/^$/, () => {
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    ${lv.zero ? "" : `<div class="hnav">${xmCard()}${vbCard()}</div>`}
+    ${lv.zero ? "" : `<div class="hnav">${vbCard()}</div>`}
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
@@ -2778,7 +2793,7 @@ route(/^$/, () => {
   bindLevelPicker(); bindHomeCards(); bindClass(cu);
   app.querySelectorAll("#kursb,#unitb").forEach(b => b.onclick = () => courseSheet(b.dataset.k));
   const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
-  const ms = $("#mast"); if (ms) ms.onclick = () => startQuiz(mastPool(), "auto", "Mustahkamlash", "#");
+  const ms = $("#mast"); if (ms) ms.onclick = () => xmRun(memStats(), "#");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { setLevel("beginner"); render(); };
   bindInstall();
@@ -2787,7 +2802,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611041250";
+const APP_V = "202611041320";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3052,10 +3067,11 @@ function fcTile() {
   const mini = miniPool().length >= 5, tg = mini ? "button" : "div";
   return `<${tg} class="xm-t xg${mini ? " tap" : ""}"${mini ? ' id="mini" aria-label="2 daqiqalik takrorlashni boshlash"' : ""}><p class="xm-k">${ICON.redo}Takrorlash</p><div class="gw" role="img" aria-label="Bugun ${fc[0]} ta so'z takrorlanadi${did ? ", " + did + " tasi takrorlandi" : ""}">${arc}<b data-c="${fc[0]}">${fc[0]}</b></div><p class="xm-s">${fc[0] ? "bugun" : did ? "bugungisi tugadi" : "bugun yo'q"} · ${fc[1] ? "ertaga " + fc[1] : "ertaga yo'q"}<br>7 kunda ${wk}</p>${mini ? `<span class="mchip">2 daqiqalik mashq</span>` : ""}</${tg}>`;
 }
+/* Xotira plitkasi: halqa — mustahkam so'zlar (yutuq), past qator — hozir unutilayotganlar; plitka → #xotira, tugma → qutqarish mashqi */
 function mastTile(seen, mast) {
-  const k = WORDS.length, l = seen - mast;
-  const go = l > 0, tg = go ? "button" : "div";
-  return `<${tg} class="xm-t xg${go ? " tap" : ""}"${go ? ' id="mast" aria-label="O\'rganilayotgan so\'zlarni mustahkamlash"' : ""}><p class="xm-k">${ICON.spark}Mustahkam</p><div class="gw gr" role="img" aria-label="${mast} mustahkam, ${l} o'rganilmoqda, ${k - seen} hali ko'rilmagan">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">${k} tadan</p>${go ? `<span class="mchip">Mustahkamlash</span>` : ""}</${tg}>`;
+  const k = WORDS.length, st = memStats(), go = xmPick(st).length > 0, risk = st.weak.some(x => x.R < .9);
+  const now = st.bd ? `<span class="xm-r bd">${st.bd} ta unutilmoqda</span>` : st.wk ? `<span class="xm-r wk">${st.wk} ta zaiflashgan</span>` : `<span class="xm-r">hammasi esda</span>`;
+  return `<div class="xm-t xg xmt"><a class="xmt-a" href="#xotira" aria-label="Xotira: ${mast} ta mustahkam so'z, ${st.bd} ta unutilmoqda"></a><p class="xm-k">${ICON.curve}Xotira<span class="xmt-go">${ICON.chev}</span></p><div class="gw gr" aria-hidden="true">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">mustahkam · ${k} tadan<br>${now}</p>${go ? `<button class="mchip" id="mast">${risk ? "Qutqarish" : "Mustahkamlash"}</button>` : ""}</div>`;
 }
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {
@@ -3571,14 +3587,19 @@ const ORIG = {};
 function backOf(k) { if (prevH === "" || prevH === "lugat") ORIG[k] = prevH === "" ? "#" : "#lugat"; const h = ORIG[k] || "#lugat"; return [h, h === "#" ? "Bugun" : "Lug'at"]; }
 /* ---------- XOTIRA bo'limi: «Qutqarish» — eng zaif so'zlar, holatlar, bugungi yuk ---------- */
 const XM_N = 10;
-const xmPick = st => st.weak.filter(x => x.R < .9).slice(0, XM_N).map(x => x.w);
+function xmPick(st) {
+  const a = st.weak.filter(x => x.R < .9).slice(0, XM_N).map(x => x.w);
+  if (a.length < XM_N) { const has = new Set(a.map(w => w.id)); a.push(...WORDS.filter(w => isSeen(w) && !isMastered(w) && !has.has(w.id)).sort((x, y) => (rec(x.id).b || 0) - (rec(y.id).b || 0)).slice(0, XM_N - a.length)); }
+  return a;
+}
+const xmRun = (st, back) => startQuiz(xmPick(st), "auto", st.weak.some(x => x.R < .9) ? "Xotirani qutqarish" : "Mustahkamlash", back);
 function xmCard() {
   const st = memStats(); if (st.all < 5) return "";
   const n = st.bd || st.wk;
-  return `<a class="nwb xm-entry${st.bd ? " hot" : ""}" href="#xotira"><span class="pmi">${ICON.curve}</span><span class="tx"><b>Xotira</b><span>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : "Hammasi esda · " + st.ok + " ta mustahkam"}</span></span>${n ? `<span class="xm-n">${n}</span>` : ""}<span class="go">${ICON.chev}</span></a>`;
+  return `<a class="nwb xm-entry${st.bd ? " hot" : ""}" href="#xotira"><span class="pmi">${ICON.curve}</span><span class="tx"><b>Xotira</b><span>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : "Hammasi esda"}</span></span>${n ? `<span class="xm-n">${n}</span>` : ""}<span class="go">${ICON.chev}</span></a>`;
 }
 route(/^xotira$/, () => {
-  const [bh, bl] = backOf("xm"), st = memStats(), pick = xmPick(st), due = dueWords().length, cap = newCap(due), all = st.weak.length;
+  const [bh, bl] = backOf("xm"), st = memStats(), pick = xmPick(st), risk = st.weak.some(x => x.R < .9), due = dueWords().length, mast = WORDS.filter(isMastered).length, cap = newCap(due), all = st.weak.length;
   const mins = Math.max(2, Math.round(pick.length * .5));
   const row = x => { const p = Math.round(x.R * 100), c = memState(x.R); return `<li class="xm-w"><button data-say="${esc(spoken(x.w))}"><span class="tx"><b>${esc(x.w.w)}</b><span>${esc(x.w.u)}</span></span><span class="xm-bar" aria-hidden="true"><i class="${c}" style="width:${p}%"></i></span><span class="xm-p ${c}">${p}%</span></button></li>`; };
   let open = false;
@@ -3588,11 +3609,12 @@ route(/^xotira$/, () => {
       <section class="card xm-hero">
         <p class="label">Bugun</p>
         <h2>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : st.all ? "Hammasi esda" : "Hali so'z yo'q"}</h2>
-        <p class="muted">${pick.length ? "Hozir takrorlasangiz — keyingi takrorlashgacha uzoqroq esda qoladi" : st.all ? "Eslash ehtimoli hamma so'zda 90% dan yuqori. Keyingi takrorlash vaqti kelganda shu yerda chiqadi." : "Bugungi darsda yangi so'zlarni o'rganing — ular shu yerda kuzatiladi."}</p>
-        ${pick.length ? `<button class="btn" id="xmgo">Qutqarish · ${mins} daq</button>` : st.all ? "" : `<a class="btn" href="#">Bugungi darsga</a>`}
+        <p class="muted">${risk ? "Hozir takrorlasangiz — keyingi takrorlashgacha uzoqroq esda qoladi" : pick.length ? "Hali mustahkam bo'lmagan so'zlarni mashq qilsangiz, tezroq uzoq muddatli xotiraga o'tadi." : st.all ? "Eslash ehtimoli hamma so'zda 90% dan yuqori. Keyingi takrorlash vaqti kelganda shu yerda chiqadi." : "Bugungi darsda yangi so'zlarni o'rganing — ular shu yerda kuzatiladi."}</p>
+        ${pick.length ? `<button class="btn" id="xmgo">${risk ? "Qutqarish" : "Mustahkamlash"} · ${mins} daq</button>` : st.all ? "" : `<a class="btn" href="#">Bugungi darsga</a>`}
       </section>
+      ${st.all ? `<div class="card xm-ach"><div class="vb-th"><span><b>${mast}</b> ta mustahkam so'z</span><span class="muted">${WORDS.length} tadan</span></div><span class="vb-bar"><i style="width:${(mast / WORDS.length * 100).toFixed(1)}%"></i></span><p class="xm-how" style="margin:10px 0 0">Mustahkam — uzoq muddatli xotiraga o'tgan, xotiradan yozib berilgan so'z. Pastdagi holatlar esa so'z hozir qanchalik esda ekanini ko'rsatadi.</p></div>` : ""}
       <div class="vb-stats c3 xm-tiles">
-        <div class="xm-t"><b>${st.ok}</b><span><i class="xd ok"></i>mustahkam</span></div>
+        <div class="xm-t"><b>${st.ok}</b><span><i class="xd ok"></i>esda</span></div>
         <div class="xm-t"><b>${st.wk}</b><span><i class="xd wk"></i>zaif</span></div>
         <div class="xm-t"><b>${st.bd}</b><span><i class="xd bd"></i>unutilmoqda</span></div>
       </div>
@@ -3605,7 +3627,7 @@ route(/^xotira$/, () => {
       <p class="xm-how">Eslash ehtimoli oxirgi takrorlashdan beri o'tgan vaqt va so'z qanchalik mustahkamligiga qarab hisoblanadi (FSRS egri chizig'i). Maqsad — 90% dan tushirmaslik.</p>
     </div>`;
     bindSay(app);
-    const g = $("#xmgo"); if (g) g.onclick = () => startQuiz(pick, "auto", "Xotirani qutqarish", "#xotira", "rev");
+    const g = $("#xmgo"); if (g) g.onclick = () => xmRun(st, "#xotira");
     const a = $("#xmall"); if (a) a.onclick = () => { open = !open; const y = scrollY; draw(); scrollTo(0, y); };
   };
   draw();

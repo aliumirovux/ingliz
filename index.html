@@ -2802,7 +2802,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611041320";
+const APP_V = "202611041400";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3592,7 +3592,7 @@ function xmPick(st) {
   if (a.length < XM_N) { const has = new Set(a.map(w => w.id)); a.push(...WORDS.filter(w => isSeen(w) && !isMastered(w) && !has.has(w.id)).sort((x, y) => (rec(x.id).b || 0) - (rec(y.id).b || 0)).slice(0, XM_N - a.length)); }
   return a;
 }
-const xmRun = (st, back) => startQuiz(xmPick(st), "auto", st.weak.some(x => x.R < .9) ? "Xotirani qutqarish" : "Mustahkamlash", back);
+const xmRun = (st, back) => startQuiz(xmPick(st), "auto", st.weak.some(x => x.R < .9) ? "Xotirani qutqarish" : "Mustahkamlash", back, null, { prod: true });
 function xmCard() {
   const st = memStats(); if (st.all < 5) return "";
   const n = st.bd || st.wk;
@@ -4037,7 +4037,8 @@ function qmodeRaw(w) {
   // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi, goh ovoz chiqarib aytiladi
   if (b >= 2 && canSpeak() && spkOn() && Math.random() < .25) return "say";
   if (b >= 3 && clozeOf(w) && Math.random() < .5) return "cloze";
-  return b === 0 ? "uz-en" : b === 1 ? "en-uz" : "spell";
+  // xotira mashqi (prod): tanlash yo'q — zaif so'z ham xotiradan yoziladi (eslab yozish tanib olishdan ko'ra yaxshiroq esda qoldiradi)
+  return b >= 2 || Z.prod ? "spell" : b === 0 ? "uz-en" : "en-uz";
 }
 function pool(w) { const same = WORDS.filter(x => x.unit === w.unit && x.id !== w.id); return same.length >= 3 ? same : WORDS.filter(x => x.id !== w.id); }
 function distractors(w, f) {
@@ -4371,7 +4372,7 @@ function resultHero(label, right, total) {
 function finish() {
   const total = Z.base, pct = total ? Math.round(Z.right / total * 100) : 0;
   const uniq = [...new Map(Z.wrong.map(w => [w.id, w])).values()];
-  if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag; const again = uniq.slice(), mode = Z.mode, title = Z.title, ch = Z.chunk;
+  if (Z.tag) markDone(Z.tag); const back = Z.back, tag = Z.tag, prod = Z.prod; const again = uniq.slice(), mode = Z.mode, title = Z.title, ch = Z.chunk;
   const more = ch && ch.left > 0 ? `<button class="btn" id="more">Keyingi ${Math.min(CHUNK, ch.left)} ta so'z ${ICON.arrow}</button><p class="gohint">Unitda yana ${ch.left} ta so'z qoldi</p><div style="height:10px"></div>` : "";
   app.innerHTML = `<div class="stack"><div class="card">${resultHero(title + (ch && ch.of > 1 ? " · " + ch.n + "-bo'lak / " + ch.of : ""), Z.right, total)}
     ${tag === "mini" ? `<p class="muted rh-m"><b>Seriya saqlandi ✓</b> Ertaga to'liq darsni qilasiz.</p>` : ""}<p class="muted rh-m">${pct === 100 ? "Hammasi birinchi urinishda to'g'ri." : pct >= 80 ? "Xatolar ertaga yana chiqadi." : "Xatolarni hozir yana bir marta ishlang."}</p></div>
@@ -4380,7 +4381,7 @@ function finish() {
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   Z = null; zSave();
-  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch ? { chunk: ch } : null); // xatolardan keyin ham «Keyingi N ta so'z» qoladi
+  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch || prod ? Object.assign(ch ? { chunk: ch } : {}, prod ? { prod } : {}) : null); // xatolardan keyin ham «Keyingi N ta so'z» qoladi
   const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
   $("#barfill") && ($("#barfill").style.transform = "none");

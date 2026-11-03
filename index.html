@@ -958,6 +958,35 @@ button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-c
 .hdate{margin:4px 0 8px;font-size:14px;color:var(--muted)}
 .hello.hbar{align-items:center;margin:0 0 16px}
 .hello.hbar .pills{margin:0}
+/* hisob: kirgan — avatar (sozlamalar tugmasi o'rnida), kirmagan — «Kirish» + sozlamalar */
+.hme{flex:none;display:flex;align-items:center;gap:6px}
+.inb{position:relative;display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 12px 0 9px;border:0;border-radius:999px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:transform .4s cubic-bezier(.3,1.4,.5,1)}
+.inb::after{content:"";position:absolute;inset:-4px -2px}/* bosish maydoni 44px */
+.inb svg{width:17px;height:17px;color:var(--marker)}
+.inb:active{transform:scale(.94);transition-duration:.12s}
+.inb:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.hbar.tight .inb{padding:0 14px}.hbar.tight .inb svg{display:none}
+.hbar.tight2 .inb{width:36px;padding:0;justify-content:center}.hbar.tight2 .inb svg{display:block}.hbar.tight2 .inb::after{inset:-4px}
+.hbar.tight2 .inb span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.me{position:relative}
+.av{position:relative;flex:none;width:40px;height:40px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:color-mix(in srgb,var(--marker) 16%,var(--surface));color:var(--accent-text)}
+.av-i{font:600 17px/1 var(--font-display);letter-spacing:0}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.me.acc .av{box-shadow:0 0 0 1px var(--glass-line)}
+.av-warn{position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--bad-strong);color:var(--surface);font:800 12px/1 var(--font-body);box-shadow:0 0 0 2px var(--bg)}
+.sy .sy-acc{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px 12px;border-radius:18px;background:var(--surface-2)}
+.sy .sy-acc .av{width:44px;height:44px}.sy .sy-acc .av-i{font-size:18px}
+.sy .sy-who{min-width:0;display:flex;flex-direction:column}
+.sy .sy-who>*{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sy .sy-who b{font-size:16px;font-weight:600;color:var(--ink);white-space:normal;word-break:break-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3}.sy .sy-who span{font-size:14px;color:var(--muted)}
+/* kirish oynasi (pastki oyna; kompyuterda o'rtada) */
+.qs .sg-sub{margin:4px 0 0;font-size:15px;color:var(--muted)}
+#sgsheet .ks-body{padding-top:16px}#sgsheet .qs:focus{outline:none}
+#sgsheet .sy input.search{background:var(--surface-2)}#sgsheet .sy input.search:focus{background:var(--surface)}
+#sgsheet .sy .gohint{margin:12px 2px 0;font-size:14px;line-height:1.45}
+.sg-later{display:block;width:100%;min-height:48px;margin-top:6px;border:0;background:none;font:inherit;font-size:15px;font-weight:500;color:var(--muted);cursor:pointer;border-radius:999px}
+.sg-later:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+@media (min-width:600px){#sgsheet .qs.ks{width:min(420px,calc(100% - 48px))}}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
 .side{display:contents}
@@ -2280,6 +2309,11 @@ const cloud = { ref: null, kind: "", status: "local", timer: null, busy: false, 
 let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTHKEY) || "null"); } catch (e) {}
 if (AUTH && (!AUTH.rt || !AUTH.uid)) AUTH = null;
 const authSave = a => { AUTH = a; try { a ? localStorage.setItem(AUTHKEY, JSON.stringify(a)) : localStorage.removeItem(AUTHKEY); } catch (e) {} };
+/* JWT ichidagi user_metadata: Google'da surat (avatar_url/picture) va ism bor, email bilan kirganda odatda bo'sh */
+const jwtPl = t => { try { return JSON.parse(decodeURIComponent(escape(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))))) || {}; } catch (e) { return {}; } };
+const jwtMeta = t => { const m = jwtPl(t || "").user_metadata || {}, p = m.avatar_url || m.picture || ""; return { pic: /^https:\/\//.test(p) ? p : "", name: String(m.full_name || m.name || "").trim() }; };
+// eski sessiyalarda surat/ism saqlanmagan — tokendan bir marta olamiz
+if (AUTH && AUTH.pic === undefined) authSave(Object.assign(AUTH, jwtMeta(AUTH.at)));
 /* sinxron yozuvi: qaysi server versiyasini ko'rganmiz (at), yuborilmagan o'zgarish bormi (dirty) — ilova yopilsa ham saqlanadi */
 const syGet = () => { try { const o = JSON.parse(localStorage.getItem(SYNCKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } };
 const sySet = p => { try { localStorage.setItem(SYNCKEY, JSON.stringify(Object.assign(syGet(), p))); } catch (e) {} };
@@ -2295,7 +2329,7 @@ let OAUTH = null;
   const at = q.get("access_token");
   if (at) {
     let pl = {}; try { pl = JSON.parse(atob(at.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))); } catch (e) {}
-    const s = { at, rt: q.get("refresh_token"), exp: (+q.get("expires_at") || 0) * 1000 || Date.now() + (+q.get("expires_in") || 3600) * 1000, uid: pl.sub, email: pl.email || "", via: "google" };
+    const s = Object.assign({ at, rt: q.get("refresh_token"), exp: (+q.get("expires_at") || 0) * 1000 || Date.now() + (+q.get("expires_in") || 3600) * 1000, uid: pl.sub, email: pl.email || "", via: "google" }, jwtMeta(at));
     if (!s.rt || !s.uid) { OAUTH = { err: "bad" }; return; }
     if (syGet().uid !== s.uid) { try { localStorage.setItem(SYNCKEY, JSON.stringify({ uid: s.uid })); } catch (e) {} }
     sySet({ dirty: 1 }); authSave(s);
@@ -2399,7 +2433,7 @@ async function sbToken() {
   if (!AUTH) throw Object.assign(new Error("no auth"), { status: 401 });
   if (AUTH.exp - Date.now() > 60e3) return AUTH.at;
   if (!refreshing) refreshing = sbFetch("/auth/v1/token?grant_type=refresh_token", { method: "POST", body: JSON.stringify({ refresh_token: AUTH.rt }) })
-    .then(b => { authSave(Object.assign(sessionFrom(b), { uid: (b.user && b.user.id) || AUTH.uid, email: (b.user && b.user.email) || AUTH.email, via: AUTH.via })); return AUTH.at; })
+    .then(b => { const m = jwtMeta(b.access_token); authSave(Object.assign(sessionFrom(b), { uid: (b.user && b.user.id) || AUTH.uid, email: (b.user && b.user.email) || AUTH.email, via: AUTH.via, pic: m.pic || AUTH.pic || "", name: m.name || AUTH.name || "" })); return AUTH.at; })
     .catch(e => { if (e.status >= 400 && e.status < 500) { cloud.ref = null; setStatus("relogin"); } throw e; })
     .finally(() => { refreshing = null; });
   return refreshing;
@@ -2470,7 +2504,7 @@ window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = 
 const sbSend = email => sbFetch("/auth/v1/otp", { method: "POST", body: JSON.stringify({ email, create_user: true }) });
 async function sbVerify(email, code) {
   const b = await sbFetch("/auth/v1/verify", { method: "POST", body: JSON.stringify({ type: "email", email, token: code }) });
-  const s = Object.assign(sessionFrom(b), { via: "email" }); if (!s.at || !s.uid) throw Object.assign(new Error("no session"), { status: 500 });
+  const s = Object.assign(sessionFrom(b), { via: "email" }, jwtMeta(b.access_token)); if (!s.at || !s.uid) throw Object.assign(new Error("no session"), { status: 500 });
   if (syGet().uid !== s.uid) { try { localStorage.setItem(SYNCKEY, JSON.stringify({ uid: s.uid, dirty: 1 })); } catch (e) {} }
   authSave(s); cloud.retry = 0;
   return new Promise(res => { cloud.first = (n, err) => res({ n, err }); cloud.dirty = true; startSb(); });
@@ -2984,7 +3018,7 @@ route(/^$/, () => {
   <h1 class="sr-only">Bugun</h1><p class="date hdate">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p>
   <div class="hello hbar"><div class="pills">
     <button class="pill" id="kursb" data-k="lvl" aria-haspopup="dialog" aria-label="Darajani o'zgartirish: ${esc(lv.t)}"><span>${esc(lv.t)}</span><span class="dn">${ICON.down}</span></button>${lvReady ? `<button class="pill" id="unitb" data-k="unit" aria-haspopup="dialog" aria-label="Unitni o'zgartirish"><span>${S.course ? "Unit " + un(cu.n) : "Unitni tanlang"}</span><span class="dn">${ICON.down}</span></button>` : ""}
-  </div><a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a></div>
+  </div>${meBtn()}</div>
   <div class="stack">
     ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
     ${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
@@ -3007,6 +3041,8 @@ route(/^$/, () => {
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
   bindLevelPicker(); bindHomeCards(); bindClass(cu);
   app.querySelectorAll("#kursb,#unitb").forEach(b => b.onclick = () => courseSheet(b.dataset.k));
+  const ib = $("#inb"); if (ib) ib.onclick = () => signSheet(); askSignIn();
+  fitHbar();
   const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
   const ms = $("#mast"); if (ms) ms.onclick = () => xmRun(memStats(), "#");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
@@ -4998,9 +5034,9 @@ function syErr(e, stage) {
 function syncCardInner() {
   const head = (t, s) => `<div class="sy-h"><span class="sy-ic">${ICON_SYNC}</span><span><b>${t}</b><span>${s}</span></span></div>`;
   if (AUTH) {
-    const relog = cloud.status === "relogin";
+    const relog = cloud.status === "relogin", nm = AUTH.name || "", em = AUTH.email || "";
     return `${head("Sinxronlash", "Mac va telefonda bir xil progress")}
-    <p class="sy-me">Hisob: <b>${esc(AUTH.email || "")}</b></p>
+    <div class="sy-acc">${avatar()}<span class="sy-who"><b title="${esc(nm || em)}">${esc(nm || em)}</b><span${nm && em ? ` title="${esc(em)}"` : ""}>${nm && em ? esc(em) : AUTH.via === "google" ? "Google hisobi" : "Email orqali kirilgan"}</span></span></div>
     <p class="sy-st" id="sync" data-s="${cloud.status}" role="status">${esc(statusText())}</p>
     ${relog ? `<button class="btn" id="syre">Qayta kirish</button>` : `<button class="btn ghost" id="synow"${cloud.status === "busy" ? " disabled" : ""}>Hozir sinxronlash</button>`}
     <div class="sy-row"><button class="tlink" id="syout">Chiqish</button><span class="muted" style="font-size:13px">Chiqsangiz ham natijalar shu qurilmada qoladi</span></div>`;
@@ -5014,7 +5050,7 @@ function syncCardInner() {
       <button class="btn" id="syin" type="submit" disabled>${SY.busy ? "Tekshirilmoqda…" : "Kirish"}</button></form>
     <div class="sy-row"><button class="tlink" id="syback">Emailni o'zgartirish</button><button class="tlink" id="syre2"${left ? " disabled" : ""}>${left ? "Qayta yuborish · " + left + " s" : "Kodni qayta yuborish"}</button></div>`;
   }
-  return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
+  return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : SYS ? "" : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
     ${googleBtn()}<form id="syf1" novalidate><label class="sr-only" for="syem">Email</label>
       <input class="search" id="syem" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Email manzilingiz" value="${esc(SY.email)}">
       <p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>
@@ -5045,6 +5081,77 @@ function syRedraw(focus) {
   const c = $("#sycard"); if (!c) return;
   c.innerHTML = syncCardInner(); bindSync();
   if (focus) { const f = $(focus); if (f) f.focus(); }
+}
+/* ---------- HISOB: bosh sahifa tepasida avatar yoki «Kirish» ----------
+   Kirgan: sozlamalar tugmasi o'rnida avatar (Google surati yoki bosh harf). Kirmagan: «Kirish» + sozlamalar, bosilsa pastki oyna. */
+const ICON_USER = sv('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>');
+const inClaude = () => cloud.kind === "claude" || !!(window.claude && window.claude.use);
+function avatar() {
+  const a = AUTH || {}, ch = [...String(a.name || a.email || "?").trim()][0] || "?";
+  return `<span class="av" aria-hidden="true"><span class="av-i">${esc(ch.toUpperCase())}</span>${a.pic ? `<img src="${esc(a.pic)}" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>`;
+}
+function meBtn() {
+  if (AUTH) { const relog = cloud.status === "relogin";
+    return `<a class="me acc${relog ? " warn" : ""}" href="#sozlama" aria-label="${relog ? "Hisob: sinxron to'xtadi — qayta kiring" : "Hisob va sozlamalar"}">${avatar()}${relog ? `<span class="av-warn" aria-hidden="true">!</span>` : ""}</a>`; }
+  const gear = `<a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a>`;
+  return cloud.kind === "claude" ? gear : `<div class="hme"><button class="inb" id="inb" type="button" aria-haspopup="dialog">${ICON_USER}<span>Kirish</span></button>${gear}</div>`;
+}
+/* tor ekranda pillar ikki qatorga tushsa: avval «Kirish» belgisiz (faqat matn), baribir sig'masa — faqat belgi (matn ekran o'quvchi uchun qoladi).
+   Shrift yuklanganda va o'lcham o'zgarganda qayta o'lchanadi */
+function fitHbar() {
+  const hb = $(".hbar"), pl = hb && hb.querySelector(".pills"); if (!pl || !$("#inb")) return;
+  hb.classList.remove("tight", "tight2"); if (pl.offsetHeight > 44) hb.classList.add("tight"); if (pl.offsetHeight > 44) hb.classList.add("tight2");
+}
+try { document.fonts.ready.then(fitHbar); } catch (e) {}
+addEventListener("resize", () => { clearTimeout(fitHbar.t); fitHbar.t = setTimeout(fitHbar, 120); });
+/* bir marta o'zi so'raladi: progressi bor, lekin kirish ekranini ko'rmagan (u chiqishidan oldingi) qurilmada. Mehmonni tanlagan yoki chiqib ketganga — yo'q */
+const ASKK = "ingliz-signin-ask";
+function askSignIn() {
+  if (AUTH || OAUTH || inClaude() || fresh()) return;
+  try { if (localStorage.getItem(ASKK) || localStorage.getItem(WKEY)) return; } catch (e) { return; }
+  setTimeout(() => {
+    if (AUTH || inClaude() || location.hash.replace(/^#/, "") !== "" || document.querySelector(".qsheet")) return;
+    try { if (localStorage.getItem(ASKK)) return; localStorage.setItem(ASKK, "1"); } catch (e) { return; }
+    signSheet(true);
+  }, 700);
+}
+let SYS = false, signClose = null;
+function signSheet(auto) {
+  if (AUTH || document.querySelector(".qsheet") || $("#sycard")) return; // sahifada ikkinchi #sycard bo'lmasin
+  SYS = true; SY.err = ""; SY.goog = false;
+  const wrap = document.createElement("div"); wrap.id = "sgsheet"; wrap.className = "qsheet";
+  wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs ks" role="dialog" aria-modal="true" aria-labelledby="sgh" aria-describedby="sgd" tabindex="-1"><div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="sgh">Hisobingizga kiring</h2><button class="ks-x" type="button" data-x aria-label="Yopish">${ICON.x}</button></div><p class="sg-sub" id="sgd">Mac va telefonda bir xil progress</p></div>
+    <div class="ks-body"><div class="sy" id="sycard">${syncCardInner()}</div>${auto ? `<button class="sg-later" type="button" data-x>Keyinroq</button>` : ""}</div></div>`;
+  document.body.appendChild(wrap);
+  const sheet = wrap.querySelector(".ks"), prev = document.activeElement, bg = [app, document.querySelector("nav.tabs")].filter(Boolean);
+  bg.forEach(e => { e.inert = true; }); bindSync();
+  let closed = false;
+  const close = fromPop => { if (closed) return; closed = true; SYS = false; signClose = null; clearInterval(syTick);
+    const c = wrap.querySelector("#sycard"); if (c) c.removeAttribute("id");
+    wrap.classList.remove("on"); bg.forEach(e => { e.inert = false; });
+    document.removeEventListener("keydown", key, true); removeEventListener("popstate", pop); removeEventListener("hashchange", pop);
+    if (!fromPop && history.state && history.state.sg) history.back(); setTimeout(() => wrap.remove(), 300);
+    const t = prev && prev.isConnected && prev !== document.body ? prev : $("#inb"); if (t && t.focus) t.focus({ preventScroll: true }); };
+  const pop = () => close(true);
+  const key = e => {
+    if (e.key === "Escape") { e.preventDefault(); close(); return; }
+    if (e.key !== "Tab") return;
+    const f = [...sheet.querySelectorAll("button:not([disabled]),input:not([disabled]),a[href]")].filter(x => x.offsetParent); if (!f.length) return;
+    if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+  };
+  history.pushState({ sg: 1 }, ""); addEventListener("popstate", pop); addEventListener("hashchange", pop);
+  document.addEventListener("keydown", key, true);
+  wrap.addEventListener("click", e => { if (e.target.closest("[data-x]")) close(); });
+  signClose = close;
+  // tutqichdan pastga tortib yopish
+  const top = wrap.querySelector(".ks-top"); let y0 = null, dy = 0;
+  top.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; y0 = e.clientY; dy = 0; sheet.style.transition = "none"; top.setPointerCapture(e.pointerId); });
+  top.addEventListener("pointermove", e => { if (y0 === null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
+  const up = () => { if (y0 === null) return; y0 = null; sheet.style.transition = ""; sheet.style.transform = ""; if (dy > 90) close(); };
+  top.addEventListener("pointerup", up); top.addEventListener("pointercancel", up);
+  // o'zi ochilganda fokus oynaning o'zida (halqa ko'rinmaydi), tugmadan ochilganda — Google tugmasida
+  requestAnimationFrame(() => { wrap.classList.add("on"); const f = auto ? sheet : wrap.querySelector("#sygoo") || wrap.querySelector(".ks-x"); f.focus({ preventScroll: true }); });
 }
 async function sySendCode() {
   SY.busy = true; SY.err = ""; syRedraw();
@@ -5077,8 +5184,9 @@ function bindSync() {
       try {
         const { n, err } = await sbVerify(SY.email, ci.value); clearTimeout(slow);
         SY.busy = false; SY.step = "email"; SY.err = ""; try { localStorage.removeItem(SYK); localStorage.setItem(WKEY, "in"); } catch (er) {}
-        const wasW = SYW; SYW = false;
-        if (wasW || location.hash === "#sozlama") render();
+        const wasW = SYW, inS = !!signClose; SYW = false;
+        if (inS) { signClose(); render(); const m = $(".hbar .me"); if (m) m.focus({ preventScroll: true }); }
+        else if (wasW || location.hash === "#sozlama") render();
         if (err) toast("Kirdingiz", null, null, { type: "warn", sub: "Hozir sinxronlab bo'lmadi — internet qaytganda o'zi qiladi." });
         else toast("Sinxron yoqildi", null, null, { sub: n > 0 ? n + " ta so'z natijasi boshqa qurilmadan qo'shildi" : "Natijalar hisobingizga saqlandi" });
       } catch (er) { clearTimeout(slow); SY.busy = false; SY.err = syErr(er, "verify"); syRedraw("#sycode"); }

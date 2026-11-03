@@ -5036,7 +5036,8 @@ function welcomePage() {
     <div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p>Navigate Beginner bo'yicha kunlik mashq</p></div>
     <div class="card sy" id="sycard">${syncCardInner()}</div>
     <div class="wel-guest"><button class="btn ghost" id="guest">Mehmon sifatida davom etish</button>
-    <p class="gohint">Natijalar faqat shu qurilmada saqlanadi. Keyin kirsangiz, yo'qolmaydi — hisobingizga qo'shiladi.</p></div></div>`;
+    <p class="gohint">Natijalar faqat shu qurilmada saqlanadi. Keyin kirsangiz, yo'qolmaydi — hisobingizga qo'shiladi.</p>
+    <p class="gohint"><a href="privacy.html" style="color:inherit">Maxfiylik siyosati</a></p></div></div>`;
   bindSync();
   $("#guest").onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; render(); };
 }

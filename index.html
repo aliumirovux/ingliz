@@ -4197,7 +4197,7 @@ function finish() {
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   Z = null;
-  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back);
+  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch ? { chunk: ch } : null); // xatolardan keyin ham «Keyingi N ta so'z» qoladi
   const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
   $("#barfill") && ($("#barfill").style.transform = "none");

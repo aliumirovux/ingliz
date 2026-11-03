@@ -416,6 +416,21 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .sy-or{display:flex;align-items:center;gap:12px;margin:16px 0 12px;font-size:13px;color:var(--muted)}.sy-or::before,.sy-or::after{content:"";flex:1;height:1px;background:var(--line)}
 .wel-spin{width:28px;height:28px;margin:8px auto;border-radius:50%;border:3px solid var(--line);border-top-color:var(--marker);animation:wspin .9s linear infinite}
 @keyframes wspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.wel-spin{animation-duration:3s}}
+/* «Nega xato?» */
+.why-slot{margin-top:10px}.why{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid color-mix(in srgb,var(--bad-strong) 35%,transparent);background:var(--surface);color:var(--bad);font:inherit;font-size:14px;font-weight:600;cursor:pointer;touch-action:manipulation}
+.why svg,.ai-k svg,.ai-own svg{width:16px;height:16px}.why:disabled{opacity:.75;cursor:default}.why:focus-visible,.ai-own:focus-visible{outline:2px solid var(--marker);outline-offset:3px}
+.why-off{margin:10px 0 0;font-size:13px;opacity:.85}
+.ai{margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--surface-2);font-size:15px;line-height:1.5;text-align:left}
+.ai p{margin:0 0 8px}.ai p:last-child{margin:0}
+.ai-k{display:flex;align-items:center;gap:6px;font-size:13px!important;font-weight:700;color:var(--accent-text)}
+.ai-ex{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:8px;background:var(--surface);border-radius:12px;padding:8px 8px 8px 12px;margin:2px 0 10px}.ai-ex small{grid-column:1/-1;color:var(--muted);font-size:13px}
+.ai-own{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;border:0;background:var(--surface);color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.ai-l{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:2px 0 6px}
+.ai-try .spell{font-size:16px;margin-bottom:8px;white-space:normal;overflow:auto;min-height:72px}.ai-try .btn{margin-bottom:6px}
+.ai-r p{margin:6px 0 0}.ai-v{padding:8px 12px;border-radius:12px;font-size:14px}.ai-v.ok{background:var(--ok-bg);color:var(--ok)}.ai-v.bad{background:var(--bad-bg);color:var(--bad)}
+.ai-err{color:var(--bad);font-size:14px}
+.ai .sk{height:10px;border-radius:6px;margin:8px 0;background:linear-gradient(90deg,var(--line),var(--surface),var(--line));background-size:200% 100%;animation:aisk 1.2s linear infinite}
+@keyframes aisk{to{background-position:-200% 0}}@media (prefers-reduced-motion:reduce){.ai .sk{animation:none}}
 .sy .sy-me{margin:0 0 4px;font-size:15px;word-break:break-all}.sy .sy-me b{font-weight:600}
 .sw b{display:block;font-weight:600}
 .sw input{flex:none;width:24px;height:24px;margin:0;accent-color:var(--marker)}
@@ -4971,7 +4986,7 @@ route(/^tuzmashq$/, () => {
       inp.className = "spell " + (ok ? "ok" : "bad"); inp.style.fontSize = "19px";
       if (exact) show("ok", `<b>${esc(it.e)}</b>`);
       else if (close) { const d = wordDiff(got, want); show("ok", `To'g'ri, faqat bitta harf xato: <div class="diff" style="font-size:18px">${d.want}</div>`); }
-      else { const d = wordDiff(got, want); show("bad", `To'g'risi: <b>${esc(it.e)}</b>${d.want.includes('class="x"') ? `<div style="margin-top:8px">Qizil — xato yozilgan yoki tushib qolgan so'zlar:</div><div class="diff" style="font-size:18px">${d.want}</div>` : ""}${d.extra.length ? `<div>Ortiqcha: <s>${esc(d.extra.join(" "))}</s></div>` : ""}`); }
+      else { const d = wordDiff(got, want); show("bad", `To'g'risi: <b>${esc(it.e)}</b>${d.want.includes('class="x"') ? `<div style="margin-top:8px">Qizil — xato yozilgan yoki tushib qolgan so'zlar:</div><div class="diff" style="font-size:18px">${d.want}</div>` : ""}${d.extra.length ? `<div>Ortiqcha: <s>${esc(d.extra.join(" "))}</s></div>` : ""}`); whyButton($("#tf"), { uz: it.u, target: it.e, answer: inp.value.trim(), rule: it.h }); }
     };
     inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     $("#chk").onclick = check;
@@ -4997,6 +5012,7 @@ route(/^tuzmashq$/, () => {
     A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
     A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
     show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>` : `To'g'risi: <b>${esc(it.e)}</b>`);
+    if (!ok) whyButton($("#tf"), { uz: it.u, target: it.e, answer: picked.map(k => tiles[k]).join(" "), rule: it.h });
   };
   draw();
 });
@@ -5013,6 +5029,68 @@ function tuzFinish() {
   $("#back").onclick = () => { location.hash = back; };
 }
 
+/* ---------- TUSHUNTIR: «Nega xato?» — Claude (Supabase Edge Function «tushuntir») ----------
+   Faqat so'ralganda chaqiriladi. Kirmagan bo'lsa tugma o'rnida izoh, internet yo'q bo'lsa — mashq davom etadi. */
+const ICON_WHY = sv('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4"/><path d="M12 16h.01"/>');
+const ICON_PEN = sv('<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>');
+async function aiAsk(body) {
+  if (!AUTH) throw Object.assign(new Error("auth"), { code: "auth" });
+  if (navigator.onLine === false) throw Object.assign(new Error("offline"), { code: "offline" });
+  let tok; try { tok = await sbToken(); } catch (e) { throw Object.assign(new Error("auth"), { code: e.status === 0 ? "offline" : "auth" }); }
+  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 20000);
+  try {
+    const r = await fetch(SB.url + "/functions/v1/tushuntir", { method: "POST", signal: ctl.signal, headers: { apikey: SB.key, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(d.error || "http"), { code: r.status === 429 ? "limit" : r.status === 401 ? "auth" : d.error === "no_key" ? "no_key" : "fail" });
+    return d;
+  } catch (e) { if (!e.code) e.code = "offline"; throw e; }
+  finally { clearTimeout(tm); }
+}
+const aiErr = c => c === "limit" ? "Bugungi 50 ta tushuntirish ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
+const aiExample = m => m && m.en ? `<div class="ai-ex" ><b>${esc(m.en)}</b><button class="icon" data-say="${esc(m.en)}" aria-label="Tinglash">${ICON.vol}</button>${m.uz ? `<small>${esc(m.uz)}</small>` : ""}</div>` : "";
+/* host — xato kartasi (#tf); ctx: { uz, target, answer, rule } */
+function whyButton(host, ctx) {
+  if (cloud.kind === "claude") return;
+  const slot = document.createElement("div"); slot.className = "why-slot"; host.appendChild(slot);
+  if (!AUTH) { slot.innerHTML = `<p class="why-off">Xatoni tushuntirish uchun hisobga kiring — Sozlamalarda.</p>`; return; }
+  slot.innerHTML = `<button class="why" type="button">${ICON_WHY}<span>Nega xato?</span></button>`;
+  const btn = slot.querySelector(".why");
+  btn.onclick = async () => {
+    if (ctx.res) return;
+    btn.disabled = true; btn.querySelector("span").textContent = "Tushuntirilmoqda…";
+    let box = host.parentNode.querySelector(".ai"); if (!box) { box = document.createElement("div"); box.className = "ai"; host.after(box); }
+    box.setAttribute("aria-live", "polite"); box.innerHTML = `<p class="ai-k">${ICON_WHY}Nega xato</p><div class="sk"></div><div class="sk" style="width:72%"></div><div class="sk" style="width:84%"></div>`;
+    try {
+      const d = await aiAsk({ mode: "fix", uz: ctx.uz, target: ctx.target, answer: ctx.answer, rule: ctx.rule });
+      ctx.res = d; slot.remove();
+      box.innerHTML = `<p class="ai-k">${ICON_WHY}Nega xato</p><p>${esc(d.izoh || "")}</p>${aiExample(d.misol)}
+        <button class="ai-own" type="button">${ICON_PEN}<span>O'zim gap tuzaman</span></button><div class="ai-try"></div>`;
+      bindSay(box);
+      box.querySelector(".ai-own").onclick = e => { e.currentTarget.remove(); ownTry(box.querySelector(".ai-try"), ctx); };
+    } catch (e) {
+      box.innerHTML = `<p class="ai-k">${ICON_WHY}Nega xato</p><p class="ai-err" role="alert">${aiErr(e.code)}</p>`;
+      if (e.code === "fail" || e.code === "offline") { btn.disabled = false; btn.querySelector("span").textContent = "Qayta urinish"; } else slot.remove();
+    }
+  };
+}
+/* 2-funksiya: shu qoida bilan o'z gapini yozadi → tekshiriladi */
+function ownTry(el, ctx) {
+  el.innerHTML = `<label class="ai-l" for="aiown">Shu qoida bilan o'z gapingizni yozing</label>
+    <textarea id="aiown" class="spell" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Inglizcha gap…"></textarea>
+    <button class="btn sm" id="aichk" type="button" disabled>Gapni tekshirish</button><div class="ai-r" aria-live="polite"></div>`;
+  const t = el.querySelector("#aiown"), b = el.querySelector("#aichk"), out = el.querySelector(".ai-r");
+  t.oninput = () => { b.disabled = !t.value.trim(); }; t.focus();
+  t.addEventListener("keydown", e => { e.stopPropagation(); if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!b.disabled) b.click(); } });
+  b.onclick = async () => {
+    b.disabled = true; b.textContent = "Tekshirilmoqda…"; out.innerHTML = "";
+    try {
+      const d = await aiAsk({ mode: "check", word: ctx.rule || ctx.target, answer: t.value.trim() });
+      const ok = d.togri === true;
+      out.innerHTML = `<div class="ai-v ${ok ? "ok" : "bad"}"><b>${ok ? "To'g'ri!" : "Deyarli"}</b>${!ok && d.tuzatilgan ? ` To'g'risi: <b>${esc(d.tuzatilgan)}</b>` : ""}</div><p>${esc(d.izoh || "")}</p>`;
+      buzz(ok); b.textContent = "Yana bir gap"; b.disabled = false; b.onclick = () => ownTry(el, ctx);
+    } catch (e) { out.innerHTML = `<p class="ai-err" role="alert">${aiErr(e.code)}</p>`; b.disabled = false; b.textContent = "Qayta urinish"; }
+  };
+}
 /* ---------- SINXRONLASH: email → kod → kirgan holat ----------
    Kod bosqichi 15 daqiqa eslab qolinadi: pochtaga o'tib qaytganda telefon ilovani qayta ochsa ham, kod maydoni o'sha joyda turadi. */
 const SYK = "ingliz-sy";

@@ -947,6 +947,31 @@ button.xm-t.tap{padding:14px 12px 12px}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img,svg{-webkit-user-drag:none}
+/* xotira */
+.xm-hero{display:block;background:linear-gradient(160deg,var(--hl),var(--card,var(--surface)) 70%)}
+.xm-hero .label{display:block;margin:0 0 4px}
+.xm-hero h2{margin:2px 0 6px;font-size:24px;line-height:1.2;letter-spacing:-.01em}
+.xm-hero p.muted{margin:0}
+.xm-hero .btn{margin-top:16px}
+.xm-tiles .xm-t span{white-space:nowrap}
+.xd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.xd.ok,.xm-bar i.ok{background:var(--ok-strong)}.xd.wk,.xm-bar i.wk{background:#D29A1E}.xd.bd,.xm-bar i.bd{background:var(--bad-strong)}
+.xm-l{margin:0}
+.wl.xm-l li{padding:0}
+.xm-w button{display:grid;grid-template-columns:minmax(0,1fr) 64px 42px;align-items:center;gap:12px;width:100%;min-height:56px;padding:9px 0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.xm-w button:active{opacity:.6}
+.xm-w button:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.xm-w .tx{min-width:0}.xm-w .tx b,.xm-w .tx span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xm-w .tx b{display:block;font-weight:600}.xm-w .tx span{font-size:13px;color:var(--muted)}
+.xm-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden}.xm-bar i{display:block;height:100%;border-radius:3px}
+.xm-p{text-align:right;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}.xm-p.bd{color:var(--bad)}
+.xm-kv{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;font-size:15px}.xm-kv b{font-variant-numeric:tabular-nums}.xm-kv .muted{font-weight:500;font-size:13px}
+.xm-note{margin:10px 0 0;padding:10px 12px;border-radius:14px;background:#FBF0D9;color:#7A5410;font-size:14px;line-height:1.45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xm-note{background:#2E2410;color:#E9C46A}}
+:root[data-theme="dark"] .xm-note{background:#2E2410;color:#E9C46A}
+.xm-how{margin:4px 4px 0;font-size:13px;color:var(--muted);line-height:1.45}
+.xm-entry .xm-n{flex:none;min-width:28px;height:28px;padding:0 8px;border-radius:999px;display:grid;place-items:center;background:var(--surface-2);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+.xm-entry.hot .xm-n{background:var(--bad-bg);color:var(--bad)}
 /* so'z boyligi */
 .vbs{display:flex;flex-direction:column;min-height:calc(100dvh - 220px)}
 .vb-l{margin:6px 0 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -980,7 +1005,7 @@ img,svg{-webkit-user-drag:none}
 .vb-prog .vb-bar{margin:0}
 .vb-idk{color:var(--muted)}
 #vbnext{position:sticky;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.16)}
-@media (min-width:700px){.vb-stats{grid-template-columns:repeat(4,1fr)}}
+@media (min-width:700px){.vb-stats{grid-template-columns:repeat(4,1fr)}.vb-stats.c3{grid-template-columns:repeat(3,1fr)}}
 .rh-chips .rc:not(.ok):not(.bad){background:var(--accent-soft,rgba(184,68,34,.1));color:var(--accent-text)}
 /* mashq natijasi */
 .rh{text-align:center;padding:6px 0 4px}
@@ -2351,6 +2376,29 @@ const isDue = w => { const r = rec(w.id); return r && r.due <= today(); };
 const isMastered = w => { const r = rec(w.id); return r && r.b >= 3 && (!w.a || r.sp > 0); };
 const isSeen = w => !!rec(w.id);
 const dueWords = () => WORDS.filter(isDue);
+/* ---------- XOTIRA: so'zning hozir esda qolish ehtimoli (FSRS egri chizig'i) ----------
+   R(t) = (1 + 19/81 · t / S)^-0.5 — S: rejalashtirilgan oraliq (oxirgi takrorlash → due; shu kuni R ≈ 90%), t: oxirgi takrorlashdan beri kunlar.
+   Holat: mustahkam R ≥ 90% (va quti ≥ 2), zaif 80–90%, unutilmoqda < 80%. Yaqinda xato qilingan (quti 0–1) so'z mustahkam hisoblanmaydi. */
+const dnum = d => Math.round(Date.parse(d + "T00:00:00") / 864e5);
+function recall(w) {
+  const r = rec(w.id); if (!r || !r.due) return null;
+  const now = dnum(today()), due = dnum(r.due);
+  let last = r.ls ? dnum(r.ls) : r.lt ? dnum(new Date(r.lt).toISOString().slice(0, 10)) : due - INT[Math.min(r.b || 0, 5)];
+  if (!Number.isFinite(last) || last > now) last = now;
+  const S = Math.max(1, due - last), t = Math.max(0, now - last);
+  let R = Math.pow(1 + 19 / 81 * t / S, -0.5);
+  if ((r.b || 0) <= 1) R = Math.min(R, .89);
+  return R;
+}
+const memState = R => R == null ? null : R >= .9 ? "ok" : R >= .8 ? "wk" : "bd";
+function memStats() {
+  const ws = WORDS.filter(isSeen).map(w => ({ w, R: recall(w) })).filter(x => x.R != null);
+  const by = { ok: [], wk: [], bd: [] }; ws.forEach(x => by[memState(x.R)].push(x));
+  const weak = by.bd.concat(by.wk).sort((a, b) => a.R - b.R);
+  return { all: ws.length, ok: by.ok.length, wk: by.wk.length, bd: by.bd.length, weak };
+}
+/* yuk nazorati: takrorlash ko'paysa, kunlik yangi so'zlar kamayadi (40+ — yangi so'z yo'q) */
+const newCap = due => due <= 20 ? LEARN_N : due <= 30 ? 3 : due <= 40 ? 2 : 0;
 const weakWords = () => WORDS.filter(w => { const r = rec(w.id); return r && r.b === 0; });
 
 /* ---------- XATOLARIM: har bir xato shu yerga tushadi, keyingi safar to'g'ri javob berilsa o'chadi ---------- */
@@ -2467,7 +2515,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
@@ -2583,9 +2631,11 @@ function todayPlan(n) {
   const plan = [], mw = misWords(true).filter(w => w.unit <= n).slice(0, 5), ids = new Set(mw.map(w => w.id));
   if (mw.length) plan.push({ tag: "esla", t: "Esla: oldingi xatolar", s: mw.length + " ta so'z · xotiradan yozasiz", run: () => startQuiz(mw, "spell", "Esla", "#", "esla") });
   const dueAll = revOrder(dueWords().filter(w => !ids.has(w.id))), due = dueAll.slice(0, REV_CAP), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
-  if (due.length) plan.push({ tag: "rev", t: "So'zlarni takrorlash", s: due.length + " ta so'z" + (dueAll.length > due.length ? " · yana " + (dueAll.length - due.length) + " tasi keyingi kunlarga" : " bugun qaytariladi"), run: () => startQuiz(due, "auto", "Takrorlash", "#", "rev") });
+  const atRisk = due.filter(w => (recall(w) ?? 1) < .8).length;
+  if (due.length) plan.push({ tag: "rev", t: atRisk ? "Xotirani qutqarish" : "So'zlarni takrorlash", s: (atRisk ? atRisk + " ta so'z unutilmoqda · " : "") + due.length + " ta so'z" + (dueAll.length > due.length ? " · yana " + (dueAll.length - due.length) + " tasi keyingi kunlarga" : atRisk ? "" : " bugun qaytariladi"), run: () => startQuiz(due.slice().sort((a, b) => (recall(a) ?? 1) - (recall(b) ?? 1)), "auto", atRisk ? "Xotirani qutqarish" : "Takrorlash", "#", "rev") });
   // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
-  if (unseen.length && dueAll.length <= 40) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + n : "") : "Unit " + un(n)) + " · " + Math.min(LEARN_N, unseen.length) + " ta so'z", d: Math.min(LEARN_N, unseen.length) + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen, myNew.length ? "Yangi so'zlar" : "Unit " + un(n), "#", "new") });
+  const cap = Math.min(newCap(dueAll.length), unseen.length);
+  if (cap) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + un(n) : "") : "Unit " + un(n)) + " · " + cap + " ta so'z" + (cap < LEARN_N && unseen.length > cap ? " (takrorlash ko'p)" : ""), d: cap + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen.slice(0, cap), myNew.length ? "Yangi so'zlar" : "Unit " + un(n), "#", "new") });
   if (!dueAll.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + un(n) + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + un(n), "#", "rev") });
   const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
   if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
@@ -2735,7 +2785,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611040020";
+const APP_V = "202611041200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3513,6 +3563,47 @@ route(/^boylik-test$/, () => {
     setTimeout(() => { VBP.i++; render(); }, 450);
   });
 });
+/* ---------- XOTIRA bo'limi: «Qutqarish» — eng zaif so'zlar, holatlar, bugungi yuk ---------- */
+const XM_N = 10;
+const xmPick = st => st.weak.filter(x => x.R < .9).slice(0, XM_N).map(x => x.w);
+function xmCard() {
+  const st = memStats(); if (st.all < 5) return "";
+  const n = st.bd || st.wk;
+  return `<a class="nwb xm-entry${st.bd ? " hot" : ""}" href="#xotira"><span class="pmi">${ICON.redo}</span><span class="tx"><b>Xotira</b><span>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : "Hammasi esda · " + st.ok + " ta mustahkam"}</span></span>${n ? `<span class="xm-n">${n}</span>` : ""}<span class="go">${ICON.chev}</span></a>`;
+}
+route(/^xotira$/, () => {
+  const st = memStats(), pick = xmPick(st), due = dueWords().length, cap = newCap(due), all = st.weak.length;
+  const mins = Math.max(2, Math.round(pick.length * .5));
+  const row = x => { const p = Math.round(x.R * 100), c = memState(x.R); return `<li class="xm-w"><button data-say="${esc(spoken(x.w))}"><span class="tx"><b>${esc(x.w.w)}</b><span>${esc(x.w.u)}</span></span><span class="xm-bar" aria-hidden="true"><i class="${c}" style="width:${p}%"></i></span><span class="xm-p ${c}">${p}%</span></button></li>`; };
+  let open = false;
+  const draw = () => {
+    app.innerHTML = `${nav("#lugat", "Lug'at", "Xotira")}
+    <div class="stack">
+      <section class="card xm-hero">
+        <p class="label">Bugun</p>
+        <h2>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : st.all ? "Hammasi esda" : "Hali so'z yo'q"}</h2>
+        <p class="muted">${pick.length ? "Hozir takrorlasangiz — keyingi takrorlashgacha uzoqroq esda qoladi" : st.all ? "Eslash ehtimoli hamma so'zda 90% dan yuqori. Keyingi takrorlash vaqti kelganda shu yerda chiqadi." : "Bugungi darsda yangi so'zlarni o'rganing — ular shu yerda kuzatiladi."}</p>
+        ${pick.length ? `<button class="btn" id="xmgo">Qutqarish · ${mins} daq</button>` : st.all ? "" : `<a class="btn" href="#">Bugungi darsga</a>`}
+      </section>
+      <div class="vb-stats c3 xm-tiles">
+        <div class="xm-t"><b>${st.ok}</b><span><i class="xd ok"></i>mustahkam</span></div>
+        <div class="xm-t"><b>${st.wk}</b><span><i class="xd wk"></i>zaif</span></div>
+        <div class="xm-t"><b>${st.bd}</b><span><i class="xd bd"></i>unutilmoqda</span></div>
+      </div>
+      ${all ? `<div class="card"><p class="label">Eng zaif so'zlar</p><ul class="wl xm-l">${st.weak.slice(0, open ? all : 7).map(row).join("")}</ul>${all > 7 ? `<button class="btn ghost" id="xmall" style="margin-top:12px">${open ? "Kamroq ko'rsatish" : "Hammasini ko'rish · " + all}</button>` : ""}</div>` : ""}
+      <div class="card"><p class="label">Bugungi yuk</p>
+        <div class="xm-kv"><span>Takrorlash</span><b>${due} ta</b></div>
+        <div class="xm-kv"><span>Yangi so'zlar</span><b>${cap} ta${cap < LEARN_N ? ` <span class="muted">(odatda ${LEARN_N})</span>` : ""}</b></div>
+        ${cap < LEARN_N ? `<p class="xm-note">${cap ? "Takrorlash ko'p to'plangan — yangi so'zlar vaqtincha kamaytirildi." : "Takrorlash 40 tadan oshdi — avval eskilarini mustahkamlang, yangi so'zlar to'xtatildi."} Takrorlash 20 tadan tushsa, yana ${LEARN_N} ta bo'ladi.</p>` : ""}
+      </div>
+      <p class="xm-how">Eslash ehtimoli oxirgi takrorlashdan beri o'tgan vaqt va so'z qanchalik mustahkamligiga qarab hisoblanadi (FSRS egri chizig'i). Maqsad — 90% dan tushirmaslik.</p>
+    </div>`;
+    bindSay(app);
+    const g = $("#xmgo"); if (g) g.onclick = () => startQuiz(pick, "auto", "Xotirani qutqarish", "#xotira", "rev");
+    const a = $("#xmall"); if (a) a.onclick = () => { open = !open; const y = scrollY; draw(); scrollTo(0, y); };
+  };
+  draw();
+});
 /* lug'at sahifasidagi kirish kartasi */
 function vbCard() {
   if (!S.vb.lvl) return `<a class="nwb vb-entry" href="#boylik"><span class="pmi">${ICON.spark}</span><span class="tx"><b>So'z boyligi</b><span>Kuniga 5–25 ta yangi so'z · bilganlaringiz qaytmaydi</span></span><span class="go">${ICON.chev}</span></a>`;
@@ -3523,7 +3614,7 @@ route(/^lugat$/, () => {
   app.innerHTML = `${nav(null, "", "Lug'at", { href: "#mening", label: "So'z qo'shish", icon: ICON.plus })}
   <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="${WORDS.length} ta so'zdan qidiring" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
-  ${vbCard()}
+  ${xmCard()}${vbCard()}
   <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${readyUnits().map(n => { const info = UNIT_INFO[n], st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${un(n)} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
   $("#qclr").onclick = () => { const i = $("#q"); i.value = ""; i.dispatchEvent(new Event("input")); i.focus(); };
   $("#q").oninput = e => {

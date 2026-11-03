@@ -579,6 +579,7 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty svg{width:18px;height:18px;margin-top:1px}
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hnav{display:grid;gap:12px}.hnav:empty{display:none}
 .xm-t{background:var(--card);border-radius:24px;padding:14px 14px 12px;min-width:0}
 .xm-k{font-size:14px;color:var(--muted);font-weight:500;margin:0}
 .xm-v{font:700 30px/1.1 var(--font-display);letter-spacing:-.02em;margin:4px 0 2px;font-variant-numeric:tabular-nums}
@@ -721,9 +722,9 @@ a.nwb{text-decoration:none}
 .home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);box-shadow:inset 0 0 0 1px var(--glass-edge),var(--shadow)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.home .lesson.dars,.home .xm,.home .xm-t,.home .skc,.home .xrow{background:var(--surface)}}
 .home .xm,.home .xm-t,.home .skc{border-radius:30px}
-.home .xm,.home .xm-t,.home .skc,.home .lesson.dars,.home .xrow{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
-:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
+.home .xm,.home .xm-t,.home .skc,.home .lesson.dars,.home .xrow,.home .hnav .nwb{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 2px 4px rgba(23,23,27,.04),0 16px 34px -18px rgba(23,23,27,.25)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow,.hnav .nwb){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
+:root[data-theme="dark"] .home :is(.xm,.xm-t,.skc,.lesson.dars,.xrow,.hnav .nwb){background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
 /* dars: halqa va ixcham qadamlar */
 .dars .cnt{position:relative;width:58px;height:58px;padding:0;background:none;justify-content:center;margin:-4px -2px 0 0}
 .dars .cnt .rg{position:absolute;inset:0}
@@ -2022,7 +2023,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
-const ICON = {vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
+const ICON = {curve: sv('<path d="M4 4v15a1 1 0 0 0 1 1h15"/><path d="M8 6.5c1.2 4.6 3.2 7.6 6 8.6 1.7.6 3.6.6 5 .4"/>'), vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -2768,6 +2769,7 @@ route(/^$/, () => {
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
+    ${lv.zero ? "" : `<div class="hnav">${xmCard()}${vbCard()}</div>`}
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
@@ -2785,7 +2787,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611041200";
+const APP_V = "202611041250";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3425,8 +3427,8 @@ const vbRecheck = () => Object.entries(S.vb.known).filter(([, d]) => d <= addDay
 const vbW = k => WORDS.find(w => w.id === "vb|" + k);
 let VBT = null; // joriy saralash / tekshiruv
 function vbSetup(first) {
-  const lv = S.vb.lvl || "mid", g = S.vb.goal || 10;
-  app.innerHTML = `${nav("#lugat", "Lug'at", "So'z boyligi")}
+  const lv = S.vb.lvl || "mid", g = S.vb.goal || 10, [bh, bl] = first ? backOf("vb") : ["#boylik", "So'z boyligi"];
+  app.innerHTML = `${nav(bh, bl, "So'z boyligi")}
   <div class="vbs"><p class="vb-l">Daraja</p>
   <div class="vb-seg" role="radiogroup" aria-label="Daraja">${Object.entries(VB_LV).map(([k, v]) => `<button role="radio" aria-checked="${k === lv}" class="${k === lv ? "on" : ""}" data-l="${k}">${v[0]}</button>`).join("")}</div>
   <div class="vb-desc"><span id="vbd">${VB_LV[lv][1]} · ${VB_LV[lv][2]}</span><a href="#boylik-test">Darajamni aniqla ›</a></div>
@@ -3455,7 +3457,8 @@ route(/^boylik$/, () => {
   const known = Object.keys(S.vb.known).length, vw = vbWords(), learning = vw.filter(w => !isMastered(w)).length;
   const due = vw.filter(isDue), rc = vbRecheck(), unseen = vw.filter(w => !isSeen(w)), n = vbToday(), goal = S.vb.goal, need = Math.max(0, goal - n), left = vbLeft().length;
   const lv = VB_LV[S.vb.lvl];
-  app.innerHTML = `${nav("#lugat", "Lug'at", "So'z boyligi", { href: "#boylik-sozla", label: "Sozlash", icon: ICON.gear })}
+  const [bh, bl] = backOf("vb");
+  app.innerHTML = `${nav(bh, bl, "So'z boyligi", { href: "#boylik-sozla", label: "Sozlash", icon: ICON.gear })}
   <p class="sub">${lv[0]} · ${lv[1]} · kuniga ${goal} ta</p>
   <div class="stack">
     <div class="vb-stats">
@@ -3563,21 +3566,24 @@ route(/^boylik-test$/, () => {
     setTimeout(() => { VBP.i++; render(); }, 450);
   });
 });
+/* bo'limga bosh sahifadan kirilsa — orqaga bosh sahifaga, Lug'atdan kirilsa — Lug'atga (ichki sahifalar va mashqdan qaytish manbani o'zgartirmaydi) */
+const ORIG = {};
+function backOf(k) { if (prevH === "" || prevH === "lugat") ORIG[k] = prevH === "" ? "#" : "#lugat"; const h = ORIG[k] || "#lugat"; return [h, h === "#" ? "Bugun" : "Lug'at"]; }
 /* ---------- XOTIRA bo'limi: «Qutqarish» — eng zaif so'zlar, holatlar, bugungi yuk ---------- */
 const XM_N = 10;
 const xmPick = st => st.weak.filter(x => x.R < .9).slice(0, XM_N).map(x => x.w);
 function xmCard() {
   const st = memStats(); if (st.all < 5) return "";
   const n = st.bd || st.wk;
-  return `<a class="nwb xm-entry${st.bd ? " hot" : ""}" href="#xotira"><span class="pmi">${ICON.redo}</span><span class="tx"><b>Xotira</b><span>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : "Hammasi esda · " + st.ok + " ta mustahkam"}</span></span>${n ? `<span class="xm-n">${n}</span>` : ""}<span class="go">${ICON.chev}</span></a>`;
+  return `<a class="nwb xm-entry${st.bd ? " hot" : ""}" href="#xotira"><span class="pmi">${ICON.curve}</span><span class="tx"><b>Xotira</b><span>${st.bd ? st.bd + " ta so'z unutilmoqda" : st.wk ? st.wk + " ta so'z zaiflashgan" : "Hammasi esda · " + st.ok + " ta mustahkam"}</span></span>${n ? `<span class="xm-n">${n}</span>` : ""}<span class="go">${ICON.chev}</span></a>`;
 }
 route(/^xotira$/, () => {
-  const st = memStats(), pick = xmPick(st), due = dueWords().length, cap = newCap(due), all = st.weak.length;
+  const [bh, bl] = backOf("xm"), st = memStats(), pick = xmPick(st), due = dueWords().length, cap = newCap(due), all = st.weak.length;
   const mins = Math.max(2, Math.round(pick.length * .5));
   const row = x => { const p = Math.round(x.R * 100), c = memState(x.R); return `<li class="xm-w"><button data-say="${esc(spoken(x.w))}"><span class="tx"><b>${esc(x.w.w)}</b><span>${esc(x.w.u)}</span></span><span class="xm-bar" aria-hidden="true"><i class="${c}" style="width:${p}%"></i></span><span class="xm-p ${c}">${p}%</span></button></li>`; };
   let open = false;
   const draw = () => {
-    app.innerHTML = `${nav("#lugat", "Lug'at", "Xotira")}
+    app.innerHTML = `${nav(bh, bl, "Xotira")}
     <div class="stack">
       <section class="card xm-hero">
         <p class="label">Bugun</p>

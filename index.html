@@ -5041,18 +5041,19 @@ async function aiAsk(body) {
   try {
     const r = await fetch(SB.url + "/functions/v1/tushuntir", { method: "POST", signal: ctl.signal, headers: { apikey: SB.key, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw Object.assign(new Error(d.error || "http"), { code: r.status === 429 ? "limit" : r.status === 401 ? "auth" : d.error === "no_key" ? "no_key" : "fail" });
+    if (!r.ok) throw Object.assign(new Error(d.error || "http"), { code: r.status === 429 ? "limit" : r.status === 401 ? "auth" : r.status === 403 ? "not_allowed" : d.error === "no_key" ? "no_key" : "fail" });
     return d;
   } catch (e) { if (!e.code) e.code = "offline"; throw e; }
   finally { clearTimeout(tm); }
 }
-const aiErr = c => c === "limit" ? "Bugungi 50 ta tushuntirish ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
+const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 50 ta tushuntirish ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
 const aiExample = m => m && m.en ? `<div class="ai-ex" ><b>${esc(m.en)}</b><button class="icon" data-say="${esc(m.en)}" aria-label="Tinglash">${ICON.vol}</button>${m.uz ? `<small>${esc(m.uz)}</small>` : ""}</div>` : "";
 /* host — xato kartasi (#tf); ctx: { uz, target, answer, rule } */
+/* faqat Ali uchun (API krediti boshqalarga sarflanmasin) — server ham shu ro'yxatni tekshiradi */
+const AI_ALLOW = ["aliumirov.me@gmail.com"];
 function whyButton(host, ctx) {
-  if (cloud.kind === "claude") return;
+  if (cloud.kind === "claude" || !AUTH || !AI_ALLOW.includes(String(AUTH.email || "").toLowerCase())) return;
   const slot = document.createElement("div"); slot.className = "why-slot"; host.appendChild(slot);
-  if (!AUTH) { slot.innerHTML = `<p class="why-off">Xatoni tushuntirish uchun hisobga kiring — Sozlamalarda.</p>`; return; }
   slot.innerHTML = `<button class="why" type="button">${ICON_WHY}<span>Nega xato?</span></button>`;
   const btn = slot.querySelector(".why");
   btn.onclick = async () => {

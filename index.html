@@ -338,9 +338,9 @@ textarea.spell{display:block;resize:none;overflow:hidden;white-space:pre;height:
   .wrap:has(.card .spell) .bar{margin-bottom:10px}
   .wrap:has(.card .spell) .card{padding:14px 16px}
   .wrap:has(.card .spell) .q{margin:2px 0}
-  .wrap:has(.card .spell) .tools{margin-top:8px}
+  .wrap:has(.card .spell) .tools{margin-top:14px}
   .wrap:has(.card .spell) .hintline:empty{min-height:0;margin:0}
-  .wrap:has(.card .spell) .spell{margin-top:10px}
+  .wrap:has(.card .spell) .spell,.wrap:has(.card .spell) .lans{margin-top:18px}
   .wrap:has(.card .spell) .card .row{margin-top:10px!important}
 }
 .fb{margin-top:14px;border-radius:16px;padding:14px 16px;font-size:15px}
@@ -520,6 +520,10 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .top .bar{flex:1;margin:0;height:10px}
 .top .cnt{flex:none;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums;min-width:36px;text-align:right}
 .top .icon#quit{flex:none}
+/* savol kartasi: so'z → yordam tugmalari → yozish maydoni orasida nafas (bir-biriga tiqilmasin) */
+.qcard .tools{margin-top:18px}
+.qcard .hintline:empty{min-height:0;margin:0}
+.qcard .spell,.qcard .lans{margin-top:24px}
 /* mashq headeri: yopishqoq, aylantirilganda shisha fon (.nb kabi) */
 #app > .top{position:sticky;top:0;z-index:30;margin:calc(-20px - env(safe-area-inset-top,0px)) calc(50% - 50vw) 12px;padding:calc(env(safe-area-inset-top,0px) + 18px) calc(50vw - 50%) 10px;transition:background-color .2s,box-shadow .2s}
 #app > .top.on{background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:0 1px 0 var(--line)}
@@ -2731,7 +2735,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611040010";
+const APP_V = "202611040020";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

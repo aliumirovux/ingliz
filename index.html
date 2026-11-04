@@ -1353,6 +1353,40 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .pron.synh{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px;color:var(--muted);font-size:13px;text-align:center}
 .pron.synh i{font-style:normal;font-size:16px;color:var(--ink);font-weight:500}
 .synalt{display:block;padding:8px 12px;border-radius:12px;background:var(--hl);color:var(--ink);font-size:14px;text-align:left}.synalt i{font-style:normal;font-weight:600}
+/* Fe'llar */
+.fl-tag{display:table;margin:0 auto 10px;font-size:13px;font-weight:600;color:var(--accent-text);background:var(--marker-soft);padding:4px 12px;border-radius:999px}
+.fl-q{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center}
+.fl-q em{font-style:normal;color:var(--accent-text);background:var(--marker-soft);border-radius:6px;padding:0 3px}
+.fl-arr{display:flex;color:var(--muted)}.fl-arr svg{width:22px;height:22px}
+.fl .pron{text-align:center}
+.fl-sub{margin:4px 0 0;text-align:center;color:var(--muted);font-size:15px}
+.fl-sent{font-size:20px;line-height:1.45;font-weight:600}.fl-own{font-size:17px;font-weight:500}
+.fl-gap{display:inline-block;min-width:72px;border-bottom:2px solid var(--marker);margin:0 3px;vertical-align:baseline}
+.fl-step{margin:18px 0 0;text-align:center;font-size:14px;color:var(--muted)}
+.fl-field{position:relative}
+.fl-ghost{position:absolute;left:18px;top:50%;margin-top:12px;transform:translateY(-50%);font-size:22px;color:var(--line-strong);pointer-events:none;white-space:pre}
+.fl-ghost[hidden]{display:none}
+.qcard textarea.spell.fl-tr{background:transparent}
+.qcard textarea.spell.fl-area{white-space:pre-wrap;min-height:104px;font-size:18px;line-height:1.45}
+.qcard textarea.spell.ok{border-color:var(--ok-strong);background:var(--ok-bg);color:var(--ok)}
+.qcard textarea.spell.bad{border-color:var(--bad-strong)}
+.fl-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}.fl-dots i{width:10px;height:10px;border-radius:50%;background:var(--surface-2)}.fl-dots i.on{background:var(--ok-strong)}
+.fl .fb.bad{background:var(--hl);color:var(--ink)}
+.fl .fb.ok{background:var(--ok-bg);color:var(--ok)}
+.fl .fb:not(.ok):not(.bad){background:var(--surface-2);color:var(--ink)}
+.fl-df{display:block;margin:6px 0;font:700 21px/1.3 var(--font-display);letter-spacing:.02em}
+.fl-df s{color:var(--bad);font-weight:500;text-decoration-thickness:2px}
+.fl-df u{text-decoration:none;color:var(--ok);background:var(--ok-bg);border-radius:3px}
+.fl-dfs{font-size:17px;letter-spacing:0}
+.fl-ex{display:block;margin-top:8px;color:var(--ink)}.fl-ex small{display:block;color:var(--muted);font-size:13px}
+.fl-ai{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent-text);margin-bottom:4px}.fl-ai svg{width:14px;height:14px}
+.fl-play{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:112px;height:112px;margin:6px auto;border:0;border-radius:50%;background:var(--surface);box-shadow:var(--card-sm);color:var(--muted);font:600 13px var(--font-body);cursor:pointer}
+.fl-play svg{width:34px;height:34px;color:var(--marker)}
+.fl-res{text-align:center}.fl-big{margin:4px 0 0;font:700 48px/1.1 var(--font-display);font-variant-numeric:tabular-nums}
+.fl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}.fl-stats div{background:var(--surface-2);border-radius:14px;padding:10px 6px}.fl-stats b{display:block;font-size:22px}.fl-stats span{font-size:12px;color:var(--muted)}
+.fl-list{list-style:none;padding:0;margin:0}.fl-list li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}.fl-list li:first-child{border-top:0}
+.fl-list em{font-style:normal;color:var(--accent-text)}.fl-list span{color:var(--muted);font-size:13px;text-align:right}
+.fl-log{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.fl-log span{font-size:13px;font-weight:600;padding:5px 10px;border-radius:10px}.fl-log .ok{background:var(--ok-bg);color:var(--ok)}.fl-log .bad{background:var(--bad-bg);color:var(--bad)}
 /* So'z o'yini */
 .qa.q4{grid-template-columns:repeat(2,minmax(0,1fr))}
 .oy-lead{margin:14px 2px 16px;color:var(--muted);font-size:15px;line-height:1.5}
@@ -2339,6 +2373,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 const ICON = {curve: sv('<path d="M4 4v15a1 1 0 0 0 1 1h15"/><path d="M8 6.5c1.2 4.6 3.2 7.6 6 8.6 1.7.6 3.6.6 5 .4"/>'), vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
+ICON.verb = sv('<path d="M4 7h10"/><path d="m11 4 3 3-3 3"/><path d="M20 17H10"/><path d="m13 14-3 3 3 3"/>');
 ICON.twin = sv('<rect x="3" y="6" width="11" height="12" rx="2.5"/><path d="M10 6V5.5A2.5 2.5 0 0 1 12.5 3h6A2.5 2.5 0 0 1 21 5.5v7a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M6.5 13.5 8.5 9l2 4.5M7.2 12h2.6"/>');
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
@@ -2649,6 +2684,7 @@ function merge(a, b) {
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   out.hook = Object.assign({}, a.hook || {}, b.hook || {});
+  { const ia = a.irr || {}, ib = b.irr || {}; out.irr = { best: Math.max(+ia.best || 0, +ib.best || 0), sp: (ia.sp || "") > (ib.sp || "") ? ia.sp || "" : ib.sp || "" }; }
   { const ca = a.conf || {}, cb = b.conf || {}; out.conf = {}; new Set(Object.keys(ca).concat(Object.keys(cb))).forEach(k => { const x = ca[k], y = cb[k]; out.conf[k] = !x ? y : !y ? x : ((y.n || 0) > (x.n || 0) || ((y.n || 0) === (x.n || 0) && (y.d || "") > (x.d || "")) ? y : x); }); }
   const my = new Map(); (a.my || []).concat(b.my || []).forEach(m => my.set(m.id, m)); out.my = [...my.values()];
   { const va = a.vb || {}, vb = b.vb || {}, kn = Object.assign({}, va.known || {}, vb.known || {});
@@ -2708,7 +2744,7 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
+const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
 /* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
@@ -3081,10 +3117,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3206,6 +3242,7 @@ function todayPlan(n) {
   const lt = learnedToday(), ready = lt.filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5);
   if (ready.length) plan.push({ tag: "kech", t: "Kechki takrorlash", s: ready.length + " ta bugungi so'z · xotiradan yozasiz", run: () => startQuiz(ready, "spell", "Kechki takrorlash", "#", "kech", { kech: true }) });
   else if (lt.length) plan.push({ tag: "kech", lock: true, t: "Kechki takrorlash", s: "Soat " + hhmm(Math.min(...lt.map(w => rec(w.id).lt)) + KECH_H * 36e5) + " dan keyin ochiladi · uxlashdan oldin qiling", run: () => {} });
+  if (curLevel().id !== "zero") { const fi = felPlanInfo(); if (fi.d.length || fi.n.length || dayDone().includes("fel")) plan.push({ tag: "fel", t: "Fe'llar", s: (fi.d.length || fi.n.length ? [fi.n.length ? fi.n.length + " ta yangi" : "", fi.d.length ? fi.d.length + " ta takror" : ""].filter(Boolean).join(" · ") : "Bugungi fe'llar yozildi") + " · yozib o'rganasiz", run: () => startFel() }); }
   const pats = unitPats(n), p = pats.find(x => patFrac(x) < 1), rv = gramReview(n, p && p.id, p ? 3 : 6), plus = rv.length ? " · +" + rv.length + " ta takrorlash" : "";
   if (p) plan.push({ tag: "gram", t: "Grammatika: " + p.title, s: (S.pat[p.id] != null ? "Eng yaxshi natija: " + S.pat[p.id] + "/" + p.drill.length : "Qoida va " + p.drill.length + " ta mashq") + plus, min: rv.length ? 4 : 3, run: () => { GX = rv; go("qolip-" + p.id); } });
   else if (rv.length) plan.push({ tag: "gram", t: "Grammatika: takrorlash", s: rv.length + " ta savol, o'tilgan qoliplardan", run: () => { GX = rv; go("gtakror"); } });
@@ -3224,7 +3261,7 @@ function todayPlan(n) {
   plan.forEach(x => { x.min = x.min || STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
-const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3, tl: 5 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read", tl: "vol" }, STEP_NAME = { tl: "Tinglash", story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
+const STEP_MIN = { fel: 5, esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3, tl: 5 }, STEP_IC = { fel: "verb", esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read", tl: "vol" }, STEP_NAME = { fel: "Fe'llar", tl: "Tinglash", story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
 let GX = null; // rejadan kelgan grammatika takrorlash savollari
 
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
@@ -3363,7 +3400,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042140";
+const APP_V = "202611042230";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3862,6 +3899,294 @@ function oyFinish() {
   <div class="oy-acts"><button class="btn" id="oyre">Yana ${OY_N} ta</button><a class="btn ghost" href="#unitlar">Tayyor</a></div>`;
   $("#oyre").onclick = () => { const q = oyRound(pool); OY = { pool, q, i: 0, res: [], conf: [] }; render(); };
 }
+
+/* ---------- NOTO'G'RI FE'LLAR: 60 ta eng ko'p ishlatiladigan, 3 to'lqin, tovush oilalari ----------
+   [hozirgi, o'tgan, o'tganning o'qilishi, o'zbekcha, o'zbekcha o'tgan, oila, gap (o'tgan shakl bilan), tarjima, Did-savol (___ = oddiy shakl), tarjima] */
+const FEL_FAM = {
+  yol: ["Yolg'iz", "o'z shakli — yodlanadi", null],
+  ought: ["-ought / -aught", "oxiri «oot» eshitiladi", /(ought|aught)$/],
+  dt: ["d → t", "oxiridagi «d» → «t»", /t$/],
+  eet: ["ee/ea → e (+t)", "unli qisqaradi", /e.*$/],
+  same: ["O'zgarmaydi", "uchala shakl bir xil", null],
+  a: ["→ a", "o'rtasi «a» bo'ladi", /a/],
+  o: ["→ o", "o'rtasi «o» bo'ladi: wrote, spoke", /o/],
+  ew: ["→ ew", "oxiri «uu» eshitiladi", /ew$/],
+  aid: ["ay → aid", "say → said, pay → paid", /aid$/],
+  ound: ["-old / -ound / -ood", "tell → told, find → found", /(old|ound|ood)$/],
+  ot: ["→ o(t)", "get → got, lose → lost", /o(st|t|n)$/]
+};
+const FEL = [
+  // 1-to'lqin
+  ["be", "was / were", "uoz / uyo", "bo'lmoq", "edim", "yol", "I was at home yesterday.", "Kecha uyda edim.", "", ""],
+  ["have", "had", "hed", "ega bo'lmoq", "bor edi", "yol", "We had a meeting this morning.", "Bugun ertalab majlisimiz bo'ldi.", "Did you ___ lunch?", "Tushlik qildingizmi?"],
+  ["do", "did", "did", "qilmoq", "qildim", "yol", "I did my homework.", "Uy vazifamni qildim.", "Did you ___ the task?", "Vazifani bajardingizmi?"],
+  ["say", "said", "sed", "aytmoq", "aytdim", "aid", "He said yes.", "U «ha» dedi.", "Did she ___ anything?", "U biror narsa dedimi?"],
+  ["go", "went", "uent", "bormoq", "bordim", "yol", "We went to Samarkand last week.", "O'tgan hafta Samarqandga bordik.", "Did you ___ to work yesterday?", "Kecha ishga bordingizmi?"],
+  ["get", "got", "got", "olmoq (qabul qilmoq)", "oldim", "ot", "I got your message.", "Xabaringizni oldim.", "Did you ___ my email?", "Xatimni oldingizmi?"],
+  ["make", "made", "meyd", "yasamoq, tayyorlamoq", "tayyorladim", "yol", "I made a new mockup.", "Yangi maket tayyorladim.", "Did you ___ the mockup?", "Maketni tayyorladingizmi?"],
+  ["know", "knew", "nyuu", "bilmoq", "bilardim", "ew", "I knew the answer.", "Javobni bilardim.", "Did you ___ about the meeting?", "Majlis haqida bilarmidingiz?"],
+  ["think", "thought", "thoot", "o'ylamoq", "o'yladim", "ought", "I thought about the design.", "Dizayn haqida o'yladim.", "Did you ___ about my idea?", "Fikrim haqida o'ylab ko'rdingizmi?"],
+  ["take", "took", "tuk", "olib ketmoq, olmoq", "oldim", "yol", "I took a taxi to work.", "Ishga taksida bordim.", "Did you ___ the bus?", "Avtobusga chiqdingizmi?"],
+  ["see", "saw", "soo", "ko'rmoq", "ko'rdim", "yol", "I saw your message.", "Xabaringizni ko'rdim.", "Did you ___ the new design?", "Yangi dizaynni ko'rdingizmi?"],
+  ["come", "came", "keym", "kelmoq", "keldim", "a", "He came late.", "U kech keldi.", "Did he ___ to the meeting?", "U majlisga keldimi?"],
+  ["give", "gave", "geyv", "bermoq", "berdim", "a", "She gave me a book.", "U menga kitob berdi.", "Did you ___ him the file?", "Unga faylni berdingizmi?"],
+  ["find", "found", "faund", "topmoq", "topdim", "ound", "I found the bug.", "Xatoni topdim.", "Did you ___ the problem?", "Muammoni topdingizmi?"],
+  ["tell", "told", "tould", "aytmoq (kimgadir)", "aytdim", "ound", "I told my manager.", "Rahbarimga aytdim.", "Did you ___ your manager?", "Rahbaringizga aytdingizmi?"],
+  ["feel", "felt", "felt", "his qilmoq", "his qildim", "eet", "I felt tired yesterday.", "Kecha charchadim.", "Did you ___ better?", "O'zingizni yaxshiroq his qildingizmi?"],
+  ["leave", "left", "left", "ketmoq, jo'namoq", "ketdim", "eet", "I left work at six.", "Ishdan oltida chiqdim.", "Did you ___ early?", "Erta ketdingizmi?"],
+  ["put", "put", "put", "qo'ymoq", "qo'ydim", "same", "I put the file in the folder.", "Faylni papkaga qo'ydim.", "Did you ___ it on the table?", "Uni stol ustiga qo'ydingizmi?"],
+  ["bring", "brought", "broot", "olib kelmoq", "olib keldim", "ought", "I brought my laptop.", "Noutbukimni olib keldim.", "Did you ___ your laptop?", "Noutbukingizni olib keldingizmi?"],
+  ["send", "sent", "sent", "yubormoq", "yubordim", "dt", "I sent the file.", "Faylni yubordim.", "Did you ___ the file?", "Faylni yubordingizmi?"],
+  // 2-to'lqin
+  ["buy", "bought", "boot", "sotib olmoq", "sotib oldim", "ought", "I bought a new phone.", "Yangi telefon sotib oldim.", "Did you ___ bread?", "Non oldingizmi?"],
+  ["pay", "paid", "peyd", "to'lamoq", "to'ladim", "aid", "I paid by card.", "Karta bilan to'ladim.", "Did you ___ the bill?", "Hisobni to'ladingizmi?"],
+  ["spend", "spent", "spent", "sarflamoq, o'tkazmoq", "o'tkazdim", "dt", "We spent the weekend at home.", "Dam olish kunlarini uyda o'tkazdik.", "Did you ___ a lot of money?", "Ko'p pul sarfladingizmi?"],
+  ["meet", "met", "met", "uchrashmoq, tanishmoq", "uchrashdim", "eet", "I met the new designer.", "Yangi dizayner bilan tanishdim.", "Did you ___ the client?", "Mijoz bilan uchrashdingizmi?"],
+  ["keep", "kept", "kept", "saqlamoq", "saqladim", "eet", "I kept the old version.", "Eski versiyani saqlab qoldim.", "Did you ___ the receipt?", "Chekni saqladingizmi?"],
+  ["sleep", "slept", "slept", "uxlamoq", "uxladim", "eet", "I slept well.", "Yaxshi uxladim.", "Did you ___ well?", "Yaxshi uxladingizmi?"],
+  ["sit", "sat", "set", "o'tirmoq", "o'tirdim", "a", "We sat near the window.", "Deraza yonida o'tirdik.", "Did you ___ in the front?", "Oldinda o'tirdingizmi?"],
+  ["stand", "stood", "stud", "turmoq", "turdim", "ound", "We stood in a long line.", "Uzun navbatda turdik.", "Did you ___ in the line?", "Navbatda turdingizmi?"],
+  ["understand", "understood", "an-da-STUD", "tushunmoq", "tushundim", "ound", "I understood the task.", "Vazifani tushundim.", "Did you ___ the question?", "Savolni tushundingizmi?"],
+  ["read", "read", "red", "o'qimoq", "o'qidim", "same", "I read the article.", "Maqolani o'qidim.", "Did you ___ my message?", "Xabarimni o'qidingizmi?"],
+  ["write", "wrote", "rout", "yozmoq", "yozdim", "o", "I wrote to the developer.", "Dasturchiga yozdim.", "Did you ___ the report?", "Hisobotni yozdingizmi?"],
+  ["speak", "spoke", "spouk", "gapirmoq", "gaplashdim", "o", "I spoke with the team.", "Jamoa bilan gaplashdim.", "Did you ___ with the manager?", "Rahbar bilan gaplashdingizmi?"],
+  ["drive", "drove", "drouv", "mashina haydamoq", "haydadim", "o", "I drove to Chorsu.", "Chorsuga mashinada bordim.", "Did you ___ to work?", "Ishga mashinada keldingizmi?"],
+  ["eat", "ate", "eyt", "yemoq", "yedim", "a", "We ate plov on Thursday.", "Payshanba kuni osh yedik.", "Did you ___ breakfast?", "Nonushta qildingizmi?"],
+  ["drink", "drank", "drenk", "ichmoq", "ichdim", "a", "I drank green tea.", "Ko'k choy ichdim.", "Did you ___ coffee?", "Qahva ichdingizmi?"],
+  ["begin", "began", "bi-GEN", "boshlamoq", "boshladim", "a", "The meeting began at ten.", "Majlis o'nda boshlandi.", "Did the lesson ___ on time?", "Dars o'z vaqtida boshlandimi?"],
+  ["run", "ran", "ren", "yugurmoq", "yugurdim", "a", "I ran in the park.", "Bog'da yugurdim.", "Did you ___ this morning?", "Bugun ertalab yugurdingizmi?"],
+  ["sell", "sold", "sould", "sotmoq", "sotdim", "ound", "He sold his car.", "U mashinasini sotdi.", "Did you ___ your car?", "Mashinangizni sotdingizmi?"],
+  ["lose", "lost", "lost", "yo'qotmoq", "yo'qotdim", "ot", "I lost my keys.", "Kalitlarimni yo'qotdim.", "Did you ___ your phone?", "Telefoningizni yo'qotdingizmi?"],
+  ["forget", "forgot", "fa-GOT", "unutmoq", "unutdim", "ot", "I forgot his name.", "Uning ismini unutdim.", "Did you ___ the password?", "Parolni unutdingizmi?"],
+  // 3-to'lqin
+  ["break", "broke", "brouk", "sindirmoq", "sindirdim", "o", "I broke my phone screen.", "Telefonim ekranini sindirdim.", "Did you ___ the cup?", "Piyolani sindirdingizmi?"],
+  ["choose", "chose", "chouz", "tanlamoq", "tanladim", "o", "I chose the blue color.", "Ko'k rangni tanladim.", "Did you ___ a hotel?", "Mehmonxona tanladingizmi?"],
+  ["wake", "woke", "uouk", "uyg'onmoq", "uyg'ondim", "o", "I woke up at seven.", "Yettida uyg'ondim.", "Did you ___ up early?", "Erta uyg'ondingizmi?"],
+  ["teach", "taught", "toot", "o'rgatmoq, dars bermoq", "o'rgatdim", "ought", "She taught me English.", "U menga ingliz tilini o'rgatdi.", "Did he ___ you to drive?", "U sizga mashina haydashni o'rgatdimi?"],
+  ["catch", "caught", "koot", "ushlamoq, ulgurmoq", "ulgurdim", "ought", "I caught the last bus.", "Oxirgi avtobusga ulgurdim.", "Did you ___ the train?", "Poyezdga ulgurdingizmi?"],
+  ["fight", "fought", "foot", "kurashmoq, janjallashmoq", "kurashdim", "ought", "The two teams fought hard.", "Ikki jamoa qattiq kurashdi.", "Did they ___ again?", "Ular yana janjallashishdimi?"],
+  ["build", "built", "bilt", "qurmoq", "qurdim", "dt", "They built a new school.", "Ular yangi maktab qurishdi.", "Did they ___ the bridge?", "Ular ko'prikni qurishdimi?"],
+  ["lend", "lent", "lent", "qarzga bermoq", "qarzga berdim", "dt", "I lent him some money.", "Unga biroz pul qarzga berdim.", "Did you ___ him your car?", "Unga mashinangizni berib turdingizmi?"],
+  ["cut", "cut", "kat", "kesmoq", "kesdim", "same", "I cut the bread.", "Nonni kesdim.", "Did you ___ your finger?", "Barmog'ingizni kesib oldingizmi?"],
+  ["hit", "hit", "hit", "urmoq, urilmoq", "urildi", "same", "The ball hit the window.", "To'p derazaga tegdi.", "Did the car ___ anything?", "Mashina biror narsaga urildimi?"],
+  ["hear", "heard", "hyod", "eshitmoq", "eshitdim", "yol", "I heard a strange noise.", "G'alati shovqin eshitdim.", "Did you ___ the news?", "Yangilikni eshitdingizmi?"],
+  ["hold", "held", "held", "ushlab turmoq", "ushlab turdim", "yol", "She held the baby.", "U chaqaloqni ushlab turdi.", "Did you ___ the door?", "Eshikni ushlab turdingizmi?"],
+  ["win", "won", "uan", "yutmoq", "yutdim", "ot", "Our team won the game.", "Jamoamiz o'yinda yutdi.", "Did you ___ the prize?", "Sovrinni yutdingizmi?"],
+  ["wear", "wore", "uoo", "kiymoq", "kiydim", "yol", "I wore a suit to the interview.", "Suhbatga kostyum kiydim.", "Did you ___ a jacket?", "Kurtka kiydingizmi?"],
+  ["swim", "swam", "suem", "suzmoq", "suzdim", "a", "We swam in the sea.", "Dengizda suzdik.", "Did you ___ in the lake?", "Ko'lda suzdingizmi?"],
+  ["sing", "sang", "seng", "kuylamoq", "kuyladim", "a", "She sang a beautiful song.", "U chiroyli qo'shiq kuyladi.", "Did he ___ at the party?", "U bazmda qo'shiq aytdimi?"],
+  ["fly", "flew", "fluu", "uchmoq (samolyotda)", "uchdim", "ew", "We flew to Istanbul.", "Istanbulga samolyotda uchdik.", "Did you ___ to Dubai?", "Dubayga samolyotda uchdingizmi?"],
+  ["grow", "grew", "gruu", "o'smoq", "o'sdi", "ew", "The company grew fast.", "Kompaniya tez o'sdi.", "Did your son ___ a lot?", "O'g'lingiz ancha o'sdimi?"],
+  ["throw", "threw", "thruu", "otmoq, tashlamoq", "tashladim", "ew", "He threw the ball.", "U to'pni otdi.", "Did you ___ it away?", "Uni tashlab yubordingizmi?"],
+  ["draw", "drew", "druu", "chizmoq", "chizdim", "ew", "I drew a quick sketch.", "Tezda eskiz chizdim.", "Did you ___ the icons?", "Ikonkalarni chizdingizmi?"]
+].map((r, i) => ({ v1: r[0], v2: r[1], pr: r[2], u: r[3], up: r[4], fam: r[5], e: r[6], t: r[7], dq: r[8], dt: r[9], wave: Math.floor(i / 20) + 1, id: "irr|" + r[0] }));
+/* ---------- Fe'llar: yozish zinapoyasi ----------
+   Har bir fe'l S.srs["irr|..."] da: b — pog'ona (0–5), due — keyingi kun. Har qadam — klaviaturada yozish, tanlash yo'q.
+   1: ko'chirib yozish (2 marta) → 2: birinchi harf bilan → 3: xotiradan + teskari → 4: eshitib + gap ichida → 5: Did-tuzog'i / o'z gapingiz.
+   Pog'ona faqat hamma savol birinchi urinishda to'g'ri bo'lsa ko'tariladi; xato — bir pog'ona pastga va ertaga qaytadi.
+   Xato javobdan keyin to'g'risini qayta yozmaguncha keyingisiga o'tilmaydi. */
+const FEL_NEW = 5, FEL_DUE = 8, FEL_SPEED_GAP = 3;
+const felRec = v => S.srs[v.id];
+const felSeen = () => FEL.filter(v => felRec(v));
+const felDue = () => FEL.filter(v => { const r = felRec(v); return r && r.due && r.due <= today(); }).sort((a, b) => (felRec(a).b || 0) - (felRec(b).b || 0) || (felRec(a).due < felRec(b).due ? -1 : 1));
+const felNew = n => FEL.filter(v => !felRec(v)).slice(0, n);
+const felOk = (v, kind) => kind === "rev" ? [v.v1] : kind === "did" ? [v.v1] : v.v2.split("/").map(x => norm(x)).concat([norm(v.v2)]);
+const felMark = v => { const f = FEL_FAM[v.fam], re = f && f[2]; return re && !v.v2.includes("/") ? esc(v.v2).replace(re, s => `<em>${s}</em>`) : esc(v.v2); };
+const felGap = v => { const w = v.v2.split("/")[0].trim(), re = new RegExp("\\b" + w + "\\b", "i"); return re.test(v.e) ? esc(v.e).replace(re, '<span class="fl-gap" aria-label="bo\'sh joy"></span>') : ""; };
+/* kuniga 5 ta yangi (bugun boshlanganlar ham hisobga olinadi); takror ko'p bo'lsa — kamroq yoki yo'q */
+function felPlanInfo() {
+  const all = felDue(), d = all.slice(0, FEL_DUE), started = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length;
+  const cap = Math.max(0, (all.length > 15 ? 0 : all.length > 10 ? 3 : FEL_NEW) - started);
+  return { d, n: felNew(cap) };
+}
+/* savollar ro'yxati: yangi fe'llar — ko'chirish, keyin takrorlar, oxirida yangilarni birinchi harf bilan */
+function felQueue() {
+  const { d, n } = felPlanInfo(), q = [];
+  n.forEach(v => q.push({ v, k: "copy" }));
+  d.forEach(v => {
+    const b = felRec(v).b || 0;
+    if (b <= 1) q.push({ v, k: "first" });
+    else if (b === 2) q.push({ v, k: "recall" }, { v, k: "rev" });
+    else if (b === 3) q.push({ v, k: "listen" }, { v, k: felGap(v) ? "gap" : "recall" });
+    else if (b === 4) { if (v.dq) q.push({ v, k: "did" }); q.push({ v, k: aiOn() ? "own" : felGap(v) ? "gap" : "recall" }); }
+    else q.push({ v, k: Math.random() < .5 ? "recall" : "rev" });
+  });
+  n.forEach(v => q.push({ v, k: "first" }));
+  return q;
+}
+let FL = null;
+function startFel() {
+  const q = felQueue(); if (!q.length) { toast("Bugun fe'l yo'q", null, null, { type: "info", sub: "Takrorlar ertaga keladi" }); return; }
+  FL = { q, i: 0, miss: new Set(), from: {}, typed: 0, first: 0, fixed: 0, newIds: new Set(q.filter(x => x.k === "copy").map(x => x.v.id)) };
+  q.forEach(x => { if (!(x.v.id in FL.from)) FL.from[x.v.id] = felRec(x.v) ? felRec(x.v).b || 0 : -1; });
+  go("fellarmashq");
+}
+route(/^fellar$/, () => { startFel(); if (!FL) go(""); });
+route(/^fellarmashq$/, () => {
+  if (!FL) { go(""); return; }
+  if (FL.i >= FL.q.length) return felFinish();
+  const x = FL.q[FL.i], v = x.v, N = FL.q.length, hasDid = x.k === "did", trapW = norm(v.v2.split("/")[0]);
+  const fam = FEL_FAM[v.fam];
+  const head = {
+    copy: [`Yangi fe'l · ${fam[0]}`, `<span lang="en">${esc(v.v1)}</span><span class="fl-arr">${ICON.arrow}</span><span lang="en">${felMark(v)}</span>`, `${esc(v.pr)}`, `${esc(v.u)} → ${esc(v.up)}`],
+    first: ["Xotiradan · yordam bilan", `<span lang="en">${esc(v.v1)} → ${esc(v.v2.split("/")[0].trim()[0])}${"_".repeat(Math.max(2, v.v2.split("/")[0].trim().length - 1))}</span>`, "", `${esc(v.u)} → ${esc(v.up)} · ${v.v2.split("/")[0].trim().length} harf`],
+    recall: ["Xotiradan", `<span lang="en">${esc(v.v1)} → ?</span>`, "", `${esc(v.u)} → ${esc(v.up)}`],
+    rev: ["Teskari", `<span lang="en">${esc(v.v2)} → ?</span>`, "", `${esc(v.up)} → ${esc(v.u)} (oddiy shakli)`],
+    listen: ["Eshitib yozing", `<button class="fl-play" id="flplay" type="button" aria-label="Qayta eshitish">${ICON.vol}<span>Eshitish</span></button>`, "", "Eshitgan o'tgan shaklni yozing"],
+    gap: ["Gap ichida", `<span class="fl-sent" lang="en">${felGap(v)}</span>`, "", `${esc(v.t)} · ${esc(v.v1)} → ?`],
+    did: ["Did-tuzog'i", `<span class="fl-sent" lang="en">${esc(v.dq).replace("___", '<span class="fl-gap" aria-label="bo\'sh joy"></span>')}</span>`, "", `${esc(v.dt)} · ${esc(v.v1)} → ?`],
+    own: ["O'z gapingiz", `<span class="fl-sent fl-own">Kecha nima qildingiz? <b lang="en">${esc(v.v2.split("/")[0])}</b> bilan bitta gap yozing</span>`, "", "Claude tekshiradi · masalan: " + esc(v.e)]
+  }[x.k];
+  app.innerHTML = `<div class="top"><button class="icon" id="flx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" id="flbar"><i></i></div><span class="cnt">${FL.i + 1}/${N}</span></div>
+  <div class="card qcard fl"><p class="label">Fe'llar · ${esc(head[0])}</p><span class="fl-tag">${esc(head[0])}</span>
+    <div class="q fl-q${x.k === "gap" || x.k === "did" || x.k === "own" ? " qsmall" : ""}">${head[1]}</div>${head[2] ? `<div class="pron">${head[2]}</div>` : ""}<p class="fl-sub">${head[3]}</p>
+    ${x.k === "copy" ? `<p class="fl-step" id="flstep">Ko'chirib yozing (1/2)</p>` : ""}
+    <div class="fl-field">${x.k === "copy" ? `<span class="fl-ghost" id="flghost" aria-hidden="true">${esc(v.v2.split("/")[0].trim())}</span>` : ""}
+      <textarea class="spell${x.k === "copy" ? " fl-tr" : ""}${x.k === "own" ? " fl-area" : ""}" id="flin" rows="${x.k === "own" ? 3 : 1}" wrap="${x.k === "own" ? "soft" : "off"}" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" aria-label="${x.k === "own" ? "Gapingiz" : "Javob"}" placeholder="${x.k === "own" ? "Yesterday I…" : x.k === "copy" ? "" : x.k === "rev" ? "Oddiy shaklini yozing…" : "O'tgan shaklini yozing…"}"></textarea></div>
+    ${x.k === "copy" ? `<div class="fl-dots" aria-hidden="true"><i></i><i></i></div>` : ""}
+    <div class="fb hidden" id="flfb" role="status" aria-live="polite"></div>
+    <div class="row" style="margin-top:14px">${x.k === "copy" ? "" : `<button class="btn ghost" id="flidk">${x.k === "own" ? "O'tkazish" : "Bilmayman"}</button>`}<button class="btn" id="flgo">Tekshirish</button></div></div>`;
+  segBar($("#flbar"), N, FL.q.map((y, j) => j < FL.i ? !FL.miss.has(y.v.id + y.k) : null), FL.i);
+  $("#flx").onclick = () => confirmQuit(FL.i, N, () => { FL = null; LES = false; go(""); });
+  const inp = $("#flin"), fb = $("#flfb"), btn = $("#flgo"), idk = $("#flidk");
+  const want = felOk(v, x.k), sayW = v.v2.split("/")[0].trim();
+  const show = (cls, h) => { fb.className = "fb " + cls; fb.innerHTML = h; };
+  const famH = fam[2] ? `Oila «${esc(fam[0])}» — ${esc(fam[1])}.` : `${esc(fam[0])} fe'l — ${esc(fam[1])}.`;
+  let fix = false, done = false;
+  const nextQ = () => { FL.i++; render(); };
+  const finish = msg => { done = true; inp.readOnly = true; inp.classList.add("ok"); show("ok", msg); btn.textContent = "Keyingi"; if (idk) idk.classList.add("hidden"); if (x.k !== "own") say(x.k === "rev" || x.k === "did" ? v.v1 : sayW); setTimeout(() => btn.focus({ preventScroll: true }), 0); };
+  const miss = () => { if (!FL.miss.has(v.id + x.k)) { FL.miss.add(v.id + x.k); FL.miss.add(v.id); } };
+  const needFix = (typed, why) => {
+    miss(); fix = true; buzz(false); if (idk) idk.classList.add("hidden"); inp.classList.remove("ok"); inp.classList.add("bad"); inp.value = ""; inp.placeholder = "To'g'risini yozing…";
+    const w = x.k === "rev" || x.k === "did" ? v.v1 : sayW;
+    show("bad", `${why}<span class="fl-df" lang="en">${typed ? `<s>${esc(typed)}</s> → ` : ""}${typed ? felDiff(typed, w) : `<b>${esc(w)}</b>`}</span>${x.k === "rev" ? `<span lang="en">${esc(v.v1)} → ${felMark(v)}</span>. ` : x.k === "did" ? "<b>Did</b> bo'lsa, fe'l oddiy shaklda qoladi. " : famH + " "}<b>Endi to'g'risini yozing.</b>`);
+    inp.focus();
+  };
+  if (x.k === "listen") { const p = () => say(sayW); $("#flplay").onclick = p; setTimeout(p, 300); }
+  if (x.k === "copy") {
+    let k = 0; const ghost = $("#flghost"), dots = app.querySelectorAll(".fl-dots i"), st = $("#flstep");
+    btn.onclick = () => {
+      if (done) return nextQ();
+      const val = norm(inp.value); if (!val) return inp.focus();
+      FL.typed++; logAns(want.includes(val), true);
+      if (!want.includes(val)) { buzz(false); show("bad", `Harflarni tekshiring:<span class="fl-df" lang="en"><s>${esc(val)}</s> → ${felDiff(val, sayW)}</span>`); inp.value = ""; inp.focus(); return; }
+      dots[k].classList.add("on"); k++; inp.value = "";
+      if (k === 1) { ghost.hidden = true; inp.classList.remove("fl-tr"); inp.placeholder = "Endi xotiradan…"; st.textContent = "Endi xotiradan yozing (2/2)"; show("ok", "To'g'ri! Endi harflar yashirin."); buzz(true); inp.focus(); return; }
+      inp.value = sayW; FL.first++; finish(`<b>Ikki marta yozdingiz.</b> Darsning oxirida yana so'raladi. <span class="fl-ex" lang="en">${esc(v.e)}<small>${esc(v.t)}</small></span>`);
+    };
+  } else if (x.k === "own") {
+    let target = "";
+    btn.onclick = async () => {
+      if (done) return nextQ();
+      const val = inp.value.trim(); if (!val) return inp.focus();
+      if (target) { // tuzatilgan gapni qayta yozish
+        const a = norm(val).replace(/[.!?]+$/, ""), b = norm(target).replace(/[.!?]+$/, "");
+        FL.typed++; if (a === b) { FL.fixed++; return finish("<b>Endi to'g'ri.</b> Bu fe'l ertaga yana yoziladi."); }
+        show("bad", `Yana bir bor — to'g'risi:<span class="fl-df fl-dfs" lang="en">${esc(target)}</span>`); inp.value = ""; return;
+      }
+      btn.disabled = true; show("", `<span class="fl-ai">${ICON.spark}Tekshirilmoqda…</span>`);
+      try {
+        const d = await aiAsk({ mode: "check", word: sayW, uz: "", answer: val });
+        FL.typed++; logAns(!!d.togri, true);
+        if (d.togri) { FL.first++; finish(`<span class="fl-ai">${ICON.spark}Claude</span><b>To'g'ri!</b> ${esc(d.izoh || "")}`); }
+        else { miss(); target = String(d.tuzatilgan || "").trim(); inp.value = ""; inp.placeholder = target;
+          show("bad", `<span class="fl-ai">${ICON.spark}Claude</span>${esc(d.izoh || "")}<span class="fl-df fl-dfs" lang="en">${esc(target)}</span><b>Endi tuzatilgan gapni o'zingiz yozing.</b>`); inp.focus(); }
+      } catch (e) { show("bad", esc(aiErr(e.code)) + " Bu savolni o'tkazib yuborishingiz mumkin."); }
+      btn.disabled = false;
+    };
+    if (idk) idk.onclick = () => nextQ();
+  } else {
+    btn.onclick = () => {
+      if (done) return nextQ();
+      const val = norm(inp.value); if (!val) return inp.focus();
+      FL.typed++;
+      if (want.includes(val)) {
+        logAns(!fix, true);
+        if (fix) { FL.fixed++; return finish("<b>Endi to'g'ri.</b> Bu fe'l ertaga yana yoziladi."); }
+        FL.first++; buzz(true); return finish(`<b>To'g'ri!</b> ${x.k === "did" ? `Did you <b lang="en">${esc(v.v1)}</b> — fe'l o'zgarmaydi.` : x.k === "gap" ? `<span lang="en">${esc(v.e)}</span>` : "Birinchi urinishda."}`);
+      }
+      if (fix) { buzz(false); show("bad", `Yana bir bor — to'g'risi:<span class="fl-df" lang="en"><s>${esc(val)}</s> → ${felDiff(val, x.k === "rev" || x.k === "did" ? v.v1 : sayW)}</span>`); inp.value = ""; return; }
+      logAns(false, true);
+      needFix(val, hasDid && val === trapW ? "<b>Did</b> o'tgan zamonni o'zi ko'rsatadi — fe'l o'zgarmaydi." : /ed$/.test(val) && x.k !== "rev" && x.k !== "did" ? "<b>-ed qo'shilmaydi</b> — bu noto'g'ri fe'l." : "Deyarli.");
+    };
+    if (idk) idk.onclick = () => { if (!done && !fix) { FL.typed++; logAns(false, true); needFix("", "Mana to'g'risi:"); } };
+  }
+  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); btn.click(); } });
+  inp.addEventListener("input", () => { if (!done) inp.classList.remove("bad"); });
+  if (matchMedia("(pointer:fine)").matches || x.k !== "listen") setTimeout(() => inp.focus({ preventScroll: true }), 50);
+});
+/* yozilgan so'z → to'g'ri so'z: to'g'risida yetishmagan / farqli harflar belgilanadi */
+function felDiff(a, b) {
+  const m = a.length, n = b.length, d = [...Array(m + 1)].map(() => Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+  const keep = new Set(); let i = 0, j = 0;
+  while (i < m && j < n) { if (a[i] === b[j]) { keep.add(j); i++; j++; } else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++; }
+  return [...b].map((c, k) => keep.has(k) ? esc(c) : `<u>${esc(c)}</u>`).join("");
+}
+/* sessiya oxiri: pog'onalar yangilanadi */
+function felApply() {
+  const up = [], down = [], ids = [...new Set(FL.q.map(x => x.v.id))];
+  ids.forEach(id => {
+    const v = FEL.find(x => x.id === id), r = felRec(v) || { b: 0, ok: 0, bad: 0 }, was = FL.from[id], missed = FL.miss.has(id);
+    if (!felRec(v)) untomb("srs:" + id);
+    let b = was < 0 ? (missed ? 1 : 2) : missed ? Math.max(1, (r.b || 1) - 1) : Math.min(5, (r.b || 0) + 1);
+    r.b = b; r.ls = today(); if (missed) r.bad = (r.bad || 0) + 1; else r.ok = (r.ok || 0) + 1;
+    r.due = missed ? addDays(1) : addDays(INT[b]); if (was < 0) r.lt = Date.now();
+    S.srs[id] = r;
+    if (missed) down.push(v); else if (b > Math.max(was, 0)) up.push([v, Math.max(was, 0), b]);
+  });
+  touchStreak(); save(); markDone("fel");
+  return { up, down };
+}
+function felFinish() {
+  const { up, down } = felApply(), sp = felSpeedOffer();
+  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">Fe'llar qadami tugadi</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
+    <div class="fl-stats"><div><b>${FL.first}</b><span>birinchi urinishda</span></div><div><b>${FL.fixed}</b><span>qayta yozildi</span></div><div><b>${felSeen().length}</b><span>/ ${FEL.length} fe'l</span></div></div></div>
+    ${down.length ? `<div class="card"><p class="label">Ertaga qayta yoziladi</p><ul class="fl-list">${down.map(v => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${esc(v.u)}</span></li>`).join("")}</ul></div>` : ""}
+    ${up.length ? `<div class="card"><p class="label">Pog'onaga ko'tarildi</p><ul class="fl-list">${up.map(([v, a, b]) => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${b === 5 ? "mustahkam ✓" : (FL.newIds.has(v.id) ? "yangi" : a) + " → " + b + "-pog'ona"}</span></li>`).join("")}</ul></div>` : ""}
+    <div class="card">${sp ? `<button class="btn${LES ? " ghost" : ""}" id="flsp">Tez yozish · 60 soniya</button><p class="gohint">Haftasiga 2 marta · rekord: ${S.irr && S.irr.best || 0}</p><div style="height:10px"></div>` : ""}${lessonBtn("fel")}<button class="btn ghost" id="flback">${backLabel("fel")}</button></div></div>`;
+  FL = null;
+  const s = $("#flsp"); if (s) s.onclick = () => go("fellartez");
+  $("#flback").onclick = () => { LES = false; go(""); }; bindLesson();
+  if (window.countUp) countUp(app);
+}
+/* ---------- tez yozish: 60 soniya, ko'rilgan fe'llar ---------- */
+const felSpeedOffer = () => { const seen = felSeen().length, last = (S.irr && S.irr.sp) || ""; return seen >= 8 && (!last || dayDiff(last, today()) >= FEL_SPEED_GAP); };
+route(/^fellartez$/, () => {
+  const pool = shuffle(felSeen()); if (pool.length < 4) { go(""); return; }
+  S.irr = S.irr && typeof S.irr === "object" ? S.irr : {}; const best = S.irr.best || 0;
+  app.innerHTML = `<div class="top"><button class="icon" id="tzx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i id="tzbar" style="transform:none"></i></div><span class="cnt" id="tzt">60</span></div>
+  <div class="card qcard fl"><p class="label">Tez yozish</p><span class="fl-tag">Tez yozish · rekord ${best}</span>
+    <div class="q fl-q" id="tzq">Tayyormisiz?</div><p class="fl-sub" id="tzs">Fe'l chiqadi — o'tgan shaklini yozib Enter bosing. To'g'ri: <b id="tzok">0</b></p>
+    <div class="fl-field"><textarea class="spell" id="flin" rows="1" wrap="off" enterkeyhint="next" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" aria-label="O'tgan shakli" placeholder="O'tgan shakli…" readonly></textarea></div>
+    <div class="fl-log" id="tzlog" aria-live="polite"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="flgo">Boshlash</button></div></div>`;
+  const inp = $("#flin"), btn = $("#flgo"), qEl = $("#tzq"), tEl = $("#tzt"), bar = $("#tzbar"), log = $("#tzlog");
+  let t = 60, ok = 0, i = 0, tm = 0, wrong = new Set();
+  const cur = () => pool[i % pool.length];
+  const ask = () => { qEl.innerHTML = `<span lang="en">${esc(cur().v1)} → ?</span>`; inp.value = ""; inp.focus(); };
+  const stop = () => {
+    clearInterval(tm); tm = 0; inp.readOnly = true; qEl.textContent = "Vaqt tugadi";
+    S.irr.sp = today(); const rec = ok > (S.irr.best || 0); if (rec) S.irr.best = ok;
+    wrong.forEach(id => { const r = S.srs[id]; if (r && r.due > addDays(1)) r.due = addDays(1); });
+    save(); markDone("fel");
+    $("#tzs").innerHTML = `<b>${ok} ta to'g'ri</b>${rec ? " · yangi rekord!" : ""}${wrong.size ? ` · ${wrong.size} ta fe'l ertaga qayta yoziladi` : ""}`;
+    btn.textContent = "Tayyor"; btn.onclick = () => go(""); if (rec && ok >= 5) confetti();
+  };
+  const start = () => { inp.readOnly = false; btn.textContent = "Keyingi"; btn.onclick = submit; ask();
+    tm = setInterval(() => { t--; tEl.textContent = t; bar.style.transform = `translateX(${(t / 60 - 1) * 100}%)`; if (t <= 0) stop(); }, 1000); };
+  const submit = () => {
+    if (!tm) return; const val = norm(inp.value); if (!val) return;
+    const v = cur(), good = felOk(v, "recall").includes(val); FL_dummy(good);
+    if (good) { ok++; $("#tzok").textContent = ok; } else wrong.add(v.id);
+    log.insertAdjacentHTML("afterbegin", `<span class="${good ? "ok" : "bad"}" lang="en">${good ? esc(val) : esc(v.v1) + " → " + esc(v.v2)}</span>`);
+    i++; ask();
+  };
+  const FL_dummy = good => logAns(good, true);
+  btn.onclick = start;
+  inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); submit(); } });
+  $("#tzx").onclick = () => { clearInterval(tm); go(""); };
+});
 
 /* ---------- NOLDAN BOSHLASH: yangi o'rganuvchi uchun qo'llanmalar (kursdan oldin yoki u bilan birga) ---------- */
 const GUIDES = [
@@ -5534,7 +5859,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

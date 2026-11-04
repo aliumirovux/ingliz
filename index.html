@@ -1290,6 +1290,57 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 .qa a>span:last-child{font-size:13px;color:var(--muted)}
 .qa a:active{transform:scale(.98)}
 .qa a:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+/* So'z o'yini */
+.qa.q4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.oy-lead{margin:14px 2px 16px;color:var(--muted);font-size:15px;line-height:1.5}
+.oy-lvs{display:grid;gap:10px}
+.oy-lv{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:14px 16px;border:0;border-radius:20px;background:var(--card);box-shadow:var(--card-sm),inset 0 0 0 2px transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:box-shadow .15s,transform .15s}
+.oy-lv:active{transform:scale(.99)}
+.oy-lv.on{box-shadow:var(--card-sm),inset 0 0 0 2px var(--marker)}
+.oy-lv[aria-disabled]{opacity:.5;cursor:default}
+.oy-lv .rd{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line-strong);display:grid;place-items:center}
+.oy-lv.on .rd{box-shadow:inset 0 0 0 2px var(--marker)}.oy-lv.on .rd::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--marker)}
+.oy-lv .tx{flex:1;min-width:0}.oy-lv .tx b{display:block;font-size:16px;font-weight:600}.oy-lv .tx span{font-size:13px;color:var(--muted)}
+.oy-lv .n{flex:none;font-size:13px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.oy-lv:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.oy-how{list-style:none;counter-reset:oy;padding:0;margin:18px 2px 20px;display:grid;gap:10px;font-size:14px}
+.oy-how li{counter-increment:oy;display:flex;gap:10px;align-items:flex-start}
+.oy-how li::before{content:counter(oy);flex:none;width:24px;height:24px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:12px;font-weight:700}
+.oy .label svg{width:15px;height:15px;margin-right:2px}
+.oy-q{text-align:center;margin-top:10px}
+.oy .opt{display:flex;align-items:center;gap:10px}
+.oy .opt .mk{margin-left:auto;display:none}.oy .opt .mk svg{width:20px;height:20px}
+.oy .opt.ok .mk,.oy .opt.bad .mk,.oy .opt.right .mk{display:flex}
+.oy .opt.right{color:var(--ok);outline:2px dashed var(--ok-strong);outline-offset:-2px}
+.oy .opt.dim{opacity:.45}
+.oy-sh h2{margin-bottom:2px}.oy-sh>p{margin-bottom:14px}
+.oy-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.oy-pw{position:relative;border-radius:18px;padding:12px;background:var(--bg);box-shadow:inset 0 0 0 2px var(--line)}
+.oy-pw.mine{box-shadow:inset 0 0 0 2px var(--bad-strong)}.oy-pw.good{box-shadow:inset 0 0 0 2px var(--ok-strong)}
+.qs .oy-pw p{margin:0;color:var(--ink);font-size:14px;line-height:1.35}
+.qs .oy-pw .who{padding-right:38px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.qs .oy-pw.mine .who{color:var(--bad)}.qs .oy-pw.good .who{color:var(--ok)}
+.qs .oy-pw .en{font:700 21px/1.2 var(--font-display);letter-spacing:-.01em;word-break:break-word}
+.oy-pw .en u{text-decoration:none;background:var(--marker-soft);color:var(--accent-text);border-radius:4px;padding:0 1px}
+.qs .oy-pw .pr{color:var(--pron);font-size:13px;font-weight:500;margin-top:2px}
+.qs .oy-pw .uz{margin-top:4px}
+.oy-say{position:absolute;top:6px;right:6px;width:40px;height:40px;border:0;border-radius:50%;background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.oy-say svg{width:18px;height:18px}
+.qs .oy-ex{margin:0 0 8px;padding:2px 0 2px 10px;border-left:3px solid var(--line-strong);color:var(--ink);font-size:14px}
+.qs .oy-ex span{display:block;color:var(--muted);font-size:13px}
+.qs .oy-note{display:flex;gap:8px;align-items:flex-start;background:var(--bg);border-radius:12px;padding:10px 12px;margin:12px 0 14px;font-size:13px}
+.oy-note svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--marker)}
+.oy-res{text-align:center;margin:12px 0 18px}
+.oy-ring{position:relative;width:120px;height:120px;margin:0 auto 12px}
+.oy-ring svg{width:120px;height:120px;transform:rotate(-90deg)}
+.oy-ring b{position:absolute;inset:0;display:grid;place-items:center;font:700 28px var(--font-display);font-variant-numeric:tabular-nums}
+.oy-res h2{margin:0 0 4px;font-size:22px}
+.oy-cf{flex:none!important;display:block!important}.oy-cf .label{margin:0 0 4px}
+.oy-li{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.oy-li:first-of-type{border-top:0}
+.oy-li .vs{color:var(--muted)}.oy-li .sub{display:block;font-size:13px;color:var(--muted)}
+.oy-li .tg{margin-left:auto;flex:none;font-size:12px;font-weight:600;color:var(--accent-text);background:var(--marker-soft);padding:3px 8px;border-radius:999px}
+.oy-acts{display:grid;gap:10px;margin-top:16px}
 
 /* ===== qidiruv maydoni ===== */
 .sbox{position:relative}
@@ -2225,6 +2276,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 const ICON = {curve: sv('<path d="M4 4v15a1 1 0 0 0 1 1h15"/><path d="M8 6.5c1.2 4.6 3.2 7.6 6 8.6 1.7.6 3.6.6 5 .4"/>'), vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
+ICON.twin = sv('<rect x="3" y="6" width="11" height="12" rx="2.5"/><path d="M10 6V5.5A2.5 2.5 0 0 1 12.5 3h6A2.5 2.5 0 0 1 21 5.5v7a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M6.5 13.5 8.5 9l2 4.5M7.2 12h2.6"/>');
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 /* ---------- words ---------- */
@@ -2248,6 +2300,7 @@ function fixState(o) {
   s.gr = {}; Object.entries(obj(o.gr)).forEach(([k, r]) => { if (r && typeof r === "object") s.gr[k] = { b: Math.min(5, Math.round(num(r.b))), due: day(r.due) ? r.due : "" }; });
   s.log = {}; Object.entries(obj(o.log)).forEach(([k, r]) => { if (day(k) && r && typeof r === "object") s.log[k] = r; });
   s.mis = {}; Object.entries(obj(o.mis)).forEach(([k, v]) => { if (day(v)) s.mis[k] = v; });
+  s.conf = {}; Object.entries(obj(o.conf)).forEach(([k, v]) => { if (v && typeof v === "object" && typeof v.a === "string" && typeof v.b === "string") s.conf[k] = Object.assign({}, v, { n: Math.round(num(v.n)) || 1, d: day(v.d) ? v.d : "" }); });
   s.hook = {}; Object.entries(obj(o.hook)).forEach(([k, v]) => { if (typeof v === "string" && v.trim()) s.hook[k] = v; });
   s.story = obj(o.story);
   s.guide = {}; Object.entries(obj(o.guide)).forEach(([k, v]) => { if (day(v)) s.guide[k] = v; });
@@ -2533,6 +2586,7 @@ function merge(a, b) {
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   out.hook = Object.assign({}, a.hook || {}, b.hook || {});
+  { const ca = a.conf || {}, cb = b.conf || {}; out.conf = {}; new Set(Object.keys(ca).concat(Object.keys(cb))).forEach(k => { const x = ca[k], y = cb[k]; out.conf[k] = !x ? y : !y ? x : ((y.n || 0) > (x.n || 0) || ((y.n || 0) === (x.n || 0) && (y.d || "") > (x.d || "")) ? y : x); }); }
   const my = new Map(); (a.my || []).concat(b.my || []).forEach(m => my.set(m.id, m)); out.my = [...my.values()];
   { const va = a.vb || {}, vb = b.vb || {}, kn = Object.assign({}, va.known || {}, vb.known || {});
     out.vb = { lvl: vb.lvl || va.lvl || "", goal: vb.goal || va.goal || 10, known: kn, learn: [...new Set((va.learn || []).concat(vb.learn || []))], day: (vb.day && va.day && (vb.day.d || "") >= (va.day.d || "")) ? vb.day : va.day || vb.day }; }
@@ -2591,7 +2645,7 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
+const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
 /* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
@@ -2964,10 +3018,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3246,7 +3300,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042000";
+const APP_V = "202611042100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3592,14 +3646,159 @@ route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}
   <a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar</span></span>${nwRing(GUIDES.length - guidesLeft(), GUIDES.length)}<span class="go">${ICON.chev}</span></a>
-  <div class="qa" aria-label="Hamma unitlar bo'yicha">
+  <div class="qa q4" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.filter(p => lvOf(p.unit) === curLvId()).length} ta qolip</span></a>
     <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.filter(x => lvOf(x.unit) === curLvId()).length} ta gap</span></a>
     <a href="#gapir"><span class="ic">${ICON.mic}</span><b>Gapirish</b><span>${SPEAKING.filter(t => lvOf(t.unit) === curLvId()).length} ta topshiriq</span></a>
+    <a href="#oyin"><span class="ic">${ICON.twin}</span><b>So'z o'yini</b><span>O'xshashini toping</span></a>
   </div>
   <div class="units">${readyUnits().map(n => { const info = UNIT_INFO[n], st = unitStat(n); return `<a class="unit" href="#unit-${n}"><div class="urow ${n === cu.n ? "cur" : ""}"><span class="num">${un(n)}</span><span class="tx"><b>${esc(info[0])}</b><span>${esc(info[1])}${n === cu.n ? " · hozir shu yerdasiz" : ""}</span></span><span class="pct">${st.pct}%</span></div><div class="pbar"><i class="m" style="width:${st.pct}%"></i></div></a>`; }).join("")}${soonUnits()}</div>
 `;
 });
+
+/* ---------- SO'Z O'YINI: o'zbekcha so'z → 4 ta bir-biriga juda o'xshash inglizcha variant ----------
+   Savollar faqat ko'rilgan so'zlardan. Variantlar shakli (harflari) yoki talaffuzi o'xshash so'zlardan tanlanadi.
+   Xato javob: ikkala so'z yonma-yon ko'rsatiladi, so'z takrorga tushadi, juftlik S.conf ga yoziladi */
+const OY_N = 10, OY_LVKEY = "ingliz-oyin-lv";
+const OY_POOLS = [
+  { id: "beginner", t: "Beginner", s: "A1", f: w => !w.mine && !w.vb && w.unit > 0 && w.unit < 100 },
+  { id: "pre", t: "Pre-intermediate", s: "B1", f: w => w.unit > 100 },
+  { id: "extra", t: "Qo'shimcha so'zlarim", s: "So'z boyligi va o'zingiz qo'shganlar", f: w => !!(w.mine || w.vb) },
+  { id: "all", t: "Hammasi aralash", s: "Barcha ko'rgan so'zlaringiz", f: () => true }];
+let OY = null;
+const oyLv = () => { let v = ""; try { v = localStorage.getItem(OY_LVKEY) || ""; } catch (e) {} return OY_POOLS.find(p => p.id === v) ? v : curLvId() === "pre" ? "pre" : "beginner"; };
+const oyPr = w => norm(w.p || "").replace(/[^a-z']/g, "");
+const oyOk = w => w && w.w && w.u && norm(w.w).split(" ").length <= 2;
+/* kichik son — o'xshashroq; null — o'xshash emas. 0 — talaffuzi bir xil (meat / meet) */
+function oySim(t, c) {
+  const a = norm(t.w), b = norm(c.w); if (a === b || norm(t.u) === norm(c.u)) return null;
+  const pa = oyPr(t), pb = oyPr(c);
+  if (pa && pa.length > 1 && pa === pb) return 0;
+  const L = Math.max(a.length, b.length), d = lev(a, b), lim = L <= 4 ? 1 : L <= 7 ? 2 : 3;
+  if (d <= lim) return d + (a[0] === b[0] ? 0 : .5);
+  if (pa && pb && pa.length >= 3 && lev(pa, pb) <= 1) return 1.6;
+  return null;
+}
+/* variantlar manbasi: avval ko'rilgan so'zlar, keyin kitobdagi boshqa so'zlar (bir so'z bir marta) */
+function oyLexicon() {
+  const seen = new Map(), rest = new Map();
+  WORDS.forEach(w => { if (!oyOk(w)) return; const k = norm(w.w); if (isSeen(w)) { if (!seen.has(k)) seen.set(k, w); } else if (!rest.has(k)) rest.set(k, w); });
+  VB_ALL.forEach(x => { const k = norm(x.w); if (oyOk(x) && !seen.has(k) && !rest.has(k)) rest.set(k, x); });
+  seen.forEach((_, k) => rest.delete(k));
+  return { seen: [...seen.values()], rest: [...rest.values()] };
+}
+function oyDistractors(t, lex) {
+  const pick = [], used = new Set([norm(t.w)]), meanings = new Set([norm(t.u)]);
+  const scan = list => list.map(c => ({ c, s: oySim(t, c) })).filter(x => x.s != null).sort((x, y) => x.s - y.s || Math.random() - .5);
+  for (const { c } of scan(lex.seen).concat(scan(lex.rest))) {
+    if (pick.length === 3) break; const k = norm(c.w), m = norm(c.u);
+    if (used.has(k) || meanings.has(m)) continue; used.add(k); meanings.add(m); pick.push(c);
+  }
+  return pick;
+}
+function oyRound(poolId) {
+  const P = OY_POOLS.find(p => p.id === poolId), lex = oyLexicon(), conf = S.conf || {};
+  const was = new Set(Object.values(conf).filter(x => x.d < today()).map(x => x.id));
+  const cand = shuffle(WORDS.filter(w => P.f(w) && isSeen(w) && oyOk(w)));
+  cand.sort((a, b) => was.has(b.id) - was.has(a.id)); // avval ilgari chalkashtirilgan so'zlar
+  const q = [], weak = [], took = new Set(); // bir so'z (masalan letter — harf / xat) raundda bir marta
+  for (const w of cand) {
+    if (q.length >= OY_N) break;
+    const kw = norm(w.w); if (took.has(kw)) continue; took.add(kw);
+    const d = oyDistractors(w, lex);
+    if (d.length === 3) q.push({ w, o: shuffle([w].concat(d)) }); else if (d.length === 2 && weak.length < OY_N) weak.push({ w, d });
+  }
+  // o'xshash so'z yetmasa: 2 ta o'xshash + 1 ta shu mavzudan
+  for (const x of weak) { if (q.length >= OY_N) break; const f = distractors(x.w, "w").find(z => !x.d.some(y => norm(y.w) === norm(z.w)) && norm(z.u) !== norm(x.w.u)); if (f) q.push({ w: x.w, o: shuffle([x.w, ...x.d, f]) }); }
+  return shuffle(q);
+}
+const oySeenCount = P => WORDS.filter(w => P.f(w) && isSeen(w) && oyOk(w)).length;
+/* ikki so'zning farq qiladigan harflari */
+function oyDiff(a, b) {
+  const m = a.length, n = b.length, d = [...Array(m + 1)].map(() => Array(n + 1).fill(0));
+  for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+  const keep = new Set(); let i = 0, j = 0;
+  while (i < m && j < n) { if (a[i] === b[j]) { keep.add(i); i++; j++; } else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++; }
+  return [...a].map((c, k) => keep.has(k) ? esc(c) : `<u>${esc(c)}</u>`).join("");
+}
+
+route(/^oyin$/, () => {
+  const cur = oyLv();
+  app.innerHTML = `${nav("#unitlar", "Unitlar", "So'z o'yini")}
+  <p class="oy-lead">O'zbekcha so'z beriladi — 4 ta bir-biriga juda o'xshash inglizcha so'zdan to'g'risini topasiz.</p>
+  <div class="oy-lvs" role="radiogroup" aria-label="Qaysi so'zlardan">${OY_POOLS.map(P => { const n = oySeenCount(P), off = n < 6, on = P.id === cur && !off;
+    return `<button class="oy-lv${on ? " on" : ""}" role="radio" aria-checked="${on}" data-p="${P.id}"${off ? ' aria-disabled="true"' : ""}><span class="rd" aria-hidden="true"></span><span class="tx"><b>${P.t}</b><span>${off ? (n ? `Hozircha ${n} ta so'z · avval darslarni o'ting` : "Hali so'z ko'rilmagan") : esc(P.s)}</span></span><span class="n">${n} ta</span></button>`; }).join("")}</div>
+  <ol class="oy-how"><li>Faqat siz ko'rgan so'zlar chiqadi</li><li>Xato qilsangiz — ikkala so'z yonma-yon ochiladi</li><li>Chalkashgan so'z takrorga tushadi</li></ol>
+  <button class="btn" id="oygo">${OY_N} ta savol · 2 daq</button>`;
+  const sel = () => app.querySelector(".oy-lv.on");
+  app.querySelectorAll(".oy-lv").forEach(b => b.onclick = () => {
+    if (b.getAttribute("aria-disabled")) { toast("Bu darajada so'z kam", null, null, { type: "info", sub: "Avval shu darajadagi darslarni o'ting" }); return; }
+    app.querySelectorAll(".oy-lv").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
+    try { localStorage.setItem(OY_LVKEY, b.dataset.p); } catch (e) {}
+    $("#oygo").disabled = false;
+  });
+  $("#oygo").disabled = !sel();
+  $("#oygo").onclick = () => {
+    const s = sel(); if (!s) return;
+    const q = oyRound(s.dataset.p);
+    if (q.length < 4) { toast("O'xshash so'zlar hozircha kam", null, null, { type: "info", sub: "Ko'proq dars o'tgach, o'yin to'liq ishlaydi" }); return; }
+    OY = { pool: s.dataset.p, q, i: 0, res: [], conf: [] }; go("oyinmashq");
+  };
+});
+route(/^oyinmashq$/, () => {
+  if (!OY) { go("oyin"); return; }
+  if (OY.i >= OY.q.length) return oyFinish();
+  const x = OY.q[OY.i], N = OY.q.length;
+  app.innerHTML = `<div class="top"><button class="icon" id="oyx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" id="oybar"><i style="width:${OY.i / N * 100}%"></i></div><span class="cnt">${OY.i + 1}/${N}</span></div>
+  <div class="card qcard oy"><p class="label">${ICON.twin}<span>So'z o'yini · inglizchasini toping</span></p><div class="q oy-q">${esc(x.w.u)}</div>
+    <div class="opts" id="oyo">${x.o.map((o, k) => `<button class="opt" lang="en" data-k="${k}">${esc(o.w)}<span class="mk" aria-hidden="true">${o === x.w ? ICON.check : ICON.x}</span></button>`).join("")}</div></div>`;
+  segBar($("#oybar"), N, OY.res, OY.i);
+  $("#oyx").onclick = () => confirmQuit(OY.i, N, () => { OY = null; go("oyin"); });
+  app.querySelectorAll("#oyo .opt").forEach(b => b.onclick = () => oyPick(+b.dataset.k));
+});
+function oyPick(k) {
+  const x = OY.q[OY.i], o = x.o[k], ok = o === x.w;
+  app.querySelectorAll("#oyo .opt").forEach((b, j) => { b.disabled = true; const v = x.o[j]; b.classList.add(j === k ? (ok ? "ok" : "bad") : v === x.w ? "right" : "dim"); });
+  OY.res[OY.i] = ok; segBar($("#oybar"), OY.q.length, OY.res, -1); buzz(ok);
+  const next = () => { OY.i++; if (location.hash === "#oyinmashq") render(); };
+  if (ok) { logAns(true); touchStreak(); save(); setTimeout(next, 750); return; }
+  // xato: so'z takrorga (grade), tanlangan so'z ham ko'rilgan bo'lsa — ertaga takrorga; juftlik eslab qolinadi
+  grade(x.w, false);
+  if (o.id && S.srs[o.id]) { const r = S.srs[o.id]; if (!r.due || r.due > addDays(1)) { r.due = addDays(1); save(); } }
+  S.conf = S.conf && typeof S.conf === "object" ? S.conf : {};
+  const key = x.w.id + ">" + norm(o.w), prev = S.conf[key];
+  S.conf[key] = { id: x.w.id, a: x.w.w, au: x.w.u, b: o.w, bu: o.u, n: (prev ? prev.n : 0) + 1, d: today() }; save();
+  OY.conf.push([x.w, o]);
+  oySheet(x.w, o, next);
+}
+function oySheet(g, m, done) {
+  const same = oyPr(g) && oyPr(g) === oyPr(m), wrap = document.createElement("div");
+  wrap.id = "oysheet"; wrap.className = "qsheet";
+  const card = (w, kind, d) => `<div class="oy-pw ${kind}"><p class="who">${kind === "good" ? "To'g'ri" : "Siz tanladingiz"}</p><p class="en" lang="en">${d}</p>${w.p ? `<p class="pr">${esc(w.p)}</p>` : ""}<p class="uz">${esc(w.u)}</p><button class="oy-say" data-say="${esc(w.w)}" aria-label="${esc(w.w)} — eshitish">${ICON.vol}</button></div>`;
+  const ex = w => w.e ? `<p class="oy-ex" lang="en">${esc(w.e)}${w.t ? `<span>${esc(w.t)}</span>` : ""}</p>` : "";
+  wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs oy-sh" role="dialog" aria-modal="true" aria-labelledby="oysh"><span class="qs-grab" aria-hidden="true"></span>
+    <h2 id="oysh">Bular ko'pincha chalkashadi</h2><p>${same ? "Talaffuzi bir xil — faqat yozilishi farq qiladi" : "Farq qiladigan harflar belgilangan"}</p>
+    <div class="oy-pair">${card(m, "mine", oyDiff(m.w, g.w))}${card(g, "good", oyDiff(g.w, m.w))}</div>
+    ${ex(g)}${ex(m)}
+    <p class="oy-note">${ICON.redo}<span><b>${esc(g.w)}</b> takrorga qo'shildi — ertaga yana chiqadi.</span></p>
+    <button class="btn" id="oynx">Davom etish</button></div>`;
+  document.body.appendChild(wrap);
+  let closed = false;
+  const close = () => { if (closed) return; closed = true; wrap.classList.remove("on"); document.removeEventListener("keydown", key, true); setTimeout(() => { wrap.remove(); done(); }, 260); };
+  const key = e => { if (e.key === "Escape") { e.preventDefault(); close(); } };
+  document.addEventListener("keydown", key, true);
+  wrap.querySelectorAll("[data-x]").forEach(b => b.onclick = close); $("#oynx").onclick = close;
+  wrap.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
+  requestAnimationFrame(() => { wrap.classList.add("on"); $("#oynx").focus({ preventScroll: true }); });
+}
+function oyFinish() {
+  const N = OY.q.length, ok = OY.res.filter(Boolean).length, C = 2 * Math.PI * 52, pool = OY.pool;
+  app.innerHTML = `<div class="oy-res"><div class="oy-ring" role="img" aria-label="${N} tadan ${ok} ta to'g'ri"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="10"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ok-strong)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C * ok / N} ${C}"/></svg><b>${ok}/${N}</b></div>
+    <h2>${ok === N ? "Hammasi to'g'ri!" : "Raund tugadi"}</h2><p class="muted">${OY.conf.length ? `${OY.conf.length} ta chalkash so'z takrorga qo'shildi` : "Bironta ham chalkashmadingiz"}</p></div>
+  ${OY.conf.length ? `<div class="card oy-cf"><p class="label">Chalkash juftlar</p>${OY.conf.map(([g, m]) => `<div class="oy-li"><span><b lang="en">${esc(g.w)}</b> <span class="vs">≠</span> <b lang="en">${esc(m.w)}</b><span class="sub">${esc(g.u)} · ${esc(m.u)}</span></span><span class="tg">Takrorda</span></div>`).join("")}</div>` : ""}
+  <div class="oy-acts"><button class="btn" id="oyre">Yana ${OY_N} ta</button><a class="btn ghost" href="#unitlar">Tayyor</a></div>`;
+  $("#oyre").onclick = () => { const q = oyRound(pool); OY = { pool, q, i: 0, res: [], conf: [] }; render(); };
+}
 
 /* ---------- NOLDAN BOSHLASH: yangi o'rganuvchi uchun qo'llanmalar (kursdan oldin yoki u bilan birga) ---------- */
 const GUIDES = [

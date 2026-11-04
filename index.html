@@ -656,13 +656,14 @@ body.lp-on .wrap{max-width:1120px}
 .lp-fx{max-width:460px;width:100%}.lp-fx p{margin:0}
 .lp-card{background:var(--surface);border-radius:28px;padding:24px;margin:16px 0 0;box-shadow:var(--shadow)}
 .lp-card p{margin:0}
-.lp-end{text-align:center}.lp-end .btn{max-width:360px;margin:0 auto}
+.lp-end{text-align:center}.lp-end .lp-ctas{max-width:420px;margin:0 auto}
+.lp .gbtn{min-height:56px;font-size:17px}.lp .gbtn svg{width:20px;height:20px}
 .lp-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:24px 0 0;font-size:13px;color:var(--muted)}.lp-foot a{color:inherit;min-height:44px;display:inline-flex;align-items:center}
 @media (min-width:900px){
   .lp h1{font-size:60px}.lp p{font-size:18px}
   .lp-hero{flex-direction:row;align-items:center;justify-content:space-between;padding:40px 0}
   .lp-hx{max-width:540px}.lp-ph.tilt{width:290px}
-  .lp-ctas{flex-direction:row}.lp-ctas .btn{width:auto;min-width:220px;flex:none}
+  .lp-ctas{flex-direction:row}.lp-ctas .btn,.lp-ctas .gbtn{width:auto;min-width:240px;flex:none}.lp-end .lp-ctas{max-width:none;justify-content:center}
   .lp-f{flex-direction:row;justify-content:center;gap:80px}.lp-f.r{flex-direction:row-reverse}.lp-f .lp-ph{width:250px}
   .lp-card{padding:40px}
 }
@@ -3502,7 +3503,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050030";
+const APP_V = "202611050045";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7142,7 +7143,7 @@ const SY = (() => { let o = {}; try { o = JSON.parse(localStorage.getItem(SYK) |
 const syKeep = () => { try { localStorage.setItem(SYK, JSON.stringify({ step: SY.step, email: SY.email, until: SY.until, t: Date.now() })); } catch (e) {} };
 const ICON_SYNC = sv('<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.7 8.1 4.5 4.5 0 0 1 17 17"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5"/><path d="M12 11v8"/>');
 const G_LOGO = '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
-const googleBtn = () => `<button class="gbtn" id="sygoo" type="button"${SY.goog ? " disabled" : ""}>${G_LOGO}<span>${SY.goog ? "Google ochilmoqda…" : "Google bilan kirish"}</span></button><div class="sy-or"><span>yoki email orqali</span></div>`;
+const googleBtn = () => `<button class="gbtn" id="sygoo" type="button"${SY.goog ? " disabled" : ""}>${G_LOGO}<span>${SY.goog ? "Google ochilmoqda…" : "Google bilan kirish"}</span></button>`;
 const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 function syErr(e, stage) {
   const c = (e && e.code) || "", s = e && e.status;
@@ -7172,17 +7173,18 @@ function syncCardInner() {
     <div class="sy-row"><button class="tlink" id="syback">Emailni o'zgartirish</button><button class="tlink" id="syre2"${left ? " disabled" : ""}>${left ? "Qayta yuborish · " + left + " s" : "Kodni qayta yuborish"}</button></div>`;
   }
   return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : SYS ? "" : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
-    ${googleBtn()}<form id="syf1" novalidate><label class="sr-only" for="syem">Email</label>
-      <input class="search" id="syem" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="Email manzilingiz" value="${esc(SY.email)}">
-      <p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>
-      <button class="btn" id="sysend" type="submit"${SY.busy ? " disabled" : ""}>${SY.busy ? "Yuborilmoqda…" : "Kod yuborish"}</button></form>
-    ${SYW ? "" : `<p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: kirgach, ikki qurilmadagisi birlashtiriladi.</p>`}`;
+    ${googleBtn()}${SY.err ? `<p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>` : ""}
+    ${SYW ? "" : `<p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: kirgach, ikki qurilmadagisi birlashtiriladi.</p>`}
+    ${SYW || SYS ? "" : `<div class="sy-row"><button class="tlink" id="syguest">Chiqish</button><span class="muted" style="font-size:13px">Mehmon sifatida kirgansiz · natijalar shu qurilmada</span></div>`}`;
 }
 let syTick = 0, SYW = false;
 /* birinchi ochilish: progress ham, hisob ham yo'q, ekran oldin yopilmagan bo'lsa (telefondagi mavjud tarix bor qurilmada chiqmaydi) */
 const WKEY = "ingliz-welcome";
 const fresh = () => !Object.keys(S.srs).length && !S.course && !(S.my || []).length && !Object.keys(S.log || {}).length && !Object.keys(S.vb.known || {}).length;
-const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { if (localStorage.getItem(WKEY)) return false; } catch (e) { return false; } return fresh(); };
+/* landing: hisobga kirilmagan va «Mehmon» tanlanmagan bo'lsa (chiqish ham shu holatga qaytaradi). Avval mehmon bo'lib ishlagan qurilma — bir marta «mehmon» deb belgilanadi, landing to'satdan chiqmasin */
+const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { return !localStorage.getItem(WKEY); } catch (e) { return false; } };
+try { if (!AUTH && !localStorage.getItem(WKEY) && !fresh()) localStorage.setItem(WKEY, "guest"); } catch (e) {}
+const toLanding = () => { try { localStorage.removeItem(WKEY); } catch (e) {} SY.step = "email"; SY.err = ""; scrollTo(0, 0); location.hash = ""; render(); };
 function loadingPage() {
   document.body.classList.add("welcome");
   app.innerHTML = `<div class="wel"><div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p role="status">Progress yuklanmoqda…</p></div><div class="wel-spin" aria-hidden="true"></div></div>`;
@@ -7198,20 +7200,20 @@ function welcomePage() {
     ["xotira", "Unutishdan oldin qaytaradi", `So'z esdan chiqay deganda yana chiqadi: ertaga, 3 kundan keyin, bir haftadan keyin, bir oydan keyin. Kitobdagi ${WORDS.length} so'zning qanchasi mustahkam — har kuni ko'rinib turadi.`],
     ["read", "Kitobdek o'qing", `${BOOKS.length} ta hikoya — uzun, qiziqarli, o'zimizning hayotdan. Tushunmagan gapingizni bossangiz, ostida o'zbekcha tarjimasi chiqadi.`],
     ["home", "Kuniga 15–25 daqiqa", "Bugungi dars o'zi tuziladi: yangi so'zlar, noto'g'ri fe'llar, qoida, gap tuzish va tinglash. Siz faqat «Boshlash»ni bosasiz."]];
-  const ctas = `<div class="lp-ctas"><button class="btn" data-go>Boshlash — bepul</button><button class="btn ghost" data-in>Menda hisob bor</button></div>`;
+  const ctas = `<div class="lp-ctas"><button class="gbtn lp-g" data-in type="button">${G_LOGO}<span>Google bilan kirish</span></button><button class="btn ghost" data-go>Mehmon sifatida boshlash</button></div>`;
   app.innerHTML = `<div class="lp">
     <header class="lp-top"><span class="lp-logo"><img src="icons/icon-192.png" alt="" width="32" height="32">Ingliz tili</span><button class="lp-in" data-in>Kirish</button></header>
     <section class="lp-hero"><div class="lp-hx"><h1>Ingliz tilini <em>yozib</em> o'rganing</h1>
       <p class="lp-lead">Navigate (Oxford) kitobi bo'yicha kunlik mashq — so'zlar, fe'llar, grammatika va hikoyalar. O'zbek tilida, bepul, reklamasiz.</p>${ctas}
-      <p class="lp-hint">Hisobsiz ham boshlaysiz — natijalar shu qurilmada saqlanadi. Keyin kirsangiz, hisobingizga qo'shiladi.</p></div>
+      <p class="lp-hint">Google bilan kirsangiz — telefon va kompyuterda bir xil progress. Mehmon bo'lsangiz — natijalar shu qurilmada saqlanadi, keyin kirsangiz hisobingizga qo'shiladi.</p></div>
       <div class="lp-hv">${lpPic("home", "tilt", true)}</div></section>
     <div class="lp-lv" aria-label="Darajalar"><span>Noldan · alifbo</span><span>Beginner · A1</span><span>Pre-intermediate · B1</span><span class="soon">Elementary · tez orada</span></div>
     ${feats.map(([n, t, d], i) => `<section class="lp-f${i % 2 ? " r" : ""}"><div class="lp-fv">${lpPic(n)}</div><div class="lp-fx"><h2>${t}</h2><p>${d}</p></div></section>`).join("")}
     <section class="lp-card"><h2>Telefonga ilova kabi o'rnating</h2><p>iPhone: Safari'da oching → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Internet bo'lmasa ham ishlaydi; hisobga kirsangiz, telefon va kompyuterda bir xil progress.</p></section>
-    <section class="lp-card lp-end"><h2>Bugun birinchi 5 ta so'zni o'rganing</h2><button class="btn" data-go>Boshlash — bepul</button></section>
+    <section class="lp-card lp-end"><h2>Bugun birinchi 5 ta so'zni o'rganing</h2>${ctas}</section>
     <footer class="lp-foot"><a href="privacy.html">Maxfiylik siyosati</a><span>Bepul · reklamasiz</span></footer></div>`;
   app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; scrollTo(0, 0); render(); });
-  app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => signSheet());
+  app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
 }
 function syRedraw(focus) {
   const c = $("#sycard"); if (!c) return;
@@ -7336,7 +7338,8 @@ function bindSync() {
     }, 1000);
   }
   const now = $("#synow"); if (now) now.onclick = () => { lastWake = 0; cloud.ref = sbRef; cloud.kind = "sb"; now.disabled = true; sbSync().then(() => { const b = $("#synow"); if (b) b.disabled = false; }); };
-  const out = $("#syout"); if (out) out.onclick = async () => { await sbLogout(); SY.step = "email"; syRedraw("#syem"); toast("Hisobdan chiqdingiz", null, null, { type: "info", sub: "Natijalar shu qurilmada qoldi" }); };
+  const out = $("#syout"); if (out) out.onclick = async () => { await sbLogout(); toLanding(); toast("Hisobdan chiqdingiz", null, null, { type: "info", sub: "Natijalar shu qurilmada qoldi" }); };
+  const gq = $("#syguest"); if (gq) gq.onclick = () => toLanding();
   const re = $("#syre"); if (re) re.onclick = () => { const via = AUTH && AUTH.via; SY.email = (AUTH && AUTH.email) || SY.email; authSave(null); cloud.status = "local"; if (via === "google") googleLogin(); else sySendCode(); };
 }
 

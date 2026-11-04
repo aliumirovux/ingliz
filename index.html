@@ -2720,11 +2720,13 @@ function ovozSync() {
     try { localStorage.setItem("ingliz-ovoz", JSON.stringify({ ids: d.ids, at: OVM.at })); } catch (e) {}
   }).catch(() => {});
 }
+const VRATE = .85; // Apollo tezligi (1 = oddiy)
 let VG = 0, VBUSY = false; // VG: har to'xtatishda oshadi — eski zanjir (sayAll) davom etmasin
 const ACACHE = "ingliz-ovoz-a1", BLOBS = new Map();
 const SILENT = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAABQAAAqAAbW1tbW1tbW1tbW1tbW1tbW1tbZKSkpKSkpKSkpKSkpKSkpKSkpKStra2tra2tra2tra2tra2tra2trbb29vb29vb29vb29vb29vb29vb2///////////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQEUAAAAAAAAAKgvT9A1gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
 /* bitta doimiy audio element: iPhone birinchi bosishda uni «ochadi», keyin ovoz kechikib (internetdan) kelsa ham chala oladi */
 const AEL = typeof Audio === "function" ? new Audio() : null; let AEL_OK = false;
+if (AEL) { AEL.preservesPitch = true; AEL.webkitPreservesPitch = true; }
 if (AEL) document.addEventListener("pointerdown", () => {
   if (AEL_OK || VBUSY) return; AEL_OK = true; AEL.src = SILENT;
   const p = AEL.play(); if (p && p.then) p.then(() => { if (AEL.src === SILENT) AEL.pause(); }).catch(() => { AEL_OK = false; });
@@ -2752,7 +2754,7 @@ function speakOne(text, done) {
   audioUrl(id).then(u => {
     if (g !== VG) return;
     AEL.onended = () => { if (g !== VG) return; VBUSY = false; if (done) done(); };
-    AEL.onerror = back; AEL.src = u;
+    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE; // telefon ovozidek sekinroq, ohang o'zgarmaydi
     const p = AEL.play(); if (p && p.catch) p.catch(back);
   }).catch(back);
 }

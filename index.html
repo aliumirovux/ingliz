@@ -628,6 +628,26 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty svg{width:18px;height:18px;margin-top:1px}
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* O'qish: kitobdek matn — gapni bossangiz tarjima ostida ochiladi */
+.hkc .xm-h b{display:inline-flex;align-items:center;gap:6px}.hkc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
+.hk-t{font:700 20px/1.25 var(--font-display);letter-spacing:-.01em;margin:2px 0 2px}
+.hk-u{color:var(--muted);font-size:14px;margin:0 0 8px}
+.hk-ex{font-size:16px;line-height:1.55;margin:0;color:var(--ink);opacity:.85;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hk-bar{display:block;height:6px;border-radius:3px;background:var(--track);overflow:hidden;margin:12px 0 0}.hk-bar i{display:block;height:100%;background:var(--marker);border-radius:3px}
+.hkc .flb .mchip svg{width:18px;height:18px;margin-right:6px}
+.book{padding:20px 18px}
+.bp{font-size:19px;line-height:1.75;margin:0 0 20px;color:var(--ink)}.bp:last-child{margin-bottom:0}
+.bs{border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:1px 0;transition:background .15s}
+.bs:hover{background:var(--press)}.bs.open{background:var(--hl)}.bs.say{background:rgba(226,122,78,.24)}
+.bs:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.bu{display:none}
+.bs.open + .bu{display:flex;align-items:flex-start;gap:8px;margin:6px 0 12px;padding:10px 6px 10px 12px;border-radius:14px;background:var(--surface-2);font-size:15px;line-height:1.5;color:var(--ink)}
+.bu > span{flex:1;padding-top:2px}
+.bu-say{flex:none;width:36px;height:36px;margin:-4px 0 -4px;border:0;border-radius:18px;background:none;color:var(--accent-text);display:grid;place-items:center;cursor:pointer}
+.bu-say svg{width:18px;height:18px}
+em.irr{font-style:normal;color:var(--accent-text);font-weight:600}
+#bkall{gap:8px}
 /* Fe'llar kartasi (bosh sahifa): 60 fe'l = 3 qator × 20, rang — pog'ona */
 .flc .xm-h b{display:inline-flex;align-items:center;gap:6px}.flc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
 .flc .xm-hero{align-items:baseline;gap:8px}
@@ -1290,7 +1310,12 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
   .wrap.home .lcol>.flc{flex:1 1 auto;display:flex;flex-direction:column}
   .wrap.home .lcol>.flc .flg{flex:1 1 auto;grid-template-rows:repeat(3,minmax(8px,20px));align-content:center;margin:8px 0 10px}.wrap.home .lcol>.flc .flg i{height:auto}
   .wrap.home .lcol>.flc .mchip{margin-top:auto}.wrap.home .lcol>.flc .xm-note{margin-bottom:12px}
-  .wrap.home .lcol>:only-child{flex:1 1 auto}.wrap.home .lcol>.flc .flb{margin-top:auto}
+  .wrap.home .lcol>:only-child{flex:1 1 auto}
+  /* «Bugungi hikoya» qaysi ustunda bo'lsa, bo'sh joyni u oladi: matndan ko'proq ko'rinadi */
+  .wrap.home .lcol:has(>.hkc)>.flc,.wrap.home .side:has(>.hkc)>.xm2{flex:0 0 auto}
+  .wrap.home :is(.lcol,.side)>.hkc{flex:1 1 auto;display:flex;flex-direction:column}
+  .wrap.home :is(.lcol,.side)>.hkc .hk-ex{display:block;flex:1 1 0;min-height:3.1em;-webkit-mask-image:linear-gradient(180deg,#000 calc(100% - 1.6em),transparent);mask-image:linear-gradient(180deg,#000 calc(100% - 1.6em),transparent)}
+  .wrap.home.bal-m .hkc .hk-ex{flex:none;height:3.1em}.wrap.home .lcol>.flc .flb{margin-top:auto}
   /* balanceHome() o'lchash paytida: hech narsa cho'zilmaydi */
   .wrap.home.bal-m .lcol,.wrap.home.bal-m .stack>.side{align-self:start}.wrap.home.bal-m .lcol>*,.wrap.home.bal-m .side>*{flex:none}
   .wrap.home .stack>.side{grid-column:2;display:flex;flex-direction:column;gap:16px;align-self:stretch}
@@ -2418,6 +2443,7 @@ function fixState(o) {
   s.conf = {}; Object.entries(obj(o.conf)).forEach(([k, v]) => { if (v && typeof v === "object" && typeof v.a === "string" && typeof v.b === "string") s.conf[k] = Object.assign({}, v, { n: Math.round(num(v.n)) || 1, d: day(v.d) ? v.d : "" }); });
   s.hook = {}; Object.entries(obj(o.hook)).forEach(([k, v]) => { if (typeof v === "string" && v.trim()) s.hook[k] = v; });
   s.story = obj(o.story);
+  s.read = {}; Object.entries(obj(o.read)).forEach(([k, v]) => { if (v && typeof v === "object") s.read[k] = { p: Math.round(num(v.p)), done: day(v.done) ? v.done : "" }; });
   s.guide = {}; Object.entries(obj(o.guide)).forEach(([k, v]) => { if (day(v)) s.guide[k] = v; });
   s.my = arr(o.my).filter(m => m && typeof m.w === "string" && m.w.trim() && typeof m.u === "string").map(m => Object.assign({}, m, { id: typeof m.id === "string" && m.id ? m.id : "my|" + m.w.trim().toLowerCase() }));
   const st = obj(o.streak); s.streak = { last: day(st.last) ? st.last : "", n: Math.round(num(st.n)), best: Math.round(num(st.best)) };
@@ -2687,6 +2713,7 @@ function merge(a, b) {
   out.course = Math.max(a.course || 0, b.course || 0);
   out.rest = [...new Set((a.rest || []).concat(b.rest || []))].sort().slice(-40);
   out.story = Object.assign({}, a.story || {}, b.story || {});
+  { const ra = a.read || {}, rb = b.read || {}; out.read = {}; new Set(Object.keys(ra).concat(Object.keys(rb))).forEach(k => { const x = ra[k] || {}, y = rb[k] || {}; out.read[k] = { p: Math.max(x.p || 0, y.p || 0), done: x.done || y.done || "" }; }); }
   { const ta = a.tl || {}, tb = b.tl || {}; out.tl = {};
     new Set(Object.keys(ta).concat(Object.keys(tb))).forEach(k => { const x = ta[k] || {}, y = tb[k] || {};
       const w = [...new Set((x.w || []).concat(y.w || []))], px = x.pass || 1, py = y.pass || 1;
@@ -2761,7 +2788,7 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
+const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
 /* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
@@ -3134,7 +3161,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar)$/.test(h) || h.startsWith("oqish-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez");
@@ -3392,7 +3419,7 @@ route(/^$/, () => {
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
-    ${lv.zero ? "" : felCard()}</div>
+    ${lv.zero ? "" : felCard()}${lv.zero ? "" : hikCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
@@ -3413,6 +3440,7 @@ route(/^$/, () => {
   const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
   const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
   const fe = $("#felex"); if (fe) fe.onclick = () => { LES = false; startFel("extra"); };
+  const hb = nextBook(), hg = $("#hkgo"), hl = $("#hkls"); if (hg && hb) hg.onclick = () => go("oqish-" + hb.id); if (hl && hb) hl.onclick = () => { BK_PLAY = true; go("oqish-" + hb.id); };
   const ff = $("#felfr"); if (ff) ff.onclick = () => { LES = false; startFel("free"); };
   balanceHome();
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
@@ -3423,7 +3451,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042330";
+const APP_V = "202611042345";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3465,6 +3493,334 @@ const mastPool = () => shuffle(WORDS.filter(w => isSeen(w) && !isMastered(w))).s
 /* «2 daqiqa»: charchagan kuni — 10 ta so'z, seriya saqlanadi */
 const miniPool = () => { const d = revOrder(dueWords()); return (d.length >= 5 ? d : d.concat(shuffle(WORDS.filter(w => isSeen(w) && !isDue(w))).sort((a, b) => rec(a.id).b - rec(b.id).b))).slice(0, 10); };
 const myEx = w => w.pe ? `<div class="ex pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : "";
+/* ---------- O'QISH: kitobdek uzun matnlar (gapni bossangiz — o'zbekcha tarjima) ----------
+   p — xatboshilar, har biri [inglizcha, o'zbekcha] gaplar ro'yxati. Matnlar o'zimizniki (Beginner → Elementary). */
+const BOOKS = [
+ { id: "week", t: "My week", u: "Mening haftam", lv: "Beginner", p: [
+  [["My name is Aziz, and I live in Tashkent.", "Mening ismim Aziz, men Toshkentda yashayman."],
+   ["I'm thirty years old.", "Men o'ttiz yoshdaman."],
+   ["I work in an office in the city centre.", "Men shahar markazidagi ofisda ishlayman."],
+   ["My week is very busy, but I like it.", "Haftam juda band, lekin menga yoqadi."]],
+  [["On Monday, I get up at seven o'clock.", "Dushanba kuni men soat yettida turaman."],
+   ["I have breakfast with my wife, Nilufar.", "Rafiqam Nilufar bilan nonushta qilaman."],
+   ["We usually have eggs, bread and green tea.", "Odatda tuxum, non va ko'k choy ichamiz."],
+   ["Then I go to work by metro.", "Keyin metroda ishga boraman."],
+   ["The metro is fast and cheap.", "Metro tez va arzon."]],
+  [["On Tuesday and Thursday, I have English classes after work.", "Seshanba va payshanba kunlari ishdan keyin ingliz tili darsim bor."],
+   ["My teacher is from Scotland.", "O'qituvchim Shotlandiyadan."],
+   ["Her name is Fiona, and she speaks very fast.", "Uning ismi Fiona, u juda tez gapiradi."],
+   ["Sometimes I don't understand her, but she is very kind.", "Ba'zan uni tushunmayman, lekin u juda mehribon."],
+   ["After the class, I do my homework on the bus.", "Darsdan keyin uy vazifamni avtobusda qilaman."]],
+  [["On Wednesday, I play football with my friends.", "Chorshanba kuni do'stlarim bilan futbol o'ynayman."],
+   ["We play in a small park near my house.", "Uyim yaqinidagi kichik parkda o'ynaymiz."],
+   ["I'm not very good, but it's fun.", "Unchalik yaxshi o'ynamayman, lekin qiziqarli."],
+   ["On Friday evening, we visit my parents.", "Juma kuni kechqurun ota-onamnikiga boramiz."],
+   ["My mother always cooks plov, and my father tells funny stories.", "Onam har doim palov pishiradi, otam esa kulgili hikoyalar aytib beradi."]],
+  [["At the weekend, I don't work.", "Dam olish kunlari ishlamayman."],
+   ["On Saturday, Nilufar and I go to the bazaar.", "Shanba kuni Nilufar bilan bozorga boramiz."],
+   ["We buy fruit, vegetables and fresh bread.", "Meva, sabzavot va issiq non sotib olamiz."],
+   ["On Sunday, I sleep late and read a book.", "Yakshanba kuni kech uyg'onaman va kitob o'qiyman."],
+   ["In the evening, we watch a film together.", "Kechqurun birga film ko'ramiz."],
+   ["Then a new week begins.", "Keyin yangi hafta boshlanadi."]]] },
+
+ { id: "bakery", t: "The bakery on our street", u: "Ko'chamizdagi novvoyxona", lv: "Beginner", p: [
+  [["There is a small bakery on our street.", "Ko'chamizda kichik novvoyxona bor."],
+   ["It's next to the pharmacy, opposite the school.", "U dorixona yonida, maktab qarshisida."],
+   ["The baker's name is Rustam.", "Novvoyning ismi Rustam."],
+   ["He is fifty-five years old, and he has a big smile.", "U ellik besh yoshda, chehrasida doim katta tabassum."]],
+  [["Rustam starts work very early.", "Rustam ishni juda erta boshlaydi."],
+   ["He gets up at four o'clock in the morning.", "U ertalab soat to'rtda turadi."],
+   ["The streets are dark and quiet.", "Ko'chalar qorong'i va jimjit."],
+   ["He makes the dough and heats the tandir.", "U xamir qoradi va tandirni qizdiradi."],
+   ["At six o'clock, the first bread is ready.", "Soat oltida birinchi non tayyor bo'ladi."]],
+  [["People come to the bakery before work.", "Odamlar ishdan oldin novvoyxonaga kelishadi."],
+   ["Students buy small round buns.", "Talabalar kichik dumaloq bulochkalar olishadi."],
+   ["Old women buy two or three big loaves.", "Kampirlar ikki-uchta katta non olishadi."],
+   ["The bread is hot, and the smell is wonderful.", "Non issiq, hidi esa ajoyib."],
+   ["One loaf costs five thousand sum.", "Bitta non besh ming so'm turadi."]],
+  [["Rustam knows everyone on the street.", "Rustam ko'chadagi hammani taniydi."],
+   ["He asks about their children and their work.", "U ularning bolalari va ishi haqida so'raydi."],
+   ["Sometimes he gives free bread to old people.", "Ba'zan keksalarga bepul non beradi."],
+   ["\"Bread is life,\" he always says.", "\"Non — bu hayot\", deydi u doim."]],
+  [["In the afternoon, Rustam is tired.", "Tushdan keyin Rustam charchaydi."],
+   ["His son, Jasur, helps him after school.", "O'g'li Jasur maktabdan keyin unga yordam beradi."],
+   ["Jasur wants to be a baker too.", "Jasur ham novvoy bo'lishni xohlaydi."],
+   ["\"One day, this bakery is yours,\" Rustam tells him.", "\"Bir kun bu novvoyxona seniki bo'ladi\", deydi Rustam unga."],
+   ["Jasur smiles. He loves the smell of fresh bread.", "Jasur jilmayadi. U issiq non hidini yaxshi ko'radi."]]] },
+
+ { id: "navruz", t: "Navruz at Grandma's house", u: "Buvimnikida Navro'z", lv: "Beginner", p: [
+  [["Last March, we celebrated Navruz at my grandmother's house.", "O'tgan mart oyida Navro'zni buvimnikida nishonladik."],
+   ["She lives in a village near Andijan.", "U Andijon yaqinidagi qishloqda yashaydi."],
+   ["We went there by car on Friday morning.", "Juma kuni ertalab u yerga mashinada bordik."],
+   ["The trip took five hours.", "Yo'l besh soat davom etdi."]],
+  [["My grandmother's house is old, but it is very big.", "Buvimning uyi eski, lekin juda katta."],
+   ["There is a garden with apple and apricot trees.", "Olma va o'rik daraxtlari bor bog'i bor."],
+   ["In March, the trees were white and pink.", "Mart oyida daraxtlar oq va pushti edi."],
+   ["All my uncles, aunts and cousins came too.", "Barcha tog'alarim, xolalarim va amakivachchalarim ham keldi."],
+   ["There were more than thirty people in the house!", "Uyda o'ttizdan ortiq odam bor edi!"]],
+  [["In the evening, the women made sumalak.", "Kechqurun ayollar sumalak pishirishdi."],
+   ["They put wheat, flour and water in a very big pot.", "Ular juda katta qozonga bug'doy, un va suv solishdi."],
+   ["They cooked it all night.", "Uni tun bo'yi pishirishdi."],
+   ["Everybody took turns and stirred the pot.", "Hamma navbat bilan qozonni kavladi."],
+   ["The women sang old songs, and the children played in the garden.", "Ayollar eski qo'shiqlar aytishdi, bolalar esa bog'da o'ynashdi."]],
+  [["I didn't sleep much that night.", "O'sha kechasi ko'p uxlamadim."],
+   ["I sat with my grandmother by the fire.", "Gulxan yonida buvim bilan o'tirdim."],
+   ["She told me stories about her childhood.", "U menga bolaligi haqida hikoyalar aytib berdi."],
+   ["\"When I was a girl, we had no electricity,\" she said.", "\"Men qizaloq bo'lganimda elektr yo'q edi\", dedi u."]],
+  [["In the morning, the sumalak was ready.", "Ertalab sumalak tayyor bo'ldi."],
+   ["It was brown and sweet.", "U jigarrang va shirin edi."],
+   ["We gave some to our neighbours.", "Bir qismini qo'shnilarimizga berdik."],
+   ["Then we had a big lunch in the garden.", "Keyin bog'da katta tushlik qildik."],
+   ["It was the best Navruz of my life.", "Bu hayotimdagi eng yaxshi Navro'z bo'ldi."]]] },
+
+ { id: "chimgan", t: "A day in the mountains", u: "Tog'dagi bir kun", lv: "Elementary", p: [
+  [["Last Saturday, I went to Chimgan with three friends.", "O'tgan shanba kuni uch do'stim bilan Chimyonga bordim."],
+   ["We left Tashkent at six in the morning.", "Toshkentdan ertalab soat oltida chiqdik."],
+   ["The roads were empty, and the sky was clear.", "Yo'llar bo'sh, osmon musaffo edi."],
+   ["Bobur drove, and we listened to music in the car.", "Bobur mashina haydadi, biz mashinada musiqa tingladik."]],
+  [["We got to the mountains at half past seven.", "Tog'larga yetti yarimda yetib keldik."],
+   ["The air was cold and fresh.", "Havo sovuq va toza edi."],
+   ["We put on our warm jackets and began to walk.", "Issiq kurtkalarimizni kiydik va yura boshladik."],
+   ["Our plan was to climb to the top of a small mountain.", "Rejamiz kichik bir tog'ning cho'qqisiga chiqish edi."],
+   ["The path was narrow and steep.", "So'qmoq tor va tik edi."]],
+  [["After two hours, we stopped by a small river.", "Ikki soatdan keyin kichik daryo bo'yida to'xtadik."],
+   ["We sat on the rocks and had a rest.", "Toshlar ustiga o'tirib dam oldik."],
+   ["Javlon brought tea in a thermos, and I had some bread and cheese.", "Javlon termosda choy olib kelgan edi, menda esa non va pishloq bor edi."],
+   ["The water in the river was very cold, but very clean.", "Daryodagi suv juda sovuq, lekin juda toza edi."],
+   ["We saw a big eagle in the sky.", "Osmonda katta burgutni ko'rdik."]],
+  [["At midday, we reached the top.", "Tush paytida cho'qqiga chiqdik."],
+   ["The view was amazing.", "Manzara ajoyib edi."],
+   ["We could see the Charvak lake far below.", "Pastda, uzoqda Chorvoq ko'lini ko'rdik."],
+   ["It was blue, like the sky.", "U osmondek moviy edi."],
+   ["We took a lot of photos and felt very proud.", "Ko'p suratga tushdik va o'zimizdan juda faxrlandik."]],
+  [["Going down was harder than going up.", "Pastga tushish chiqishdan qiyinroq bo'ldi."],
+   ["My legs hurt, and I fell two times.", "Oyoqlarim og'ridi, ikki marta yiqildim."],
+   ["We got back to the car at four o'clock.", "Mashinaga soat to'rtda qaytdik."],
+   ["On the way home, we stopped at a cafe and ate shashlik.", "Uyga qaytishda kafega to'xtab, shashlik yedik."],
+   ["That night, I slept for ten hours!", "O'sha kecha o'n soat uxladim!"]]] },
+
+ { id: "car", t: "Buying a car", u: "Mashina sotib olish", lv: "Elementary", p: [
+  [["For five years, Sardor drove an old white Nexia.", "Besh yil davomida Sardor eski oq Nexia haydadi."],
+   ["It was a good car, but it was very old.", "Bu yaxshi mashina edi, lekin juda eskirgan edi."],
+   ["Every month, something broke.", "Har oy biror narsasi buzilardi."],
+   ["One day in winter, it didn't start at all.", "Qishda bir kuni u umuman o't olmadi."],
+   ["Sardor was late for an important meeting.", "Sardor muhim uchrashuvga kechikdi."]],
+  [["That evening, he talked to his wife, Dilnoza.", "O'sha kuni kechqurun u rafiqasi Dilnoza bilan gaplashdi."],
+   ["\"We need a new car,\" he said.", "\"Bizga yangi mashina kerak\", dedi u."],
+   ["\"But new cars are expensive,\" Dilnoza answered.", "\"Lekin yangi mashinalar qimmat\", deb javob berdi Dilnoza."],
+   ["They looked at their savings.", "Ular jamg'armalariga qarashdi."],
+   ["They had enough money for half of a new car.", "Ularda yangi mashinaning yarmiga yetadigan pul bor edi."]],
+  [["Then Sardor's friend told him about a special offer.", "Keyin Sardorning do'sti unga maxsus taklif haqida aytdi."],
+   ["You pay half now and the rest in twelve months.", "Yarmini hozir to'laysan, qolganini o'n ikki oyda."],
+   ["There is no extra charge.", "Hech qanday qo'shimcha to'lov yo'q."],
+   ["Sardor thought about it for a week.", "Sardor bu haqda bir hafta o'yladi."],
+   ["He wrote all their costs in a notebook.", "U barcha xarajatlarini daftarga yozib chiqdi."],
+   ["Finally, he said, \"Yes, we can do it.\"", "Nihoyat u: \"Ha, buni uddalaymiz\", dedi."]],
+  [["First, they sold the old Nexia.", "Avval ular eski Nexiani sotishdi."],
+   ["A young man bought it for his village.", "Bir yigit uni qishlog'i uchun sotib oldi."],
+   ["Then they went to the car showroom.", "Keyin avtosalonga borishdi."],
+   ["They chose a grey car with big windows.", "Ular katta oynali kulrang mashinani tanlashdi."],
+   ["Sardor signed the papers and paid the first half.", "Sardor hujjatlarga imzo qo'ydi va birinchi yarmini to'ladi."]],
+  [["Two weeks later, they got the keys.", "Ikki haftadan keyin kalitlarni olishdi."],
+   ["Their children jumped and shouted in the new car.", "Bolalari yangi mashinada sakrab, qiyqirishdi."],
+   ["The car smelled new and clean.", "Mashinadan yangilik va tozalik hidi kelardi."],
+   ["That weekend, the whole family drove to Charvak.", "O'sha dam olish kunlari butun oila Chorvoqqa bordi."],
+   ["\"Now we must save money again,\" Dilnoza laughed.", "\"Endi yana pul yig'ishimiz kerak\", deb kuldi Dilnoza."]]] },
+
+ { id: "wedding", t: "A wedding in Bukhara", u: "Buxorodagi to'y", lv: "Elementary", p: [
+  [["In September, my cousin Kamola got married.", "Sentabrda amakivachcham Kamola turmushga chiqdi."],
+   ["The wedding was in Bukhara, her husband's city.", "To'y Buxoroda — kuyovning shahrida bo'ldi."],
+   ["We flew there from Tashkent on Thursday.", "U yerga payshanba kuni Toshkentdan uchib bordik."],
+   ["The flight was short, only one hour.", "Parvoz qisqa, atigi bir soat edi."]],
+  [["Bukhara is a very old city.", "Buxoro juda qadimiy shahar."],
+   ["On Friday, we walked around the old centre.", "Juma kuni eski shahar markazini aylandik."],
+   ["We saw the Kalon minaret and drank tea near Lyabi-Hauz.", "Minorai Kalonni ko'rdik va Labi hovuz yonida choy ichdik."],
+   ["My brother bought a small carpet for his flat.", "Akam xonadoni uchun kichik gilam sotib oldi."],
+   ["I bought some spices for my mother.", "Men onam uchun ziravorlar oldim."]],
+  [["The wedding was on Saturday evening.", "To'y shanba kuni kechqurun bo'ldi."],
+   ["The restaurant was huge, with more than four hundred guests.", "Restoran ulkan bo'lib, to'rt yuzdan ortiq mehmon bor edi."],
+   ["Kamola wore a beautiful white dress.", "Kamola chiroyli oq ko'ylak kiygan edi."],
+   ["Her husband, Shoxrux, wore a dark blue suit.", "Eri Shoxrux to'q ko'k kostyum kiygan edi."],
+   ["When they came in, everybody stood up and clapped.", "Ular kirib kelganda hamma o'rnidan turib qarsak chaldi."]],
+  [["The food was delicious.", "Ovqatlar juda mazali edi."],
+   ["We ate salads, meat and, of course, Bukhara plov.", "Salatlar, go'sht va, albatta, Buxoro palovini yedik."],
+   ["Then the music began.", "Keyin musiqa boshlandi."],
+   ["A famous singer sang, and we danced for three hours.", "Mashhur xonanda kuyladi, biz uch soat raqs tushdik."],
+   ["Even my grandfather danced!", "Hatto bobom ham raqsga tushdi!"]],
+  [["At the end, Kamola hugged her mother and cried a little.", "Oxirida Kamola onasini quchoqlab, biroz yig'ladi."],
+   ["Now she lives in Bukhara, far from her family.", "Endi u oilasidan uzoqda, Buxoroda yashaydi."],
+   ["But she calls us every day.", "Lekin har kuni bizga qo'ng'iroq qiladi."],
+   ["\"Come back in spring,\" she says. \"Bukhara is beautiful in April.\"", "\"Bahorda yana keling\", deydi u. \"Aprelda Buxoro juda go'zal.\""]]] },
+
+ { id: "match", t: "The big match", u: "Katta o'yin", lv: "Elementary", p: [
+  [["Timur is ten years old, and he loves football.", "Temur o'n yoshda va futbolni yaxshi ko'radi."],
+   ["He plays for his school team.", "U maktab jamoasida o'ynaydi."],
+   ["Last month, his team was in the city final.", "O'tgan oy jamoasi shahar finaliga chiqdi."],
+   ["Timur couldn't sleep the night before the match.", "Temur o'yindan oldingi kecha uxlay olmadi."]],
+  [["The match was on Sunday at ten o'clock.", "O'yin yakshanba kuni soat o'nda edi."],
+   ["His father and his little sister came to watch.", "Otasi va singlisi tomosha qilgani kelishdi."],
+   ["The other team was bigger and stronger.", "Raqib jamoa kattaroq va kuchliroq edi."],
+   ["In the first half, they scored two goals.", "Birinchi bo'limda ular ikkita gol urishdi."],
+   ["Timur's team felt sad and tired.", "Temurning jamoasi xafa va charchagan edi."]],
+  [["In the break, the coach spoke to the boys.", "Tanaffusda murabbiy bolalar bilan gaplashdi."],
+   ["\"Don't stop,\" he said. \"Run, pass the ball, and believe.\"", "\"To'xtamanglar\", dedi u. \"Yuguringlar, to'pni uzatinglar va ishoninglar.\""],
+   ["In the second half, everything changed.", "Ikkinchi bo'limda hammasi o'zgardi."],
+   ["Timur's friend Akmal scored a goal.", "Temurning do'sti Akmal gol urdi."],
+   ["Then Timur caught a long ball and scored too!", "Keyin Temur uzun to'pni ilib olib, u ham gol urdi!"]],
+  [["Now it was two-two.", "Endi hisob ikki-ikki bo'ldi."],
+   ["In the last minute, the ball hit Timur's hand in the penalty area.", "So'nggi daqiqada to'p jarima maydonchasida Temurning qo'liga tegdi."],
+   ["The referee gave a penalty to the other team.", "Hakam raqib jamoaga penalti belgiladi."],
+   ["Timur felt terrible.", "Temur o'zini juda yomon his qildi."],
+   ["But their goalkeeper, Bek, jumped and held the ball!", "Lekin darvozabonlari Bek sakrab, to'pni ushlab qoldi!"]],
+  [["The match finished two-two, and there were penalties.", "O'yin ikki-ikki tugadi va penaltilar seriyasi boshlandi."],
+   ["Timur's team won four-three.", "Temurning jamoasi to'rt-uch hisobida g'alaba qozondi."],
+   ["The boys ran to Bek and lifted him up.", "Bolalar Bekka yugurib borib, uni ko'tarishdi."],
+   ["After the match, his father bought ice cream for everyone.", "O'yindan keyin otasi hammaga muzqaymoq olib berdi."],
+   ["\"You lost the ball once, but you never lost hope,\" he told Timur.", "\"To'pni bir marta yo'qotding, lekin umidni hech qachon yo'qotmading\", dedi u Temurga."]]] },
+
+ { id: "letter", t: "A letter from London", u: "Londondan xat", lv: "Elementary", p: [
+  [["Dear Mum and Dad,", "Aziz oyijon va dadajon,"],
+   ["I'm sorry, I didn't write last week.", "Kechirasizlar, o'tgan hafta yozmadim."],
+   ["I was very busy with my new course.", "Yangi kursim bilan juda band edim."],
+   ["I'm fine, and London is very interesting.", "Men yaxshiman, London esa juda qiziq."]],
+  [["My room is small, but it's warm and clean.", "Xonam kichkina, lekin issiq va toza."],
+   ["I share a kitchen with two other students.", "Oshxonani yana ikki talaba bilan baham ko'raman."],
+   ["Maria is from Spain, and Kenji is from Japan.", "Mariya Ispaniyadan, Kenji esa Yaponiyadan."],
+   ["Last Friday, I cooked plov for them.", "O'tgan juma ularga palov pishirdim."],
+   ["They loved it and asked for more!", "Ularga juda yoqdi va yana so'rashdi!"]],
+  [["The weather here is not like in Tashkent.", "Bu yerda ob-havo Toshkentdagidek emas."],
+   ["It rains almost every day, and the sky is grey.", "Deyarli har kuni yomg'ir yog'adi, osmon kulrang."],
+   ["I bought a big umbrella in my first week.", "Birinchi haftamdayoq katta soyabon sotib oldim."],
+   ["I lost it on the bus three days later.", "Uch kundan keyin uni avtobusda yo'qotib qo'ydim."],
+   ["Now I have a raincoat.", "Endi menda yomg'irpo'sh bor."]],
+  [["My English is getting better.", "Ingliz tilim yaxshilanyapti."],
+   ["At first, I didn't understand people in the shops.", "Avvaliga do'konlardagi odamlarni tushunmasdim."],
+   ["They spoke very fast, and I felt shy.", "Ular juda tez gapirishardi, men esa uyalardim."],
+   ["Now I can talk to them, and I even make jokes.", "Endi ular bilan gaplasha olaman, hatto hazillashaman ham."],
+   ["My teacher says my writing is very good.", "O'qituvchim yozishim juda yaxshi deydi."]],
+  [["I miss you very much.", "Sizlarni juda sog'indim."],
+   ["I miss Mum's soup and our evenings in the garden.", "Oyimning sho'rvasini va bog'dagi kechalarimizni sog'indim."],
+   ["Please say hello to Grandma and to my little brother.", "Iltimos, buvimga va ukamga salom ayting."],
+   ["I'll come home in July.", "Iyulda uyga kelaman."],
+   ["With love, your daughter Madina", "Mehr bilan, qizingiz Madina"]]] },
+
+ { id: "photo", t: "The old photo", u: "Eski surat", lv: "Elementary", p: [
+  [["Last winter, Nodira cleaned her grandfather's room.", "O'tgan qish Nodira bobosining xonasini tozaladi."],
+   ["Her grandfather died two years ago.", "Bobosi ikki yil oldin vafot etgan edi."],
+   ["In an old box, she found a black and white photo.", "Eski qutidan u oq-qora surat topdi."],
+   ["In the photo, there was a young man and a young woman.", "Suratda bir yigit va bir qiz bor edi."],
+   ["They stood in front of a big building and smiled.", "Ular katta bino oldida jilmayib turishardi."]],
+  [["The young man was her grandfather.", "Yigit uning bobosi edi."],
+   ["But who was the woman?", "Lekin ayol kim edi?"],
+   ["It wasn't her grandmother.", "Bu buvisi emas edi."],
+   ["On the back of the photo, someone wrote: \"Moscow, 1968. Remember me. Vera.\"", "Suratning orqasiga kimdir yozgan edi: \"Moskva, 1968. Meni esla. Vera.\""]],
+  [["Nodira showed the photo to her grandmother.", "Nodira suratni buvisiga ko'rsatdi."],
+   ["Her grandmother looked at it for a long time.", "Buvisi unga uzoq qarab turdi."],
+   ["Then she smiled and told the story.", "Keyin jilmayib, voqeani aytib berdi."],
+   ["\"Your grandfather studied in Moscow for four years,\" she said.", "\"Bobong Moskvada to'rt yil o'qigan\", dedi u."],
+   ["\"Vera was his friend at the university. She helped him with Russian.\"", "\"Vera universitetda uning do'sti edi. Unga rus tilida yordam bergan.\""]],
+  [["\"Did he love her?\" Nodira asked.", "\"U uni sevganmi?\" — so'radi Nodira."],
+   ["\"Maybe a little,\" her grandmother laughed.", "\"Balki ozgina\", deb kuldi buvisi."],
+   ["\"But he came back to Tashkent, and he met me.\"", "\"Lekin u Toshkentga qaytdi va men bilan tanishdi.\""],
+   ["\"He kept this photo, and he never hid it from me.\"", "\"U bu suratni saqlab qo'ydi va hech qachon mendan yashirmadi.\""],
+   ["\"He was an honest man.\"", "\"U halol inson edi.\""]],
+  [["Nodira put the photo in a new frame.", "Nodira suratni yangi ramkaga soldi."],
+   ["Now it stands on the shelf next to a photo of her grandparents' wedding.", "Endi u javonda bobosi va buvisining to'y surati yonida turibdi."],
+   ["Sometimes Nodira looks at the young man in the photo.", "Ba'zan Nodira suratdagi yigitga qaraydi."],
+   ["She thinks about his life before her family began.", "U oilasi boshlanishidan oldingi uning hayoti haqida o'ylaydi."],
+   ["Every photo has a story, she thinks.", "Har bir suratning o'z tarixi bor, deb o'ylaydi u."]]] },
+
+ { id: "english", t: "Learning English at thirty", u: "O'ttiz yoshda ingliz tili", lv: "Elementary", p: [
+  [["At school, Jamshid didn't like English.", "Maktabda Jamshid ingliz tilini yoqtirmasdi."],
+   ["The lessons were boring, and he forgot all the words.", "Darslar zerikarli edi, u hamma so'zlarni unutib qo'yardi."],
+   ["Later, he became a designer and found a good job.", "Keyinroq u dizayner bo'ldi va yaxshi ish topdi."],
+   ["But last year, his company started working with a team in Dubai.", "Lekin o'tgan yili kompaniyasi Dubaydagi jamoa bilan ishlay boshladi."],
+   ["Suddenly, he needed English every day.", "To'satdan unga ingliz tili har kuni kerak bo'lib qoldi."]],
+  [["His first online meeting was a disaster.", "Uning birinchi onlayn uchrashuvi falokat bo'ldi."],
+   ["His manager asked him a simple question.", "Rahbari unga oddiy savol berdi."],
+   ["Jamshid understood the question, but he couldn't answer.", "Jamshid savolni tushundi, lekin javob bera olmadi."],
+   ["He knew the words in his head, but he couldn't say them.", "So'zlarni bilardi, lekin ularni ayta olmadi."],
+   ["After the meeting, he felt angry with himself.", "Uchrashuvdan keyin u o'zidan jahli chiqdi."]],
+  [["That evening, he made a plan.", "O'sha kuni kechqurun u reja tuzdi."],
+   ["Every day, he learned five new words.", "Har kuni beshta yangi so'z o'rgandi."],
+   ["He wrote each word by hand, not only on his phone.", "Har bir so'zni faqat telefonda emas, qo'lda ham yozdi."],
+   ["In the morning, he read short stories on the metro.", "Ertalab metroda qisqa hikoyalar o'qidi."],
+   ["In the evening, he listened to English podcasts while he cooked.", "Kechqurun ovqat pishirayotganda inglizcha podkastlar tingladi."]],
+  [["The first month was hard.", "Birinchi oy qiyin bo'ldi."],
+   ["Some days he was tired and didn't want to study.", "Ba'zi kunlari charchab, o'qigisi kelmasdi."],
+   ["But he never stopped for more than one day.", "Lekin hech qachon bir kundan ortiq to'xtamadi."],
+   ["After three months, he noticed something.", "Uch oydan keyin u bir narsani payqadi."],
+   ["In meetings, the answers came faster.", "Uchrashuvlarda javoblar tezroq kela boshladi."]],
+  [["Last week, Jamshid presented his design to the whole team in English.", "O'tgan hafta Jamshid dizaynini butun jamoaga ingliz tilida taqdim etdi."],
+   ["He spoke for ten minutes and made only a few mistakes.", "U o'n daqiqa gapirdi va bir nechtagina xato qildi."],
+   ["His manager said, \"Great job, Jamshid!\"", "Rahbari: \"Ajoyib ish, Jamshid!\" dedi."],
+   ["On the way home, he smiled all the time.", "Uyga qaytishda u tinmay jilmaydi."],
+   ["English is not easy, he thinks, but a little every day really works.", "Ingliz tili oson emas, deb o'ylaydi u, lekin har kuni ozgina — haqiqatan ishlaydi."]]] }
+];
+
+const bookRec = b => (S.read || {})[b.id];
+const bookWords = b => b.p.flat().map(x => x[0]).join(" ").split(/\s+/).length;
+const bookMin = b => Math.max(2, Math.round(bookWords(b) / 70));
+const bookPct = b => { const r = bookRec(b); return !r ? 0 : r.done ? 100 : Math.min(99, Math.round((r.p || 0) / b.p.length * 100)); };
+/* bugungi hikoya: boshlangan, tugamagani → aks holda birinchi o'qilmagani */
+const nextBook = () => BOOKS.find(b => { const r = bookRec(b); return r && !r.done && r.p > 0; }) || BOOKS.find(b => !bookRec(b) || !bookRec(b).done);
+function hikCard() {
+  const b = nextBook(), read = BOOKS.filter(x => bookRec(x) && bookRec(x).done).length;
+  const head = `<div class="xm-h"><b>${ICON.read}Bugungi hikoya</b><a href="#hikoyalar">Barchasi${ICON.chev}</a></div>`;
+  if (!b) return `<section class="xm hkc">${head}<p class="xm-note">Hamma ${BOOKS.length} ta hikoya o'qildi. Yangilari tez orada qo'shiladi — eskilarini qayta o'qish ham foydali.</p></section>`;
+  const pct = bookPct(b), first = b.p.slice(0, 2).map(pp => pp.map(x => x[0]).join(" ")).join(" ");
+  return `<section class="xm hkc">${head}<p class="hk-t" lang="en">${esc(b.t)}</p><p class="hk-u">${esc(b.u)} · ${b.lv} · ${bookMin(b)} daq${read ? ` · ${read} / ${BOOKS.length} o'qildi` : ""}</p>
+    <p class="hk-ex" lang="en">${esc(first)}</p>${pct ? `<span class="hk-bar" role="img" aria-label="${pct}% o'qildi"><i style="width:${pct}%"></i></span>` : ""}
+    <div class="flb"><button class="mchip" id="hkgo">${ICON.read}${pct ? "Davom etish · " + pct + "%" : "O'qish"}</button><button class="mchip" id="hkls">${ICON.vol}Tinglash</button></div></section>`;
+}
+let BK_PLAY = false;
+route(/^hikoyalar$/, () => {
+  const row = b => { const r = bookRec(b), pct = bookPct(b);
+    return `<a class="li" href="#oqish-${b.id}"><span class="lic">${ICON.read}</span><span class="tx"><b lang="en">${esc(b.t)}</b><span>${esc(b.u)} · ${bookMin(b)} daq</span></span><span class="st${r && r.done ? " full" : ""}">${r && r.done ? ICON.check + "o'qildi" : pct ? pct + "%" : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; };
+  const lv = l => BOOKS.filter(b => b.lv === l), read = BOOKS.filter(b => bookRec(b) && bookRec(b).done).length;
+  const units = readyUnits().filter(n => STORIES[n]);
+  app.innerHTML = `${nav("#", "Bugun", "Hikoyalar")}<h2 class="pg-h">Hikoyalar</h2><p class="sub">${BOOKS.length} ta matn · ${read} tasi o'qilgan. Gapni bossangiz — o'zbekcha tarjimasi chiqadi.</p>
+  <div class="stack">${["Beginner", "Elementary"].map(l => lv(l).length ? `<section class="sec"><div class="sec-h"><h2>${l}</h2><span class="n">${lv(l).length} ta</span></div><div class="list">${lv(l).map(row).join("")}</div></section>` : "").join("")}
+  ${units.length ? `<section class="sec"><div class="sec-h"><h2>Unit hikoyalari</h2><span class="n">qisqa · 6 gap</span></div><div class="list">${units.map(n => `<a class="li" href="#hikoya-${n}"><span class="lic">${n}</span><span class="tx"><b lang="en">${esc(STORIES[n].t)}</b><span>Unit ${n} · ${esc(STORIES[n].u)}</span></span>${S.story && S.story[n] ? `<span class="st full">${ICON.check}o'qildi</span>` : ""}<span class="go">${ICON.chev}</span></a>`).join("")}</div></section>` : ""}</div>`;
+});
+route(/^oqish-([a-z]+)$/, id => {
+  const b = BOOKS.find(x => x.id === id); if (!b) return go("hikoyalar");
+  stopVoice(); S.read = S.read || {};
+  const r = bookRec(b), seenPast = new Set(felSeen().flatMap(v => v.v2.split("/").map(x => x.trim().toLowerCase())).filter(x => !["put", "read", "cut", "hit"].includes(x)));
+  const mark = en => esc(en).replace(/[A-Za-z']+/g, w => seenPast.has(w.toLowerCase()) ? `<em class="irr">${w}</em>` : w);
+  let k = 0; const lines = [];
+  const body = b.p.map((para, pi) => `<p class="bp" data-p="${pi}">${para.map(([en, uz]) => { const i = k++; lines.push(en); return `<span class="bs" role="button" tabindex="0" aria-expanded="false" data-i="${i}" lang="en">${mark(en)}</span><span class="bu" data-i="${i}"><span>${esc(uz)}</span><button class="bu-say" data-i="${i}" aria-label="Inglizchasini eshitish">${ICON.vol}</button></span> `; }).join("")}</p>`).join("");
+  const nx = BOOKS.find(x => x !== b && (!bookRec(x) || !bookRec(x).done));
+  const end = () => { const rr = bookRec(b); return rr && rr.done ? `<p class="muted" style="margin:0 0 12px">O'qilgan ✓</p>${nx ? `<a class="btn" href="#oqish-${nx.id}">Keyingi: ${esc(nx.t)}</a><div style="height:10px"></div>` : ""}<a class="btn ghost" href="#hikoyalar">Hikoyalar</a>` : `<button class="btn" id="bkdone">O'qib bo'ldim ${ICON.check}</button>`; };
+  app.innerHTML = `${nav("#hikoyalar", "Hikoyalar", esc(b.t))}<h2 class="pg-h" lang="en">${esc(b.t)}</h2><p class="sub">${esc(b.u)} · ${b.lv} · ${bookMin(b)} daq. Gapni bossangiz — o'zbekcha tarjimasi chiqadi.${seenPast.size ? ` <em class="irr">To'q sariq</em> — siz o'rganayotgan fe'llar.` : ""}</p>
+  <div class="stack"><button class="btn ghost" id="bkall">${ICON.vol}<span>Hammasini tinglash</span></button>
+  <article class="card book">${body}</article>
+  <div class="card" id="bkend">${end()}</div></div>`;
+  navBig();
+  const sp = app.querySelectorAll(".bs");
+  const toggle = el => { const o = el.classList.toggle("open"); el.setAttribute("aria-expanded", o); };
+  sp.forEach(el => { el.onclick = () => toggle(el); el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(el); } }; });
+  app.querySelectorAll(".bu-say").forEach(x => x.onclick = e => { e.stopPropagation(); say(lines[+x.dataset.i]); });
+  /* hammasini tinglash: o'qilayotgan gap ajratiladi; yana bosilsa — to'xtaydi */
+  const all = $("#bkall"), lab = all.querySelector("span");
+  const stopAll = () => { BK_PLAY = false; stopVoice(); sp.forEach(e => e.classList.remove("say")); lab.textContent = "Hammasini tinglash"; };
+  const playFrom = (i, g) => { if (!BK_PLAY || g !== VG || i >= lines.length) { if (i >= lines.length) stopAll(); return; }
+    sp.forEach(e => e.classList.toggle("say", +e.dataset.i === i)); const el = sp[i];
+    const rc = el.getBoundingClientRect(); if (rc.top < 80 || rc.bottom > innerHeight - 120) el.scrollIntoView({ block: "center", behavior: calm() ? "auto" : "smooth" });
+    speakOne(lines[i], () => { if (g === VG) setTimeout(() => playFrom(i + 1, g), 300); }); };
+  const startAll = from => { stopVoice(); BK_PLAY = true; lab.textContent = "To'xtatish"; playFrom(Math.max(0, from), VG); };
+  all.onclick = () => BK_PLAY ? stopAll() : startAll([...sp].findIndex(e => e.getBoundingClientRect().bottom > 90));
+  /* qayergacha o'qilgani: ko'ringan eng pastki xatboshi saqlanadi */
+  const paras = app.querySelectorAll(".bp");
+  let tm = 0; const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const n = +e.target.dataset.p + 1, rr = S.read[b.id] || { p: 0, done: "" };
+    if (n > (rr.p || 0)) { rr.p = n; S.read[b.id] = rr; clearTimeout(tm); tm = setTimeout(save, 800); } }), { threshold: .6 });
+  paras.forEach(x => io.observe(x));
+  const bindEnd = () => { const d = $("#bkdone"); if (d) d.onclick = () => { const rr = S.read[b.id] || { p: 0 }; rr.p = b.p.length; rr.done = today(); S.read[b.id] = rr; touchStreak(); save(); $("#bkend").innerHTML = end(); bindEnd(); toast("Hikoya o'qildi", null, null, { type: "ok", sub: BOOKS.filter(x => bookRec(x) && bookRec(x).done).length + " / " + BOOKS.length + " o'qildi" }); }; };
+  bindEnd();
+  if (r && !r.done && r.p > 1) setTimeout(() => { const t = paras[r.p - 1]; if (t) t.scrollIntoView({ block: "start" }); scrollBy(0, -80); }, 60);
+  /* bosh sahifadagi «Tinglash»dan kelinganda: qolgan joydan (yoki boshidan) */
+  if (BK_PLAY) { BK_PLAY = false; const from = r && !r.done && r.p > 1 ? +(paras[r.p - 1].querySelector(".bs") || { dataset: { i: 0 } }).dataset.i : 0; setTimeout(() => startAll(from), 300); }
+});
 /* ---------- HIKOYA: unit so'zlari bilan qisqa matn ---------- */
 function storyLine(en, vocab) {
   return en.split(/(\s+)/).map(t => { const k = t.toLowerCase().replace(/[^a-z'-]/g, ""); return k.length > 1 && vocab.has(k) ? "<b>" + esc(t) + "</b>" : esc(t); }).join("");
@@ -3721,9 +4077,18 @@ const HOME_WIDE = matchMedia("(min-width:980px)");
 function balanceHome() {
   const L = $(".lcol"), Rc = $(".stack>.side"), W = app; if (!L || !Rc || !HOME_WIDE.matches) return;
   W.classList.add("bal-m");
-  let hL = L.offsetHeight, hR = Rc.offsetHeight; const kids = [...Rc.children], xi = kids.findIndex(e => e.classList.contains("xm2")), moved = [];
-  for (let k = kids.length - 1; k > Math.max(xi, 0); k--) { const h = kids[k].offsetHeight + 16; if (!h || hR - hL <= h) break; moved.unshift(kids[k]); hR -= h; hL += h; }
-  moved.forEach(e => L.appendChild(e));
+  /* variantlar: «Bugungi hikoya» chapda yoki o'ngda × o'ngning oxiridan 0..n karta chapga.
+     Qolgan farqni cho'ziladigan karta oladi; «Bugungi hikoya» uni eng chiroyli oladi (matn ko'proq ko'rinadi), shuning uchun u yutadi */
+  const H = e => e.offsetHeight + 16, kids = [...Rc.children], xi = kids.findIndex(e => e.classList.contains("xm2"));
+  const tail = kids.slice(Math.max(xi, 0) + 1), hk = L.querySelector(":scope>.hkc"), x2 = xi >= 0 ? kids[xi] : null, hh = hk ? H(hk) : 0;
+  const hL = L.offsetHeight, hR = Rc.offsetHeight; let best = null;
+  for (const hkR of hk && x2 ? [false, true] : [false]) for (let m = 0; m <= tail.length; m++) {
+    const mv = tail.slice(tail.length - m), sm = mv.reduce((a, e) => a + H(e), 0);
+    const d = (hL + sm - (hkR ? hh : 0)) - (hR - sm + (hkR ? hh : 0)), soft = hk && (d < 0 ? !hkR : hkR);
+    const cost = Math.abs(d) * (soft ? .25 : 1) + m * 8 + (hkR ? 8 : 0);
+    if (!best || cost < best.cost) best = { cost, mv, hkR };
+  }
+  best.mv.forEach(e => L.appendChild(e)); if (best.hkR) x2.after(hk);
   W.classList.remove("bal-m");
 }
 HOME_WIDE.addEventListener("change", () => { if (app.classList.contains("home")) render(); });

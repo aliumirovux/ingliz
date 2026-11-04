@@ -628,6 +628,15 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty svg{width:18px;height:18px;margin-top:1px}
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Fe'llar kartasi (bosh sahifa): 60 fe'l = 3 qator × 20, rang — pog'ona */
+.flc .xm-h b{display:inline-flex;align-items:center;gap:6px}.flc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
+.flc .xm-hero{align-items:baseline;gap:8px}
+.flg{display:grid;gap:4px;margin:4px 0 8px}.flg span{display:grid;grid-template-columns:repeat(20,1fr);gap:3px}
+.flg i{height:8px;border-radius:3px;background:var(--track)}
+.flg i.s1{background:var(--marker);opacity:.35}.flg i.s2{background:var(--marker);opacity:.65}.flg i.s3{background:var(--marker)}
+.flk{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0;color:var(--muted);font-size:13px}
+.flk span{display:inline-flex;align-items:center;gap:6px}.flk i{width:8px;height:8px;border-radius:3px;background:var(--marker)}.flk i.s1{opacity:.35}
+.flc .xm-note{margin-top:12px}.flc .mchip{width:100%;margin-top:12px;height:44px;font-size:14px}
 .hnav{display:grid;gap:12px}.hnav:empty{display:none}
 .xmt{position:relative}
 .xmt-a{position:absolute;inset:0;border-radius:inherit;z-index:0;-webkit-tap-highlight-color:transparent}
@@ -1041,11 +1050,11 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,[contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img,svg{-webkit-user-drag:none}
 /* xotira */
-.xm-hero{display:block;background:linear-gradient(160deg,var(--hl),var(--card,var(--surface)) 70%)}
-.xm-hero .label{display:block;margin:0 0 4px}
-.xm-hero h2{margin:2px 0 6px;font-size:24px;line-height:1.2;letter-spacing:-.01em}
-.xm-hero p.muted{margin:0}
-.xm-hero .btn{margin-top:16px}
+.card.xm-hero{display:block;background:linear-gradient(160deg,var(--hl),var(--card,var(--surface)) 70%)}
+.card.xm-hero .label{display:block;margin:0 0 4px}
+.card.xm-hero h2{margin:2px 0 6px;font-size:24px;line-height:1.2;letter-spacing:-.01em}
+.card.xm-hero p.muted{margin:0}
+.card.xm-hero .btn{margin-top:16px}
 .xm-tiles .xm-t span{white-space:nowrap}
 .xd{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
 .xd.ok,.xm-bar i.ok{background:var(--ok-strong)}.xd.wk,.xm-bar i.wk{background:#D29A1E}.xd.bd,.xm-bar i.bd{background:var(--bad-strong)}
@@ -3380,6 +3389,7 @@ route(/^$/, () => {
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
+    ${lv.zero ? "" : felCard()}
     <div class="hnav">${lv.zero ? "" : vbCard()}${tlCard()}</div>
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
@@ -3392,6 +3402,8 @@ route(/^$/, () => {
   fitHbar();
   const mn = $("#mini"); if (mn) mn.onclick = () => startQuiz(miniPool(), "auto", "2 daqiqa", "#", "mini");
   const ms = $("#mast"); if (ms) ms.onclick = () => xmRun(memStats(), "#");
+  const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
+  const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { setLevel("beginner"); render(); };
   bindInstall();
@@ -3400,7 +3412,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042230";
+const APP_V = "202611042300";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3671,6 +3683,25 @@ function mastTile(seen, mast) {
   const k = WORDS.length, st = memStats(), go = xmPick(st).length > 0, risk = st.weak.some(x => x.R < .9);
   const now = st.bd ? `<span class="xm-r bd">${st.bd} ta unutilmoqda</span>` : st.wk ? `<span class="xm-r wk">${st.wk} ta zaiflashgan</span>` : `<span class="xm-r">hammasi esda</span>`;
   return `<div class="xm-t xg xmt"><a class="xmt-a" href="#xotira" aria-label="Xotira: ${mast} ta mustahkam so'z, ${st.bd} ta unutilmoqda"></a><p class="xm-k">${ICON.curve}Xotira<span class="xmt-go">${ICON.chev}</span></p><div class="gw gr" aria-hidden="true">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">mustahkam · ${k} tadan<br>${now}</p>${go ? `<button class="mchip" id="mast">${risk ? "Qutqarish" : "Mustahkamlash"}</button>` : ""}</div>`;
+}
+/* Fe'llar kartasi: bugungi dars ochilmasa ham fe'llar ko'rinib tursin. Lesson qadami bilan bir xil holat (felPlanInfo) */
+function felCard() {
+  const lv = r => !r ? 0 : (r.b || 0) >= 4 ? 3 : (r.b || 0) >= 3 ? 2 : 1;
+  const seen = felSeen().length, strong = FEL.filter(v => lv(felRec(v)) === 3).length;
+  const { d, n } = felPlanInfo(), work = d.length + n.length, tm = addDays(1);
+  const tom = FEL.filter(v => { const r = felRec(v); return r && r.due === tm; }).length;
+  const did = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length, sp = felSpeedOffer();
+  const rows = [0, 1, 2].map(w => `<span>${FEL.slice(w * 20, w * 20 + 20).map(v => `<i class="s${lv(felRec(v))}"></i>`).join("")}</span>`).join("");
+  const mins = Math.max(2, Math.round(felQueue().length * .35));
+  const note = work ? `Bugun: ${[n.length ? n.length + " ta yangi" : "", d.length ? d.length + " ta takror" : ""].filter(Boolean).join(" · ")}. Har birini yozib o'rganasiz.`
+    : did ? `Bugungisi yozildi. ${tom ? "Ertaga " + tom + " ta takror." : "Ertaga takror yo'q."}` : seen ? `Bugun fe'l yo'q. ${tom ? "Ertaga " + tom + " ta takror." : ""}` : "";
+  const btn = work ? `<button class="mchip" id="felgo">${did ? "Davom etish" : seen ? "Boshlash" : "Birinchi 5 ta fe'l"} · ${mins} daq</button>`
+    : sp ? `<button class="mchip" id="felsp">Tez yozish · 60 soniya</button>` : "";
+  return `<section class="xm flc"><div class="xm-h"><b>${ICON.verb}Noto'g'ri fe'llar</b></div>
+    <div class="xm-hero"><span class="xm-n"><span data-c="${seen}">${seen}</span></span><span class="xm-goal">/ ${FEL.length} fe'l</span></div>
+    <div class="flg" role="img" aria-label="${FEL.length} ta fe'ldan ${seen} tasi boshlangan, ${strong} tasi mustahkam">${rows}</div>
+    ${seen ? `<p class="flk"><span><i class="s1"></i>o'rganilmoqda ${seen - strong}</span><span><i></i>mustahkam ${strong}</span></p>` : ""}
+    ${note ? `<p class="xm-note">${note}</p>` : `<p class="xm-note">Eng ko'p ishlatiladiganidan boshlab, kuniga 5 tadan. Har birini yozib o'rganasiz.</p>`}${btn}</section>`;
 }
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {

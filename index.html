@@ -1283,11 +1283,14 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
   .wrap.home{max-width:1040px}
   .wrap.home .stack{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start;grid-auto-flow:row dense}
   .wrap.home .stack>*{grid-column:1 / -1}
-  /* dars (chapda) va o'ng ustun bir qatorda, balandligi teng — ortiqcha joyni widgetlar oladi */
-  .wrap.home .stack>.lesson,.wrap.home .stack>.zero{grid-column:1;align-self:stretch}
+  /* dars (chapda) o'z balandligida; ekran yetarli bo'lsa sahifa bilan birga pastga tushadi (sticky) — o'ng ustun uzun bo'lsa ham bo'sh joy qolmaydi */
+  .wrap.home .stack>.lesson,.wrap.home .stack>.zero{grid-column:1;align-self:start}
   .wrap.home .stack>.side{grid-column:2;display:flex;flex-direction:column;gap:16px;align-self:stretch}
   .wrap.home .side>.xm2{flex:1 1 auto}
   .wrap.home .side .xm-t.xg{justify-content:space-between}
+}
+@media (min-width:980px) and (min-height:760px){
+  .wrap.home .stack>.lesson{position:sticky;top:16px}
 }
 
 /* ===== Unitlar: umumiy mashqlar ===== */

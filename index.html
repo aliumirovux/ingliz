@@ -1073,7 +1073,7 @@ button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-c
 .hbar .me{width:36px;height:36px;background:var(--surface);border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 .hbar .me::after{content:"";position:absolute;inset:-4px}
 .hbar .me svg{width:18px;height:18px;color:var(--muted)}
-.hbar .me.acc .av{width:32px;height:32px}
+.hbar .me.acc{background:none;overflow:visible}.hbar .me.acc .av{width:36px;height:36px;box-shadow:none} /* avatar ⚙️ bilan aynan bir o'lchamda */
 .hbar button.me{border:0;padding:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hdate{margin:4px 0 8px;font-size:14px;color:var(--muted)}
 .hello.hbar{align-items:center;margin:0 0 16px}
@@ -3523,7 +3523,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050120";
+const APP_V = "202611050130";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

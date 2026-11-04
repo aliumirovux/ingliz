@@ -1069,6 +1069,11 @@ button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-c
 .me:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.me{background:var(--glass-solid)}}
 /* bosh sahifa tepasi: salomlashuvsiz — chapda daraja va unit, o'ngda sozlamalar */
+/* tepadagi tugmalar bir xil bo'yda: daraja, unit, «Kirish» va sozlamalar — 36px, tekis (bosish maydoni 44px) */
+.hbar .me{width:36px;height:36px;background:var(--surface);border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.hbar .me::after{content:"";position:absolute;inset:-4px}
+.hbar .me svg{width:18px;height:18px;color:var(--muted)}
+.hbar .me.acc .av{width:32px;height:32px}
 .hdate{margin:4px 0 8px;font-size:14px;color:var(--muted)}
 .hello.hbar{align-items:center;margin:0 0 16px}
 .hello.hbar .pills{margin:0}
@@ -3516,7 +3521,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050100";
+const APP_V = "202611050110";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

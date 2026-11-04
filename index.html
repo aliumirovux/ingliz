@@ -637,6 +637,7 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .flk{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0;color:var(--muted);font-size:13px}
 .flk span{display:inline-flex;align-items:center;gap:6px}.flk i{width:8px;height:8px;border-radius:3px;background:var(--marker)}.flk i.s1{opacity:.35}
 .flc .xm-note{margin-top:12px}.flc .mchip{width:100%;margin-top:12px;height:44px;font-size:14px}
+.flb{display:flex;gap:8px;margin-top:12px}.flb .mchip{margin-top:0;flex:1 1 0;min-width:0}
 .hnav{display:grid;gap:12px}.hnav:empty{display:none}
 .xmt{position:relative}
 .xmt-a{position:absolute;inset:0;border-radius:inherit;z-index:0;-webkit-tap-highlight-color:transparent}
@@ -1289,7 +1290,9 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
   .wrap.home .lcol>.flc{flex:1 1 auto;display:flex;flex-direction:column}
   .wrap.home .lcol>.flc .flg{flex:1 1 auto;grid-template-rows:repeat(3,minmax(8px,20px));align-content:center;margin:8px 0 10px}.wrap.home .lcol>.flc .flg i{height:auto}
   .wrap.home .lcol>.flc .mchip{margin-top:auto}.wrap.home .lcol>.flc .xm-note{margin-bottom:12px}
-  .wrap.home .lcol>:only-child{flex:1 1 auto}
+  .wrap.home .lcol>:only-child{flex:1 1 auto}.wrap.home .lcol>.flc .flb{margin-top:auto}
+  /* balanceHome() o'lchash paytida: hech narsa cho'zilmaydi */
+  .wrap.home.bal-m .lcol,.wrap.home.bal-m .stack>.side{align-self:start}.wrap.home.bal-m .lcol>*,.wrap.home.bal-m .side>*{flex:none}
   .wrap.home .stack>.side{grid-column:2;display:flex;flex-direction:column;gap:16px;align-self:stretch}
   .wrap.home .side>.xm2{flex:1 1 auto}
   .wrap.home .side .xm-t.xg{justify-content:space-between}
@@ -3409,6 +3412,9 @@ route(/^$/, () => {
   const ms = $("#mast"); if (ms) ms.onclick = () => xmRun(memStats(), "#");
   const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
   const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
+  const fe = $("#felex"); if (fe) fe.onclick = () => { LES = false; startFel("extra"); };
+  const ff = $("#felfr"); if (ff) ff.onclick = () => { LES = false; startFel("free"); };
+  balanceHome();
   const er = $("#erev"); if (er) er.onclick = () => startQuiz(dueWords(), "auto", "Takrorlash", "#", "rev");
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { setLevel("beginner"); render(); };
   bindInstall();
@@ -3417,7 +3423,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042310";
+const APP_V = "202611042330";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3700,14 +3706,27 @@ function felCard() {
   const mins = Math.max(2, Math.round(felQueue().length * .35));
   const note = work ? `Bugun: ${[n.length ? n.length + " ta yangi" : "", d.length ? d.length + " ta takror" : ""].filter(Boolean).join(" · ")}. Har birini yozib o'rganasiz.`
     : did ? `Bugungisi yozildi. ${tom ? "Ertaga " + tom + " ta takror." : "Ertaga takror yo'q."}` : seen ? `Bugun fe'l yo'q. ${tom ? "Ertaga " + tom + " ta takror." : ""}` : "";
+  const more = [felExtraOk() ? `<button class="mchip" id="felex">Yana 5 ta yangi</button>` : "", sp ? `<button class="mchip" id="felsp">Tez yozish · 60 s</button>` : seen >= 3 ? `<button class="mchip" id="felfr">Takrorlab yozish</button>` : ""].filter(Boolean);
   const btn = work ? `<button class="mchip" id="felgo">${did ? "Davom etish" : seen ? "Boshlash" : "Birinchi 5 ta fe'l"} · ${mins} daq</button>`
-    : sp ? `<button class="mchip" id="felsp">Tez yozish · 60 soniya</button>` : "";
+    : more.length ? `<div class="flb">${more.join("")}</div>` : "";
   return `<section class="xm flc"><div class="xm-h"><b>${ICON.verb}Noto'g'ri fe'llar</b></div>
     <div class="xm-hero"><span class="xm-n"><span data-c="${seen}">${seen}</span></span><span class="xm-goal">/ ${FEL.length} fe'l</span></div>
     <div class="flg" role="img" aria-label="${FEL.length} ta fe'ldan ${seen} tasi boshlangan, ${strong} tasi mustahkam">${rows}</div>
     ${seen ? `<p class="flk"><span><i class="s1"></i>o'rganilmoqda ${seen - strong}</span><span><i></i>mustahkam ${strong}</span></p>` : ""}
     ${note ? `<p class="xm-note">${note}</p>` : `<p class="xm-note">Eng ko'p ishlatiladiganidan boshlab, kuniga 5 tadan. Har birini yozib o'rganasiz.</p>`}${btn}</section>`;
 }
+/* kompyuterda ikki ustunni tenglash: o'ng ustun ancha uzun bo'lsa, uning oxiridagi kartalar (So'z boyligi/Tinglash, zaxira, xatolar) chapga o'tadi.
+   Qolgan kichik farqni CSS cho'zilishi oladi. Telefonda tartib o'zgarmaydi (.lcol/.side — display:contents). */
+const HOME_WIDE = matchMedia("(min-width:980px)");
+function balanceHome() {
+  const L = $(".lcol"), Rc = $(".stack>.side"), W = app; if (!L || !Rc || !HOME_WIDE.matches) return;
+  W.classList.add("bal-m");
+  let hL = L.offsetHeight, hR = Rc.offsetHeight; const kids = [...Rc.children], xi = kids.findIndex(e => e.classList.contains("xm2")), moved = [];
+  for (let k = kids.length - 1; k > Math.max(xi, 0); k--) { const h = kids[k].offsetHeight + 16; if (!h || hR - hL <= h) break; moved.unshift(kids[k]); hR -= h; hL += h; }
+  moved.forEach(e => L.appendChild(e));
+  W.classList.remove("bal-m");
+}
+HOME_WIDE.addEventListener("change", () => { if (app.classList.contains("home")) render(); });
 /* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
 (() => {
   const tip = document.createElement("div"); tip.id = "xmtip"; tip.setAttribute("role", "status"); document.body.appendChild(tip);
@@ -4050,10 +4069,14 @@ function felQueue() {
   n.forEach(v => q.push({ v, k: "first" }));
   return q;
 }
+/* bugungi rejadan tashqari: «Yana 5 ta yangi» (kuniga 15 tagacha, takror ko'p bo'lmasa) va «Takrorlab yozish» (jadvalni o'zgartirmaydi, xato bo'lsa — ertaga) */
+const felExtraOk = () => { const started = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length; return felNew(1).length > 0 && started < 15 && felDue().length <= 10; };
+const felExtraQueue = () => { const n = felNew(FEL_NEW); return n.map(v => ({ v, k: "copy" })).concat(n.map(v => ({ v, k: "first" }))); };
+const felFreeQueue = () => shuffle(felSeen()).slice(0, 10).map((v, i) => ({ v, k: i % 2 ? "rev" : felGap(v) && i % 4 === 2 ? "gap" : "recall" }));
 let FL = null;
-function startFel() {
-  const q = felQueue(); if (!q.length) { toast("Bugun fe'l yo'q", null, null, { type: "info", sub: "Takrorlar ertaga keladi" }); return; }
-  FL = { q, i: 0, miss: new Set(), from: {}, typed: 0, first: 0, fixed: 0, newIds: new Set(q.filter(x => x.k === "copy").map(x => x.v.id)) };
+function startFel(mode) {
+  const q = mode === "extra" ? felExtraQueue() : mode === "free" ? felFreeQueue() : felQueue(); if (!q.length) { toast("Bugun fe'l yo'q", null, null, { type: "info", sub: "Takrorlar ertaga keladi" }); return; }
+  FL = { q, i: 0, mode: mode || "", miss: new Set(), from: {}, typed: 0, first: 0, fixed: 0, newIds: new Set(q.filter(x => x.k === "copy").map(x => x.v.id)) };
   q.forEach(x => { if (!(x.v.id in FL.from)) FL.from[x.v.id] = felRec(x.v) ? felRec(x.v).b || 0 : -1; });
   go("fellarmashq");
 }
@@ -4164,6 +4187,7 @@ function felApply() {
   const up = [], down = [], ids = [...new Set(FL.q.map(x => x.v.id))];
   ids.forEach(id => {
     const v = FEL.find(x => x.id === id), r = felRec(v) || { b: 0, ok: 0, bad: 0 }, was = FL.from[id], missed = FL.miss.has(id);
+    if (FL.mode === "free") { if (missed) { if (r.due > addDays(1)) r.due = addDays(1); down.push(v); } return; }
     if (!felRec(v)) untomb("srs:" + id);
     let b = was < 0 ? (missed ? 1 : 2) : missed ? Math.max(1, (r.b || 1) - 1) : Math.min(5, (r.b || 0) + 1);
     r.b = b; r.ls = today(); if (missed) r.bad = (r.bad || 0) + 1; else r.ok = (r.ok || 0) + 1;
@@ -4176,13 +4200,16 @@ function felApply() {
 }
 function felFinish() {
   const { up, down } = felApply(), sp = felSpeedOffer();
-  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">Fe'llar qadami tugadi</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
+  const fm = FL.mode, ex = felExtraOk();
+  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">${fm === "free" ? "Takrorlab yozish tugadi" : fm === "extra" ? "Qo'shimcha 5 ta fe'l" : "Fe'llar qadami tugadi"}</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
     <div class="fl-stats"><div><b>${FL.first}</b><span>birinchi urinishda</span></div><div><b>${FL.fixed}</b><span>qayta yozildi</span></div><div><b>${felSeen().length}</b><span>/ ${FEL.length} fe'l</span></div></div></div>
     ${down.length ? `<div class="card"><p class="label">Ertaga qayta yoziladi</p><ul class="fl-list">${down.map(v => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${esc(v.u)}</span></li>`).join("")}</ul></div>` : ""}
     ${up.length ? `<div class="card"><p class="label">Pog'onaga ko'tarildi</p><ul class="fl-list">${up.map(([v, a, b]) => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${b === 5 ? "mustahkam ✓" : (FL.newIds.has(v.id) ? "yangi" : a) + " → " + b + "-pog'ona"}</span></li>`).join("")}</ul></div>` : ""}
-    <div class="card">${sp ? `<button class="btn${LES ? " ghost" : ""}" id="flsp">Tez yozish · 60 soniya</button><p class="gohint">Haftasiga 2 marta · rekord: ${S.irr && S.irr.best || 0}</p><div style="height:10px"></div>` : ""}${lessonBtn("fel")}<button class="btn ghost" id="flback">${backLabel("fel")}</button></div></div>`;
+    <div class="card">${sp ? `<button class="btn${LES ? " ghost" : ""}" id="flsp">Tez yozish · 60 soniya</button><p class="gohint">Haftasiga 2 marta · rekord: ${S.irr && S.irr.best || 0}</p><div style="height:10px"></div>` : ""}${lessonBtn("fel")}${LES ? "" : `${ex ? `<button class="btn${sp ? " ghost" : ""}" id="flex">Yana 5 ta yangi fe'l</button><div style="height:10px"></div>` : ""}${felSeen().length >= 3 ? `<button class="btn ghost" id="flfree">Takrorlab yozish · ${Math.min(10, felSeen().length)} ta</button><p class="gohint">Pog'onalar o'zgarmaydi · xato fe'l ertaga qaytadi</p><div style="height:10px"></div>` : ""}`}<button class="btn ghost" id="flback">${backLabel("fel")}</button></div></div>`;
   FL = null;
   const s = $("#flsp"); if (s) s.onclick = () => go("fellartez");
+  const fx = $("#flex"); if (fx) fx.onclick = () => startFel("extra");
+  const ff = $("#flfree"); if (ff) ff.onclick = () => startFel("free");
   $("#flback").onclick = () => { LES = false; go(""); }; bindLesson();
   if (window.countUp) countUp(app);
 }

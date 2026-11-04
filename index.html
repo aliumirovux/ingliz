@@ -688,6 +688,17 @@ body.lp-on .wrap{max-width:1120px}
 em.irr{font-style:normal;color:var(--accent-text);font-weight:600}
 #bkall{gap:8px}
 
+
+/* Mashqlar to'ri */
+.mxw{display:block}.mx-l{margin:4px 4px 8px;font-size:13px;font-weight:600;color:var(--muted)}
+.mx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mxt{display:flex;flex-direction:column;align-items:flex-start;min-height:104px;padding:12px;border:0;border-radius:22px;background:var(--card);box-shadow:var(--card-shadow);color:var(--ink);text-decoration:none;text-align:left;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.mxt:active{transform:scale(.97)}.mxt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.mxi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text);margin-bottom:auto}.mxi svg{width:18px;height:18px}
+.mxt b{font-size:14px;font-weight:600;margin-top:12px;line-height:1.25}.mxt span:last-child{font-size:12px;color:var(--muted);line-height:1.3;margin-top:2px}
+.mxt.off .mxi{background:var(--surface-2);color:var(--muted)}.mxt.off b{color:var(--muted)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .home .mxt{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}}
+:root[data-theme="dark"] .home .mxt{background:var(--card);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 16px 34px -18px rgba(0,0,0,.8)}
 /* Iboralar */
 .ibc .xm-h b{display:inline-flex;align-items:center;gap:6px}.ibc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
 .ib-uz{font:700 21px/1.25 var(--font-display);letter-spacing:-.01em;margin:2px 0 2px;text-wrap:balance}
@@ -3475,7 +3486,7 @@ route(/^$/, () => {
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    <div class="hnav">${lv.zero ? "" : vbCard()}${tlCard()}</div>
+    ${mxGrid(lv.zero)}
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
@@ -3490,6 +3501,8 @@ route(/^$/, () => {
   const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
   const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
   const fe = $("#felex"); if (fe) fe.onclick = () => { LES = false; startFel("extra"); };
+  const mxs = $("#mxsp"); if (mxs) mxs.onclick = () => felSeen().length >= 4 ? go("fellartez") : (LES = false, startFel());
+  const mxm = $("#mxmini"); if (mxm) mxm.onclick = () => { const pool = miniPool(); if (pool.length >= 5) startQuiz(pool, "auto", "2 daqiqa", "#", "mini"); else toast("Hali so'z yo'q", null, null, { type: "info", sub: "Avval «Yangi so'zlar»ni o'rganing" }); };
   const ig = $("#ibgo2"); if (ig) ig.onclick = () => startIb(ibDue().length ? "due" : "new");
   const im = $("#ibmore2"); if (im) im.onclick = () => startIb("new");
   const hb = nextBook(), hg = $("#hkgo"), hl = $("#hkls"); if (hg && hb) hg.onclick = () => go("oqish-" + hb.id); if (hl && hb) hl.onclick = () => { BK_PLAY = true; go("oqish-" + hb.id); };
@@ -3503,7 +3516,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050045";
+const APP_V = "202611050100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4709,6 +4722,20 @@ function mastTile(seen, mast) {
   const now = st.bd ? `<span class="xm-r bd">${st.bd} ta unutilmoqda</span>` : st.wk ? `<span class="xm-r wk">${st.wk} ta zaiflashgan</span>` : `<span class="xm-r">hammasi esda</span>`;
   return `<div class="xm-t xg xmt"><a class="xmt-a" href="#xotira" aria-label="Xotira: ${mast} ta mustahkam so'z, ${st.bd} ta unutilmoqda"></a><p class="xm-k">${ICON.curve}Xotira<span class="xmt-go">${ICON.chev}</span></p><div class="gw gr" aria-hidden="true">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">mustahkam · ${k} tadan<br>${now}</p>${go ? `<button class="mchip" id="mast">${risk ? "Qutqarish" : "Mustahkamlash"}</button>` : ""}</div>`;
 }
+/* «Mashqlar» to'ri: kutubxona bo'limlari bitta joyda (oldin So'z boyligi va Tinglash alohida qatorlar edi) */
+function mxGrid(zero) {
+  const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
+  const bRead = BOOKS.filter(b => bookRec(b) && bookRec(b).done).length, ibSeen = IBS.filter(ibRec).length, fs = felSeen().length, mp = !zero && miniPool().length >= 5;
+  const t = (tag, attr, ic, name, sub, off) => `<${tag} class="mxt${off ? " off" : ""}" ${attr}><span class="mxi">${ic}</span><b>${name}</b><span>${sub}</span></${tag}>`;
+  const tiles = [
+    zero ? "" : t("a", 'href="#boylik"', ICON.spark, "So'z boyligi", S.vb.lvl ? Object.keys(S.vb.known).length + " ta bilgan" : "5–25 ta yangi"),
+    t("a", `href="${cur ? "#tinglash-" + cur[0] : "#tinglash"}"`, ICON_TL, "Tinglash", cur ? "davom etish" : "VOA videolar"),
+    t("a", 'href="#hikoyalar"', ICON.read, "Hikoyalar", bRead ? `${bRead} / ${BOOKS.length} o'qildi` : `${BOOKS.length} ta`),
+    t("a", 'href="#iboralar"', ICON.ibc, "Iboralar", ibSeen ? `${ibSeen} / ${IBS.length}` : `${IBS.length} ta · ${IB_T.length} mavzu`),
+    zero ? "" : t("button", 'type="button" id="mxsp"', ICON.verb, "Tez yozish", fs >= 4 ? "fe'llar · 60 s" : "4 ta fe'ldan keyin", fs < 4),
+    zero ? "" : t("button", 'type="button" id="mxmini"', ICON.redo, "2 daqiqa", mp ? "tezkor takror" : "so'z o'rgangach", !mp)].join("");
+  return `<div class="mxw"><p class="mx-l">Mashqlar</p><div class="mx">${tiles}</div></div>`;
+}
 /* Fe'llar kartasi: bugungi dars ochilmasa ham fe'llar ko'rinib tursin. Lesson qadami bilan bir xil holat (felPlanInfo) */
 function felCard() {
   const lv = r => !r ? 0 : (r.b || 0) >= 4 ? 3 : (r.b || 0) >= 3 ? 2 : 1;
@@ -4738,7 +4765,7 @@ function balanceHome() {
   /* variantlar: «Bugungi hikoya» chapda yoki o'ngda × o'ngning oxiridan 0..n karta chapga.
      Qolgan farqni cho'ziladigan karta oladi; «Bugungi hikoya» uni eng chiroyli oladi (matn ko'proq ko'rinadi), shuning uchun u yutadi */
   const H = e => e.offsetHeight + 16, kids = [...Rc.children], xi = kids.findIndex(e => e.classList.contains("xm2"));
-  const tail = kids.slice(Math.max(xi, 0) + 1), hk = L.querySelector(":scope>.hkc"), x2 = xi >= 0 ? kids[xi] : null, hh = hk ? H(hk) : 0;
+  const ai = xi >= 0 ? xi : Math.max(0, kids.findIndex(e => e.classList.contains("xm") && !e.classList.contains("hkc"))), tail = kids.slice(ai + 1), hk = L.querySelector(":scope>.hkc"), x2 = kids[ai] || null, hh = hk ? H(hk) : 0;
   const hL = L.offsetHeight, hR = Rc.offsetHeight; let best = null;
   for (const hkR of hk && x2 ? [false, true] : [false]) for (let m = 0; m <= tail.length; m++) {
     const mv = tail.slice(tail.length - m), sm = mv.reduce((a, e) => a + H(e), 0);

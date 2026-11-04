@@ -1373,42 +1373,113 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 @media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
 
 /* tinglash */
-#app .tl{gap:12px}
+#app .tlz{gap:12px}
 #app .tl-v{position:relative;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:16/9}
 #app .tl-v video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
-#app .tl-vb{position:absolute;right:10px;bottom:10px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
-#app .tl-vb svg{width:20px;height:20px}
-#app .tl-pr{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}#app .tl-pr i{display:block;height:100%;width:0;background:var(--marker);transition:width .3s}
-#app .tl-card{padding:18px}
+#app .tl-cov{position:absolute;left:0;right:0;bottom:0;height:24%;display:flex;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:12px;font-weight:600;letter-spacing:.02em;background:rgba(18,18,20,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:opacity .2s}
+#app .tl-cov svg{width:16px;height:16px}
+#app .tl-cov.hidden{display:flex!important;opacity:0;pointer-events:none}
+#app .tl-seg{display:flex;gap:3px}
+#app .tl-seg i{flex:1;height:5px;border-radius:3px;background:var(--line-strong);opacity:.55}
+#app .tl-seg i.ok{background:var(--ok-strong);opacity:1}#app .tl-seg i.no{background:var(--bad-strong);opacity:1}#app .tl-seg i.seen{background:var(--muted);opacity:.7}#app .tl-seg i.cur{background:var(--marker);opacity:1}
 #app .tl-pos{margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
-#app .tl-en{margin:0;font-size:23px;line-height:1.4;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
-#app .tl-w{display:inline;cursor:pointer;border-radius:6px;padding:0 2px;margin:0 -2px;-webkit-tap-highlight-color:transparent}
+#app .tl-listen{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:18px 16px 20px}
+#app .tl-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;align-self:stretch}
+#app .tl-meta .tl-pos{margin:0}
+#app .tl-who{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+#app .tl-wc{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 3px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:12.5px;font-weight:700;color:var(--ink)}
+#app .tl-wc i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#fff;font-style:normal;font-size:11px}
+#app .tl-arr{color:var(--muted);font-size:12px}
+#app .tl-scene{border-radius:var(--r);padding:14px 16px;background:var(--marker-soft);color:var(--ink)}
+#app .tl-scene .label{margin:0 0 4px;color:var(--accent-text)}#app .tl-scene p:last-child{margin:0;font-size:15px;line-height:1.45}
+#app .tl-seg i.s0{margin-left:5px}
+#app .tl-listen b{font-size:17px}#app .tl-listen .muted{font-size:14px}
+#app .tl-wave{display:flex;align-items:center;gap:4px;height:44px;margin:2px 0 8px}
+#app .tl-wave i{width:4px;height:12px;border-radius:2px;background:var(--line-strong)}
+#app .tl-wave i:nth-child(2n){height:24px}#app .tl-wave i:nth-child(3n){height:34px}#app .tl-wave i:nth-child(5){height:40px}
+#app .tl-wave.on i{background:var(--marker);animation:tlw 1s ease-in-out infinite alternate}
+#app .tl-wave.on i:nth-child(2n){animation-delay:-.3s}#app .tl-wave.on i:nth-child(3n){animation-delay:-.6s}
+@keyframes tlw{to{transform:scaleY(.4)}}
+@media (prefers-reduced-motion:reduce){#app .tl-wave.on i{animation:none}}
+#app .tl-ask .q-label{margin:2px 0 8px;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+#app .tl-cl{margin:0 0 14px;font-size:22px;line-height:1.45;font-weight:700;color:var(--ink)}
+#app .tl-blank{display:inline-block;min-width:96px;height:1.05em;border-bottom:2.5px solid var(--marker);vertical-align:-3px}
+#app .tl-bank{display:flex;flex-wrap:wrap;gap:8px}
+#app .tl-picks{display:flex;flex-direction:column;gap:8px}
+#app .tl-in{font:700 22px var(--font-body);color:var(--accent-text);background:var(--marker-soft);border:0;border-bottom:2.5px solid var(--marker);border-radius:8px 8px 0 0;padding:2px 6px;min-width:4ch;text-align:center;outline:none}
+#app .tl-in::placeholder{color:var(--accent-text);opacity:.4;letter-spacing:.1em}
+#app .tl-in:focus{background:var(--surface);box-shadow:0 0 0 2px var(--marker)}
+#app .tl-dh{margin:-6px 0 0;font-size:13.5px}
+#app .tl-mo:empty{display:none}#app .tl-mo{margin-top:10px}
+#app .tl-opt{min-height:48px;padding:0 18px;border-radius:14px;border:1.5px solid var(--line-strong);border-bottom-width:3px;background:var(--surface);color:var(--ink);font:600 16px var(--font-body);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s}
+#app .tl-opt:active{transform:translateY(1px)}
+#app .tl-opt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+#app .tl-pick{text-align:left;padding:12px 16px;line-height:1.35}
+#app .tl-card{padding:18px}
+#app .tl-en{margin:0;font-size:23px;line-height:1.55;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+#app .tl-w{display:inline;cursor:pointer;border-radius:6px;padding:6px 2px;margin:-6px -2px;text-decoration:underline dotted var(--line-strong);text-decoration-thickness:2px;text-underline-offset:5px;-webkit-tap-highlight-color:transparent}
+#app .tl-w.hl{background:var(--marker-soft);color:var(--accent-text);text-decoration-color:var(--marker)}
 #app .tl-w:hover,#app .tl-w:focus-visible{background:var(--marker-soft);color:var(--accent-text);outline:none}
-#app .tl-uz{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line);font-size:15px;color:var(--muted)}
+#app .tl-uz{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line);font-size:15px;color:var(--ink)}
+#app .tl-uzb{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;margin:12px 0 -6px;padding:10px 0 0;border:0;border-top:1px dashed var(--line);background:none;color:var(--muted);font:500 14.5px var(--font-body);cursor:pointer;text-align:left}
+#app .tl-uzb svg{width:18px;height:18px}
+#app .tl-hint{margin:0;text-align:left}
+#app .tl-res{border-radius:var(--r);padding:14px 16px}
+#app .tl-res.ok{background:var(--ok-bg)}#app .tl-res.bad{background:var(--bad-bg)}
+#app .tl-rh{margin:0 0 4px;display:flex;align-items:center;gap:6px;font-size:17px;font-weight:700}
+#app .tl-res.ok .tl-rh{color:var(--ok)}#app .tl-res.bad .tl-rh{color:var(--bad)}
+#app .tl-rh svg{width:20px;height:20px;stroke-width:2.6}
+#app .tl-rt{margin:0;font-size:15px;color:var(--ink)}#app .tl-rt .muted{font-size:13.5px}
+#app .tl-rn{margin:6px 0 0;font-size:13.5px;color:var(--muted)}
 #app .tl-acts{display:flex;gap:8px}
-#app .tl-act{flex:1;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--font-body);cursor:pointer}
-#app .tl-act svg{width:20px;height:20px}
-#app .tl-act.tl-main{background:var(--marker);border-color:var(--marker);color:var(--on-marker);font-size:16px}
+#app .tl-act{flex:1;min-height:56px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--font-body);cursor:pointer;padding:0 14px}
+#app .tl-act svg{width:20px;height:20px;flex:none}
+#app .tl-act span{display:block;text-align:center}
+#app .tl-act.tl-sq{flex:none;width:56px;padding:0}
+#app .tl-act.tl-add{flex:none}
+#app .tl-act.tl-main{background:var(--marker);border-color:var(--marker);color:var(--on-marker);font-size:16px;font-weight:700}
+#app .tl-act.tl-main.tl-ok{background:var(--ok);border-color:var(--ok);color:var(--bg)}
 #app .tl-act:disabled{opacity:.6}
-#app .tl-tools{display:flex;gap:8px;flex-wrap:wrap}
-#app .tl-tools .tl-chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 14px var(--font-body);cursor:pointer}
-#app .tl-tools .tl-chip[aria-pressed="true"]{background:var(--marker-soft);border-color:transparent;color:var(--accent-text)}
+#app .tl-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#app .tl-chip{display:inline-flex;align-items:center;gap:6px;width:auto;flex:none;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 14px var(--font-body);cursor:pointer}
+#app .tl-chip svg{width:18px;height:18px}
+#app .tl-chip[aria-pressed="true"]{background:var(--marker-soft);border-color:transparent;color:var(--accent-text)}
+#app .tl-err p{margin:0 0 10px}
 body .tl-sheet{position:fixed;inset:0;z-index:1000}
 body .tl-bd{position:absolute;inset:0;background:rgba(0,0,0,.32)}
-body .tl-sh{position:absolute;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.18)}
-body .tl-grab{display:block;width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px}
+body .tl-sh{position:absolute;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:var(--surface);border-radius:24px 24px 0 0;padding:8px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+body .tl-shtop{position:relative;height:36px;margin-bottom:4px}
+body .tl-grab{display:block;width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:6px auto 0}
+body .tl-shx{position:absolute;right:-8px;top:-4px}
 body .tl-wh{display:flex;align-items:center;justify-content:space-between;gap:10px}
 body .tl-wh b{font-size:28px;font-weight:700}body .tl-wh .pron{margin-left:8px;color:var(--pron);font-size:15px}
 body .tl-wu{margin:4px 0 12px;font-size:18px;font-weight:600}
 body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weight:600}
-#app .tl-num{flex:none;width:44px;height:44px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center;font-weight:700;font-size:17px}
+#app .tl-th{flex:none;position:relative;width:72px;height:46px;border-radius:12px;background:var(--marker-soft) center/cover no-repeat;overflow:hidden}
+#app .tl-th b{position:absolute;left:5px;bottom:5px;min-width:22px;height:22px;padding:0 6px;border-radius:7px;display:grid;place-items:center;background:rgba(18,18,20,.72);color:#fff;font-size:12.5px;font-weight:700}
+#app .tl-th.done b{background:var(--ok-strong)}#app .tl-th b svg{width:14px;height:14px;stroke-width:3}
 #app .tl-li{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;padding:10px 0;border-bottom:1px solid var(--line)}#app .tl-li:last-child{border-bottom:0}
 #app .tl-li .tx{flex:1;min-width:0}#app .tl-li .tx b{display:block}#app .tl-li .tx span{display:block;font-size:13px;color:var(--muted)}
 #app .tl-done{color:var(--ok);font-weight:600;font-size:13px;white-space:nowrap}
-#app .tl-cont{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit}#app .tl-cont .bar{display:block;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin-top:6px}#app .tl-cont .bar i{display:block;height:100%;background:var(--marker)}
-#app .tl-fin{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}#app .tl-fin h2{margin:0}#app .tl-fin-ic{width:56px;height:56px;border-radius:50%;margin:0 auto;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-size:26px;font-weight:700}#app .tl-fin-w{margin:0;font-weight:600}
-#app .tl-act span{display:block;text-align:center}
-#app .tl-tools .tl-chip{display:inline-flex;align-items:center;width:auto;flex:none}
+#app .tl-cont{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit}#app .tl-cont .bar{display:block;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin-top:6px}#app .tl-cont .bar i{display:block;height:100%;background:var(--marker);transform:none}
+#app .tl-fin{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:stretch;padding:22px 18px}
+#app .tl-fin h2{margin:4px 0 0;font-size:22px}#app .tl-fin>p{margin:0}
+#app .tl-ring{position:relative;width:132px;height:132px;margin:0 auto}
+#app .tl-ring svg{width:132px;height:132px;transform:rotate(-90deg)}
+#app .tl-ring circle{fill:none;stroke-width:11}#app .tl-ring .tr{stroke:var(--surface-2)}#app .tl-ring .fg{stroke:var(--ok-strong);stroke-linecap:round}
+#app .tl-ring>div{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#app .tl-ring b{font-size:32px;line-height:1;letter-spacing:-.02em}#app .tl-ring span{font-size:12px;color:var(--muted);font-weight:600}
+#app .tl-prev{font-size:14px}#app .tl-up{color:var(--ok)}
+#app .tl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+#app .tl-stats div{border:1px solid var(--line);border-radius:14px;padding:10px 6px}
+#app .tl-stats b{display:block;font-size:20px;line-height:1.2}#app .tl-stats span{font-size:12px;color:var(--muted);font-weight:600}
+#app .tl-stats .fire b{color:var(--marker)}
+#app .tl-hard{text-align:left;margin-top:10px;border-top:1px solid var(--line);padding-top:12px}
+#app .tl-hard .label{margin:0 0 6px}
+#app .tl-hard p{margin:0 0 6px;display:flex;gap:10px;align-items:baseline;font-size:15px}
+#app .tl-hard i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--bad-strong);transform:translateY(-1px)}
+#app .tl-fbtn{display:flex;flex-direction:column;gap:8px}
+#app .tl-fbtn .btn svg{width:18px;height:18px;vertical-align:-3px;margin-right:4px}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -2450,7 +2521,10 @@ function merge(a, b) {
   out.story = Object.assign({}, a.story || {}, b.story || {});
   { const ta = a.tl || {}, tb = b.tl || {}; out.tl = {};
     new Set(Object.keys(ta).concat(Object.keys(tb))).forEach(k => { const x = ta[k] || {}, y = tb[k] || {};
-      out.tl[k] = Object.assign({}, x, y, { i: Math.max(x.i || 0, y.i || 0), done: !!(x.done || y.done), at: Math.max(x.at || 0, y.at || 0), w: [...new Set((x.w || []).concat(y.w || []))] }); }); }
+      const w = [...new Set((x.w || []).concat(y.w || []))], px = x.pass || 1, py = y.pass || 1;
+      if (px !== py) { out.tl[k] = Object.assign({}, px > py ? x : y, { w }); return; }
+      const nw = (y.at || 0) >= (x.at || 0) ? y : x;
+      out.tl[k] = Object.assign({}, x, y, { i: Math.max(x.i || 0, y.i || 0), done: !!(x.done || y.done), at: Math.max(x.at || 0, y.at || 0), w, r: nw.r, pct: nw.pct != null ? nw.pct : (x.pct != null ? x.pct : y.pct) }); }); }
   out.guide = Object.assign({}, a.guide || {}, b.guide || {});
   out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
   out.level = b.level || a.level || "";
@@ -3029,10 +3103,11 @@ function todayPlan(n) {
   const pd = PH.filter(isDue), pn = PH.filter(x => !isSeen(x));
   const pl = pd.length ? pd : pn.slice(0, 3);
   if (pl.length) plan.push({ tag: "gap", t: "Tayyor gaplar", s: pd.length ? pd.length + " ta gap takrorlanadi" : "3 ta yangi gap: " + pl[0].w, run: () => { startPh(pl, "Tayyor gaplar", "gap"); G.back = "#"; } });
+  { const tc = tlPick(); if (tc) plan.push({ tag: "tl", t: "Tinglash: " + tc.t, s: tc.s, run: () => go(tc.href) }); }
   plan.forEach(x => { x.min = x.min || STEP_MIN[x.tag]; x.ic = STEP_IC[x.tag]; });
   return plan;
 }
-const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read" }, STEP_NAME = { story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
+const STEP_MIN = { esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3, tl: 5 }, STEP_IC = { esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read", tl: "vol" }, STEP_NAME = { tl: "Tinglash", story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
 let GX = null; // rejadan kelgan grammatika takrorlash savollari
 
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
@@ -5398,8 +5473,9 @@ function bindSync() {
 /* ---------- SOZLAMA: export / import ---------- */
 /* ---------- TINGLASH: VOA «Let's Learn English» video darslari, gap-gap rejim ----------
    Video VOA serveridan (erkin kontent). Gaplar va vaqtlari tinglash.json da (Whisper bilan bir marta tayyorlangan, tarjimalar qo'lda).
-   Har gapdan keyin video o'zi to'xtaydi: «Qayta» · «Tushuntir» (Claude, faqat ruxsatli hisob) · «Keyingi». So'z bosilsa — tarjima va «Takrorga qo'shish». */
-let TL = null;
+   «Avval eshit»: matn va video subtitri eshitguncha yopiq; eshitgach bitta savol (tlQuiz), javobdan keyin matn ochiladi. So'z bosilsa — tarjima va «Takrorga qo'shish».
+   Natija seriyaga (logAns + touchStreak) hisoblanadi; oxirida qiyin gaplar mashqi va butun sahnani matnsiz ko'rish. */
+var TL = null; // var: bosh sahifa rejasi (tlPick) skript oxirigacha o'qilmasdan ham murojaat qilishi mumkin
 const ICON_TL = sv('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M20 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z"/><path d="M4 15a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2z"/>');
 const ICON_RE = sv('<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>');
 function tlLoad() { if (TL) return Promise.resolve(TL); return fetch("tinglash.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error("tl"); return r.json(); }).then(d => (TL = d)); }
@@ -5408,6 +5484,14 @@ function tlSave(n, patch) { S.tl = S.tl || {}; S.tl[n] = Object.assign({}, tlSt(
 const tlPref = (k, d) => { try { const v = localStorage.getItem("ingliz-tl-" + k); return v == null ? d : v; } catch (e) { return d; } };
 const tlSetPref = (k, v) => { try { localStorage.setItem("ingliz-tl-" + k, v); } catch (e) {} };
 const mmss = s => Math.floor(s / 60) + ":" + String(Math.round(s % 60)).padStart(2, "0");
+/* kunlik rejadagi tinglash qadami: boshlangan dars yoki keyingi tugallanmagan dars */
+function tlPick() {
+  const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
+  if (cur) return { t: cur[1].t || cur[0] + "-dars", s: `${cur[1].i + 1} / ${cur[1].len} gap · davom etish`, href: "tinglash-" + cur[0] };
+  if (TL) { const L = TL.lessons.find(x => !tlSt(x.n).done); return L ? { t: L.t, s: L.s.length + " gap · avval eshitib, keyin savol", href: "tinglash-" + L.n } : null; }
+  tlLoad().catch(() => {});
+  return { t: "video dars", s: "Avval eshitib, keyin savol", href: "tinglash" };
+}
 /* bosh sahifadagi qator */
 function tlCard() {
   const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
@@ -5416,15 +5500,15 @@ function tlCard() {
 }
 function tlRow(L) {
   const st = tlSt(L.n), len = L.s.length, pct = st.done ? 100 : Math.round(Math.min(st.i, len) / len * 100);
-  const right = st.done ? `<span class="tl-done">✓ ${(st.w || []).length} so'z</span>` : st.i > 0 ? `<span class="muted">${pct}%</span>` : "";
-  return `<a class="li tl-li" href="#tinglash-${L.n}"><span class="tl-num" aria-hidden="true">${L.n}</span><span class="tx"><b>${esc(L.t)}</b><span>${esc(L.uz)} · ${L.s.length} ta gap</span></span>${right}<span class="go">${ICON.chev}</span></a>`;
+  const right = st.done ? `<span class="tl-done">✓ ${st.pct != null ? st.pct + "%" : (st.w || []).length + " so'z"}</span>` : st.i > 0 ? `<span class="muted">${st.i + 1} / ${len}</span>` : "";
+  return `<a class="li tl-li" href="#tinglash-${L.n}"><span class="tl-th${st.done ? " done" : ""}" aria-hidden="true"${L.poster ? ` style="background-image:url('${esc(L.poster)}')"` : ""}><b>${st.done ? ICON.check : L.n}</b></span><span class="tx"><b>${esc(L.t)}</b><span>${esc(L.uz)} · ${L.s.length} ta gap</span></span>${right}<span class="go">${ICON.chev}</span></a>`;
 }
 route(/^tinglash$/, () => {
   app.innerHTML = `${nav("#", "Bugun", "Tinglash")}<div class="stack" id="tll"><p class="muted">Yuklanmoqda…</p></div>`;
   tlLoad().then(d => {
     if (location.hash !== "#tinglash") return;
     const cur = d.lessons.find(L => { const st = tlSt(L.n); return st.i > 0 && !st.done; });
-    $("#tll").innerHTML = `<p class="sub">A1 · VOA «Let's Learn English». Video har gapdan keyin to'xtaydi: tushunsangiz — keyingisi, tushunmasangiz — qayta yoki tushuntirish.</p>
+    $("#tll").innerHTML = `<p class="sub">A1 · VOA «Let's Learn English». Avval quloq bilan eshitasiz, keyin bitta qisqa savol — matn javobdan keyin ochiladi.</p>
       ${cur ? `<a class="card tl-cont" href="#tinglash-${cur.n}"><span class="label">Davom etish</span><b>${esc(cur.t)}</b><span class="muted">${tlSt(cur.n).i + 1} / ${cur.s.length} gap</span><span class="bar"><i style="width:${Math.round(tlSt(cur.n).i / cur.s.length * 100)}%"></i></span></a>` : ""}
       <div class="card"><p class="label">Let's Learn English · Level 1</p><div class="list">${d.lessons.map(tlRow).join("")}</div></div>
       <p class="gohint" style="text-align:left">Video va matn: VOA Learning English (learningenglish.voanews.com).</p>`;
@@ -5450,112 +5534,267 @@ route(/^tinglash-(\d+)$/, n => {
     tlLesson(L);
   }).catch(() => { app.querySelector(".stack").innerHTML = `<div class="card"><p>Darsni yuklab bo'lmadi. Internetni tekshirib, qayta oching.</p></div>`; });
 });
+const ICF = (p, t) => `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd"${t ? ` transform="translate(${t})"` : ""} d="${p}"/></svg>`;
+const ICON_PLAY = ICF("M10,0 C15.51,0 20,4.49 20,10.01 C20,15.51 15.51,20 10,20 C4.49,20 0,15.51 0,10.01 C0,4.49 4.49,0 10,0 Z M8.86,6.03 C8.65,6.03 8.45,6.08 8.25,6.17 C8.01,6.31 7.82,6.52 7.71,6.77 C7.64,6.95 7.54,7.47 7.54,7.48 C7.43,8.05 7.37,8.97 7.37,10 C7.37,10.97 7.43,11.86 7.52,12.44 C7.53,12.45 7.64,13.09 7.75,13.31 C7.96,13.72 8.38,13.97 8.82,13.97 L8.86,13.97 C9.15,13.96 9.76,13.71 9.76,13.7 C10.78,13.28 12.8,11.95 13.61,11.08 L13.67,11.02 C13.77,10.91 13.91,10.75 13.94,10.71 C14.09,10.51 14.17,10.26 14.17,10.01 C14.17,9.73 14.08,9.46 13.92,9.25 C13.88,9.21 13.74,9.05 13.6,8.91 C12.81,8.07 10.74,6.68 9.66,6.25 C9.5,6.19 9.08,6.04 8.86,6.03 Z", "2 2");
+const ICON_PAUSE = ICF("M8.59 3.5H6.28C5.45 3.5 4.78 4.17 4.78 5V19C4.78 19.83 5.45 20.5 6.28 20.5H8.59C9.42 20.5 10.09 19.83 10.09 19V5C10.09 4.17 9.42 3.5 8.59 3.5Z M17.72 3.5H15.41C14.58 3.5 13.91 4.17 13.91 5V19C13.91 19.83 14.58 20.5 15.41 20.5H17.72C18.55 20.5 19.22 19.83 19.22 19V5C19.22 4.17 18.55 3.5 17.72 3.5Z");
+const ICON_HIDE = ICF("M18.42,0.22 C18.71,0.51 18.71,0.99 18.42,1.28 L2.64,17.05 C2.5,17.2 2.31,17.27 2.11,17.27 C1.92,17.27 1.73,17.2 1.58,17.05 C1.29,16.76 1.29,16.29 1.58,15.99 L3.56,14.02 C2.14,12.73 0.94,10.99 0.06,8.93 C-0.02,8.74 -0.02,8.53 0.06,8.34 C1.08,5.98 2.52,4.02 4.22,2.68 C7.51,0.08 11.84,-0.06 15.27,2.31 L17.36,0.22 C17.65,-0.07 18.12,-0.07 18.42,0.22 Z M18.05,5.04 C18.77,6 19.41,7.11 19.94,8.34 C20.02,8.53 20.02,8.74 19.94,8.93 C17.84,13.79 14.13,16.69 10,16.69 C9.06,16.69 8.13,16.54 7.23,16.24 C6.84,16.11 6.63,15.68 6.76,15.29 C6.89,14.9 7.31,14.69 7.71,14.81 C8.45,15.06 9.22,15.19 10,15.19 C13.43,15.19 16.56,12.75 18.43,8.64 C17.97,7.64 17.44,6.73 16.85,5.94 C16.6,5.61 16.67,5.14 17,4.89 C17.33,4.64 17.8,4.71 18.05,5.04 Z M5.15,3.86 C3.71,4.99 2.48,6.64 1.57,8.64 C2.36,10.39 3.41,11.87 4.62,12.96 L6.75,10.82 C6.32,10.18 6.09,9.43 6.09,8.64 C6.09,6.48 7.84,4.72 10,4.72 C10.78,4.72 11.55,4.96 12.19,5.39 L14.19,3.39 C11.34,1.55 7.86,1.71 5.15,3.86 Z M13.24,8.46 C13.65,8.53 13.92,8.92 13.84,9.33 C13.56,10.93 12.29,12.19 10.7,12.48 C10.66,12.49 10.61,12.49 10.57,12.49 C10.21,12.49 9.9,12.24 9.83,11.88 C9.76,11.47 10.03,11.08 10.43,11 C11.41,10.83 12.19,10.05 12.37,9.07 C12.44,8.66 12.83,8.39 13.24,8.46 Z M10,6.22 C8.67,6.22 7.59,7.31 7.59,8.64 C7.59,9.02 7.68,9.4 7.85,9.73 L11.09,6.48 C10.76,6.31 10.38,6.22 10,6.22 Z", "2 3");
+const ICON_SHOW = ICF("M10,0 C14.14,0 17.85,2.9 19.94,7.76 C20.02,7.95 20.02,8.16 19.94,8.35 C17.85,13.2 14.14,16.1 10,16.11 L10,16.11 C5.86,16.1 2.15,13.2 0.06,8.35 C-0.02,8.16 -0.02,7.95 0.06,7.76 C2.15,2.9 5.86,0 10,0 Z M10,1.5 C6.56,1.5 3.43,3.94 1.57,8.05 C3.43,12.16 6.56,14.6 10,14.61 C13.44,14.6 16.57,12.16 18.43,8.05 C16.57,3.94 13.44,1.5 10,1.5 Z M10,4.14 C12.16,4.14 13.91,5.9 13.91,8.05 C13.91,10.21 12.16,11.96 10,11.96 C7.84,11.96 6.09,10.21 6.09,8.05 C6.09,5.9 7.84,4.14 10,4.14 Z M10,5.64 C8.67,5.64 7.59,6.72 7.59,8.05 C7.59,9.38 8.67,10.46 10,10.46 C11.33,10.46 12.41,9.38 12.41,8.05 C12.41,6.72 11.33,5.64 10,5.64 Z", "2 4");
+/* ---------- «Tez savol»: har gapdan keyin bitta savol (gapning o'zidan avtomatik) ----------
+   3 so'zdan qisqa yoki mazmunli so'zi yo'q gapda savol yo'q — matn shunchaki ochiladi.
+   Turlari: «cloze» — bo'sh joyga eshitilgan so'z (3 variant), «pick» — ikki o'xshash gapdan eshitilganini tanlash. */
+const TL_STOP = new Set("the a an and or but to of in on at for is are am was were be been i i'm i've you you're he she it it's we they me my your his her our their this that there here what who where when how why yes no not do does did don't can can't oh hi hey okay ok so with from just very too let's let who's what's where's that's he's she's there's here's isn't aren't i'll you'll we're they're well right".split(" "));
+const tlClean = t => String(t).toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z0-9']+|[^a-z0-9']+$/g, "");
+const tlHash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+const tlOkWord = w => w.length >= 3 && !TL_STOP.has(w) && /^[a-z']+$/.test(w);
+const TL_Q = {};
+function tlQuiz(L, i) {
+  const key = L.n + ":" + i; if (key in TL_Q) return TL_Q[key];
+  const toks = L.s[i][2].split(/\s+/).filter(Boolean);
+  let q = null;
+  // ismlar: gap o'rtasida bosh harf bilan yozilgan so'zlar (Anna, Pete, Marsha) — savolga ham, chalg'ituvchiga ham olinmaydi
+  const names = L._names || (L._names = new Set(L.s.flatMap(x => x[2].split(/\s+/).slice(1).filter(t => /^[A-Z][a-z]/.test(t.replace(/^[^A-Za-z]+/, ""))).map(tlClean))));
+  const all = toks.length >= 3 ? toks.map((t, k) => ({ k, w: tlClean(t) })).filter(o => tlOkWord(o.w)) : [];
+  const cand = all.filter(o => !names.has(o.w)).length ? all.filter(o => !names.has(o.w)) : all;
+  if (cand.length) {
+    const h = tlHash(key), known = cand.filter(o => (tlLookup(o.w) || {}).u), pool = known.length ? known : cand, tg = pool[h % pool.length];
+    const inS = new Set(toks.map(tlClean));
+    const others = [...new Set(L.s.flatMap((x, j) => j === i ? [] : x[2].split(/\s+/).map(tlClean)))].filter(w => tlOkWord(w) && !inS.has(w) && !names.has(w));
+    others.sort((a, b) => Math.abs(a.length - tg.w.length) - Math.abs(b.length - tg.w.length) || tlHash(a + h) - tlHash(b + h));
+    const ds = others.slice(0, 2);
+    for (const w of ["friend", "house", "city", "work", "coffee", "morning"]) { if (ds.length >= 2) break; if (!inS.has(w) && !ds.includes(w)) ds.push(w); }
+    const m = toks[tg.k].match(/^([^A-Za-z0-9']*)(.*?)([^A-Za-z0-9']*)$/), word = m[2];
+    const cap = d => /^[A-Z]/.test(word) ? d[0].toUpperCase() + d.slice(1) : d;
+    const mix = a => a.map((o, j) => ({ o, r: tlHash(o + ":" + h + ":" + j) })).sort((x, y) => x.r - y.r).map(x => x.o);
+    const with_ = w => toks.map((t, k) => k === tg.k ? m[1] + w + m[3] : t).join(" ");
+    // pick — har 3-savol; qisqa gaplarda (6 so'zgacha) yarmi diktant: so'zni o'zi yozadi
+    const kind = h % 3 === 2 ? "pick" : toks.length <= 6 && (h >> 2) % 2 === 0 ? "dict" : "cloze";
+    q = kind === "pick"
+      ? { kind, k: tg.k, word, opts: mix([L.s[i][2], with_(cap(ds[0]))]), ans: L.s[i][2] }
+      : { kind, k: tg.k, word, pre: m[1], post: m[3], toks, opts: mix([word, ...ds.map(cap)]), ans: word };
+  }
+  return (TL_Q[key] = q);
+}
+const TL_COL = ["#3B6FB6", "#B9441F", "#5F7D3A", "#8A4FA0", "#A0612A", "#2F7F7A", "#9C3D63"];
+const tlWho = w => w ? `<span class="tl-who">${w.split(" → ").map(nm => `<span class="tl-wc"><i style="background:${TL_COL[tlHash(nm) % TL_COL.length]}" aria-hidden="true">${esc(nm[0])}</i>${esc(nm)}</span>`).join('<span class="tl-arr" aria-hidden="true">→</span>')}</span>` : "";
+/* diktant: katta-kichik harf va tutuq belgisi farq qilmaydi; 5+ harfli so'zda bitta harf xatosi kechiriladi */
+const tlLev = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; };
+const tlNorm = w => String(w).toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9']/g, "");
+const tlSame = (got, want) => { const a = tlNorm(got), b = tlNorm(want); return !!a && (a === b || (b.length >= 5 && tlLev(a, b) <= 1)); };
+const ICON_MIC = ICF("M16.75,8.8 C17.16,8.8 17.5,9.14 17.5,9.55 C17.5,14.14 13.97,17.92 9.5,18.31 L9.5,20.75 C9.5,21.16 9.16,21.5 8.75,21.5 C8.34,21.5 8,21.16 8,20.75 L8,18.31 C3.52,17.92 0,14.14 0,9.55 C0,9.14 0.34,8.8 0.75,8.8 C1.16,8.8 1.5,9.14 1.5,9.55 C1.5,13.57 4.75,16.84 8.75,16.84 C12.75,16.84 16,13.57 16,9.55 C16,9.14 16.34,8.8 16.75,8.8 Z M8.75,0 C11.4,0 13.56,2.17 13.56,4.83 L13.56,9.52 C13.56,12.18 11.4,14.35 8.75,14.35 C6.1,14.35 3.94,12.18 3.94,9.52 L3.94,4.83 C3.94,2.17 6.1,0 8.75,0 Z M8.75,1.5 C6.92,1.5 5.44,2.99 5.44,4.83 L5.44,9.52 C5.44,11.35 6.92,12.85 8.75,12.85 C10.58,12.85 12.06,11.35 12.06,9.52 L12.06,4.83 C12.06,2.99 10.58,1.5 8.75,1.5 Z", "3 1");
 function tlLesson(L) {
-  const N = L.s.length, st = tlSt(L.n), ai = !!(AUTH && AI_ALLOW.includes((AUTH.email || "").toLowerCase()));
-  let i = Math.min(st.done ? 0 : st.i || 0, N - 1), heard = false, raf = 0;
+  const N = L.s.length, ai = !!(AUTH && AI_ALLOW.includes((AUTH.email || "").toLowerCase()));
+  const st0 = tlSt(L.n);
+  let arr = (st0.r || "").padEnd(N, " ").slice(0, N).split("");
+  let i = Math.min(st0.i || 0, N - 1), phase = "idle", playing = false, raf = 0, endAt = 0, onEnd = null, picked = null, uzOpen = false;
+  let mode = "main", seq = null, k = 0, answered = 0;
+  // sahnalar: [boshlanish gapi, o'zbekcha kirish]; har sahna kirishi birinchi eshitishgacha ko'rsatiladi
+  const SC = L.sc && L.sc.length ? L.sc : [[0, ""]], seenSc = new Set();
+  const scOf = j => { let x = 0; SC.forEach((c, y) => { if (c[0] <= j) x = y; }); return x; };
+  const scEnd = x => x + 1 < SC.length ? SC[x + 1][0] : N; // mode: main · hard (qiyin gaplar) · watch (butun sahna)
   tlSave(L.n, { len: N, t: L.t, i });
   app.innerHTML = `${nav("#tinglash", "Tinglash", L.t)}
-  <div class="stack tl">
-    <div class="tl-v"><video id="tlv" playsinline preload="auto" src="${esc(L.video)}"${L.poster ? ` poster="${esc(L.poster)}"` : ""} aria-label="Dars videosi"></video><button class="tl-vb" id="tlvb" aria-label="Shu gapni eshitish">${ICON_RE}</button></div>
-    <div class="tl-pr" aria-hidden="true"><i id="tlpr"></i></div>
-    <div class="card tl-card"><p class="tl-pos" id="tlpos"></p><p class="tl-en" id="tlen" lang="en"></p><p class="tl-uz" id="tluz"></p></div>
-    <div class="tl-acts">
-      <button class="tl-act" id="tlrep">${ICON_RE}<span>Qayta</span></button>
-      ${ai ? `<button class="tl-act" id="tlwhy">${ICON_WHY}<span>Tushuntir</span></button>` : ""}
-      <button class="tl-act tl-main" id="tlnext"><span id="tlnl">Eshitish</span></button>
-    </div>
+  <div class="stack tlz">
+    <div class="tl-v"><video id="tlv" playsinline preload="auto" src="${esc(L.video)}"${L.poster ? ` poster="${esc(L.poster)}"` : ""} aria-label="Dars videosi"></video><div class="tl-cov" id="tlcov" aria-hidden="true">${ICON_HIDE}<span>Subtitr yopiq</span></div></div>
+    <div class="tl-seg" id="tlseg" aria-hidden="true"></div>
+    <div id="tlbody"></div>
     <div id="tlai"></div>
-    <div class="tl-tools"><button class="tl-chip" id="tlspd" aria-pressed="false"></button><button class="tl-chip" id="tltr" aria-pressed="false"></button></div>
-  </div>
-`;
-  // so'z oynasi body ga qo'yiladi: pastki menyudan ustun tursin
+    <div id="tlacts"></div>
+  </div>`;
   { const o = document.getElementById("tlsh"); if (o) o.remove(); }
-  document.body.insertAdjacentHTML("beforeend", `<div class="tl-sheet hidden" id="tlsh" role="dialog" aria-modal="true" aria-labelledby="tlsw"><div class="tl-bd" data-x></div><div class="tl-sh"><span class="tl-grab"></span><div id="tlshb"></div></div></div>`);
-  const v = $("#tlv"), en = $("#tlen"), uz = $("#tluz"), nl = $("#tlnl"), spd = $("#tlspd"), tr = $("#tltr"), aiBox = $("#tlai");
+  document.body.insertAdjacentHTML("beforeend", `<div class="tl-sheet hidden" id="tlsh" role="dialog" aria-modal="true" aria-labelledby="tlsw"><div class="tl-bd" data-x></div><div class="tl-sh"><div class="tl-shtop"><span class="tl-grab"></span><button class="icon tl-shx" data-x aria-label="Yopish">${ICON.x}</button></div><div id="tlshb"></div></div></div>`);
+  const v = $("#tlv"), body = $("#tlbody"), acts = $("#tlacts"), aiBox = $("#tlai"), cov = $("#tlcov"), segEl = $("#tlseg");
   const rate = () => +tlPref("spd", ".75");
-  const applyPrefs = () => {
-    v.playbackRate = rate(); spd.textContent = rate() < 1 ? "Sekin · 0,75×" : "Oddiy · 1×"; spd.setAttribute("aria-pressed", String(rate() < 1));
-    const show = tlPref("uz", "1") === "1"; uz.classList.toggle("hidden", !show); tr.textContent = show ? "Tarjimani yashirish" : "Tarjimani ko'rsatish"; tr.setAttribute("aria-pressed", String(show));
-  };
-  const draw = () => {
-    const s = L.s[i];
-    en.innerHTML = s[2].split(/(\s+)/).map(t => /\S/.test(t) ? `<span class="tl-w" role="button" tabindex="0" data-w="${esc(t)}">${esc(t)}</span>` : t).join("");
-    uz.textContent = s[3] || "";
-    $("#tlpos").textContent = (i + 1) + " / " + N;
-    $("#tlpr").style.width = Math.round(i / N * 100) + "%";
-    nl.textContent = !heard ? "Eshitish" : i < N - 1 ? "Keyingi" : "Tugatish";
-    aiBox.innerHTML = "";
-    en.querySelectorAll(".tl-w").forEach(b => { b.onclick = () => wordSheet(b.dataset.w); b.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wordSheet(b.dataset.w); } }; });
-  };
+  const saveR = () => tlSave(L.n, { r: arr.join("") });
+  const enHTML = (s, hl) => s.split(/(\s+)/).map((t, j) => /\S/.test(t) ? `<span class="tl-w${hl === j / 2 ? " hl" : ""}" role="button" tabindex="0" data-w="${esc(t)}">${esc(t)}</span>` : t).join("");
+  const spdChip = () => `<button class="tl-chip" id="tlspd" aria-pressed="${rate() < 1}">${rate() < 1 ? "Sekin · 0,75×" : "Oddiy · 1×"}</button>`;
+  const repChip = (t = "Yana eshitish") => `<button class="tl-chip" id="tlrep">${ICON_RE}<span>${t}</span></button>`;
+  const score = () => { const q = arr.filter(c => c === "1" || c === "0").length, ok = arr.filter(c => c === "1").length; return { q, ok, pct: q ? Math.round(ok / q * 100) : null }; };
+
+  /* ---- video ---- */
   const stopWatch = () => { cancelAnimationFrame(raf); raf = 0; };
-  const play = () => {
-    const s = L.s[i]; stopVoice(); stopWatch();
-    try { v.currentTime = s[0]; } catch (e) {}
-    v.playbackRate = rate();
-    const p = v.play(); if (p && p.catch) p.catch(() => {});
-    const end = s[1];
-    const tick = () => { if (v.currentTime >= end - 0.05 || v.ended) { v.pause(); stopWatch(); heard = true; nl.textContent = i < N - 1 ? "Keyingi" : "Tugatish"; return; } raf = requestAnimationFrame(tick); };
-    raf = requestAnimationFrame(tick);
+  const halt = () => { stopWatch(); try { v.pause(); } catch (e) {} playing = false; };
+  const tick = () => { if (v.currentTime >= endAt - 0.05 || v.ended) { halt(); const f = onEnd; onEnd = null; if (f) f(); else draw(); return; } raf = requestAnimationFrame(tick); };
+  const run = (from, to, done) => {
+    stopVoice(); stopWatch();
+    if (from != null) { try { v.currentTime = from; } catch (e) {} }
+    endAt = to; onEnd = done || null; v.playbackRate = rate(); playing = true;
+    const p = v.play(); if (p && p.catch) p.catch(() => { playing = false; draw(); });
+    raf = requestAnimationFrame(tick); draw();
   };
-  const finish = () => {
-    stopWatch(); v.pause(); tlSave(L.n, { i: N - 1, done: true });
-    const next = TL.lessons.find(x => x.n === L.n + 1), w = tlSt(L.n).w || [];
-    app.querySelector(".tl").innerHTML = `<div class="card tl-fin"><span class="tl-fin-ic">✓</span><h2>Dars tugadi</h2><p class="muted">${N} ta gap · ${w.length ? w.length + " ta so'z takrorga qo'shildi" : "takrorga so'z qo'shilmadi"}</p>
-      ${w.length ? `<p class="tl-fin-w">${w.map(esc).join(" · ")}</p>` : ""}
-      ${next ? `<a class="btn" href="#tinglash-${next.n}">Keyingi dars: ${esc(next.t)}</a>` : ""}<a class="btn ghost" href="#tinglash">Darslar ro'yxati</a></div>`;
+  const resume = () => { playing = true; v.playbackRate = rate(); const p = v.play(); if (p && p.catch) p.catch(() => {}); raf = requestAnimationFrame(tick); draw(); };
+  const pause = () => { halt(); draw(); };
+  const playCur = first => (seenSc.add(scOf(i)), run(L.s[i][0], L.s[i][1], first ? () => { phase = tlQuiz(L, i) ? "ask" : "shown"; if (phase === "shown" && arr[i] === " ") { arr[i] = "-"; saveR(); } draw(); } : null));
+
+  /* ---- javob ---- */
+  const answer = opt => {
+    const q = tlQuiz(L, i), ok = opt != null && (q.kind === "dict" ? tlSame(opt, q.ans) : opt === q.ans);
+    picked = opt; phase = "res"; uzOpen = false;
+    if (mode === "hard") { if (ok) arr[i] = "1"; }
+    else if (arr[i] !== "1" && arr[i] !== "0") arr[i] = ok ? "1" : "0";
+    saveR(); logAns(ok); touchStreak(); save(); buzz(ok);
+    if (++answered >= 10) markDone("tl");
+    draw();
   };
-  $("#tlrep").onclick = play; $("#tlvb").onclick = play;
-  $("#tlnext").onclick = () => {
-    if (!heard) return play();
-    if (i >= N - 1) return finish();
-    i++; heard = false; tlSave(L.n, { i }); draw(); play();
+  const nextSentence = () => {
+    halt(); picked = null; uzOpen = false; aiBox.innerHTML = "";
+    if (mode === "hard") { k++; if (k >= seq.length) return finish(); i = seq[k]; phase = "idle"; return draw(); }
+    if (i >= N - 1) { const sc = score(); tlSave(L.n, { i: N - 1, done: true, pct: sc.pct }); markDone("tl"); return finish(); }
+    if (SC.length > 1 && i + 1 === scEnd(scOf(i))) {
+      const x = scOf(i), part = arr.slice(SC[x][0], i + 1), q = part.filter(c => c === "1" || c === "0").length, ok = part.filter(c => c === "1").length;
+      toast(`Sahna ${x + 1} / ${SC.length} tugadi`, null, null, { sub: q ? `${q} ta savoldan ${ok} tasi to'g'ri` : "Keyingi sahnaga o'tamiz" });
+      i++; phase = "idle"; tlSave(L.n, { i }); return draw();
+    }
+    i++; phase = "idle"; tlSave(L.n, { i }); draw(); playCur(true);
   };
-  spd.onclick = () => { tlSetPref("spd", rate() < 1 ? "1" : ".75"); applyPrefs(); };
-  tr.onclick = () => { tlSetPref("uz", tlPref("uz", "1") === "1" ? "0" : "1"); applyPrefs(); };
-  const why = $("#tlwhy");
-  if (why) why.onclick = () => {
-    const s = L.s[i]; why.disabled = true;
-    aiBox.innerHTML = `<div class="ai" role="status"><div class="sk"></div><div class="sk" style="width:70%"></div><p class="muted" style="margin:8px 0 0;font-size:13px">Tushuntirish tayyorlanmoqda…</p></div>`;
-    aiAsk({ mode: "sentence", answer: s[2], uz: s[3] || "" }).then(r => {
-      aiBox.innerHTML = `<div class="ai"><p>${esc(r.izoh || "")}</p>${aiExample(r.misol)}</div>`; bindSay(aiBox);
-    }).catch(e => { aiBox.innerHTML = `<div class="ai"><p class="muted">${esc(aiErr(e.code))}</p></div>`; }).finally(() => { why.disabled = false; });
-  };
-  /* so'z oynasi */
+
+  /* ---- chizish ---- */
+  function segs() {
+    const list = mode === "hard" ? seq : L.s.map((_, j) => j);
+    segEl.innerHTML = list.map(j => { const c = arr[j]; return `<i class="${mode === "main" && j && SC.some(x => x[0] === j) ? "s0 " : ""}${j === i && mode !== "watch" && (phase === "idle" || phase === "ask") ? "cur" : c === "1" ? "ok" : c === "0" ? "no" : c === "-" ? "seen" : ""}"></i>`; }).join("");
+    segEl.classList.toggle("hidden", mode === "watch" || phase === "fin");
+  }
+  function draw() {
+    segs();
+    cov.classList.toggle("hidden", !(mode === "watch" || phase === "idle" || (phase === "ask" && !picked)));
+    if (phase === "fin") return;
+    const s = L.s[i], q = tlQuiz(L, i), pos = mode === "hard" ? `Qiyin gap ${k + 1} / ${seq.length}` : `Gap ${i + 1} / ${N}`;
+    if (mode === "watch") {
+      body.innerHTML = `<div class="card tl-listen"><div class="tl-wave${playing ? " on" : ""}" aria-hidden="true">${"<i></i>".repeat(9)}</div><b>Butun sahna · matnsiz</b><span class="muted">${mmss(L.s[N - 1][1] - L.s[0][0])} · ${N} gap, to'xtovsiz</span></div>`;
+      acts.innerHTML = `<div class="tl-acts"><button class="tl-act tl-sq" id="tlback" aria-label="Natijaga qaytish">${ICON.x}</button><button class="tl-act tl-main" id="tlmain">${playing ? ICON_PAUSE + "<span>Pauza</span>" : ICON_PLAY + `<span>${v.currentTime > L.s[0][0] + 1 ? "Davom ettirish" : "Boshlash"}</span>`}</button></div>`;
+      $("#tlmain").onclick = () => playing ? pause() : v.currentTime > L.s[0][0] + 1 && v.currentTime < L.s[N - 1][1] - 0.5 ? (endAt = L.s[N - 1][1], onEnd = () => { mode = "main"; finish(); }, resume()) : run(L.s[0][0], L.s[N - 1][1], () => { mode = "main"; finish(); });
+      $("#tlback").onclick = () => { halt(); mode = "main"; finish(); };
+      return;
+    }
+    if (phase === "idle") {
+      const x = scOf(i), intro = mode === "main" && !playing && !seenSc.has(x) && SC[x][1] ? `<div class="tl-scene"><p class="label">${SC.length > 1 ? `Sahna ${x + 1} / ${SC.length}` : "Dars haqida"}</p><p>${esc(SC[x][1])}</p></div>` : "";
+      body.innerHTML = `${intro}<div class="card tl-listen"><div class="tl-meta"><p class="tl-pos">${pos}</p>${tlWho(s[4])}</div><div class="tl-wave${playing ? " on" : ""}" aria-hidden="true">${"<i></i>".repeat(9)}</div><b>${playing ? "Eshitilmoqda…" : "Avval quloq bilan"}</b><span class="muted">${q ? "Keyin bitta savol bo'ladi" : "Matn eshitgandan keyin ochiladi"}</span></div>`;
+      acts.innerHTML = `<div class="tl-acts">${playing ? `<button class="tl-act tl-sq" id="tlre" aria-label="Boshidan eshitish">${ICON_RE}</button>` : ""}<button class="tl-act tl-main" id="tlmain">${playing ? ICON_PAUSE + "<span>Pauza</span>" : ICON_PLAY + `<span>${v.currentTime > s[0] + 0.3 && v.currentTime < s[1] - 0.1 ? "Davom ettirish" : "Eshitish"}</span>`}</button></div><div class="tl-tools">${spdChip()}</div>`;
+      $("#tlmain").onclick = () => playing ? pause() : v.currentTime > s[0] + 0.3 && v.currentTime < s[1] - 0.1 && endAt === s[1] ? (onEnd = () => { phase = q ? "ask" : "shown"; if (phase === "shown" && arr[i] === " ") { arr[i] = "-"; saveR(); } draw(); }, resume()) : playCur(true);
+      const re = $("#tlre"); if (re) re.onclick = () => playCur(true);
+    } else if (phase === "ask") {
+      const len = q.word.length;
+      const qh = q.kind === "dict"
+        ? `<p class="q-label">Eshitgan so'zni yozing</p><p class="tl-cl" lang="en">${q.toks.map((t, j) => j === q.k ? `${esc(q.pre)}<input class="tl-in" id="tlin" type="text" inputmode="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="${len + 4}" style="width:${len + 2}ch" placeholder="${"•".repeat(len)}" aria-label="Tushib qolgan so'z, ${len} harf">${esc(q.post)}` : esc(t)).join(" ")}</p><p class="muted tl-dh" id="tldh">${len} ta harf</p>`
+        : q.kind === "cloze"
+        ? `<p class="q-label">Eshitgan so'zni qo'ying</p><p class="tl-cl" lang="en">${q.toks.map((t, j) => j === q.k ? `${esc(q.pre)}<span class="tl-blank"></span>${esc(q.post)}` : esc(t)).join(" ")}</p><div class="tl-bank">${q.opts.map(o => `<button class="tl-opt" data-o="${esc(o)}" lang="en">${esc(o)}</button>`).join("")}</div>`
+        : `<p class="q-label">Qaysi gapni eshitdingiz?</p><div class="tl-picks">${q.opts.map(o => `<button class="tl-opt tl-pick" data-o="${esc(o)}" lang="en">${esc(o)}</button>`).join("")}</div>`;
+      body.innerHTML = `<div class="tl-ask"><div class="tl-meta"><p class="tl-pos">${pos}</p>${tlWho(s[4])}</div>${qh}</div>`;
+      acts.innerHTML = `${q.kind === "dict" ? `<div class="tl-acts"><button class="tl-act tl-main" id="tlchk" disabled><span>Tekshirish</span></button></div>` : ""}<div class="tl-tools">${repChip()}${spdChip()}${q.kind === "dict" ? `<button class="tl-chip" id="tlhint">Birinchi harf</button>` : ""}<button class="tl-chip" id="tlidk">Bilmayman</button></div>`;
+      body.querySelectorAll(".tl-opt").forEach(b => b.onclick = () => { if (!playing) answer(b.dataset.o); else { halt(); answer(b.dataset.o); } });
+      const inp = $("#tlin");
+      if (inp) {
+        const chk = $("#tlchk"), go_ = () => { if (!inp.value.trim()) return; halt(); answer(inp.value.trim()); };
+        inp.oninput = () => { chk.disabled = !inp.value.trim(); };
+        inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); go_(); } };
+        chk.onclick = go_;
+        $("#tlhint").onclick = e => { const w = q.word; if (!tlNorm(inp.value).startsWith(tlNorm(w[0]))) inp.value = w[0]; $("#tldh").textContent = `${w.length} ta harf · «${w[0]}» bilan boshlanadi`; e.currentTarget.disabled = true; chk.disabled = false; inp.focus(); };
+        if (!playing) inp.focus({ preventScroll: true });
+      }
+      $("#tlidk").onclick = () => { halt(); answer(null); };
+    } else {
+      // res / shown: matn ochiq
+      const ok = phase === "res" && picked != null && (q.kind === "dict" ? tlSame(picked, q.ans) : picked === q.ans), hl = q ? q.k : -1;
+      const info = q ? tlLookup(q.word) : null;
+      const addOk = info && info.u && !info.book && !info.inPlan && !info.mine && !(tlSt(L.n).w || []).includes(info.w);
+      body.innerHTML = `<div class="card tl-card"><div class="tl-meta"><p class="tl-pos">${pos}</p>${tlWho(s[4])}</div><p class="tl-en" id="tlen" lang="en">${enHTML(s[2], phase === "res" ? hl : -1)}</p>
+        ${s[3] ? (uzOpen ? `<p class="tl-uz">${esc(s[3])}</p>` : `<button class="tl-uzb" id="tluzb">${ICON_SHOW}<span>Tarjimani ko'rish</span></button>`) : ""}</div>
+        ${phase === "res" ? `<div class="tl-res ${ok ? "ok" : "bad"}" role="status"><p class="tl-rh">${ok ? ICON.check + "To'g'ri!" : picked == null ? "Mana to'g'risi" : "Bu safar emas"}</p>
+          <p class="tl-rt"><b lang="en">${esc(q.word)}</b>${info && info.u ? " — " + esc(info.u) : ""}${!ok && q.kind === "pick" && picked ? `<br><span class="muted">Siz tanlagan: <s lang="en">${esc(picked)}</s></span>` : ""}${q.kind === "dict" && picked && tlNorm(picked) !== tlNorm(q.word) ? `<br><span class="muted">Siz yozgan: <s lang="en">${esc(picked)}</s>${ok ? " — bitta harf farq, imloga e'tibor bering" : ""}</span>` : ""}</p>
+          ${ok ? "" : `<p class="tl-rn">Bu gap «qiyin gaplar»ga tushdi — oxirida yana mashq qilasiz.</p>`}</div>` : `<p class="gohint tl-hint">Tanimagan so'zni bosing — tarjimasi chiqadi</p>`}`;
+      const last = mode === "hard" ? k >= seq.length - 1 : i >= N - 1;
+      acts.innerHTML = `<div class="tl-acts"><button class="tl-act tl-sq" id="tlre" aria-label="Yana eshitish">${playing ? ICON_PAUSE : ICON_RE}</button>${phase === "res" && addOk ? `<button class="tl-act tl-add" id="tladd2">${ICON.plus}<span>Takrorga</span></button>` : ""}<button class="tl-act tl-main${phase === "res" && ok ? " tl-ok" : ""}" id="tlmain"><span>${last ? "Tugatish" : phase === "res" ? "Davom etish" : "Keyingi gap"}</span></button></div>
+        <div class="tl-tools">${SR ? `<button class="tl-chip" id="tlmic">${ICON_MIC}<span>Qaytarish</span></button>` : ""}${spdChip()}${ai ? `<button class="tl-chip" id="tlwhy">${ICON_WHY}<span>Tushuntir</span></button>` : ""}</div><div class="micout tl-mo" id="tlmo" aria-live="polite"></div>`;
+      $("#tlre").onclick = () => playing ? pause() : playCur(false);
+      $("#tlmain").onclick = nextSentence;
+      const ub = $("#tluzb"); if (ub) ub.onclick = () => { uzOpen = true; draw(); };
+      // shadowing: gap yana eshitiladi, tugagach mikrofon o'zi yoqiladi — gapni ortidan qaytarasiz
+      const mic = $("#tlmic"); if (mic) mic.onclick = () => run(s[0], s[1], () => { draw(); const b = $("#tlmic"), o = $("#tlmo"); if (b && o) listen(s[2], o, b); });
+      const ad = $("#tladd2"); if (ad) ad.onclick = () => { addWord(info, s); draw(); };
+      body.querySelectorAll(".tl-w").forEach(b => { b.onclick = () => wordSheet(b.dataset.w); b.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wordSheet(b.dataset.w); } }; });
+      const why = $("#tlwhy");
+      if (why) why.onclick = () => {
+        why.disabled = true;
+        aiBox.innerHTML = `<div class="ai" role="status"><div class="sk"></div><div class="sk" style="width:70%"></div><p class="muted" style="margin:8px 0 0;font-size:13px">Tushuntirish tayyorlanmoqda…</p></div>`;
+        aiAsk({ mode: "sentence", answer: s[2], uz: s[3] || "" }).then(r => {
+          aiBox.innerHTML = `<div class="ai"><p>${esc(r.izoh || "")}</p>${aiExample(r.misol)}</div>`; bindSay(aiBox);
+        }).catch(e => { aiBox.innerHTML = `<div class="ai"><p class="muted">${esc(aiErr(e.code))}</p></div>`; }).finally(() => { why.disabled = false; });
+      };
+    }
+    const sp = $("#tlspd"); if (sp) sp.onclick = () => { tlSetPref("spd", rate() < 1 ? "1" : ".75"); v.playbackRate = rate(); draw(); };
+    const rp = $("#tlrep"); if (rp) rp.onclick = () => playCur(false);
+  }
+
+  /* ---- natija ---- */
+  function finish() {
+    halt(); phase = "fin"; aiBox.innerHTML = ""; segs(); cov.classList.add("hidden");
+    const sc = score(); if (sc.pct != null && tlSt(L.n).done) tlSave(L.n, { pct: sc.pct });
+    const st = tlSt(L.n), next = TL.lessons.find(x => x.n === L.n + 1), w = st.w || [];
+    const hard = arr.map((c, j) => c === "0" ? j : -1).filter(j => j >= 0);
+    const C = 2 * Math.PI * 52, pct = sc.pct == null ? 100 : sc.pct;
+    const head = sc.pct == null ? "Dars tugadi" : pct >= 90 ? "A'lo!" : pct >= 70 ? "Zo'r natija" : pct >= 50 ? "Yaxshi boshlanish" : "Quloq endi o'rganyapti";
+    const prev = st.prev != null && sc.pct != null ? `<p class="muted tl-prev">O'tgan safar: ${st.prev}%${sc.pct > st.prev ? ` · <b class="tl-up">+${sc.pct - st.prev}%</b>` : ""}</p>` : "";
+    body.innerHTML = `<div class="card tl-fin">
+      <div class="tl-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="tr"/><circle cx="60" cy="60" r="52" class="fg" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - pct / 100)).toFixed(1)}"/></svg><div><b>${sc.pct == null ? "✓" : sc.pct + "%"}</b>${sc.pct == null ? "" : "<span>to'g'ri</span>"}</div></div>
+      <h2>${head}</h2>
+      <p class="muted">${sc.q ? `${sc.q} ta savoldan ${sc.ok} tasini eshitib topdingiz` : `${N} ta gap tinglandi`}</p>${prev}
+      <div class="tl-stats"><div><b>${N}</b><span>gap</span></div><div><b>${w.length}</b><span>yangi so'z</span></div><div class="fire"><b>${liveStreak()}</b><span>kun seriya</span></div></div>
+      ${hard.length ? `<div class="tl-hard"><p class="label">Qiyin gaplar</p>${hard.slice(0, 3).map(j => `<p lang="en"><i></i>${esc(L.s[j][2])}</p>`).join("")}${hard.length > 3 ? `<p class="muted">+${hard.length - 3} ta gap</p>` : ""}</div>` : ""}
+    </div>`;
+    acts.innerHTML = `${lessonBtn("tl")}<div class="tl-fbtn">
+      ${hard.length ? `<button class="btn" id="tlhard">${hard.length} ta qiyin gapni mashq qilish</button>` : ""}
+      <button class="btn${hard.length ? " ghost" : ""}" id="tlwatch">${ICON_PLAY} Butun sahnani matnsiz ko'rish</button>
+      ${next ? `<a class="btn ghost" href="#tinglash-${next.n}">Keyingi dars: ${esc(next.t)}</a>` : ""}
+      <button class="btn ghost" id="tlagain">Darsni qaytadan boshlash</button></div>`;
+    bindLesson();
+    const hb = $("#tlhard"); if (hb) hb.onclick = () => { mode = "hard"; seq = hard; k = 0; i = seq[0]; phase = "idle"; draw(); playCur(true); };
+    $("#tlwatch").onclick = () => { mode = "watch"; phase = "watch"; draw(); run(L.s[0][0], L.s[N - 1][1], () => { mode = "main"; finish(); }); };
+    $("#tlagain").onclick = () => { tlSave(L.n, { i: 0, r: "", done: false, prev: score().pct, pass: (tlSt(L.n).pass || 1) + 1 }); arr = Array(N).fill(" "); mode = "main"; i = 0; phase = "idle"; draw(); };
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /* ---- so'z oynasi ---- */
   const sh = $("#tlsh"), shb = $("#tlshb");
   const closeSheet = () => { sh.classList.add("hidden"); };
   sh.querySelectorAll("[data-x]").forEach(x => x.onclick = closeSheet);
   sh.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+  function addWord(info, s) {
+    const id = "my|" + norm(info.w);
+    if (!S.my.some(m => m.id === id)) { S.my.push({ id, w: info.w, u: info.u, p: info.p || "", e: s[2], t: s[3] || "" }); untomb("my:" + id); syncMyWords(); }
+    tlSave(L.n, { w: [...new Set((tlSt(L.n).w || []).concat(info.w))] });
+  }
   function wordSheet(raw) {
     const info = tlLookup(raw); if (!info) return;
-    v.pause(); stopWatch();
+    if (playing) pause();
     const s = L.s[i], added = (tlSt(L.n).w || []).includes(info.w) || info.mine;
-    const body = u => `<div class="tl-wh"><div><b id="tlsw" lang="en">${esc(info.w)}</b>${info.p ? `<span class="pron">[${esc(info.p)}]</span>` : ""}</div><button class="icon" data-say="${esc(info.w)}" aria-label="Talaffuzni eshitish">${ICON.vol}</button></div>
-      <p class="tl-wu">${u ? esc(u) : `<span class="muted">Lug'atda yo'q</span>`}</p>
+    const name = /^[A-Z]/.test(String(raw).replace(/^[^A-Za-z]+/, "")) && !info.u;
+    const sbody = u => `<div class="tl-wh"><div><b id="tlsw" lang="en">${esc(info.w)}</b>${info.p ? `<span class="pron">[${esc(info.p)}]</span>` : ""}</div><button class="icon" data-say="${esc(info.w)}" aria-label="Talaffuzni eshitish">${ICON.vol}</button></div>
+      <p class="tl-wu">${u ? esc(u) : name ? `<span class="muted">Ism yoki joy nomi — tarjima qilinmaydi</span>` : `<span class="muted">Ilova lug'atida hali yo'q</span>`}</p>
       ${info.book ? `<p class="muted tl-wn">Kitobda bor: Unit ${un(info.book.unit)} — rejaga o'zi tushadi.</p>` : info.inPlan ? `<p class="muted tl-wn">«So'z boyligi»da o'rganilmoqda.</p>` : added ? `<p class="tl-wn tl-ok">✓ Takrorga qo'shilgan</p>` : u ? `<button class="btn" id="tladd">${ICON.plus} Takrorga qo'shish</button>` : ""}`;
-    shb.innerHTML = body(info.u); sh.classList.remove("hidden"); bindSay(shb);
-    const bindAdd = () => { const a = $("#tladd"); if (a) a.onclick = () => {
-      const id = "my|" + norm(info.w);
-      if (!S.my.some(m => m.id === id)) { S.my.push({ id, w: info.w, u: info.u, p: info.p || "", e: s[2], t: s[3] || "" }); untomb("my:" + id); syncMyWords(); }
-      tlSave(L.n, { w: [...new Set((tlSt(L.n).w || []).concat(info.w))] });
-      a.outerHTML = `<p class="tl-wn tl-ok">✓ Takrorga qo'shildi · ertadan takrorda chiqadi</p>`;
-    }; };
+    shb.innerHTML = sbody(info.u); sh.classList.remove("hidden"); bindSay(shb);
+    const bindAdd = () => { const a = $("#tladd"); if (a) a.onclick = () => { addWord(info, s); a.outerHTML = `<p class="tl-wn tl-ok">✓ Takrorga qo'shildi · ertadan takrorda chiqadi</p>`; draw(); }; };
     bindAdd();
-    if (!info.u && ai) {
+    if (!info.u && !name && ai) {
       shb.querySelector(".tl-wu").innerHTML = `<span class="muted">Claude'dan so'ralmoqda…</span>`;
       aiAsk({ mode: "word", answer: s[2], word: info.w }).then(r => {
-        info.u = r.tarjima || ""; info.p = info.p || r.pron || ""; shb.innerHTML = body(info.u) + (r.izoh ? `<p class="muted tl-wn">${esc(r.izoh)}</p>` : ""); bindSay(shb); bindAdd();
+        info.u = r.tarjima || ""; info.p = info.p || r.pron || ""; shb.innerHTML = sbody(info.u) + (r.izoh ? `<p class="muted tl-wn">${esc(r.izoh)}</p>` : ""); bindSay(shb); bindAdd();
       }).catch(e => { shb.querySelector(".tl-wu").innerHTML = `<span class="muted">${esc(aiErr(e.code))}</span>`; });
     }
-    const cl = shb.querySelector("button, a"); if (cl) cl.focus({ preventScroll: true });
+    const cl = shb.querySelector(".tl-shx"); if (cl) cl.focus({ preventScroll: true });
   }
-  // oldindan shu gap joyiga o'tib qo'yamiz (birinchi «Eshitish» kutmasin); yuklanayotganini tugmada ko'rsatamiz
+
+  /* ---- holatlar ---- */
   v.addEventListener("loadedmetadata", () => { if (v.paused && v.currentTime < 0.1) { try { v.currentTime = L.s[i][0]; } catch (e) {} } }, { once: true });
-  v.addEventListener("waiting", () => { if (raf) nl.textContent = "Yuklanmoqda…"; });
-  v.addEventListener("playing", () => { if (raf) nl.textContent = "Eshitilmoqda…"; });
-  v.addEventListener("error", () => { nl.textContent = "Video ochilmadi"; });
-  applyPrefs(); draw();
-  // sahifadan chiqilganda video to'xtaydi
-  const off = () => { if (location.hash !== "#tinglash-" + L.n) { stopWatch(); try { v.pause(); } catch (e) {} const o = document.getElementById("tlsh"); if (o) o.remove(); window.removeEventListener("hashchange", off); } };
+  v.addEventListener("waiting", () => { const b = $("#tlmain span"); if (playing && b) b.textContent = "Yuklanmoqda…"; });
+  v.addEventListener("playing", () => { if (playing) draw(); });
+  v.addEventListener("error", () => {
+    halt();
+    acts.innerHTML = `<div class="card tl-err"><p><b>Video ochilmadi.</b> Internet sekin yoki VOA serveri javob bermayapti.</p><button class="btn" id="tlretry">Qayta urinish</button></div>`;
+    $("#tlretry").onclick = () => { v.load(); draw(); };
+  });
+  if (st0.done && st0.i >= N - 1) phase = "fin";
+  phase === "fin" ? finish() : draw();
+  const off = () => { if (location.hash !== "#tinglash-" + L.n) { halt(); const o = document.getElementById("tlsh"); if (o) o.remove(); window.removeEventListener("hashchange", off); } };
   window.addEventListener("hashchange", off);
 }
 /* ---------- TELEFON WIDGETI: uy ekranida bugungi takror soni va seriya ----------

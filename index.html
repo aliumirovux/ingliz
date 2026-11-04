@@ -1371,6 +1371,44 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 .spell.ltm{caret-color:transparent;cursor:default;letter-spacing:.06em}
 .spell.ltm:focus{box-shadow:none}
 @media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
+
+/* tinglash */
+#app .tl{gap:12px}
+#app .tl-v{position:relative;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:16/9}
+#app .tl-v video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+#app .tl-vb{position:absolute;right:10px;bottom:10px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;cursor:pointer}
+#app .tl-vb svg{width:20px;height:20px}
+#app .tl-pr{height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}#app .tl-pr i{display:block;height:100%;width:0;background:var(--marker);transition:width .3s}
+#app .tl-card{padding:18px}
+#app .tl-pos{margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
+#app .tl-en{margin:0;font-size:23px;line-height:1.4;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+#app .tl-w{display:inline;cursor:pointer;border-radius:6px;padding:0 2px;margin:0 -2px;-webkit-tap-highlight-color:transparent}
+#app .tl-w:hover,#app .tl-w:focus-visible{background:var(--marker-soft);color:var(--accent-text);outline:none}
+#app .tl-uz{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--line);font-size:15px;color:var(--muted)}
+#app .tl-acts{display:flex;gap:8px}
+#app .tl-act{flex:1;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px var(--font-body);cursor:pointer}
+#app .tl-act svg{width:20px;height:20px}
+#app .tl-act.tl-main{background:var(--marker);border-color:var(--marker);color:var(--on-marker);font-size:16px}
+#app .tl-act:disabled{opacity:.6}
+#app .tl-tools{display:flex;gap:8px;flex-wrap:wrap}
+#app .tl-tools .tl-chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 14px var(--font-body);cursor:pointer}
+#app .tl-tools .tl-chip[aria-pressed="true"]{background:var(--marker-soft);border-color:transparent;color:var(--accent-text)}
+body .tl-sheet{position:fixed;inset:0;z-index:1000}
+body .tl-bd{position:absolute;inset:0;background:rgba(0,0,0,.32)}
+body .tl-sh{position:absolute;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;background:var(--surface);border-radius:24px 24px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+body .tl-grab{display:block;width:36px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 14px}
+body .tl-wh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+body .tl-wh b{font-size:28px;font-weight:700}body .tl-wh .pron{margin-left:8px;color:var(--pron);font-size:15px}
+body .tl-wu{margin:4px 0 12px;font-size:18px;font-weight:600}
+body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weight:600}
+#app .tl-num{flex:none;width:44px;height:44px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);display:grid;place-items:center;font-weight:700;font-size:17px}
+#app .tl-li{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;padding:10px 0;border-bottom:1px solid var(--line)}#app .tl-li:last-child{border-bottom:0}
+#app .tl-li .tx{flex:1;min-width:0}#app .tl-li .tx b{display:block}#app .tl-li .tx span{display:block;font-size:13px;color:var(--muted)}
+#app .tl-done{color:var(--ok);font-weight:600;font-size:13px;white-space:nowrap}
+#app .tl-cont{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit}#app .tl-cont .bar{display:block;height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden;margin-top:6px}#app .tl-cont .bar i{display:block;height:100%;background:var(--marker)}
+#app .tl-fin{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}#app .tl-fin h2{margin:0}#app .tl-fin-ic{width:56px;height:56px;border-radius:50%;margin:0 auto;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;font-size:26px;font-weight:700}#app .tl-fin-w{margin:0;font-weight:600}
+#app .tl-act span{display:block;text-align:center}
+#app .tl-tools .tl-chip{display:inline-flex;align-items:center;width:auto;flex:none}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -2410,6 +2448,9 @@ function merge(a, b) {
   out.course = Math.max(a.course || 0, b.course || 0);
   out.rest = [...new Set((a.rest || []).concat(b.rest || []))].sort().slice(-40);
   out.story = Object.assign({}, a.story || {}, b.story || {});
+  { const ta = a.tl || {}, tb = b.tl || {}; out.tl = {};
+    new Set(Object.keys(ta).concat(Object.keys(tb))).forEach(k => { const x = ta[k] || {}, y = tb[k] || {};
+      out.tl[k] = Object.assign({}, x, y, { i: Math.max(x.i || 0, y.i || 0), done: !!(x.done || y.done), at: Math.max(x.at || 0, y.at || 0), w: [...new Set((x.w || []).concat(y.w || []))] }); }); }
   out.guide = Object.assign({}, a.guide || {}, b.guide || {});
   out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
   out.level = b.level || a.level || "";
@@ -3110,7 +3151,7 @@ route(/^$/, () => {
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    ${lv.zero ? "" : `<div class="hnav">${vbCard()}</div>`}
+    <div class="hnav">${lv.zero ? "" : vbCard()}${tlCard()}</div>
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
@@ -5355,6 +5396,168 @@ function bindSync() {
 }
 
 /* ---------- SOZLAMA: export / import ---------- */
+/* ---------- TINGLASH: VOA «Let's Learn English» video darslari, gap-gap rejim ----------
+   Video VOA serveridan (erkin kontent). Gaplar va vaqtlari tinglash.json da (Whisper bilan bir marta tayyorlangan, tarjimalar qo'lda).
+   Har gapdan keyin video o'zi to'xtaydi: «Qayta» · «Tushuntir» (Claude, faqat ruxsatli hisob) · «Keyingi». So'z bosilsa — tarjima va «Takrorga qo'shish». */
+let TL = null;
+const ICON_TL = sv('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M20 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z"/><path d="M4 15a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2z"/>');
+const ICON_RE = sv('<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>');
+function tlLoad() { if (TL) return Promise.resolve(TL); return fetch("tinglash.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error("tl"); return r.json(); }).then(d => (TL = d)); }
+const tlSt = n => (S.tl && S.tl[n]) || { i: 0 };
+function tlSave(n, patch) { S.tl = S.tl || {}; S.tl[n] = Object.assign({}, tlSt(n), patch, { at: Date.now() }); save(); }
+const tlPref = (k, d) => { try { const v = localStorage.getItem("ingliz-tl-" + k); return v == null ? d : v; } catch (e) { return d; } };
+const tlSetPref = (k, v) => { try { localStorage.setItem("ingliz-tl-" + k, v); } catch (e) {} };
+const mmss = s => Math.floor(s / 60) + ":" + String(Math.round(s % 60)).padStart(2, "0");
+/* bosh sahifadagi qator */
+function tlCard() {
+  const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
+  const sub = cur ? `Davom etish: ${esc(cur[1].t || cur[0] + "-dars")} · ${cur[1].i + 1} / ${cur[1].len}` : "VOA video darslari · gap-gap";
+  return `<a class="nwb vb-entry" href="${cur ? "#tinglash-" + cur[0] : "#tinglash"}"><span class="pmi">${ICON_TL}</span><span class="tx"><b>Tinglash</b><span>${sub}</span></span><span class="go">${ICON.chev}</span></a>`;
+}
+function tlRow(L) {
+  const st = tlSt(L.n), len = L.s.length, pct = st.done ? 100 : Math.round(Math.min(st.i, len) / len * 100);
+  const right = st.done ? `<span class="tl-done">✓ ${(st.w || []).length} so'z</span>` : st.i > 0 ? `<span class="muted">${pct}%</span>` : "";
+  return `<a class="li tl-li" href="#tinglash-${L.n}"><span class="tl-num" aria-hidden="true">${L.n}</span><span class="tx"><b>${esc(L.t)}</b><span>${esc(L.uz)} · ${L.s.length} ta gap</span></span>${right}<span class="go">${ICON.chev}</span></a>`;
+}
+route(/^tinglash$/, () => {
+  app.innerHTML = `${nav("#", "Bugun", "Tinglash")}<div class="stack" id="tll"><p class="muted">Yuklanmoqda…</p></div>`;
+  tlLoad().then(d => {
+    if (location.hash !== "#tinglash") return;
+    const cur = d.lessons.find(L => { const st = tlSt(L.n); return st.i > 0 && !st.done; });
+    $("#tll").innerHTML = `<p class="sub">A1 · VOA «Let's Learn English». Video har gapdan keyin to'xtaydi: tushunsangiz — keyingisi, tushunmasangiz — qayta yoki tushuntirish.</p>
+      ${cur ? `<a class="card tl-cont" href="#tinglash-${cur.n}"><span class="label">Davom etish</span><b>${esc(cur.t)}</b><span class="muted">${tlSt(cur.n).i + 1} / ${cur.s.length} gap</span><span class="bar"><i style="width:${Math.round(tlSt(cur.n).i / cur.s.length * 100)}%"></i></span></a>` : ""}
+      <div class="card"><p class="label">Let's Learn English · Level 1</p><div class="list">${d.lessons.map(tlRow).join("")}</div></div>
+      <p class="gohint" style="text-align:left">Video va matn: VOA Learning English (learningenglish.voanews.com).</p>`;
+  }).catch(() => { const b = $("#tll"); if (b) b.innerHTML = `<div class="card"><p>Darslarni yuklab bo'lmadi. Internetni tekshirib, qayta oching.</p></div>`; });
+});
+/* so'z: avval ilovadagi lug'atdan (kitob, o'z so'zlarim, so'z boyligi), oddiy qo'shimchalarni olib tashlab */
+function tlLookup(raw) {
+  const w = String(raw).toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z']+|[^a-z']+$/g, "");
+  if (!w) return null;
+  const forms = [w, w.replace(/'s$/, ""), w.replace(/s$/, ""), w.replace(/es$/, ""), w.replace(/ies$/, "y"), w.replace(/ed$/, ""), w.replace(/ed$/, "e"), w.replace(/ing$/, ""), w.replace(/ing$/, "e")];
+  for (const f of forms) {
+    const b = WORDS.find(x => norm(spoken(x)) === f || norm(x.w) === f);
+    if (b) return { w: f, u: b.u, p: b.p || "", book: !b.mine && !b.vb ? b : null, mine: !!b.mine, inPlan: !!b.vb };
+    const v = VB_ALL.get(f); if (v) return { w: v.w, u: v.u, p: v.p || "" };
+  }
+  return { w, u: "", p: "" };
+}
+route(/^tinglash-(\d+)$/, n => {
+  n = +n;
+  app.innerHTML = `${nav("#tinglash", "Tinglash", "Dars")}<div class="stack"><p class="muted">Yuklanmoqda…</p></div>`;
+  tlLoad().then(d => {
+    const L = d.lessons.find(x => x.n === n); if (!L || location.hash !== "#tinglash-" + n) return L ? null : go("tinglash");
+    tlLesson(L);
+  }).catch(() => { app.querySelector(".stack").innerHTML = `<div class="card"><p>Darsni yuklab bo'lmadi. Internetni tekshirib, qayta oching.</p></div>`; });
+});
+function tlLesson(L) {
+  const N = L.s.length, st = tlSt(L.n), ai = !!(AUTH && AI_ALLOW.includes((AUTH.email || "").toLowerCase()));
+  let i = Math.min(st.done ? 0 : st.i || 0, N - 1), heard = false, raf = 0;
+  tlSave(L.n, { len: N, t: L.t, i });
+  app.innerHTML = `${nav("#tinglash", "Tinglash", L.t)}
+  <div class="stack tl">
+    <div class="tl-v"><video id="tlv" playsinline preload="auto" src="${esc(L.video)}"${L.poster ? ` poster="${esc(L.poster)}"` : ""} aria-label="Dars videosi"></video><button class="tl-vb" id="tlvb" aria-label="Shu gapni eshitish">${ICON_RE}</button></div>
+    <div class="tl-pr" aria-hidden="true"><i id="tlpr"></i></div>
+    <div class="card tl-card"><p class="tl-pos" id="tlpos"></p><p class="tl-en" id="tlen" lang="en"></p><p class="tl-uz" id="tluz"></p></div>
+    <div class="tl-acts">
+      <button class="tl-act" id="tlrep">${ICON_RE}<span>Qayta</span></button>
+      ${ai ? `<button class="tl-act" id="tlwhy">${ICON_WHY}<span>Tushuntir</span></button>` : ""}
+      <button class="tl-act tl-main" id="tlnext"><span id="tlnl">Eshitish</span></button>
+    </div>
+    <div id="tlai"></div>
+    <div class="tl-tools"><button class="tl-chip" id="tlspd" aria-pressed="false"></button><button class="tl-chip" id="tltr" aria-pressed="false"></button></div>
+  </div>
+`;
+  // so'z oynasi body ga qo'yiladi: pastki menyudan ustun tursin
+  { const o = document.getElementById("tlsh"); if (o) o.remove(); }
+  document.body.insertAdjacentHTML("beforeend", `<div class="tl-sheet hidden" id="tlsh" role="dialog" aria-modal="true" aria-labelledby="tlsw"><div class="tl-bd" data-x></div><div class="tl-sh"><span class="tl-grab"></span><div id="tlshb"></div></div></div>`);
+  const v = $("#tlv"), en = $("#tlen"), uz = $("#tluz"), nl = $("#tlnl"), spd = $("#tlspd"), tr = $("#tltr"), aiBox = $("#tlai");
+  const rate = () => +tlPref("spd", ".75");
+  const applyPrefs = () => {
+    v.playbackRate = rate(); spd.textContent = rate() < 1 ? "Sekin · 0,75×" : "Oddiy · 1×"; spd.setAttribute("aria-pressed", String(rate() < 1));
+    const show = tlPref("uz", "1") === "1"; uz.classList.toggle("hidden", !show); tr.textContent = show ? "Tarjimani yashirish" : "Tarjimani ko'rsatish"; tr.setAttribute("aria-pressed", String(show));
+  };
+  const draw = () => {
+    const s = L.s[i];
+    en.innerHTML = s[2].split(/(\s+)/).map(t => /\S/.test(t) ? `<span class="tl-w" role="button" tabindex="0" data-w="${esc(t)}">${esc(t)}</span>` : t).join("");
+    uz.textContent = s[3] || "";
+    $("#tlpos").textContent = (i + 1) + " / " + N;
+    $("#tlpr").style.width = Math.round(i / N * 100) + "%";
+    nl.textContent = !heard ? "Eshitish" : i < N - 1 ? "Keyingi" : "Tugatish";
+    aiBox.innerHTML = "";
+    en.querySelectorAll(".tl-w").forEach(b => { b.onclick = () => wordSheet(b.dataset.w); b.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wordSheet(b.dataset.w); } }; });
+  };
+  const stopWatch = () => { cancelAnimationFrame(raf); raf = 0; };
+  const play = () => {
+    const s = L.s[i]; stopVoice(); stopWatch();
+    try { v.currentTime = s[0]; } catch (e) {}
+    v.playbackRate = rate();
+    const p = v.play(); if (p && p.catch) p.catch(() => {});
+    const end = s[1];
+    const tick = () => { if (v.currentTime >= end - 0.05 || v.ended) { v.pause(); stopWatch(); heard = true; nl.textContent = i < N - 1 ? "Keyingi" : "Tugatish"; return; } raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+  };
+  const finish = () => {
+    stopWatch(); v.pause(); tlSave(L.n, { i: N - 1, done: true });
+    const next = TL.lessons.find(x => x.n === L.n + 1), w = tlSt(L.n).w || [];
+    app.querySelector(".tl").innerHTML = `<div class="card tl-fin"><span class="tl-fin-ic">✓</span><h2>Dars tugadi</h2><p class="muted">${N} ta gap · ${w.length ? w.length + " ta so'z takrorga qo'shildi" : "takrorga so'z qo'shilmadi"}</p>
+      ${w.length ? `<p class="tl-fin-w">${w.map(esc).join(" · ")}</p>` : ""}
+      ${next ? `<a class="btn" href="#tinglash-${next.n}">Keyingi dars: ${esc(next.t)}</a>` : ""}<a class="btn ghost" href="#tinglash">Darslar ro'yxati</a></div>`;
+  };
+  $("#tlrep").onclick = play; $("#tlvb").onclick = play;
+  $("#tlnext").onclick = () => {
+    if (!heard) return play();
+    if (i >= N - 1) return finish();
+    i++; heard = false; tlSave(L.n, { i }); draw(); play();
+  };
+  spd.onclick = () => { tlSetPref("spd", rate() < 1 ? "1" : ".75"); applyPrefs(); };
+  tr.onclick = () => { tlSetPref("uz", tlPref("uz", "1") === "1" ? "0" : "1"); applyPrefs(); };
+  const why = $("#tlwhy");
+  if (why) why.onclick = () => {
+    const s = L.s[i]; why.disabled = true;
+    aiBox.innerHTML = `<div class="ai" role="status"><div class="sk"></div><div class="sk" style="width:70%"></div><p class="muted" style="margin:8px 0 0;font-size:13px">Tushuntirish tayyorlanmoqda…</p></div>`;
+    aiAsk({ mode: "sentence", answer: s[2], uz: s[3] || "" }).then(r => {
+      aiBox.innerHTML = `<div class="ai"><p>${esc(r.izoh || "")}</p>${aiExample(r.misol)}</div>`; bindSay(aiBox);
+    }).catch(e => { aiBox.innerHTML = `<div class="ai"><p class="muted">${esc(aiErr(e.code))}</p></div>`; }).finally(() => { why.disabled = false; });
+  };
+  /* so'z oynasi */
+  const sh = $("#tlsh"), shb = $("#tlshb");
+  const closeSheet = () => { sh.classList.add("hidden"); };
+  sh.querySelectorAll("[data-x]").forEach(x => x.onclick = closeSheet);
+  sh.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+  function wordSheet(raw) {
+    const info = tlLookup(raw); if (!info) return;
+    v.pause(); stopWatch();
+    const s = L.s[i], added = (tlSt(L.n).w || []).includes(info.w) || info.mine;
+    const body = u => `<div class="tl-wh"><div><b id="tlsw" lang="en">${esc(info.w)}</b>${info.p ? `<span class="pron">[${esc(info.p)}]</span>` : ""}</div><button class="icon" data-say="${esc(info.w)}" aria-label="Talaffuzni eshitish">${ICON.vol}</button></div>
+      <p class="tl-wu">${u ? esc(u) : `<span class="muted">Lug'atda yo'q</span>`}</p>
+      ${info.book ? `<p class="muted tl-wn">Kitobda bor: Unit ${un(info.book.unit)} — rejaga o'zi tushadi.</p>` : info.inPlan ? `<p class="muted tl-wn">«So'z boyligi»da o'rganilmoqda.</p>` : added ? `<p class="tl-wn tl-ok">✓ Takrorga qo'shilgan</p>` : u ? `<button class="btn" id="tladd">${ICON.plus} Takrorga qo'shish</button>` : ""}`;
+    shb.innerHTML = body(info.u); sh.classList.remove("hidden"); bindSay(shb);
+    const bindAdd = () => { const a = $("#tladd"); if (a) a.onclick = () => {
+      const id = "my|" + norm(info.w);
+      if (!S.my.some(m => m.id === id)) { S.my.push({ id, w: info.w, u: info.u, p: info.p || "", e: s[2], t: s[3] || "" }); untomb("my:" + id); syncMyWords(); }
+      tlSave(L.n, { w: [...new Set((tlSt(L.n).w || []).concat(info.w))] });
+      a.outerHTML = `<p class="tl-wn tl-ok">✓ Takrorga qo'shildi · ertadan takrorda chiqadi</p>`;
+    }; };
+    bindAdd();
+    if (!info.u && ai) {
+      shb.querySelector(".tl-wu").innerHTML = `<span class="muted">Claude'dan so'ralmoqda…</span>`;
+      aiAsk({ mode: "word", answer: s[2], word: info.w }).then(r => {
+        info.u = r.tarjima || ""; info.p = info.p || r.pron || ""; shb.innerHTML = body(info.u) + (r.izoh ? `<p class="muted tl-wn">${esc(r.izoh)}</p>` : ""); bindSay(shb); bindAdd();
+      }).catch(e => { shb.querySelector(".tl-wu").innerHTML = `<span class="muted">${esc(aiErr(e.code))}</span>`; });
+    }
+    const cl = shb.querySelector("button, a"); if (cl) cl.focus({ preventScroll: true });
+  }
+  // oldindan shu gap joyiga o'tib qo'yamiz (birinchi «Eshitish» kutmasin); yuklanayotganini tugmada ko'rsatamiz
+  v.addEventListener("loadedmetadata", () => { if (v.paused && v.currentTime < 0.1) { try { v.currentTime = L.s[i][0]; } catch (e) {} } }, { once: true });
+  v.addEventListener("waiting", () => { if (raf) nl.textContent = "Yuklanmoqda…"; });
+  v.addEventListener("playing", () => { if (raf) nl.textContent = "Eshitilmoqda…"; });
+  v.addEventListener("error", () => { nl.textContent = "Video ochilmadi"; });
+  applyPrefs(); draw();
+  // sahifadan chiqilganda video to'xtaydi
+  const off = () => { if (location.hash !== "#tinglash-" + L.n) { stopWatch(); try { v.pause(); } catch (e) {} const o = document.getElementById("tlsh"); if (o) o.remove(); window.removeEventListener("hashchange", off); } };
+  window.addEventListener("hashchange", off);
+}
 /* ---------- TELEFON WIDGETI: uy ekranida bugungi takror soni va seriya ----------
    Android — kichik ilova (ingliz-takror.apk), iPhone — Scriptable skripti. Ikkalasi ham shaxsiy kalit bilan (widget_keys)
    faqat raqamlarni oladi (Edge Function «widget»). */

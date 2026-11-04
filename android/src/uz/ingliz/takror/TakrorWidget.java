@@ -7,6 +7,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,7 +19,6 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -30,8 +33,11 @@ import java.util.Map;
 /** «Takror» widgeti: bugungi takror soni, seriya va hafta kunlari (ma'lumot — Supabase «widget» funksiyasidan). */
 public class TakrorWidget extends AppWidgetProvider {
     static final String API = "https://rqeirdempadfwirefyit.supabase.co/functions/v1/widget";
-    static final String APP = "https://aliumirovux.github.io/ingliz/#quiz";
-    static final int[] DOTS = { R.id.d0, R.id.d1, R.id.d2, R.id.d3, R.id.d4, R.id.d5, R.id.d6 };
+    static final String APP = "https://aliumirovux.github.io/ingliz/#takror"; // tugallanmagan takrorni davom ettiradi yoki boshlaydi
+    // holat ranglari: to'q sariq — takror kutyapti, qizil — seriya xavfda (20:00 dan keyin), yashil — bugun tayyor
+    static final int DUE = 0, RISK = 1, DONE = 2;
+    static final int[] ACC = { 0xFFFF8A50, 0xFFFF5A4E, 0xFF3FD27A }, ACC2 = { 0xFFFFB27F, 0xFFFF9C86, 0xFF9BF0B9 };
+    static final int[] BG = { R.drawable.bg_due, R.drawable.bg_risk, R.drawable.bg_done }, PILL = { R.drawable.pill_due, R.drawable.pill_risk, R.drawable.pill_done };
 
     static SharedPreferences prefs(Context c) { return c.getSharedPreferences("takror", Context.MODE_PRIVATE); }
 
@@ -54,7 +60,7 @@ public class TakrorWidget extends AppWidgetProvider {
         if (key.isEmpty()) return err("nokey");
         String s = prefs(c).getString("last", null);
         if (s == null) return err("net");
-        try { JSONObject d = new JSONObject(s); d.put("stale", true); return d; } catch (Exception e) { return err("net"); }
+        try { JSONObject d = new JSONObject(s); if (System.currentTimeMillis() - prefs(c).getLong("okAt", 0) > 45 * 60 * 1000L) d.put("stale", true); return d; } catch (Exception e) { return err("net"); }
     }
 
     static JSONObject fetch(Context c) throws Exception {
@@ -69,7 +75,7 @@ public class TakrorWidget extends AppWidgetProvider {
         byte[] b = new byte[4096]; int n; while ((n = in.read(b)) > 0) out.write(b, 0, n); in.close();
         String s = out.toString("UTF-8"); JSONObject d = new JSONObject(s);
         if (!d.has("due")) return cached(c);
-        prefs(c).edit().putString("last", s).apply();
+        prefs(c).edit().putString("last", s).putLong("okAt", System.currentTimeMillis()).apply();
         return d;
     }
 
@@ -91,47 +97,89 @@ public class TakrorWidget extends AppWidgetProvider {
         }
     }
 
+    /** 24 bo'lakli tishli yoy (270°): to'lgan bo'laklar — bugun qilingan ish, oxirgisi nur sochadi */
+    static Bitmap gauge(Context c, float frac, int st, int dp) {
+        float dens = c.getResources().getDisplayMetrics().density; int px = Math.round(dp * dens);
+        Bitmap b = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888); Canvas cv = new Canvas(b);
+        int n = 24, on = frac <= 0 ? 0 : Math.max(1, Math.round(n * Math.min(1f, frac)));
+        float cx = px / 2f, cy = px * .52f, r1 = px * .385f, r2 = px * .465f, w = px * .042f;
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG); p.setStrokeCap(Paint.Cap.ROUND);
+        Paint glow = new Paint(p); glow.setStrokeWidth(w * 1.8f); glow.setColor(ACC2[st]); glow.setAlpha(210); glow.setMaskFilter(new BlurMaskFilter(w * 1.1f, BlurMaskFilter.Blur.NORMAL));
+        for (int i = 0; i < n; i++) {
+            double a = Math.toRadians(-225 + i * 270.0 / (n - 1));
+            float x1 = cx + r1 * (float) Math.cos(a), y1 = cy + r1 * (float) Math.sin(a), x2 = cx + r2 * (float) Math.cos(a), y2 = cy + r2 * (float) Math.sin(a);
+            boolean lit = i < on, last = i == on - 1 && on < n;
+            if (last) cv.drawLine(x1, y1, x2, y2, glow);
+            p.setStrokeWidth(w); p.setColor(lit ? (last ? ACC2[st] : ACC[st]) : 0x24FFFFFF);
+            cv.drawLine(x1, y1, x2, y2, p);
+        }
+        return b;
+    }
+
     static RemoteViews build(Context c, JSONObject d, int layout, boolean small) {
         RemoteViews v = new RemoteViews(c.getPackageName(), layout);
         String error = d.optString("error", "");
         Intent tap = error.isEmpty() ? new Intent(Intent.ACTION_VIEW, Uri.parse(APP)) : new Intent(c, MainActivity.class);
         tap.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(c, small ? 1 : 2, tap, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
+        PendingIntent pi = PendingIntent.getActivity(c, small ? 1 : 2, tap, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        v.setOnClickPendingIntent(R.id.root, pi);
+        if (!small) v.setOnClickPendingIntent(R.id.btn, pi);
+
+        int due = d.optInt("due"), streak = d.optInt("streak"), tom = d.optInt("tom"), min = d.optInt("min"), rev = d.optInt("rev");
+        boolean late = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 20, stale = d.optBoolean("stale");
+        int st = !error.isEmpty() ? DUE : due == 0 ? DONE : late && rev == 0 && streak > 0 ? RISK : DUE;
+        v.setInt(R.id.root, "setBackgroundResource", BG[st]);
+        v.setTextColor(R.id.title, ACC2[st]);
+        v.setInt(R.id.fire, "setColorFilter", ACC[st]);
 
         if (!error.isEmpty()) {
-            v.setTextViewText(R.id.head, "Ingliz tili");
-            v.setViewVisibility(R.id.big, View.GONE);
-            v.setViewVisibility(R.id.streakRow, View.GONE);
-            if (!small) { v.setViewVisibility(R.id.week, View.GONE); v.setViewVisibility(R.id.btn, View.GONE); }
-            v.setTextViewTextSize(R.id.title, TypedValue.COMPLEX_UNIT_SP, 14);
-            v.setTextViewText(R.id.title, error.equals("net") ? "Internet yo'q" : error.equals("key") ? "Kalit eskirgan" : "Hisobni ulang");
-            v.setTextViewText(R.id.sub, error.equals("net") ? "Keyinroq o'zi yangilanadi" : "Bosing va ilovadagi qadamlarni bajaring");
+            v.setTextViewText(R.id.title, "Ingliz tili");
+            v.setViewVisibility(R.id.chip, View.GONE);
+            v.setImageViewBitmap(R.id.gauge, gauge(c, 0, DUE, small ? 112 : 140));
+            v.setTextViewText(R.id.num, "!");
+            v.setTextViewText(R.id.numcap, error.equals("net") ? "internet yo'q" : "ulanmagan");
+            if (!small) {
+                v.setViewVisibility(R.id.stats, View.GONE);
+                v.setTextViewText(R.id.btn, error.equals("net") ? "Keyinroq" : "Ulash");
+                v.setInt(R.id.btn, "setBackgroundResource", PILL[DUE]);
+            }
             return v;
         }
 
-        int due = d.optInt("due"), streak = d.optInt("streak"), tom = d.optInt("tom"), min = d.optInt("min"), today = d.optInt("today", -1);
-        boolean done = d.optBoolean("done"), late = Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 20;
-        String big = null, title, sub; boolean btn = true;
-        if (due > 0 && !done && late && streak > 0) { title = "Bugun hali o'qilmadi"; sub = "Seriya " + streak + " kun · saqlab qoling"; }
-        else if (due > 0) { big = String.valueOf(due); title = small ? "so'z tayyor" : "so'z takrorga tayyor"; sub = "~" + min + " daqiqa"; }
-        else if (done) { title = "Bugungisi tayyor"; sub = tom > 0 ? "Ertaga " + tom + " ta" : "Ertaga takror yo'q"; btn = false; }
-        else { title = "Takror yo'q"; sub = "Yangi so'z o'rganish vaqti"; }
+        float frac = due == 0 ? 1f : rev / (float) (rev + due);
+        v.setImageViewBitmap(R.id.gauge, gauge(c, frac, st, small ? 112 : 140));
+        if (streak > 0) { v.setViewVisibility(R.id.chip, View.VISIBLE); v.setTextViewText(R.id.streak, String.valueOf(streak)); }
+        else v.setViewVisibility(R.id.chip, View.GONE);
 
-        if (big != null) { v.setViewVisibility(R.id.big, View.VISIBLE); v.setTextViewText(R.id.big, big); v.setTextViewTextSize(R.id.title, TypedValue.COMPLEX_UNIT_SP, small ? 13 : 14); }
-        else { v.setViewVisibility(R.id.big, View.GONE); v.setTextViewTextSize(R.id.title, TypedValue.COMPLEX_UNIT_SP, 20); }
-        v.setTextViewText(R.id.title, title);
-        v.setTextViewText(R.id.sub, d.optBoolean("stale") ? sub + " · oflayn" : sub);
-        if (streak > 0) { v.setViewVisibility(R.id.streakRow, View.VISIBLE); v.setTextViewText(R.id.streak, small ? String.valueOf(streak) : streak + " kun"); }
-        else v.setViewVisibility(R.id.streakRow, View.GONE);
-
+        if (st == DONE) {
+            v.setTextViewText(R.id.title, "Bugun tayyor");
+            v.setTextViewText(R.id.num, String.valueOf(tom));
+            v.setTextViewText(R.id.numcap, "ertaga");
+        } else {
+            v.setTextViewText(R.id.title, st == RISK ? "Seriya xavfda" : "Takror");
+            v.setTextViewText(R.id.num, String.valueOf(due));
+            v.setTextViewText(R.id.numcap, "so'z qoldi");
+        }
         if (!small) {
-            JSONArray wk = d.optJSONArray("week");
-            for (int i = 0; i < 7; i++) {
-                boolean on = wk != null && wk.optInt(i) == 1;
-                v.setImageViewResource(DOTS[i], on ? R.drawable.ic_check : i == today ? R.drawable.dot_now : R.drawable.dot_off);
+            v.setViewVisibility(R.id.stats, View.VISIBLE);
+            if (st == DONE) {
+                stat(v, R.id.s1, R.id.s1u, R.id.s1c, String.valueOf(rev), "", "qilindi");
+                stat(v, R.id.s2, R.id.s2u, R.id.s2c, String.valueOf(streak), "kun", "seriya");
+                v.setViewVisibility(R.id.btn, View.GONE);
+            } else {
+                int left = Math.max(1, 24 - Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+                if (st == RISK) stat(v, R.id.s1, R.id.s1u, R.id.s1c, String.valueOf(left), "soat", "qoldi");
+                else stat(v, R.id.s1, R.id.s1u, R.id.s1c, String.valueOf(min), "daq", stale ? "oflayn" : "vaqt");
+                stat(v, R.id.s2, R.id.s2u, R.id.s2c, String.valueOf(rev), "/" + (rev + due), "bugun");
+                v.setViewVisibility(R.id.btn, View.VISIBLE);
+                v.setInt(R.id.btn, "setBackgroundResource", PILL[st]);
+                v.setTextViewText(R.id.btn, st == RISK ? "Saqlab qolish" : rev > 0 ? "Davom etish" : "Boshlash");
             }
-            v.setViewVisibility(R.id.btn, btn ? View.VISIBLE : View.GONE);
         }
         return v;
+    }
+
+    static void stat(RemoteViews v, int n, int u, int cp, String num, String unit, String cap) {
+        v.setTextViewText(n, num); v.setTextViewText(u, unit); v.setTextViewText(cp, cap);
     }
 }

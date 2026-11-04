@@ -4257,6 +4257,14 @@ function startQuiz(list, mode, title, back, tag, opts) {
   Z = Object.assign({ q, base: q.length, i: 0, right: 0, wrong: [], done: new Set(), rq: {}, mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" }, opts || {});
   if (location.hash === "#quiz") render(); else go("quiz");
 }
+/* widgetdagi «Davom etish»: tugallanmagan takror bo'lsa — davom ettiradi, bo'lmasa bugungi takrorni boshlaydi.
+   Orqaga tugmasi bosh sahifaga qaytsin (#takror qayta ishga tushmasin) — shuning uchun tarixda «#» ga almashtiriladi */
+route(/^takror$/, () => {
+  history.replaceState(null, "", "#");
+  if ((Z || zLoad()) && Z.tag === "rev" && Z.i < Z.q.length) return go("quiz");
+  const d = dueWords(); if (!d.length) return render();
+  startQuiz(d, "auto", "Takrorlash", "#", "rev");
+});
 route(/^quiz$/, () => {
   if (!Z && !zLoad()) return go("");
   if (Z.i >= Z.q.length) { if (Z.learn) { app.innerHTML = ""; return finishLearn(); } app.innerHTML = ""; return finish(); }

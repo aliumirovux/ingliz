@@ -400,6 +400,13 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 /* sinxronlash kartasi */
 .sy .sy-h{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}.sy .sy-h b{display:block;font-size:17px;font-weight:600;color:var(--ink)}.sy .sy-h>span>span{display:block;font-size:14px;color:var(--muted);margin-top:2px}
 .sy .sy-ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}.sy .sy-ic svg{width:22px;height:22px}
+.wg summary{display:flex;align-items:flex-start;gap:12px;cursor:pointer;list-style:none}.wg summary::-webkit-details-marker{display:none}
+.wg summary b{display:block;font-size:17px;font-weight:600;color:var(--ink)}.wg summary>span>span{display:block;font-size:14px;color:var(--muted)}
+.wg summary::after{content:"";margin-left:auto;align-self:center;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s}
+.wg[open] summary::after{transform:rotate(-135deg)}
+.wg .sy-ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}.wg .sy-ic svg{width:22px;height:22px}
+.wg-steps{margin:16px 0 14px;padding-left:22px;color:var(--ink);line-height:1.5}.wg-steps li{margin:6px 0}.wg-steps a{color:var(--accent-text)}
+.wg textarea{margin-top:10px;font:12px/1.4 ui-monospace,Menlo,monospace}.wg .sy-row{margin-top:10px}
 .sy form{display:grid;gap:10px;margin:0}.sy input.search{min-height:52px}
 .sy input.code{font-size:24px;letter-spacing:.32em;text-align:center;font-variant-numeric:tabular-nums}
 .sy .sy-err{margin:0;font-size:14px;color:var(--bad)}.sy .sy-err:empty{display:none}
@@ -5338,9 +5345,56 @@ function bindSync() {
 }
 
 /* ---------- SOZLAMA: export / import ---------- */
+/* ---------- TELEFON WIDGETI: iPhone uy ekranida bugungi takror soni (Scriptable orqali) ----------
+   Ilova shaxsiy kalit oladi (widget_keys), skriptga qo'yib nusxalaydi. Widget faqat raqamlarni oladi (Edge Function «widget»). */
+const ICON_WG = sv('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/>');
+const WG = { text: "", busy: false };
+function widgetCard() {
+  if (!AUTH || cloud.kind === "claude") return "";
+  return `<details class="card sy wg" id="wgc"><summary><span class="sy-ic">${ICON_WG}</span><span><b>Telefon widgeti</b><span>iPhone uy ekranida bugungi takror soni va seriya</span></span></summary>
+    <ol class="wg-steps">
+      <li>App Store'dan bepul <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a> ilovasini o'rnating.</li>
+      <li>Pastdagi <b>Skriptni nusxalash</b> tugmasini bosing.</li>
+      <li>Scriptable'da <b>+</b> ni bosing, nusxani qo'ying va nomini <b>Ingliz takror</b> qiling.</li>
+      <li>Uy ekranini bosib turing → <b>+</b> → <b>Scriptable</b> → o'rta widget. Keyin widgetni bosib turing → <b>Widgetni tahrirlash</b> → Script: <b>Ingliz takror</b>.</li>
+    </ol>
+    <button class="btn" id="wgcp" disabled>Tayyorlanmoqda…</button>
+    <p class="sy-err" id="wgmsg" role="status"></p>
+    <textarea id="wgtx" class="hidden" rows="5" readonly aria-label="Widget skripti"></textarea>
+    <div class="sy-row"><button class="tlink" id="wgnew">Kalitni yangilash</button><span class="muted" style="font-size:13px">Eski widget ishlamay qoladi</span></div>
+  </details>`;
+}
+async function wgPrep(renew) {
+  const tok = await sbToken();
+  if (renew) await sbFetch("/rest/v1/widget_keys?user_id=eq." + AUTH.uid, { method: "DELETE" }, tok);
+  let r = await sbFetch("/rest/v1/widget_keys?select=key", {}, tok);
+  if (!r || !r[0]) r = await sbFetch("/rest/v1/widget_keys?select=key", { method: "POST", headers: { Prefer: "return=representation" }, body: "{}" }, tok);
+  const key = r && r[0] && r[0].key; if (!key) throw new Error("key");
+  const s = await fetch("widget-scriptable.js", { cache: "no-store" }); if (!s.ok) throw new Error("script");
+  return (await s.text()).replace("__KEY__", key);
+}
+function bindWidget() {
+  const box = $("#wgc"); if (!box) return;
+  const btn = $("#wgcp"), msg = $("#wgmsg"), tx = $("#wgtx");
+  const ready = t => { WG.text = t; tx.value = t; btn.disabled = false; btn.textContent = "Skriptni nusxalash"; };
+  const fail = () => { btn.disabled = true; btn.textContent = "Skriptni nusxalash"; msg.textContent = "Tayyorlab bo'lmadi. Internetni tekshirib, qayta oching."; };
+  const prep = renew => { if (WG.busy) return; WG.busy = true; msg.textContent = ""; btn.disabled = true; btn.textContent = "Tayyorlanmoqda…";
+    wgPrep(renew).then(t => { ready(t); if (renew) msg.textContent = "Yangi kalit tayyor. Skriptni qayta nusxalab, Scriptable'dagisining o'rniga qo'ying."; }).catch(fail).finally(() => { WG.busy = false; }); };
+  box.addEventListener("toggle", () => { if (box.open && !WG.text) prep(false); else if (WG.text) ready(WG.text); });
+  // nusxa: matn oldindan tayyor — bosish bilan darrov (iPhone Safari kechikkan nusxani taqiqlaydi)
+  btn.onclick = () => {
+    const done = () => { msg.textContent = "Nusxalandi ✓ Endi Scriptable'ni oching (3-qadam)."; };
+    const manual = () => { tx.classList.remove("hidden"); tx.focus(); tx.select(); msg.textContent = "Avtomatik nusxalab bo'lmadi: matnni belgilab, «Nusxalash» ni bosing."; };
+    try { navigator.clipboard.writeText(WG.text).then(done, manual); } catch (e) { manual(); }
+  };
+  // eski widget ishlamay qoladi — ikkinchi bosish bilan tasdiqlanadi
+  const nb = $("#wgnew"); let armed = 0;
+  nb.onclick = () => { if (Date.now() - armed < 4000) { armed = 0; nb.textContent = "Kalitni yangilash"; prep(true); return; }
+    armed = Date.now(); nb.textContent = "Ha, yangilash"; setTimeout(() => { if (armed && Date.now() - armed >= 4000) { armed = 0; nb.textContent = "Kalitni yangilash"; } }, 4100); };
+}
 route(/^sozlama$/, () => {
   app.innerHTML = `${nav(`#`, `Bugun`, `Sozlamalar`)}
-  <div class="stack">${cloud.kind === "claude" ? `<p class="sub">Natijalar hisobingizda o'zi saqlanadi.</p>` : `<div class="card sy" id="sycard">${syncCardInner()}</div>`}${installCard(true)}${remCard()}${clsCard()}
+  <div class="stack">${cloud.kind === "claude" ? `<p class="sub">Natijalar hisobingizda o'zi saqlanadi.</p>` : `<div class="card sy" id="sycard">${syncCardInner()}</div>${widgetCard()}`}${installCard(true)}${remCard()}${clsCard()}
   <div class="card"><p class="label">Zaxira · oxirgisi: ${bakWhen()}</p>
     <button class="btn" id="bk">${sv('<path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/>')} Zaxira faylini saqlash</button>
     <p class="gohint" style="text-align:left">Telefonda «Ulashish» oynasi ochiladi — Telegram «Saqlangan xabarlar»ga yuboring.</p><p class="muted" id="bkmsg" role="status"></p></div>
@@ -5364,6 +5418,7 @@ route(/^sozlama$/, () => {
   };
   const done = add => { $("#msg").textContent = "Tiklandi ✓" + (add > 0 ? " · " + add + " ta yangi so'z natijasi qo'shildi" : " · natijalar birlashtirildi"); };
   $("#ld").onclick = () => { try { done(restoreBackup(readBackup($("#im").value))); } catch (e) { $("#msg").textContent = "Kod noto'g'ri. Qaytadan nusxalab ko'ring."; } };
+  bindWidget();
   $("#bk").onclick = async () => { const b = $("#bk"); b.disabled = true; const r = await saveBackup(); b.disabled = false; $("#bkmsg").textContent = r === "fail" ? "Saqlab bo'lmadi. «Kod orqali» usulini ishlating." : r === "cancel" ? "" : "Saqlandi ✓"; };
   $("#bf").onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { try { done(restoreBackup(readBackup(t))); } catch (er) { $("#msg").textContent = "Bu fayl zaxira emas. «ingliz-zaxira-…json» faylini tanlang."; } }); e.target.value = ""; };
 });

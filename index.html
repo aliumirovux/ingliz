@@ -1022,7 +1022,7 @@ button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-c
 @media (min-width:600px){#sgsheet .qs.ks{width:min(420px,calc(100% - 48px))}}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 /* bosh sahifa o'ng ustuni: telefonda oddiy oqim (seriya kartasi eng tepada) */
-.side{display:contents}
+.side,.lcol{display:contents}
 .home .stack>.side>.skc{order:-1}
 .home.hin .side>*{animation:h-rise .7s cubic-bezier(.16,1,.3,1) both;animation-delay:.22s}
 .home.hin .side>.skc{animation-delay:.04s}
@@ -1283,14 +1283,16 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
   .wrap.home{max-width:1040px}
   .wrap.home .stack{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start;grid-auto-flow:row dense}
   .wrap.home .stack>*{grid-column:1 / -1}
-  /* dars (chapda) o'z balandligida; ekran yetarli bo'lsa sahifa bilan birga pastga tushadi (sticky) — o'ng ustun uzun bo'lsa ham bo'sh joy qolmaydi */
-  .wrap.home .stack>.lesson,.wrap.home .stack>.zero{grid-column:1;align-self:start}
+  /* chap ustun: dars + Fe'llar; o'ng: natijalar. Ikkala ustun teng balandlikda tugaydi —
+     qisqa ustunda ortiqcha joyni oxirgi «cho'ziladigan» karta oladi (chapda Fe'llar, o'ngda Takrorlash/Xotira), bo'sh joy qolmaydi */
+  .wrap.home .stack>.lcol{grid-column:1;display:flex;flex-direction:column;gap:16px;align-self:stretch}
+  .wrap.home .lcol>.flc{flex:1 1 auto;display:flex;flex-direction:column}
+  .wrap.home .lcol>.flc .flg{flex:1 1 auto;grid-template-rows:repeat(3,minmax(8px,20px));align-content:center;margin:8px 0 10px}.wrap.home .lcol>.flc .flg i{height:auto}
+  .wrap.home .lcol>.flc .mchip{margin-top:auto}.wrap.home .lcol>.flc .xm-note{margin-bottom:12px}
+  .wrap.home .lcol>:only-child{flex:1 1 auto}
   .wrap.home .stack>.side{grid-column:2;display:flex;flex-direction:column;gap:16px;align-self:stretch}
   .wrap.home .side>.xm2{flex:1 1 auto}
   .wrap.home .side .xm-t.xg{justify-content:space-between}
-}
-@media (min-width:980px) and (min-height:760px){
-  .wrap.home .stack>.lesson{position:sticky;top:16px}
 }
 
 /* ===== Unitlar: umumiy mashqlar ===== */
@@ -3380,19 +3382,19 @@ route(/^$/, () => {
   </div>${meBtn()}</div>
   <div class="stack">
     ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
-    ${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
+    <div class="lcol">${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
       ${levelPicker()}
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    ${lv.zero ? "" : felCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
     ${retCard()}
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
-    ${lv.zero ? "" : felCard()}
     <div class="hnav">${lv.zero ? "" : vbCard()}${tlCard()}</div>
     ${backupCard(seen) || installCard()}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
@@ -3415,7 +3417,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042300";
+const APP_V = "202611042310";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

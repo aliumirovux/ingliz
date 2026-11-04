@@ -1290,6 +1290,66 @@ button.pill{border:0;font:inherit;cursor:pointer;color:var(--ink)}button.pill:fo
 .qa a>span:last-child{font-size:13px;color:var(--muted)}
 .qa a:active{transform:scale(.98)}
 .qa a:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+/* Yordamchi (FAB + varaq / panel) */
+.aifab{position:fixed;z-index:12;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border:0;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -6px rgba(0,0,0,.45);transition:transform .2s cubic-bezier(.3,1.4,.5,1)}
+.aifab svg{width:24px;height:24px}.aifab:active{transform:scale(.92)}.aifab[hidden],.typing .aifab{display:none}
+.aifab:focus-visible{outline:2px solid var(--marker);outline-offset:3px}
+.aifab[aria-expanded="true"]{background:var(--marker);color:var(--on-marker)}
+body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bottom,0px))}
+.aiw{position:fixed;inset:0;z-index:58}
+.ai-bd{position:absolute;inset:0;background:rgba(10,10,12,.45);opacity:0;transition:opacity .22s}
+.aiw.on .ai-bd{opacity:1}
+.ai-p{position:absolute;left:0;right:0;bottom:var(--kb,0px);max-width:640px;margin:0 auto;height:min(86dvh,760px);display:flex;flex-direction:column;background:var(--surface);border-radius:28px 28px 0 0;box-shadow:0 -16px 40px -16px rgba(0,0,0,.45);padding-bottom:env(safe-area-inset-bottom,0px);transform:translateY(105%);transition:transform .32s cubic-bezier(.16,1,.3,1)}
+.aiw.on .ai-p{transform:none}
+.ai-top{flex:none;padding:10px 16px 6px}.ai-top .qs-grab{margin-bottom:8px}
+.ai-h{display:flex;align-items:center;gap:8px}.ai-h h2{margin:0;font-size:19px;flex:1}
+.ai-sp{display:flex;color:var(--marker)}.ai-sp svg{width:20px;height:20px}
+.ai-ib{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:none;color:var(--muted);display:grid;place-items:center;cursor:pointer}.ai-ib svg{width:19px;height:19px}
+.ai-x{background:var(--surface-2);color:var(--ink)}
+.ai-msgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:6px 16px 12px;display:flex;flex-direction:column;gap:12px}
+.ai-hello{padding:10px 2px}.ai-hello p{margin:0;font:700 21px/1.3 var(--font-display)}.ai-hello span{display:block;margin-top:6px;color:var(--muted);font-size:14px;line-height:1.5}
+.ai-u{align-self:flex-end;max-width:84%;background:var(--surface-2);border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:15px;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.ai-k{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:12px;font-weight:600;color:var(--accent-text)}.ai-k svg{width:14px;height:14px}
+.ai-c{position:relative;background:var(--bg);border-radius:18px;padding:14px}
+.ai-v{display:flex;align-items:center;gap:6px;margin:0 0 6px;font-size:13px;font-weight:600}.ai-v svg{width:15px;height:15px}.ai-v.ok{color:var(--ok)}.ai-v.no{color:var(--accent-text)}
+.ai-en{margin:0;padding-right:46px;font:700 19px/1.3 var(--font-display);letter-spacing:-.01em;word-break:break-word}
+.ai-pr{margin:4px 0 0;color:var(--pron);font-size:13px;font-weight:500}
+.ai-uz{margin:4px 0 0;font-size:15px}
+.ai-iz{margin:8px 0 0;font-size:14px;line-height:1.5}.ai-c>.ai-iz:first-child{margin-top:0}
+.aic-ex{margin:10px 0 0;padding:2px 0 2px 10px;border-left:3px solid var(--line-strong);font-size:14px}.aic-ex span{display:block;color:var(--muted);font-size:13px}
+.ai-say{position:absolute;top:10px;right:10px;width:40px;height:40px;border:0;border-radius:50%;background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}.ai-say svg{width:18px;height:18px}
+.ai-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ai-add,.ai-cp,.ai-retry{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:999px;font:600 14px var(--font-body);cursor:pointer}
+.ai-add{background:var(--marker);color:var(--on-marker)}.ai-add svg,.ai-cp svg,.ai-retry svg{width:16px;height:16px}
+.ai-add small{font-weight:500;opacity:.8}
+.ai-add.done{background:var(--ok-bg);color:var(--ok);cursor:default}
+.ai-cp,.ai-retry{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.ai-retry{margin-top:8px}
+.ai-err{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:var(--surface-2);color:var(--ink);font-size:14px}.ai-err svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--bad)}
+.ai-err.warn{background:var(--hl)}
+.ai-a .sk{height:10px;border-radius:6px;margin:8px 0;background:linear-gradient(90deg,var(--line),var(--surface),var(--line));background-size:200% 100%;animation:aisk 1.2s linear infinite}
+.ai-ctx:empty{display:none}.ai-ctx{flex:none;padding:0 16px 6px}
+.ai-ctxc{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:4px 4px 4px 12px;border-radius:12px;background:var(--marker-soft);color:var(--accent-text);font-size:13px;font-weight:600}
+.ai-ctxc>svg{flex:none;width:14px;height:14px}.ai-ctxc>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-ctxc button{flex:none;width:32px;height:32px;border:0;border-radius:8px;background:none;color:inherit;display:grid;place-items:center;cursor:pointer}.ai-ctxc button svg{width:14px;height:14px}
+.ai-sugg{flex:none;display:flex;gap:8px;overflow-x:auto;padding:2px 16px 8px;scrollbar-width:none}.ai-sugg::-webkit-scrollbar{display:none}
+.ai-sugg button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:var(--surface-2);color:var(--ink);font:500 14px var(--font-body);cursor:pointer}
+.ai-inp{flex:none;display:flex;align-items:flex-end;gap:8px;padding:8px 12px;border-top:1px solid var(--line)}
+.ai-inp textarea{flex:1;min-width:0;min-height:48px;max-height:132px;resize:none;border:0;border-radius:24px;background:var(--surface-2);color:var(--ink);padding:13px 16px;font:400 16px/1.4 var(--font-body);outline:none}
+.ai-inp textarea:focus{box-shadow:0 0 0 2px var(--marker)}
+.ai-send{flex:none;width:48px;height:48px;border:0;border-radius:50%;background:var(--marker);color:var(--on-marker);display:grid;place-items:center;cursor:pointer}.ai-send svg{width:20px;height:20px}.ai-send:disabled{opacity:.5;cursor:default}
+.ai-note{flex:none;margin:0;padding:0 16px 10px;text-align:center;color:var(--muted);font-size:12px}
+.aiw button:focus-visible,.ai-inp textarea:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+@media (min-width:980px){
+  .aifab{right:24px;bottom:24px}
+  body.has-aifab{padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px))}
+  .aiw{inset:0 0 0 auto;width:412px;pointer-events:none}
+  .ai-bd,.ai-top .qs-grab{display:none}
+  .ai-p{pointer-events:auto;left:auto;right:16px;top:16px;bottom:16px;height:auto;width:380px;max-width:none;border-radius:24px;box-shadow:0 24px 60px -16px rgba(0,0,0,.45);transform:translateX(calc(100% + 32px))}
+  body.ai-open{padding-right:412px}
+  body.ai-open .aifab{display:none}
+}
+@media (prefers-reduced-motion:reduce){.ai-p,.aifab{transition:none}.ai-a .sk{animation:none}}
 /* So'z o'yini */
 .qa.q4{grid-template-columns:repeat(2,minmax(0,1fr))}
 .oy-lead{margin:14px 2px 16px;color:var(--muted);font-size:15px;line-height:1.5}
@@ -3017,7 +3077,7 @@ function render() {
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  navBig();
+  navBig(); aiFabSync();
   const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror)$/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -3300,7 +3360,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042100";
+const APP_V = "202611042200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -5432,8 +5492,159 @@ async function aiAsk(body) {
   } catch (e) { if (!e.code) e.code = "offline"; throw e; }
   finally { clearTimeout(tm); }
 }
-const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 50 ta tushuntirish ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
+const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 120 ta so'rov ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
 const aiExample = m => m && m.en ? `<div class="ai-ex" ><b>${esc(m.en)}</b><button class="icon" data-say="${esc(m.en)}" aria-label="Tinglash">${ICON.vol}</button>${m.uz ? `<small>${esc(m.uz)}</small>` : ""}</div>` : "";
+/* ---------- YORDAMCHI: har sahifada suzuvchi tugma — tarjima, gapni tekshirish, so'z ma'nosi, savollar ----------
+   Faqat AI_ALLOW hisoblarida ko'rinadi. Mashq, test, o'yin va tinglash darsida yashirin (javob xotiradan topilsin).
+   Telefonda — pastdan varaq, kompyuterda (≥980px) — o'ng panel, sahifa yonida ochiq turadi. Suhbat shu qurilmada saqlanadi (oxirgi 20 ta xabar). */
+const AIC_KEY = "ingliz-ai-chat", AIC_MAX = 20, AI_LIMIT = 120;
+const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY = sv('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>');
+let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
+const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
+const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
+const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|tinglash-\d)/.test(h);
+const aiWide = () => matchMedia("(min-width:980px)").matches;
+let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
+const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];
+/* ko'rib turgan sahifa — yordamchiga kontekst */
+function aiCtx() {
+  const h = location.hash.replace(/^#/, ""); let m;
+  if ((m = h.match(/^(unit|soz)-(\d+)$/))) {
+    const n = +m[2], i = UNIT_INFO[n]; if (!i) return null;
+    return { label: `Unit ${un(n)} · ${m[1] === "soz" ? "Lug'at" : i[0]}`, detail: `Unit ${un(n)} «${i[0]}» (${i[1]}). Shu unit so'zlari: ${byUnit(n).slice(0, 40).map(w => w.w + " — " + w.u).join("; ")}` };
+  }
+  if ((m = h.match(/^qolip-(.+)$/))) { const p = PATTERNS.find(x => x.id === m[1]); if (p) return { label: "Grammatika · " + p.title, detail: `Grammatika qolipi: ${p.title}. ${p.lead || ""}` }; }
+  if (h === "mening") return { label: "Mening so'zlarim", detail: "O'quvchining o'z so'zlari: " + (S.my || []).slice(-30).map(w => w.w + " — " + w.u).join("; ") };
+  const map = { unitlar: "Unitlar", lugat: "Lug'at", gap: "Tayyor gaplar", tinglash: "Tinglash", oyin: "So'z o'yini", qolip: "Grammatika", tuz: "Gap tuzish", gapir: "Gapirish", natija: "Natijalar", xotira: "Xotira", boylik: "So'z boyligi" };
+  return map[h] ? { label: map[h], detail: "Sahifa: " + map[h] } : null;
+}
+/* tugma: har render'da ko'rinish holati */
+function aiFabSync() {
+  const h = location.hash.replace(/^#/, ""), show = aiOn() && !aiHideRoute(h) && !document.body.classList.contains("welcome");
+  let b = document.getElementById("aifab");
+  if (aiW && (!show || (h !== aiLastH && !aiWide()))) aiClose(true);
+  aiLastH = h;
+  document.body.classList.toggle("has-aifab", show);
+  if (!show) { if (b) b.hidden = true; return; }
+  if (!b) {
+    b = document.createElement("button"); b.id = "aifab"; b.className = "aifab"; b.type = "button";
+    b.setAttribute("aria-label", "Yordamchi: tarjima va savollar"); b.setAttribute("aria-haspopup", "dialog");
+    b.innerHTML = ICON.spark; b.onclick = () => aiW ? aiClose() : aiOpen(); document.body.appendChild(b);
+  }
+  b.hidden = false; b.setAttribute("aria-expanded", !!aiW);
+  if (aiW) { aiCtxOff = false; aiCtxDraw(); }
+}
+function aiOpen() {
+  if (aiW) return;
+  const wide = aiWide(), w = document.createElement("div"); w.id = "aiw"; w.className = "aiw";
+  w.innerHTML = `<div class="ai-bd" data-x></div><section class="ai-p" role="dialog" aria-modal="${!wide}" aria-labelledby="aih">
+    <div class="ai-top"><span class="qs-grab" aria-hidden="true"></span><div class="ai-h"><span class="ai-sp">${ICON.spark}</span><h2 id="aih">Yordamchi</h2>
+      <button class="ai-ib" id="ainew" type="button" aria-label="Yangi suhbat" title="Yangi suhbat">${ICON_PEN}</button><button class="ai-ib ai-x" type="button" data-x aria-label="Yopish">${ICON.x}</button></div></div>
+    <div class="ai-msgs" id="aimsgs" aria-live="polite"></div>
+    <div class="ai-ctx" id="aictx"></div>
+    <div class="ai-sugg" role="group" aria-label="Tayyor so'rovlar">${AI_SUGG.map(([p, t]) => `<button type="button" data-p="${esc(p)}">${t}</button>`).join("")}</div>
+    <form class="ai-inp" id="aiform"><textarea id="aiin" rows="1" placeholder="Tarjima yoki savol yozing…" aria-label="Xabar" enterkeyhint="send" autocomplete="off"></textarea><button class="ai-send" type="submit" aria-label="Yuborish">${ICON_UP}</button></form>
+    <p class="ai-note" id="ainote"></p></section>`;
+  document.body.appendChild(w); aiW = w; aiCtxOff = false;
+  document.body.classList.toggle("ai-open", wide);
+  const inp = $("#aiin"), grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(inp.scrollHeight, 132) + "px"; };
+  inp.oninput = grow;
+  inp.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("#aiform").requestSubmit(); } };
+  $("#aiform").onsubmit = e => { e.preventDefault(); const v = inp.value.trim(); if (!v) { inp.focus(); return; } inp.value = ""; grow(); aiSend(v); };
+  w.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { inp.value = b.dataset.p; grow(); inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); });
+  w.querySelectorAll("[data-x]").forEach(b => b.onclick = () => aiClose());
+  $("#ainew").onclick = () => { if (!AIC.m.length) return; const old = AIC.m; AIC.m = []; aicSave(); aiDraw(); toast("Suhbat tozalandi", "Qaytarish", () => { AIC.m = old; aicSave(); aiDraw(); }); };
+  w.addEventListener("keydown", aiKey);
+  if (!wide) { history.pushState({ ai: 1 }, ""); addEventListener("popstate", aiPop); }
+  aiDraw(); aiCtxDraw();
+  requestAnimationFrame(() => { w.classList.add("on"); if (matchMedia("(pointer:fine)").matches) inp.focus({ preventScroll: true }); else w.querySelector(".ai-x").focus({ preventScroll: true }); });
+  const b = document.getElementById("aifab"); if (b) b.setAttribute("aria-expanded", "true");
+}
+const aiKey = e => { if (e.key === "Escape") { e.preventDefault(); aiClose(); } };
+const aiPop = () => aiClose(true);
+function aiClose(fromNav) {
+  const w = aiW; if (!w) return; aiW = null;
+  removeEventListener("popstate", aiPop);
+  if (!fromNav && history.state && history.state.ai) history.back();
+  w.classList.remove("on"); document.body.classList.remove("ai-open");
+  setTimeout(() => w.remove(), 320);
+  const b = document.getElementById("aifab"); if (b) { b.setAttribute("aria-expanded", "false"); if (!fromNav) b.focus({ preventScroll: true }); }
+}
+function aiCtxDraw() {
+  const el = aiW && aiW.querySelector("#aictx"); if (!el) return;
+  const c = aiCtxOff ? null : aiCtx();
+  el.innerHTML = c ? `<span class="ai-ctxc">${ICON.book}<span>${esc(c.label)}</span><button type="button" aria-label="Sahifani hisobga olmaslik" title="Sahifani hisobga olmaslik">${ICON.x}</button></span>` : "";
+  const x = el.querySelector("button"); if (x) x.onclick = () => { aiCtxOff = true; aiCtxDraw(); };
+}
+const AI_TUR = { tarjima: "Tarjima", tekshirish: "Tekshiruv", soz: "So'z", savol: "Javob" };
+/* so'zni «Mening so'zlarim»ga qo'shish — kitobda bo'lsa qo'shilmaydi (rejaga o'zi tushadi) */
+function aiWordState(w) {
+  const book = WORDS.find(x => !x.mine && !x.vb && (norm(x.w) === norm(w) || norm(spoken(x)) === norm(w)));
+  if (book) return { st: "book", unit: book.unit };
+  return (S.my || []).some(m => m.id === "my|" + norm(w)) ? { st: "have" } : { st: "new" };
+}
+function aiAddWord(w, u, p, e, t) {
+  const s = aiWordState(w); if (s.st !== "new") return s;
+  const id = "my|" + norm(w);
+  S.my.push({ id, w, u, p: p || "", e: e || "", t: t || "" }); untomb("my:" + id); syncMyWords(); save();
+  return { st: "ok" };
+}
+function aiAnsH(d, i) {
+  const tur = AI_TUR[d.tur] ? d.tur : "savol", one = d.en && d.en.trim().split(/\s+/).length <= 4;
+  let adds = Array.isArray(d.qosh) ? d.qosh.filter(x => x && x.w && x.u) : [];
+  if (!adds.length && one && d.uz && (tur === "soz" || tur === "tarjima")) adds = [{ w: d.en, u: d.uz }];
+  const chip = (x, k) => { const s = aiWordState(x.w), done = s.st !== "new";
+    return `<button type="button" class="ai-add${done ? " done" : ""}" data-i="${i}" data-k="${k}"${done ? " disabled" : ""}>${done ? ICON.check : ICON.plus}<span lang="en">${esc(x.w)}</span>${done ? `<small>${s.st === "book" ? "kitobda bor" : "lug'atda"}</small>` : ""}</button>`; };
+  const mis = d.misol && d.misol.en ? `<p class="aic-ex" lang="en">${esc(d.misol.en)}${d.misol.uz ? `<span>${esc(d.misol.uz)}</span>` : ""}</p>` : "";
+  return `<div class="ai-a"><p class="ai-k">${ICON.spark}${AI_TUR[tur]}</p><div class="ai-c">
+    ${tur === "tekshirish" ? `<p class="ai-v ${d.togri ? "ok" : "no"}">${d.togri ? ICON.check + "To'g'ri" : "Tuzatilgan gap"}</p>` : ""}
+    ${d.en ? `<p class="ai-en" lang="en">${esc(d.en)}</p>` : ""}${d.en && d.pron ? `<p class="ai-pr">${esc(d.pron)}</p>` : ""}${d.uz && tur === "soz" ? `<p class="ai-uz">${esc(d.uz)}</p>` : ""}
+    ${d.izoh ? `<p class="ai-iz">${esc(d.izoh)}</p>` : ""}${mis}
+    ${d.en ? `<button type="button" class="ai-say" data-say="${esc(d.en)}" aria-label="Eshitish">${ICON.vol}</button>` : ""}</div>
+    ${adds.length || d.en ? `<div class="ai-acts">${adds.map(chip).join("")}${d.en ? `<button type="button" class="ai-cp" data-cp="${esc(d.en)}">${ICON_COPY}<span>Nusxa</span></button>` : ""}</div>` : ""}</div>`;
+}
+function aiDraw() {
+  const box = aiW && aiW.querySelector("#aimsgs"); if (!box) return;
+  box.innerHTML = AIC.m.length ? AIC.m.map((x, i) => x.r === "u" ? `<div class="ai-u">${esc(x.t)}</div>`
+      : x.r === "e" ? `<div class="ai-a"><p class="ai-k">${ICON.spark}Yordamchi</p><div class="ai-err ${x.c === "limit" ? "warn" : ""}" role="alert">${ICON.info}<span>${esc(x.t)}</span></div>${x.q && x.c !== "limit" && x.c !== "not_allowed" ? `<button type="button" class="ai-retry" data-retry="${i}">${ICON.redo}Qayta urinish</button>` : ""}</div>`
+      : aiAnsH(x.d, i)).join("") + (aiBusy ? `<div class="ai-a" aria-label="Javob yozilmoqda"><p class="ai-k">${ICON.spark}Yordamchi</p><div class="sk"></div><div class="sk" style="width:72%"></div><div class="sk" style="width:84%"></div></div>` : "")
+    : `<div class="ai-hello"><p>Nima yordam kerak?</p><span>Ish xabarini tarjima qilish, gapingizni tekshirish yoki so'z ma'nosi. Har javobdagi so'zni bir bosishda lug'atingizga qo'shasiz.</span></div>`;
+  box.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
+  box.querySelectorAll("[data-cp]").forEach(b => b.onclick = () => { try { navigator.clipboard.writeText(b.dataset.cp).then(() => toast("Nusxa olindi"), () => toast("Nusxa olib bo'lmadi", null, null, { type: "warn" })); } catch (e) { toast("Nusxa olib bo'lmadi", null, null, { type: "warn" }); } });
+  box.querySelectorAll("[data-retry]").forEach(b => b.onclick = () => { const x = AIC.m[+b.dataset.retry]; AIC.m.splice(+b.dataset.retry, 1); aiSend(x.q, true); });
+  box.querySelectorAll(".ai-add:not(.done)").forEach(b => b.onclick = () => {
+    const d = AIC.m[+b.dataset.i].d, list = Array.isArray(d.qosh) && d.qosh.length ? d.qosh.filter(x => x && x.w && x.u) : [{ w: d.en, u: d.uz }], x = list[+b.dataset.k]; if (!x) return;
+    const same = norm(x.w) === norm(d.en || "");
+    const r = aiAddWord(x.w, x.u, same ? d.pron : "", d.misol && d.misol.en, d.misol && d.misol.uz);
+    if (r.st === "ok") toast(`«${x.w}» qo'shildi`, null, null, { sub: "Mening so'zlarim · bugungi yangi so'zlarda birinchi chiqadi" });
+    else if (r.st === "book") toast(`«${x.w}» kitobda bor`, null, null, { type: "info", sub: `Unit ${un(r.unit)} · rejaga o'zi tushadi` });
+    aiDraw();
+  });
+  const note = aiW.querySelector("#ainote"), left = AIC.ld === today() && Number.isFinite(AIC.left) ? AIC.left : null;
+  note.textContent = (left != null ? `Bugun ${left} ta so'rov qoldi` : `Kuniga ${AI_LIMIT} ta so'rov`) + " · AI xato qilishi mumkin";
+  aiW.querySelector(".ai-send").disabled = aiBusy;
+  requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
+}
+const aiChatErr = c => c === "limit" ? `Bugungi ${AI_LIMIT} ta so'rov tugadi. Ertaga yana — mashqlar ishlayveradi.` : c === "offline" ? "Internet yo'q. Lug'at va mashqlar oflayn ishlaydi, yordamchi esa internet qaytganda." : c === "auth" ? "Hisobga qayta kirish kerak (Sozlamalar)." : c === "not_allowed" ? "Yordamchi bu hisob uchun yoqilmagan." : "Javob olinmadi. Qayta urinib ko'ring.";
+async function aiSend(text, retry) {
+  if (aiBusy) return;
+  const prev = AIC.m.slice();
+  if (!retry) AIC.m.push({ r: "u", t: text });
+  aiBusy = true; aiDraw();
+  const hist = []; for (let i = 0; i < prev.length - 1; i++) if (prev[i].r === "u" && prev[i + 1].r === "a") { const d = prev[i + 1].d; hist.push({ q: prev[i].t, a: [d.en, d.izoh].filter(Boolean).join(" — ") }); }
+  const c = aiCtxOff ? null : aiCtx();
+  try {
+    const d = await aiAsk({ mode: "chat", text, history: hist.slice(-4), page: c ? c.detail : "" });
+    if (Number.isFinite(d.left)) { AIC.left = d.left; AIC.ld = today(); }
+    delete d.left; AIC.m.push({ r: "a", d });
+  } catch (e) {
+    AIC.m.push({ r: "e", t: aiChatErr(e.code), c: e.code, q: text });
+    if (e.code === "limit") { AIC.left = 0; AIC.ld = today(); }
+  }
+  aiBusy = false; aicSave(); if (aiW) aiDraw();
+}
+addEventListener("resize", () => { if (aiW) document.body.classList.toggle("ai-open", aiWide()); });
+
 /* host — xato kartasi (#tf); ctx: { uz, target, answer, rule } */
 /* faqat Ali uchun (API krediti boshqalarga sarflanmasin) — server ham shu ro'yxatni tekshiradi */
 const AI_ALLOW = ["aliumirov.me@gmail.com"];

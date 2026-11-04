@@ -686,6 +686,16 @@ body.lp-on .wrap{max-width:1120px}
 .bu-say svg{width:18px;height:18px}
 em.irr{font-style:normal;color:var(--accent-text);font-weight:600}
 #bkall{gap:8px}
+
+/* Iboralar */
+.ibc .xm-h b{display:inline-flex;align-items:center;gap:6px}.ibc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
+.ib-uz{font:700 21px/1.25 var(--font-display);letter-spacing:-.01em;margin:2px 0 2px;text-wrap:balance}
+.ib-bl{font-size:18px;font-weight:600;color:var(--accent-text);margin:0 0 4px;letter-spacing:.03em}
+.ibc .mchip{width:100%;height:44px;margin-top:12px;font-size:14px}
+.ib-q{font-size:26px!important;line-height:1.25}
+.ib-se{display:block;margin-top:6px;font-style:italic;opacity:.85}.ib-su{display:block;font-size:13px;opacity:.8}
+.ib-big{font:700 30px/1.15 var(--font-display);letter-spacing:-.02em;margin:6px 0 10px}
+.ib-forms{text-align:left}
 /* Fe'llar kartasi (bosh sahifa): 60 fe'l = 3 qator × 20, rang — pog'ona */
 .flc .xm-h b{display:inline-flex;align-items:center;gap:6px}.flc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
 .flc .xm-hero{align-items:baseline;gap:8px}
@@ -2453,6 +2463,7 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const sv = p => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 const ICON = {curve: sv('<path d="M4 4v15a1 1 0 0 0 1 1h15"/><path d="M8 6.5c1.2 4.6 3.2 7.6 6 8.6 1.7.6 3.6.6 5 .4"/>'), vol: sv('<path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>'), mic: sv('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>'), arrow: sv('<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>'), back: sv('<path d="m15 18-6-6 6-6"/>'), chev: sv('<path d="m9 18 6-6-6-6"/>'), check: sv('<path d="m5 12.5 4.5 4.5L19 7.5"/>'), book: sv('<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h5"/>'), bulb: sv('<path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/>'), tiles: sv('<rect x="3" y="8" width="7" height="7" rx="2"/><rect x="14" y="8" width="7" height="7" rx="2"/><path d="M3 19h18"/>'), chat: sv('<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>'), redo: sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'), gear: sv('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>'), down: sv('<path d="m6 9 6 6 6-6"/>'), x: sv('<path d="M18 6 6 18M6 6l12 12"/>'), pen: sv('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>'), flame: sv('<path d="M12 3c1 3.5 5 5.6 5 10.2A5 5 0 0 1 7 13.5c0-2.4 1.4-3.8 2.5-5 .3 1.6 1 2.6 2 3.1C11.5 8.6 10.6 6 12 3Z"/>'), plus: sv('<path d="M12 5v14M5 12h14"/>'), moon: sv('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/>'), lock: sv('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'), up: sv('<path d="m6 15 6-6 6 6"/>'), read: sv('<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2Z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8Z"/>'), clock: sv('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'), search: sv('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'), kbd: sv('<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>'), erase: sv('<path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m16 10-4 4M12 10l4 4"/>'), info: sv('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'), mix: sv('<path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/>'), pick: sv('<rect x="3" y="4" width="18" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>'), spark: sv('<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9Z"/><path d="M19 16v4M17 18h4"/>')};
+ICON.ibc = sv('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/>');
 ICON.verb = sv('<path d="M4 7h10"/><path d="m11 4 3 3-3 3"/><path d="M20 17H10"/><path d="m13 14-3 3 3 3"/>');
 ICON.twin = sv('<rect x="3" y="6" width="11" height="12" rx="2.5"/><path d="M10 6V5.5A2.5 2.5 0 0 1 12.5 3h6A2.5 2.5 0 0 1 21 5.5v7a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M6.5 13.5 8.5 9l2 4.5M7.2 12h2.6"/>');
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
@@ -2826,7 +2837,7 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
+const quizNow = () => /^#(quiz|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-|ibmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
 /* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
@@ -3199,10 +3210,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync();
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar)$/.test(h) || h.startsWith("oqish-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3457,7 +3468,7 @@ route(/^$/, () => {
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
-    ${lv.zero ? "" : felCard()}${lv.zero ? "" : hikCard()}</div>
+    ${lv.zero ? "" : felCard()}${lv.zero ? "" : ibCard()}${lv.zero ? "" : hikCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
@@ -3478,6 +3489,8 @@ route(/^$/, () => {
   const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
   const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
   const fe = $("#felex"); if (fe) fe.onclick = () => { LES = false; startFel("extra"); };
+  const ig = $("#ibgo2"); if (ig) ig.onclick = () => startIb(ibDue().length ? "due" : "new");
+  const im = $("#ibmore2"); if (im) im.onclick = () => startIb("new");
   const hb = nextBook(), hg = $("#hkgo"), hl = $("#hkls"); if (hg && hb) hg.onclick = () => go("oqish-" + hb.id); if (hl && hb) hl.onclick = () => { BK_PLAY = true; go("oqish-" + hb.id); };
   const ff = $("#felfr"); if (ff) ff.onclick = () => { LES = false; startFel("free"); };
   balanceHome();
@@ -3489,7 +3502,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050010";
+const APP_V = "202611050030";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4340,6 +4353,130 @@ route(/^oqish-([a-z]+)$/, id => {
   if (r && !r.done && r.p > 1) setTimeout(() => { const t = paras[r.p - 1]; if (t) t.scrollIntoView({ block: "start" }); scrollBy(0, -80); }, 60);
   /* bosh sahifadagi «Tinglash»dan kelinganda: qolgan joydan (yoki boshidan) */
   if (BK_PLAY) { BK_PLAY = false; const from = r && !r.done && r.p > 1 ? +(paras[r.p - 1].querySelector(".bs") || { dataset: { i: 0 } }).dataset.i : 0; setTimeout(() => startAll(from), 300); }
+});
+/* ---------- IBORALAR: jonli so'zlashuv iboralari (Cake usuli, lekin yozib) ----------
+   Har ibora 3 qadam: iboraning o'zi (ko'chirib) → shu ma'no boshqacha → teskari ma'no yoki javob.
+   Holat S.srs["ib|..."] da (fe'llardagi kabi): b — pog'ona, due — keyingi kun. Kuniga 1 ta yangi («Yana bitta» bilan 3 tagacha). */
+const IB_T = [{"t": "Maqtov va dalda", "i": [{"id": "ib|there-you-go", "en": "There you go!", "uz": "Bo'larkanu! / Ana ko'rdingmi!", "se": "You fixed the bug? There you go!", "su": "Xatoni tuzatdingmi? Bo'larkanu!", "v": ["That's it!", "Ana shunaqa!"], "t": ["Not quite.", "Unchalik emas.", "Teskari"]}, {"id": "ib|good-job", "en": "Good job!", "uz": "Barakalla!", "se": "Good job on the presentation!", "su": "Taqdimot zo'r chiqdi, barakalla!", "v": ["Well done!", "Ofarin!"], "t": ["That's not good enough.", "Bu yetarli emas.", "Teskari"]}, {"id": "ib|keep-it-up", "en": "Keep it up!", "uz": "Shunday davom et!", "se": "Your English is getting better. Keep it up!", "su": "Ingliz tiling yaxshilanyapti. Shunday davom et!", "v": ["Keep up the good work!", "Yaxshi ishingni davom ettir!"], "t": ["Thanks, I'll try!", "Rahmat, harakat qilaman!", "Javob"]}, {"id": "ib|give-it-a-shot", "en": "Give it a shot.", "uz": "Sinab ko'r.", "se": "You've never tried sushi? Give it a shot.", "su": "Sushi yeb ko'rmaganmisan? Sinab ko'r.", "v": ["Try your luck.", "Omadingni sinab ko'r."], "t": ["Don't even bother.", "Urinib ham o'tirma.", "Teskari"]}, {"id": "ib|you-ve-got-this", "en": "You've got this!", "uz": "Sen uddalaysan!", "se": "Big interview tomorrow? You've got this!", "su": "Ertaga muhim suhbatmi? Sen uddalaysan!", "v": ["I believe in you.", "Senga ishonaman."], "t": ["Thanks, I hope so.", "Rahmat, umid qilaman.", "Javob"]}]}, {"t": "Rozilik va rad etish", "i": [{"id": "ib|i-m-in", "en": "I'm in.", "uz": "Men ham borman.", "se": "Football on Saturday? I'm in.", "su": "Shanba kuni futbolmi? Men ham borman.", "v": ["Count me in.", "Meni ham qo'shinglar."], "t": ["Count me out.", "Mensiz.", "Teskari"]}, {"id": "ib|fair-enough", "en": "Fair enough.", "uz": "Mayli, to'g'ri.", "se": "You're busy today? Fair enough, let's meet tomorrow.", "su": "Bugun bandmisan? Mayli, ertaga ko'rishamiz.", "v": ["That makes sense.", "Mantiqan to'g'ri."], "t": ["That doesn't make sense.", "Bu mantiqsiz.", "Teskari"]}, {"id": "ib|sounds-good", "en": "Sounds good.", "uz": "Yaxshi, kelishdik.", "se": "Lunch at one? Sounds good.", "su": "Tushlik soat birdami? Yaxshi, kelishdik.", "v": ["Works for me.", "Menga to'g'ri keladi."], "t": ["That doesn't work for me.", "Menga to'g'ri kelmaydi.", "Teskari"]}, {"id": "ib|no-way", "en": "No way!", "uz": "Yo'g'-e!", "se": "You won a car? No way!", "su": "Mashina yutdingmi? Yo'g'-e!", "v": ["You're kidding!", "Hazillashyapsan!"], "t": ["Of course!", "Albatta!", "Teskari"]}, {"id": "ib|i-m-not-sure-about-that", "en": "I'm not sure about that.", "uz": "Bunga ishonchim komil emas.", "se": "A meeting at 7 a.m.? I'm not sure about that.", "su": "Ertalab yettida uchrashuvmi? Bunga ishonchim komil emas.", "v": ["I have my doubts.", "Shubham bor."], "t": ["I'm absolutely sure.", "Mutlaqo ishonaman.", "Teskari"]}]}, {"t": "Kechirim va rahmat", "i": [{"id": "ib|no-worries", "en": "No worries.", "uz": "Hechqisi yo'q.", "se": "Sorry I'm late. — No worries.", "su": "Kechikkanim uchun uzr. — Hechqisi yo'q.", "v": ["Don't worry about it.", "Bu haqda qayg'urma."], "t": ["Thanks for understanding.", "Tushunganing uchun rahmat.", "Javob"]}, {"id": "ib|my-bad", "en": "My bad.", "uz": "Mening aybim.", "se": "I sent the wrong file. My bad.", "su": "Noto'g'ri faylni yuboribman. Mening aybim.", "v": ["That's on me.", "Bu mening xatoyim."], "t": ["It's not your fault.", "Sening aybing emas.", "Teskari"]}, {"id": "ib|i-owe-you-one", "en": "I owe you one.", "uz": "Sendan qarzdorman.", "se": "Thanks for the ride. I owe you one.", "su": "Olib borganing uchun rahmat. Sendan qarzdorman.", "v": ["Thanks a million.", "Ming rahmat."], "t": ["Don't mention it.", "Arzimaydi.", "Javob"]}, {"id": "ib|sorry-to-bother-you", "en": "Sorry to bother you.", "uz": "Bezovta qilganim uchun uzr.", "se": "Sorry to bother you, but where is the metro?", "su": "Bezovta qilganim uchun uzr, metro qayerda?", "v": ["Sorry to interrupt.", "Gapingizni bo'lganim uchun uzr."], "t": ["No problem at all.", "Hech qisi yo'q.", "Javob"]}, {"id": "ib|it-s-my-pleasure", "en": "It's my pleasure.", "uz": "Bajonidil.", "se": "Thank you for your help! — It's my pleasure.", "su": "Yordamingiz uchun rahmat! — Bajonidil.", "v": ["Anytime.", "Har doim marhamat."], "t": ["Thanks again!", "Yana bir bor rahmat!", "Javob"]}]}, {"t": "Hayrat va kayfiyat", "i": [{"id": "ib|you-crack-me-up", "en": "You crack me up!", "uz": "Kulaverib ichagim uzildi!", "se": "Your stories crack me up!", "su": "Hikoyalaring meni kuldirib yuboradi!", "v": ["That's hilarious!", "Juda kulgili!"], "t": ["That's not funny.", "Bu kulgili emas.", "Teskari"]}, {"id": "ib|i-m-feeling-blue", "en": "I'm feeling blue.", "uz": "Kayfiyatim yo'q.", "se": "It's raining again. I'm feeling blue.", "su": "Yana yomg'ir. Kayfiyatim yo'q.", "v": ["I'm a bit down.", "Biroz xafaman."], "t": ["I'm on cloud nine!", "Osmonda uchyapman! (juda baxtliman)", "Teskari"]}, {"id": "ib|what-a-relief", "en": "What a relief!", "uz": "Yengil tortdim!", "se": "The flight isn't cancelled. What a relief!", "su": "Reys bekor qilinmabdi. Yengil tortdim!", "v": ["Thank goodness!", "Xayriyat!"], "t": ["Oh no!", "Voy, yo'q!", "Teskari"]}, {"id": "ib|lucky-you", "en": "Lucky you!", "uz": "Omadingni qara!", "se": "Two weeks in Turkey? Lucky you!", "su": "Turkiyada ikki hafta? Omadingni qara!", "v": ["You're so lucky.", "Juda omading bor ekan."], "t": ["Bad luck.", "Omading kelmabdi.", "Teskari"]}, {"id": "ib|i-can-t-believe-it", "en": "I can't believe it!", "uz": "Ishonolmayman!", "se": "We won the match! I can't believe it!", "su": "O'yinda yutdik! Ishonolmayman!", "v": ["Seriously?", "Rostdanmi?"], "t": ["I knew it!", "Bilgandim!", "Teskari"]}]}, {"t": "Ishda", "i": [{"id": "ib|i-m-on-it", "en": "I'm on it.", "uz": "Hozir qilaman.", "se": "Can you check the report? — I'm on it.", "su": "Hisobotni tekshirib bera olasizmi? — Hozir qilaman.", "v": ["Leave it with me.", "Menga qoldiring."], "t": ["I can't do it right now.", "Hozir qila olmayman.", "Teskari"]}, {"id": "ib|let-me-get-back-to-you", "en": "Let me get back to you.", "uz": "Keyinroq javob beraman.", "se": "I need to check my calendar. Let me get back to you.", "su": "Taqvimimni ko'rishim kerak. Keyinroq javob beraman.", "v": ["I'll let you know.", "Sizga xabar beraman."], "t": ["I can answer now.", "Hozir javob bera olaman.", "Teskari"]}, {"id": "ib|good-point", "en": "Good point.", "uz": "To'g'ri gap.", "se": "Good point, we need more time for testing.", "su": "To'g'ri gap, testlash uchun ko'proq vaqt kerak.", "v": ["You have a point.", "Gapingizda jon bor."], "t": ["I see it differently.", "Men buni boshqacha ko'raman.", "Teskari"]}, {"id": "ib|it-s-up-to-you", "en": "It's up to you.", "uz": "O'zingiz hal qiling.", "se": "Blue or green? It's up to you.", "su": "Ko'kmi yoki yashil? O'zingiz hal qiling.", "v": ["Your call.", "Qaror sizda."], "t": ["Let me decide.", "Men hal qilay.", "Teskari"]}, {"id": "ib|let-s-call-it-a-day", "en": "Let's call it a day.", "uz": "Bugunga yetar.", "se": "It's seven o'clock. Let's call it a day.", "su": "Soat yetti bo'ldi. Bugunga yetar.", "v": ["That's it for today.", "Bugungi ish shu."], "t": ["Let's keep going.", "Davom etaylik.", "Teskari"]}]}];
+const IBS = IB_T.flatMap((t, k) => t.i.map(e => Object.assign(e, { k })));
+const ibRec = e => S.srs[e.id];
+const ibDue = () => IBS.filter(e => { const r = ibRec(e); return r && r.due && r.due <= today(); });
+const ibNewToday = () => IBS.filter(e => { const r = ibRec(e); return r && isToday(r.lt); }).length;
+const ibNext = () => IBS.find(e => !ibRec(e));
+const ibNewOk = () => !!ibNext() && ibNewToday() < 3 && ibDue().length <= 6;
+const ibHint = s => s.replace(/[A-Za-z']+/g, w => w[0] + "_".repeat(Math.max(1, w.length - 1)));
+const ibNorm = s => norm(s).replace(/[.!?,;:"]+/g, "").replace(/\s+/g, " ").trim();
+let IB = null;
+function startIb(mode, one) {
+  let q = [];
+  const nw = e => [{ e, k: "copy" }, { e, k: "var" }, { e, k: "third" }];
+  if (one) q = ibRec(one) ? [{ e: one, k: "rec" }] : nw(one);
+  else if (mode === "new") { const e = ibNext(); if (e) q = nw(e); }
+  else { q = ibDue().slice(0, 8).map(e => { const b = ibRec(e).b || 0; return { e, k: b <= 2 ? "rec" : ["rec", "var", "third"][Math.floor(Math.random() * 3)] }; });
+    if (!q.length && ibNewOk()) q = nw(ibNext()); }
+  if (!q.length) { toast("Bugun ibora yo'q", null, null, { type: "info", sub: "Takrorlar keyingi kunlarga qolgan" }); return; }
+  IB = { q, i: 0, miss: new Set(), from: {} }; q.forEach(x => { if (!(x.e.id in IB.from)) IB.from[x.e.id] = ibRec(x.e) ? ibRec(x.e).b || 0 : -1; });
+  go("ibmashq");
+}
+function ibApply() {
+  const res = [];
+  [...new Set(IB.q.map(x => x.e.id))].forEach(id => {
+    const e = IBS.find(x => x.id === id), r = ibRec(e) || { b: 0, ok: 0, bad: 0 }, was = IB.from[id], missed = IB.miss.has(id);
+    if (!ibRec(e)) untomb("srs:" + id);
+    const b = was < 0 ? (missed ? 1 : 2) : missed ? Math.max(1, (r.b || 1) - 1) : Math.min(5, (r.b || 0) + 1);
+    r.b = b; r.ls = today(); if (missed) r.bad = (r.bad || 0) + 1; else r.ok = (r.ok || 0) + 1;
+    r.due = missed ? addDays(1) : addDays(INT[b]); if (was < 0) r.lt = Date.now();
+    S.srs[id] = r; res.push({ e, missed, isNew: was < 0, due: r.due });
+  });
+  touchStreak(); save(); return res;
+}
+const ibWhen = d => { const n = dayDiff(today(), d); return n <= 1 ? "ertaga" : n + " kundan keyin"; };
+route(/^ibmashq$/, () => {
+  if (!IB) { go(""); return; }
+  if (IB.i >= IB.q.length) return ibFinish();
+  const x = IB.q[IB.i], e = x.e, N = IB.q.length;
+  const form = x.k === "var" ? e.v : x.k === "third" ? e.t : [e.en, e.uz], target = form[0], tw = ibNorm(target);
+  const head = {
+    copy: ["Yangi ibora", `Ko'chirib yozing: <b lang="en">${esc(e.en)}</b><span class="ib-se" lang="en">${esc(e.se)}</span><span class="ib-su">${esc(e.su)}</span>`],
+    var: ["Boshqacha ayting", `Shu ma'no, boshqa so'zlar · <b lang="en">${esc(ibHint(target))}</b>`],
+    third: [e.t[2] === "Javob" ? "Javob bering" : "Teskari ma'no", `${e.t[2] === "Javob" ? `«${esc(e.uz)}» ga javob` : "Qarama-qarshi ma'no"} · <b lang="en">${esc(ibHint(target))}</b>`],
+    rec: ["Takrorlash", (ibRec(e) && ibRec(e).b >= 3) ? "Xotiradan yozing" : `Xotiradan · <b lang="en">${esc(ibHint(target))}</b>`]
+  }[x.k];
+  app.innerHTML = `<div class="top"><button class="icon" id="ibx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" id="ibbar"><i></i></div><span class="cnt">${IB.i + 1}/${N}</span></div>
+  <div class="card qcard fl"><p class="label">Iboralar · ${esc(head[0])}</p><span class="fl-tag">${esc(IB_T[e.k].t)} · ${esc(head[0])}</span>
+    <div class="q fl-q qsmall ib-q">«${esc(form[1])}»</div><p class="fl-sub">${head[1]}</p>
+    <div class="fl-field">${x.k === "copy" ? `<span class="fl-ghost" id="ibghost" aria-hidden="true">${esc(target)}</span>` : ""}
+      <textarea class="spell${x.k === "copy" ? " fl-tr" : ""}" id="ibin" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" aria-label="Inglizchasi" placeholder="${x.k === "copy" ? "" : "Inglizcha…"}"></textarea></div>
+    <div class="fb hidden" id="ibfb" role="status" aria-live="polite"></div>
+    <div class="row" style="margin-top:14px">${x.k === "copy" ? "" : `<button class="btn ghost" id="ibidk">Bilmayman</button>`}<button class="btn" id="ibgo">Tekshirish</button></div></div>`;
+  segBar($("#ibbar"), N, IB.q.map((y, j) => j < IB.i ? !IB.miss.has(y.e.id + y.k) : null), IB.i);
+  $("#ibx").onclick = () => confirmQuit(IB.i, N, () => { IB = null; go(""); });
+  const inp = $("#ibin"), fb = $("#ibfb"), btn = $("#ibgo"), idk = $("#ibidk"), ghost = $("#ibghost");
+  const show = (cls, h) => { fb.className = "fb " + cls; fb.innerHTML = h; };
+  if (ghost) { const gw = ghost.textContent; inp.addEventListener("input", () => { const n = Math.min(inp.value.length, gw.length); ghost.innerHTML = `<span class="gh-t">${esc(gw.slice(0, n))}</span>${esc(gw.slice(n))}`; }); }
+  let fix = false, done = false;
+  const finish = h => { done = true; inp.readOnly = true; inp.value = target; inp.classList.remove("bad"); inp.classList.add("ok"); if (ghost) ghost.hidden = true; show("ok", h); btn.textContent = "Keyingi"; if (idk) idk.classList.add("hidden"); say(target); setTimeout(() => btn.focus({ preventScroll: true }), 0); };
+  const miss = () => { IB.miss.add(e.id + x.k); IB.miss.add(e.id); };
+  const needFix = (val, why) => { miss(); fix = true; buzz(false); if (idk) idk.classList.add("hidden"); inp.classList.add("bad"); inp.value = ""; inp.placeholder = "To'g'risini yozing…";
+    show("bad", `${why}<span class="fl-df" lang="en">${val ? `<s>${esc(val)}</s> → ${felDiff(val, tw)}` : `<b>${esc(target)}</b>`}</span><b>Endi to'g'risini yozing.</b>`); inp.focus(); };
+  btn.onclick = () => {
+    if (done) { IB.i++; return render(); }
+    const val = ibNorm(inp.value); if (!val) return inp.focus();
+    const ok = val === tw, loose = !ok && val.replace(/'/g, "") === tw.replace(/'/g, "");
+    if (ok || loose) {
+      logAns(!fix && x.k !== "copy" ? true : !fix, true); buzz(true);
+      const ap = loose ? ` Yozilishi apostrof bilan: <b lang="en">${esc(target)}</b>` : "";
+      return finish(fix ? `<b>Endi to'g'ri.</b>${ap}` : x.k === "copy" ? `<b>To'g'ri!</b> Endi shu ma'noni boshqacha aytamiz.${ap}` : loose ? `<b>To'g'ri!</b>${ap}` : `<b>To'g'ri!</b> «${esc(form[1])}» — <span lang="en">${esc(target)}</span>`);
+    }
+    if (fix || x.k === "copy") { buzz(false); show("bad", `Harflarni tekshiring:<span class="fl-df" lang="en"><s>${esc(val)}</s> → ${felDiff(val, tw)}</span>`); inp.value = ""; inp.dispatchEvent(new Event("input")); if (x.k === "copy") miss(); return; }
+    logAns(false, true); needFix(val, "Deyarli.");
+  };
+  if (idk) idk.onclick = () => { if (!done && !fix) { logAns(false, true); needFix("", "Mana to'g'risi:"); } };
+  inp.addEventListener("keydown", ev => { if (ev.key === "Enter" && !ev.isComposing) { ev.preventDefault(); btn.click(); } });
+  inp.addEventListener("input", () => { if (!done) inp.classList.remove("bad"); });
+  setTimeout(() => inp.focus({ preventScroll: true }), 50);
+});
+function ibFinish() {
+  const res = ibApply(), nw = res.filter(r => r.isNew), more = ibNewOk();
+  const list = res.map(r => `<li><b lang="en">${esc(r.e.en)}</b><span>${esc(r.e.uz)}${r.missed ? " · ertaga qaytadi" : " · " + ibWhen(r.due)}</span></li>`).join("");
+  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">${nw.length ? "Ibora o'rganildi" : "Iboralar takrorlandi"}</p>
+    ${nw.length === 1 && res.length === 1 ? `<p class="ib-big" lang="en">${esc(nw[0].e.en)}</p><ul class="fl-list ib-forms"><li><b lang="en">${esc(nw[0].e.en)}</b><span>${esc(nw[0].e.uz)}</span></li><li><b lang="en">${esc(nw[0].e.v[0])}</b><span>${esc(nw[0].e.v[1])}</span></li><li><b lang="en">${esc(nw[0].e.t[0])}</b><span>${esc(nw[0].e.t[1])}</span></li></ul>
+      <p class="xm-note">${nw[0].missed ? "Xato bo'lgani uchun ertaga yana chiqadi." : "Ertaga qaytadi, keyin 3 kundan, bir haftadan keyin."}</p>` : `<ul class="fl-list">${list}</ul>`}</div>
+    <div class="card">${more ? `<button class="btn" id="ibmore">Yana bitta ibora</button><div style="height:10px"></div>` : ""}<a class="btn${more ? " ghost" : ""}" href="#iboralar">Iboralar</a><div style="height:10px"></div><button class="btn ghost" id="ibhome">Bosh sahifa</button></div></div>`;
+  IB = null;
+  const m = $("#ibmore"); if (m) m.onclick = () => startIb("new");
+  $("#ibhome").onclick = () => go("");
+}
+/* bosh sahifa kartasi: takror bo'lsa — takror, bo'lmasa bugungi yangi ibora, bajarilgan bo'lsa — bugungisi + «Yana bitta» */
+function ibCard() {
+  const due = ibDue(), nt = ibNewToday(), nx = ibNext(), seen = IBS.filter(ibRec).length;
+  const head = `<div class="xm-h"><b>${ICON.ibc}Kunlik ibora</b><a href="#iboralar">Barchasi${ICON.chev}</a></div>`;
+  let body, btn;
+  if (due.length) { const e = due[0]; body = `<p class="ib-uz">«${esc(e.uz)}»</p><p class="ib-bl" lang="en">${esc(ibHint(e.en))}</p><p class="hk-u">Takrorlash · ${due.length} ta ibora</p>`; btn = `<button class="mchip" id="ibgo2">Takrorlash · ${Math.max(1, Math.round(due.length * .5))} daq</button>`; }
+  else if (!nt && nx) { body = `<p class="ib-uz">«${esc(nx.uz)}»</p><p class="ib-bl" lang="en">${esc(ibHint(nx.en))}</p><p class="hk-u">${esc(IB_T[nx.k].t)} · ${seen + 1} / ${IBS.length}</p>`; btn = `<button class="mchip" id="ibgo2">Yozib o'rganish · 2 daq</button>`; }
+  else { const last = IBS.filter(e => { const r = ibRec(e); return r && isToday(r.lt); }).pop() || IBS.filter(ibRec).pop();
+    body = last ? `<p class="ib-uz" lang="en">${esc(last.en)}</p><p class="hk-u">«${esc(last.uz)}» · bugun o'rganildi · ${seen} / ${IBS.length}</p>` : `<p class="hk-u">Hamma ${IBS.length} ta ibora o'rganildi.</p>`;
+    btn = ibNewOk() ? `<button class="mchip" id="ibmore2">Yana bitta ibora</button>` : ""; }
+  return `<section class="xm ibc">${head}${body}${btn}</section>`;
+}
+route(/^iboralar$/, () => {
+  const nx = ibNext(), due = ibDue();
+  app.innerHTML = `${nav("#", "Bugun", "Iboralar")}<h2 class="pg-h">Iboralar</h2><p class="sub">Jonli so'zlashuv iboralari · ${IBS.length} ta · har biri 3 qadamda yozib o'rganiladi: iboraning o'zi, boshqacha aytish va teskari ma'no.</p>
+  <div class="stack">${due.length ? `<button class="btn" id="ibdue">Takrorlash · ${due.length} ta ibora</button>` : ""}
+  ${nx ? `<div class="card"><p class="label">Keyingi ibora</p><p class="ib-uz">«${esc(nx.uz)}»</p><p class="ib-bl" lang="en">${esc(ibHint(nx.en))}</p><div style="height:12px"></div><button class="btn${due.length ? " ghost" : ""}" id="ibnew">${ibRec(nx) ? "Davom etish" : "Yozib o'rganish"} · 2 daq</button></div>` : ""}
+  <section class="sec"><div class="sec-h"><h2>Mavzular</h2><span class="n">${IB_T.length} ta</span></div><div class="list">${IB_T.map((t, k) => { const d = t.i.filter(ibRec).length;
+    return `<a class="li" href="#ibora-${k + 1}"><span class="lic">${k + 1}</span><span class="tx"><b>${esc(t.t)}</b><span lang="en">${t.i.slice(0, 2).map(e => esc(e.en)).join(" · ")} …</span></span><span class="st${d === t.i.length ? " full" : ""}">${d === t.i.length ? ICON.check : ""}${d} / ${t.i.length}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section></div>`;
+  navBig();
+  const a = $("#ibdue"); if (a) a.onclick = () => startIb("due");
+  const b = $("#ibnew"); if (b) b.onclick = () => startIb("new");
+});
+route(/^ibora-(\d+)$/, k => {
+  const t = IB_T[+k - 1]; if (!t) return go("iboralar");
+  app.innerHTML = `${nav("#iboralar", "Iboralar", esc(t.t))}<h2 class="pg-h">${esc(t.t)}</h2><p class="sub">${t.i.length} ta ibora. Bosing — o'rganilmagan bo'lsa 3 qadamda o'rganasiz, o'rganilgan bo'lsa takrorlaysiz.</p>
+  <div class="stack"><div class="list">${t.i.map((e, j) => { const r = ibRec(e), dd = r && r.due && r.due <= today();
+    return `<button class="li" data-j="${j}"><span class="lic">${j + 1}</span><span class="tx"><b lang="en">${esc(e.en)}</b><span>${esc(e.uz)}</span></span><span class="st${r && !dd ? " full" : ""}">${!r ? "yangi" : dd ? "takror" : ICON.check + ibWhen(r.due)}</span><span class="go">${ICON.chev}</span></button>`; }).join("")}</div></div>`;
+  navBig();
+  app.querySelectorAll(".li[data-j]").forEach(b => b.onclick = () => startIb("", t.i[+b.dataset.j]));
 });
 /* ---------- HIKOYA: unit so'zlari bilan qisqa matn ---------- */
 function storyLine(en, vocab) {
@@ -6810,7 +6947,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

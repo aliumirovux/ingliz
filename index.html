@@ -1406,8 +1406,8 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .fl-gap{display:inline-block;min-width:72px;border-bottom:2px solid var(--marker);margin:0 3px;vertical-align:baseline}
 .fl-step{margin:18px 0 0;text-align:center;font-size:14px;color:var(--muted)}
 .fl-field{position:relative}
-.fl-ghost{position:absolute;left:18px;top:50%;margin-top:12px;transform:translateY(-50%);font-size:22px;color:var(--line-strong);pointer-events:none;white-space:pre}
-.fl-ghost[hidden]{display:none}
+.fl-ghost{position:absolute;left:16px;top:14px;font-size:22px;line-height:33px;color:var(--line-strong);pointer-events:none;white-space:pre} /* yozilgan matn bilan aynan ustma-ust: textarea padding 14/16, line-height 33 */
+.fl-ghost[hidden]{display:none}.fl-ghost .gh-t{visibility:hidden}
 .qcard textarea.spell.fl-tr{background:transparent}
 .qcard textarea.spell.fl-area{white-space:pre-wrap;min-height:104px;font-size:18px;line-height:1.45}
 .qcard textarea.spell.ok{border-color:var(--ok-strong);background:var(--ok-bg);color:var(--ok)}
@@ -3451,7 +3451,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611042355";
+const APP_V = "202611050005";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4970,13 +4970,16 @@ route(/^fellarmashq$/, () => {
   };
   if (x.k === "listen") { const p = () => say(sayW); $("#flplay").onclick = p; setTimeout(p, 300); }
   if (x.k === "copy") {
-    let k = 0; const ghost = $("#flghost"), dots = app.querySelectorAll(".fl-dots i"), st = $("#flstep");
+    let k = 0; const ghost = $("#flghost"), dots = app.querySelectorAll(".fl-dots i"), st = $("#flstep"), gw = ghost.textContent;
+    /* yozilgan harflar ostidagi xira harflar yashiriladi — ikki qatlam bir-birining ustiga tushmasin */
+    const ghUp = () => { const n = Math.min(inp.value.length, gw.length); ghost.innerHTML = `<span class="gh-t">${esc(gw.slice(0, n))}</span>${esc(gw.slice(n))}`; };
+    inp.addEventListener("input", ghUp);
     btn.onclick = () => {
       if (done) return nextQ();
       const val = norm(inp.value); if (!val) return inp.focus();
       FL.typed++; logAns(want.includes(val), true);
-      if (!want.includes(val)) { buzz(false); show("bad", `Harflarni tekshiring:<span class="fl-df" lang="en"><s>${esc(val)}</s> → ${felDiff(val, sayW)}</span>`); inp.value = ""; inp.focus(); return; }
-      dots[k].classList.add("on"); k++; inp.value = "";
+      if (!want.includes(val)) { buzz(false); show("bad", `Harflarni tekshiring:<span class="fl-df" lang="en"><s>${esc(val)}</s> → ${felDiff(val, sayW)}</span>`); inp.value = ""; ghUp(); inp.focus(); return; }
+      dots[k].classList.add("on"); k++; inp.value = ""; ghUp();
       if (k === 1) { ghost.hidden = true; inp.classList.remove("fl-tr"); inp.placeholder = "Endi xotiradan…"; st.textContent = "Endi xotiradan yozing (2/2)"; show("ok", "To'g'ri! Endi harflar yashirin."); buzz(true); inp.focus(); return; }
       inp.value = sayW; FL.first++; finish(`<b>Ikki marta yozdingiz.</b> Darsning oxirida yana so'raladi. <span class="fl-ex" lang="en">${esc(v.e)}<small>${esc(v.t)}</small></span>`);
     };

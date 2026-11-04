@@ -406,6 +406,8 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .wg[open] summary::after{transform:rotate(-135deg)}
 .wg .sy-ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text)}.wg .sy-ic svg{width:22px;height:22px}
 .wg-steps{margin:16px 0 14px;padding-left:22px;color:var(--ink);line-height:1.5}.wg-steps li{margin:6px 0}.wg-steps a{color:var(--accent-text)}
+.wg-os{display:flex;gap:4px;padding:4px;margin:16px 0 0;border-radius:12px;background:var(--surface-2)}.wg-os button{flex:1;min-height:40px;border:0;border-radius:9px;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}.wg-os button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.wg .wg-dl{display:inline-flex;align-items:center;min-height:44px;padding:0 2px}.wg .wg-go{display:flex;align-items:center;justify-content:center;text-decoration:none}.wg .wg-go[aria-disabled="true"]{opacity:.55;pointer-events:none}
 .wg textarea{margin-top:10px;font:12px/1.4 ui-monospace,Menlo,monospace}.wg .sy-row{margin-top:10px}
 .sy form{display:grid;gap:10px;margin:0}.sy input.search{min-height:52px}
 .sy input.code{font-size:24px;letter-spacing:.32em;text-align:center;font-variant-numeric:tabular-nums}
@@ -5345,48 +5347,76 @@ function bindSync() {
 }
 
 /* ---------- SOZLAMA: export / import ---------- */
-/* ---------- TELEFON WIDGETI: iPhone uy ekranida bugungi takror soni (Scriptable orqali) ----------
-   Ilova shaxsiy kalit oladi (widget_keys), skriptga qo'yib nusxalaydi. Widget faqat raqamlarni oladi (Edge Function «widget»). */
+/* ---------- TELEFON WIDGETI: uy ekranida bugungi takror soni va seriya ----------
+   Android — kichik ilova (ingliz-takror.apk), iPhone — Scriptable skripti. Ikkalasi ham shaxsiy kalit bilan (widget_keys)
+   faqat raqamlarni oladi (Edge Function «widget»). */
 const ICON_WG = sv('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/>');
-const WG = { text: "", busy: false };
-function widgetCard() {
-  if (!AUTH || cloud.kind === "claude") return "";
-  return `<details class="card sy wg" id="wgc"><summary><span class="sy-ic">${ICON_WG}</span><span><b>Telefon widgeti</b><span>iPhone uy ekranida bugungi takror soni va seriya</span></span></summary>
-    <ol class="wg-steps">
+const WG = { key: "", text: "", busy: false, os: /iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? "ios" : "android" };
+function wgSteps() {
+  if (WG.os === "android") return `<ol class="wg-steps">
+      <li><a class="tlink wg-dl" href="ingliz-takror.apk" download>Ilovani yuklab olish</a> <span class="muted">(40 KB)</span></li>
+      <li>Yuklangan faylni oching va <b>O'rnatish</b> ni bosing. Telefon «noma'lum manba» deb so'rasa, Chrome'ga ruxsat bering.</li>
+      <li>Pastdagi <b>Ilovaga ulash</b> tugmasini bosing: kalit ilovaga o'zi o'tadi.</li>
+      <li>Ilovada <b>Widgetni uy ekraniga qo'shish</b> ni bosing.</li>
+    </ol>
+    <a class="btn wg-go" id="wglink" aria-disabled="true">Tayyorlanmoqda…</a>`;
+  return `<ol class="wg-steps">
       <li>App Store'dan bepul <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a> ilovasini o'rnating.</li>
       <li>Pastdagi <b>Skriptni nusxalash</b> tugmasini bosing.</li>
       <li>Scriptable'da <b>+</b> ni bosing, nusxani qo'ying va nomini <b>Ingliz takror</b> qiling.</li>
       <li>Uy ekranini bosib turing → <b>+</b> → <b>Scriptable</b> → o'rta widget. Keyin widgetni bosib turing → <b>Widgetni tahrirlash</b> → Script: <b>Ingliz takror</b>.</li>
     </ol>
     <button class="btn" id="wgcp" disabled>Tayyorlanmoqda…</button>
+    <textarea id="wgtx" class="hidden" rows="5" readonly aria-label="Widget skripti"></textarea>`;
+}
+function widgetCard() {
+  if (!AUTH || cloud.kind === "claude") return "";
+  return `<details class="card sy wg" id="wgc"><summary><span class="sy-ic">${ICON_WG}</span><span><b>Telefon widgeti</b><span>Uy ekranida bugungi takror soni va seriya</span></span></summary>
+    <div class="seg wg-os" role="tablist" aria-label="Telefon turi"><button role="tab" data-os="android" aria-selected="${WG.os === "android"}">Android</button><button role="tab" data-os="ios" aria-selected="${WG.os === "ios"}">iPhone</button></div>
+    <div id="wgbody">${wgSteps()}</div>
     <p class="sy-err" id="wgmsg" role="status"></p>
-    <textarea id="wgtx" class="hidden" rows="5" readonly aria-label="Widget skripti"></textarea>
     <div class="sy-row"><button class="tlink" id="wgnew">Kalitni yangilash</button><span class="muted" style="font-size:13px">Eski widget ishlamay qoladi</span></div>
   </details>`;
 }
-async function wgPrep(renew) {
+async function wgKey(renew) {
   const tok = await sbToken();
   if (renew) await sbFetch("/rest/v1/widget_keys?user_id=eq." + AUTH.uid, { method: "DELETE" }, tok);
   let r = await sbFetch("/rest/v1/widget_keys?select=key", {}, tok);
   if (!r || !r[0]) r = await sbFetch("/rest/v1/widget_keys?select=key", { method: "POST", headers: { Prefer: "return=representation" }, body: "{}" }, tok);
   const key = r && r[0] && r[0].key; if (!key) throw new Error("key");
+  return key;
+}
+async function wgScript(key) {
   const s = await fetch("widget-scriptable.js", { cache: "no-store" }); if (!s.ok) throw new Error("script");
   return (await s.text()).replace("__KEY__", key);
 }
 function bindWidget() {
   const box = $("#wgc"); if (!box) return;
-  const btn = $("#wgcp"), msg = $("#wgmsg"), tx = $("#wgtx");
-  const ready = t => { WG.text = t; tx.value = t; btn.disabled = false; btn.textContent = "Skriptni nusxalash"; };
-  const fail = () => { btn.disabled = true; btn.textContent = "Skriptni nusxalash"; msg.textContent = "Tayyorlab bo'lmadi. Internetni tekshirib, qayta oching."; };
-  const prep = renew => { if (WG.busy) return; WG.busy = true; msg.textContent = ""; btn.disabled = true; btn.textContent = "Tayyorlanmoqda…";
-    wgPrep(renew).then(t => { ready(t); if (renew) msg.textContent = "Yangi kalit tayyor. Skriptni qayta nusxalab, Scriptable'dagisining o'rniga qo'ying."; }).catch(fail).finally(() => { WG.busy = false; }); };
-  box.addEventListener("toggle", () => { if (box.open && !WG.text) prep(false); else if (WG.text) ready(WG.text); });
-  // nusxa: matn oldindan tayyor — bosish bilan darrov (iPhone Safari kechikkan nusxani taqiqlaydi)
-  btn.onclick = () => {
-    const done = () => { msg.textContent = "Nusxalandi ✓ Endi Scriptable'ni oching (3-qadam)."; };
-    const manual = () => { tx.classList.remove("hidden"); tx.focus(); tx.select(); msg.textContent = "Avtomatik nusxalab bo'lmadi: matnni belgilab, «Nusxalash» ni bosing."; };
-    try { navigator.clipboard.writeText(WG.text).then(done, manual); } catch (e) { manual(); }
+  const msg = $("#wgmsg");
+  // tayyor kalitni joriy tabdagi tugmaga qo'yadi (iPhone uchun skript ham oldindan tayyorlanadi: Safari kechikkan nusxani taqiqlaydi)
+  const fill = async () => {
+    if (WG.os === "android") { const a = $("#wglink"); if (!a || !WG.key) return; a.href = "ingliztakror://k/" + WG.key; a.removeAttribute("aria-disabled"); a.textContent = "Ilovaga ulash"; return; }
+    const btn = $("#wgcp"), tx = $("#wgtx"); if (!btn || !WG.key) return;
+    if (!WG.text) WG.text = await wgScript(WG.key);
+    tx.value = WG.text; btn.disabled = false; btn.textContent = "Skriptni nusxalash";
+    btn.onclick = () => {
+      const done = () => { msg.textContent = "Nusxalandi ✓ Endi Scriptable'ni oching (3-qadam)."; };
+      const manual = () => { tx.classList.remove("hidden"); tx.focus(); tx.select(); msg.textContent = "Avtomatik nusxalab bo'lmadi: matnni belgilab, «Nusxalash» ni bosing."; };
+      try { navigator.clipboard.writeText(WG.text).then(done, manual); } catch (e) { manual(); }
+    };
   };
+  const prep = renew => { if (WG.busy) return; WG.busy = true; msg.textContent = "";
+    if (renew) { WG.key = ""; WG.text = ""; $("#wgbody").innerHTML = wgSteps(); }
+    wgKey(renew).then(k => { WG.key = k; return fill(); })
+      .then(() => { if (renew) msg.textContent = WG.os === "android" ? "Yangi kalit tayyor. «Ilovaga ulash» ni qayta bosing." : "Yangi kalit tayyor. Skriptni qayta nusxalab, Scriptable'dagisining o'rniga qo'ying."; })
+      .catch(() => { msg.textContent = "Tayyorlab bo'lmadi. Internetni tekshirib, qayta oching."; })
+      .finally(() => { WG.busy = false; }); };
+  box.addEventListener("toggle", () => { if (!box.open) return; if (!WG.key) prep(false); else fill().catch(() => {}); });
+  box.querySelectorAll(".wg-os [data-os]").forEach(b => b.onclick = () => {
+    WG.os = b.dataset.os; msg.textContent = "";
+    box.querySelectorAll(".wg-os [data-os]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    $("#wgbody").innerHTML = wgSteps(); if (WG.key) fill().catch(() => {});
+  });
   // eski widget ishlamay qoladi — ikkinchi bosish bilan tasdiqlanadi
   const nb = $("#wgnew"); let armed = 0;
   nb.onclick = () => { if (Date.now() - armed < 4000) { armed = 0; nb.textContent = "Kalitni yangilash"; prep(true); return; }

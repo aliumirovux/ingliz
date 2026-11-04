@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@drawable/w_bg" android:paddingStart="15dp" android:paddingEnd="15dp" android:paddingTop="14dp" android:paddingBottom="14dp" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:layout_width="15dp" android:layout_height="15dp" android:background="@drawable/badge" android:gravity="center" android:text="I" android:textSize="9sp" android:textStyle="bold" android:textColor="@color/on_acc"/>
+            <TextView android:id="@+id/head" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:text="Takror" android:textSize="11sp" android:textStyle="bold" android:textColor="@color/w_mut" android:maxLines="1"/>
+            <LinearLayout android:id="@+id/streakRow" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <ImageView android:layout_width="12dp" android:layout_height="12dp" android:src="@drawable/ic_fire" android:importantForAccessibility="no"/>
+                <TextView android:id="@+id/streak" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/acc"/>
+            </LinearLayout>
+        </LinearLayout>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"/>
+        <TextView android:id="@+id/big" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="40sp" android:textStyle="bold" android:textColor="@color/w_ink" android:includeFontPadding="false" android:maxLines="1"/>
+        <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/w_ink" android:maxLines="2"/>
+        <TextView android:id="@+id/sub" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="12sp" android:textColor="@color/w_mut" android:maxLines="2"/>
+</LinearLayout>

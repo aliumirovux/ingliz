@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="w_bg">#1C1C20</color><color name="w_ink">#F2F2EE</color><color name="w_mut">#9C9DA4</color>
+    <color name="acc">#E27A4E</color><color name="on_acc">#1C1A16</color><color name="track">#3A3A42</color>
+    <color name="bg">#111113</color><color name="card">#1A1A1E</color><color name="line">#2A2B30</color><color name="ok">#8BCB86</color>
+</resources>

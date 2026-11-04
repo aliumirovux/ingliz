@@ -84,14 +84,19 @@ public class TakrorWidget extends AppWidgetProvider {
         int[] ids = m.getAppWidgetIds(new ComponentName(c, TakrorWidget.class));
         for (int id : ids) {
             RemoteViews v;
+            // o'lchamga qarab uch xil joylashuv: kichik (2×2), keng (4×2), baland/katta (2×3, 4×3, 4×4…)
             if (Build.VERSION.SDK_INT >= 31) {
                 Map<SizeF, RemoteViews> map = new HashMap<>();
-                map.put(new SizeF(110f, 100f), build(c, d, R.layout.widget_small, true));
-                map.put(new SizeF(250f, 100f), build(c, d, R.layout.widget, false));
+                RemoteViews large = build(c, d, R.layout.widget_large);
+                map.put(new SizeF(110f, 100f), build(c, d, R.layout.widget_small));
+                map.put(new SizeF(230f, 100f), build(c, d, R.layout.widget));
+                map.put(new SizeF(110f, 200f), large);
+                map.put(new SizeF(230f, 200f), large);
                 v = new RemoteViews(map);
             } else {
-                int w = m.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 250);
-                v = w >= 230 ? build(c, d, R.layout.widget, false) : build(c, d, R.layout.widget_small, true);
+                Bundle o = m.getAppWidgetOptions(id);
+                int w = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 250), h = o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 110);
+                v = build(c, d, h >= 200 ? R.layout.widget_large : w >= 230 ? R.layout.widget : R.layout.widget_small);
             }
             m.updateAppWidget(id, v);
         }
@@ -116,12 +121,14 @@ public class TakrorWidget extends AppWidgetProvider {
         return b;
     }
 
-    static RemoteViews build(Context c, JSONObject d, int layout, boolean small) {
+    static RemoteViews build(Context c, JSONObject d, int layout) {
+        boolean small = layout == R.layout.widget_small;
+        int gdp = small ? 112 : layout == R.layout.widget_large ? 220 : 140;
         RemoteViews v = new RemoteViews(c.getPackageName(), layout);
         String error = d.optString("error", "");
         Intent tap = error.isEmpty() ? new Intent(Intent.ACTION_VIEW, Uri.parse(APP)) : new Intent(c, MainActivity.class);
         tap.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        PendingIntent pi = PendingIntent.getActivity(c, small ? 1 : 2, tap, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pi = PendingIntent.getActivity(c, layout, tap, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         v.setOnClickPendingIntent(R.id.root, pi);
         if (!small) v.setOnClickPendingIntent(R.id.btn, pi);
 
@@ -135,7 +142,7 @@ public class TakrorWidget extends AppWidgetProvider {
         if (!error.isEmpty()) {
             v.setTextViewText(R.id.title, "Ingliz tili");
             v.setViewVisibility(R.id.chip, View.GONE);
-            v.setImageViewBitmap(R.id.gauge, gauge(c, 0, DUE, small ? 112 : 140));
+            v.setImageViewBitmap(R.id.gauge, gauge(c, 0, DUE, gdp));
             v.setTextViewText(R.id.num, "!");
             v.setTextViewText(R.id.numcap, error.equals("net") ? "internet yo'q" : "ulanmagan");
             if (!small) {
@@ -147,7 +154,7 @@ public class TakrorWidget extends AppWidgetProvider {
         }
 
         float frac = due == 0 ? 1f : rev / (float) (rev + due);
-        v.setImageViewBitmap(R.id.gauge, gauge(c, frac, st, small ? 112 : 140));
+        v.setImageViewBitmap(R.id.gauge, gauge(c, frac, st, gdp));
         if (streak > 0) { v.setViewVisibility(R.id.chip, View.VISIBLE); v.setTextViewText(R.id.streak, String.valueOf(streak)); }
         else v.setViewVisibility(R.id.chip, View.GONE);
 

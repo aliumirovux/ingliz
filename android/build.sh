@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Android widget ilovasini yig'ish (Gradle'siz): aapt2 → javac -nowarn -Xlint:-options -source 8 -target 8 -bootclasspath $JAR -classpath $JAR:$BT/core-lambda-stubs.jar -d build/classes $(find build/gen src -name '*.java')
 # Kerak: ANDROID_SDK (platforms;android-35, build-tools;35.0.0), KS (keystore yo'li), KS_PASS.
+# Imzo kaliti repoda yo'q: Ali'da «ingliz-takror-imzo-kaliti.zip» (ichida .jks va parol yozilgan OQING.txt).
+# Yangilanish uchun shu kalit bilan imzolash shart — boshqa kalit bilan telefon yangilanishni qabul qilmaydi.
+# Har yangi versiyada VERSION_CODE ni oshiring (masalan, VERSION_CODE=2 VERSION_NAME=1.1).
 set -euo pipefail
 cd "$(dirname "$0")"
 SDK=${ANDROID_SDK:-/home/claude/android-sdk}; BT=$SDK/build-tools/35.0.0; JAR=$SDK/platforms/android-35/android.jar

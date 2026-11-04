@@ -629,6 +629,44 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm-empty b{color:var(--ink);font-weight:600}
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
+
+/* LANDING (kirmagan, birinchi marta) — saytning o'z tokenlari: yorug'/qorong'i avtomatik */
+body.lp-on .wrap{max-width:1120px}
+.lp{padding:0 4px 8px}
+.lp-top{display:flex;align-items:center;justify-content:space-between;min-height:56px;margin:-8px 0 8px}
+.lp-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}.lp-logo img{border-radius:9px}
+.lp-in{border:0;background:none;font:600 16px var(--font-body);color:var(--accent-text);min-height:44px;padding:0 6px;cursor:pointer}
+.lp-in:focus-visible{outline:2px solid var(--marker);outline-offset:2px;border-radius:8px}
+.lp h1{font:700 40px/1.08 var(--font-display);letter-spacing:-.03em;margin:8px 0 14px;text-wrap:balance}
+.lp h1 em{font-style:normal;color:var(--marker)}
+.lp h2{font:700 26px/1.15 var(--font-display);letter-spacing:-.02em;margin:0 0 10px;text-wrap:balance}
+.lp p{color:var(--muted);font-size:17px;line-height:1.55;margin:0 0 20px}
+.lp-ctas{display:flex;flex-direction:column;gap:10px}
+.lp .lp-hint{font-size:13px;line-height:1.45;margin:12px 0 0}
+.lp-hero{display:flex;flex-direction:column;gap:32px;padding:8px 0}
+.lp-hv{display:flex;justify-content:center}
+.lp-ph{width:220px;border-radius:30px;padding:7px;background:#17171B;box-shadow:0 30px 60px -28px rgba(23,23,27,.5)}
+.lp-ph img{display:block;width:100%;height:auto;border-radius:24px}
+.lp-ph.tilt{width:240px;transform:rotate(-3deg)}
+.lp-lv{display:flex;flex-wrap:wrap;gap:8px;margin:32px 0 8px}
+.lp-lv span{font-size:14px;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line)}
+.lp-lv .soon{background:none;box-shadow:none;color:var(--muted)}
+.lp-f{display:flex;flex-direction:column;align-items:center;gap:20px;padding:32px 0;border-top:1px solid var(--line)}
+.lp-f:first-of-type{border-top:0}
+.lp-fx{max-width:460px;width:100%}.lp-fx p{margin:0}
+.lp-card{background:var(--surface);border-radius:28px;padding:24px;margin:16px 0 0;box-shadow:var(--shadow)}
+.lp-card p{margin:0}
+.lp-end{text-align:center}.lp-end .btn{max-width:360px;margin:0 auto}
+.lp-foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:24px 0 0;font-size:13px;color:var(--muted)}.lp-foot a{color:inherit;min-height:44px;display:inline-flex;align-items:center}
+@media (min-width:900px){
+  .lp h1{font-size:60px}.lp p{font-size:18px}
+  .lp-hero{flex-direction:row;align-items:center;justify-content:space-between;padding:40px 0}
+  .lp-hx{max-width:540px}.lp-ph.tilt{width:290px}
+  .lp-ctas{flex-direction:row}.lp-ctas .btn{width:auto;min-width:220px;flex:none}
+  .lp-f{flex-direction:row;justify-content:center;gap:80px}.lp-f.r{flex-direction:row-reverse}.lp-f .lp-ph{width:250px}
+  .lp-card{padding:40px}
+}
+@media (prefers-reduced-motion:no-preference){.lp-ph.tilt{transition:transform .5s cubic-bezier(.2,.8,.2,1)}.lp-ph.tilt:hover{transform:rotate(0)}}
 /* O'qish: kitobdek matn — gapni bossangiz tarjima ostida ochiladi */
 .hkc .xm-h b{display:inline-flex;align-items:center;gap:6px}.hkc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
 .hk-t{font:700 20px/1.25 var(--font-display);letter-spacing:-.01em;margin:2px 0 2px}
@@ -3153,7 +3191,7 @@ function go(h) { if (location.hash.slice(1) === String(h).replace(/^#/, "")) ren
 const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
   stopVoice(); ovozSync();
-  app.classList.remove("home"); document.body.classList.remove("welcome"); SYW = false;
+  app.classList.remove("home"); document.body.classList.remove("welcome", "lp-on"); SYW = false;
   const h = location.hash.replace(/^#/, ""), same = h === curH, quizy = /^(quiz|gapmashq|tuzmashq)/.test(h);
   if (curH !== null) SCROLLS[curH] = scrollY;
   let back = false;
@@ -3451,7 +3489,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611050005";
+const APP_V = "202611050010";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7012,16 +7050,31 @@ function loadingPage() {
   document.body.classList.add("welcome");
   app.innerHTML = `<div class="wel"><div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p role="status">Progress yuklanmoqda…</p></div><div class="wel-spin" aria-hidden="true"></div></div>`;
 }
+/* ---------- LANDING: birinchi marta kirgan, hisobi yo'q odam uchun ----------
+   Tuzilma (Duolingo kabi): hero + 2 tugma → darajalar → 4 afzallik (haqiqiy ekranlar) → o'rnatish → yakuniy chaqiriq.
+   Faqat haqiqiy raqamlar va saytning o'z ekranlari; soxta foydalanuvchi soni yoki sharh yo'q. */
+const lpPic = (n, cls, eager) => `<div class="lp-ph${cls ? " " + cls : ""}"><picture><source media="(prefers-color-scheme: dark)" srcset="img/lp-${n}-dark.jpg"><img src="img/lp-${n}-light.jpg" alt="" width="290" height="628"${eager ? "" : ' loading="lazy"'} decoding="async"></picture></div>`;
 function welcomePage() {
-  SYW = true; document.body.classList.add("welcome");
-  app.innerHTML = `<div class="wel">
-    <div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p>Navigate Beginner bo'yicha kunlik mashq</p></div>
-    <div class="card sy" id="sycard">${syncCardInner()}</div>
-    <div class="wel-guest"><button class="btn ghost" id="guest">Mehmon sifatida davom etish</button>
-    <p class="gohint">Natijalar faqat shu qurilmada saqlanadi. Keyin kirsangiz, yo'qolmaydi — hisobingizga qo'shiladi.</p>
-    <p class="gohint"><a href="privacy.html" style="color:inherit">Maxfiylik siyosati</a></p></div></div>`;
-  bindSync();
-  $("#guest").onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; render(); };
+  SYW = true; document.body.classList.add("welcome", "lp-on");
+  const feats = [
+    ["fel", "Yozasiz, tanlamaysiz", "Har bir so'zni klaviaturada yozasiz. Xato qilsangiz, qaysi harf noto'g'ri ekanini ko'rasiz va to'g'risini qayta yozasiz — shunda qo'l ham, ko'z ham eslab qoladi."],
+    ["xotira", "Unutishdan oldin qaytaradi", `So'z esdan chiqay deganda yana chiqadi: ertaga, 3 kundan keyin, bir haftadan keyin, bir oydan keyin. Kitobdagi ${WORDS.length} so'zning qanchasi mustahkam — har kuni ko'rinib turadi.`],
+    ["read", "Kitobdek o'qing", `${BOOKS.length} ta hikoya — uzun, qiziqarli, o'zimizning hayotdan. Tushunmagan gapingizni bossangiz, ostida o'zbekcha tarjimasi chiqadi.`],
+    ["home", "Kuniga 15–25 daqiqa", "Bugungi dars o'zi tuziladi: yangi so'zlar, noto'g'ri fe'llar, qoida, gap tuzish va tinglash. Siz faqat «Boshlash»ni bosasiz."]];
+  const ctas = `<div class="lp-ctas"><button class="btn" data-go>Boshlash — bepul</button><button class="btn ghost" data-in>Menda hisob bor</button></div>`;
+  app.innerHTML = `<div class="lp">
+    <header class="lp-top"><span class="lp-logo"><img src="icons/icon-192.png" alt="" width="32" height="32">Ingliz tili</span><button class="lp-in" data-in>Kirish</button></header>
+    <section class="lp-hero"><div class="lp-hx"><h1>Ingliz tilini <em>yozib</em> o'rganing</h1>
+      <p class="lp-lead">Navigate (Oxford) kitobi bo'yicha kunlik mashq — so'zlar, fe'llar, grammatika va hikoyalar. O'zbek tilida, bepul, reklamasiz.</p>${ctas}
+      <p class="lp-hint">Hisobsiz ham boshlaysiz — natijalar shu qurilmada saqlanadi. Keyin kirsangiz, hisobingizga qo'shiladi.</p></div>
+      <div class="lp-hv">${lpPic("home", "tilt", true)}</div></section>
+    <div class="lp-lv" aria-label="Darajalar"><span>Noldan · alifbo</span><span>Beginner · A1</span><span>Pre-intermediate · B1</span><span class="soon">Elementary · tez orada</span></div>
+    ${feats.map(([n, t, d], i) => `<section class="lp-f${i % 2 ? " r" : ""}"><div class="lp-fv">${lpPic(n)}</div><div class="lp-fx"><h2>${t}</h2><p>${d}</p></div></section>`).join("")}
+    <section class="lp-card"><h2>Telefonga ilova kabi o'rnating</h2><p>iPhone: Safari'da oching → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Internet bo'lmasa ham ishlaydi; hisobga kirsangiz, telefon va kompyuterda bir xil progress.</p></section>
+    <section class="lp-card lp-end"><h2>Bugun birinchi 5 ta so'zni o'rganing</h2><button class="btn" data-go>Boshlash — bepul</button></section>
+    <footer class="lp-foot"><a href="privacy.html">Maxfiylik siyosati</a><span>Bepul · reklamasiz</span></footer></div>`;
+  app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; scrollTo(0, 0); render(); });
+  app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => signSheet());
 }
 function syRedraw(focus) {
   const c = $("#sycard"); if (!c) return;

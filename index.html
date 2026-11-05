@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Ingliz tili Beginner</title>
+<title>Ingliz tili</title>
 <script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
 (function () {
   if (!/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) return;
@@ -75,6 +75,7 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .sub{color:var(--muted);font-size:15px;margin:0 0 16px;max-width:60ch}
 .muted{color:var(--muted);font-size:15px}
 .label,.eyebrow{font-size:13px;font-weight:500;color:var(--muted);margin:0 0 10px}
+.bk-oth{margin:10px 0 -6px}
 .hidden{display:none!important}
 .stack{display:flex;flex-direction:column;gap:12px}
 .stack>*+*{margin-top:0}
@@ -3234,7 +3235,7 @@ function render() {
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
-  navBig(); aiFabSync();
+  navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
   const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -3539,7 +3540,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611060200";
+const APP_V = "202611060300";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4325,21 +4326,27 @@ const BOOKS = [
    ["But when she visits her parents, after a week she says, \"I want to go home.\"", "Lekin ota-onasinikiga borganda, bir haftadan keyin: \"Uyga qaytgim keldi\", deydi."],
    ["And by \"home\", she means Navoi.", "\"Uy\" deganda esa Navoiyni nazarda tutadi."]]] }
 ];
-/* Beginner matnlar oldin (bugungi hikoya tartibi shu) */
-BOOKS.sort((a, b) => (a.lv === "Beginner" ? 0 : 1) - (b.lv === "Beginner" ? 0 : 1));
+/* matnlar darajasi: tanlangan daraja birinchi, keyin pastroqlari (yaqinidan), keyin yuqorilari */
+const BK_LV = ["Beginner", "Elementary", "Pre-intermediate", "Intermediate"];
+const BK_OF = { zero: "Beginner", beginner: "Beginner", elementary: "Elementary", pre: "Pre-intermediate", inter: "Intermediate" };
+const curBk = () => BK_OF[curLevel().id] || "Beginner";
+const bkLvOrder = () => { const c = BK_LV.indexOf(curBk()); return [c, ...BK_LV.map((_, i) => i).filter(i => i < c).reverse(), ...BK_LV.map((_, i) => i).filter(i => i > c)].map(i => BK_LV[i]); };
+const bookList = () => bkLvOrder().flatMap(l => BOOKS.filter(b => b.lv === l));
+const lvBooks = () => BOOKS.filter(b => b.lv === curBk());
 
 const bookRec = b => (S.read || {})[b.id];
 const bookWords = b => b.p.flat().map(x => x[0]).join(" ").split(/\s+/).length;
 const bookMin = b => Math.max(2, Math.round(bookWords(b) / 70));
 const bookPct = b => { const r = bookRec(b); return !r ? 0 : r.done ? 100 : Math.min(99, Math.round((r.p || 0) / b.p.length * 100)); };
 /* bugungi hikoya: boshlangan, tugamagani → aks holda birinchi o'qilmagani */
-const nextBook = () => BOOKS.find(b => { const r = bookRec(b); return r && !r.done && r.p > 0; }) || BOOKS.find(b => !bookRec(b) || !bookRec(b).done);
+const nextBook = () => { const L = bookList(), mine = lvBooks(), open = b => { const r = bookRec(b); return r && !r.done && r.p > 0; }, unread = b => !bookRec(b) || !bookRec(b).done;
+  return mine.find(open) || mine.find(unread) || L.find(open) || L.find(unread); };
 function hikCard() {
-  const b = nextBook(), read = BOOKS.filter(x => bookRec(x) && bookRec(x).done).length;
+  const b = nextBook(), mine = lvBooks(), read = mine.filter(x => bookRec(x) && bookRec(x).done).length;
   const head = `<div class="xm-h"><b>${ICON.read}Bugungi hikoya</b><a href="#hikoyalar">Barchasi${ICON.chev}</a></div>`;
   if (!b) return `<section class="xm hkc">${head}<p class="xm-note">Hamma ${BOOKS.length} ta hikoya o'qildi. Yangilari tez orada qo'shiladi — eskilarini qayta o'qish ham foydali.</p></section>`;
   const pct = bookPct(b), first = b.p.slice(0, 2).map(pp => pp.map(x => x[0]).join(" ")).join(" ");
-  return `<section class="xm hkc">${head}<p class="hk-t" lang="en">${esc(b.t)}</p><p class="hk-u">${esc(b.u)} · ${b.lv} · ${bookMin(b)} daq${read ? ` · ${read} / ${BOOKS.length} o'qildi` : ""}</p>
+  return `<section class="xm hkc">${head}<p class="hk-t" lang="en">${esc(b.t)}</p><p class="hk-u">${esc(b.u)} · ${b.lv} · ${bookMin(b)} daq${read && b.lv === curBk() ? ` · ${read} / ${mine.length} o'qildi` : ""}</p>
     <p class="hk-ex" lang="en">${esc(first)}</p>${pct ? `<span class="hk-bar" role="img" aria-label="${pct}% o'qildi"><i style="width:${pct}%"></i></span>` : ""}
     <div class="flb"><button class="mchip" id="hkgo">${ICON.read}${pct ? "Davom etish · " + pct + "%" : "O'qish"}</button><button class="mchip" id="hkls">${ICON.vol}Tinglash</button></div></section>`;
 }
@@ -4347,11 +4354,13 @@ let BK_PLAY = false;
 route(/^hikoyalar$/, () => {
   const row = b => { const r = bookRec(b), pct = bookPct(b);
     return `<a class="li" href="#oqish-${b.id}"><span class="lic">${ICON.read}</span><span class="tx"><b lang="en">${esc(b.t)}</b><span>${esc(b.u)} · ${bookMin(b)} daq</span></span><span class="st${r && r.done ? " full" : ""}">${r && r.done ? ICON.check + "o'qildi" : pct ? pct + "%" : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; };
-  const lv = l => BOOKS.filter(b => b.lv === l), read = BOOKS.filter(b => bookRec(b) && bookRec(b).done).length;
-  const units = readyUnits().filter(n => STORIES[n]);
-  app.innerHTML = `${nav("#", "Bugun", "Hikoyalar")}<h2 class="pg-h">Hikoyalar</h2><p class="sub">${BOOKS.length} ta matn · ${read} tasi o'qilgan. Gapni bossangiz — o'zbekcha tarjimasi chiqadi.</p>
-  <div class="stack">${["Beginner", "Elementary"].map(l => lv(l).length ? `<section class="sec"><div class="sec-h"><h2>${l}</h2><span class="n">${lv(l).length} ta</span></div><div class="list">${lv(l).map(row).join("")}</div></section>` : "").join("")}
-  ${units.length ? `<section class="sec"><div class="sec-h"><h2>Unit hikoyalari</h2><span class="n">qisqa · 6 gap</span></div><div class="list">${units.map(n => `<a class="li" href="#hikoya-${n}"><span class="lic">${un(n)}</span><span class="tx"><b lang="en">${esc(STORIES[n].t)}</b><span>Unit ${un(n)} · ${esc(STORIES[n].u)}</span></span>${S.story && S.story[n] ? `<span class="st full">${ICON.check}o'qildi</span>` : ""}<span class="go">${ICON.chev}</span></a>`).join("")}</div></section>` : ""}</div>`;
+  const lv = l => BOOKS.filter(b => b.lv === l), cl = curBk(), mine = lv(cl), read = mine.filter(b => bookRec(b) && bookRec(b).done).length;
+  const units = readyUnits().filter(n => STORIES[n]), others = bkLvOrder().slice(1).filter(l => lv(l).length);
+  const sec = l => `<section class="sec"><div class="sec-h"><h2>${l}</h2><span class="n">${lv(l).length} ta</span></div><div class="list">${lv(l).map(row).join("")}</div></section>`;
+  app.innerHTML = `${nav("#", "Bugun", "Hikoyalar")}<h2 class="pg-h">Hikoyalar</h2><p class="sub">${cl} · ${mine.length} ta matn${read ? ` · ${read} tasi o'qilgan` : ""}. Gapni bossangiz — o'zbekcha tarjimasi chiqadi.</p>
+  <div class="stack">${mine.length ? sec(cl) : ""}
+  ${units.length ? `<section class="sec"><div class="sec-h"><h2>Unit hikoyalari</h2><span class="n">qisqa · 6 gap</span></div><div class="list">${units.map(n => `<a class="li" href="#hikoya-${n}"><span class="lic">${un(n)}</span><span class="tx"><b lang="en">${esc(STORIES[n].t)}</b><span>Unit ${un(n)} · ${esc(STORIES[n].u)}</span></span>${S.story && S.story[n] ? `<span class="st full">${ICON.check}o'qildi</span>` : ""}<span class="go">${ICON.chev}</span></a>`).join("")}</div></section>` : ""}
+  ${others.length ? `<p class="label bk-oth">Boshqa darajalar</p>${others.map(sec).join("")}` : ""}</div>`;
 });
 route(/^oqish-([a-z]+)$/, id => {
   const b = BOOKS.find(x => x.id === id); if (!b) return go("hikoyalar");
@@ -4360,7 +4369,7 @@ route(/^oqish-([a-z]+)$/, id => {
   const mark = en => esc(en).replace(/[A-Za-z']+/g, w => seenPast.has(w.toLowerCase()) ? `<em class="irr">${w}</em>` : w);
   let k = 0; const lines = [];
   const body = b.p.map((para, pi) => `<p class="bp" data-p="${pi}">${para.map(([en, uz]) => { const i = k++; lines.push(en); return `<span class="bs" role="button" tabindex="0" aria-expanded="false" data-i="${i}" lang="en">${mark(en)}</span><span class="bu" data-i="${i}"><span>${esc(uz)}</span><button class="bu-say" data-i="${i}" aria-label="Inglizchasini eshitish">${ICON.vol}</button></span> `; }).join("")}</p>`).join("");
-  const nx = BOOKS.find(x => x !== b && (!bookRec(x) || !bookRec(x).done));
+  const nx = bookList().filter(x => x.lv === b.lv).concat(bookList()).find(x => x !== b && (!bookRec(x) || !bookRec(x).done));
   const end = () => { const rr = bookRec(b); return rr && rr.done ? `<p class="muted" style="margin:0 0 12px">O'qilgan ✓</p>${nx ? `<a class="btn" href="#oqish-${nx.id}">Keyingi: ${esc(nx.t)}</a><div style="height:10px"></div>` : ""}<a class="btn ghost" href="#hikoyalar">Hikoyalar</a>` : `<button class="btn" id="bkdone">O'qib bo'ldim ${ICON.check}</button>`; };
   app.innerHTML = `${nav("#hikoyalar", "Hikoyalar", esc(b.t))}<h2 class="pg-h" lang="en">${esc(b.t)}</h2><p class="sub">${esc(b.u)} · ${b.lv} · ${bookMin(b)} daq. Gapni bossangiz — o'zbekcha tarjimasi chiqadi.${seenPast.size ? ` <em class="irr">To'q sariq</em> — siz o'rganayotgan fe'llar.` : ""}</p>
   <div class="stack"><button class="btn ghost" id="bkall">${ICON.vol}<span>Hammasini tinglash</span></button>
@@ -4602,7 +4611,7 @@ const MS = [25, 50, 100, 200, 300, 400, 500, 600, 700];
 function msCard(mast) {
   if (S.ms == null) { S.ms = MS.filter(x => x <= mast).pop() || 0; save(); return ""; }
   const m = MS.filter(x => x <= mast && x > S.ms).pop(); if (!m) return "";
-  return `<section class="ms"><span class="ic">${ICON.check}</span><div class="tx"><b>${m} ta mustahkam so'z!</b><span>Bu so'zlar uzoq muddatli xotiraga o'tdi. Kitobdagi ${WORDS.length} so'zning ${Math.round(m / WORDS.length * 100)}% i.</span></div><button class="x" id="msok" data-m="${m}" aria-label="Yopish">${ICON.x}</button></section>`;
+  return `<section class="ms"><span class="ic">${ICON.check}</span><div class="tx"><b>${m} ta mustahkam so'z!</b><span>Bu so'zlar uzoq muddatli xotiraga o'tdi. Ilovadagi ${WORDS.length} so'zning ${Math.round(m / WORDS.length * 100)}% i.</span></div><button class="x" id="msok" data-m="${m}" aria-label="Yopish">${ICON.x}</button></section>`;
 }
 function weekCard() {
   const wk = weekOf(today()), p = weekStat(1); if (S.wkSum === wk || !p.a) return "";
@@ -4748,12 +4757,12 @@ function mastTile(seen, mast) {
 /* «Mashqlar» to'ri: kutubxona bo'limlari bitta joyda (oldin So'z boyligi va Tinglash alohida qatorlar edi) */
 function mxGrid(zero) {
   const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
-  const bRead = BOOKS.filter(b => bookRec(b) && bookRec(b).done).length, ibSeen = IBS.filter(ibRec).length, fs = felSeen().length, mp = !zero && miniPool().length >= 5;
+  const bRead = (lvBooks().length ? lvBooks() : BOOKS).filter(b => bookRec(b) && bookRec(b).done).length, ibSeen = IBS.filter(ibRec).length, fs = felSeen().length, mp = !zero && miniPool().length >= 5;
   const t = (tag, attr, ic, name, sub, off) => `<${tag} class="mxt${off ? " off" : ""}" ${attr}><span class="mxi">${ic}</span><b>${name}</b><span>${sub}</span></${tag}>`;
   const tiles = [
     zero ? "" : t("a", 'href="#boylik"', ICON.spark, "So'z boyligi", S.vb.lvl ? Object.keys(S.vb.known).length + " ta bilgan" : "5–25 ta yangi"),
     t("a", `href="${cur ? "#tinglash-" + cur[0] : "#tinglash"}"`, ICON_TL, "Tinglash", cur ? "davom etish" : "VOA videolar"),
-    t("a", 'href="#hikoyalar"', ICON.read, "Hikoyalar", bRead ? `${bRead} / ${BOOKS.length} o'qildi` : `${BOOKS.length} ta`),
+    t("a", 'href="#hikoyalar"', ICON.read, "Hikoyalar", bRead ? `${bRead} / ${lvBooks().length || BOOKS.length} o'qildi` : `${lvBooks().length || BOOKS.length} ta`),
     t("a", 'href="#iboralar"', ICON.ibc, "Iboralar", ibSeen ? `${ibSeen} / ${IBS.length}` : `${IBS.length} ta · ${IB_T.length} mavzu`),
     zero ? "" : t("button", 'type="button" id="mxsp"', ICON.verb, "Tez yozish", fs >= 4 ? "fe'llar · 60 s" : "4 ta fe'ldan keyin", fs < 4),
     zero ? "" : t("button", 'type="button" id="mxmini"', ICON.redo, "2 daqiqa", mp ? "tezkor takror" : "so'z o'rgangach", !mp)].join("");
@@ -5618,7 +5627,7 @@ const vbRecheck = () => Object.entries(S.vb.known).filter(([, d]) => d <= addDay
 const vbW = k => WORDS.find(w => w.id === "vb|" + k);
 let VBT = null; // joriy saralash / tekshiruv
 function vbSetup(first) {
-  const lv = S.vb.lvl || "mid", g = S.vb.goal || 10, [bh, bl] = first ? backOf("vb") : ["#boylik", "So'z boyligi"];
+  const lv = S.vb.lvl || (["pre", "inter"].includes(curLvId()) ? "mid" : "easy"), g = S.vb.goal || 10, [bh, bl] = first ? backOf("vb") : ["#boylik", "So'z boyligi"];
   app.innerHTML = `${nav(bh, bl, "So'z boyligi")}
   <div class="vbs"><p class="vb-l">Daraja</p>
   <div class="vb-seg" role="radiogroup" aria-label="Daraja">${Object.entries(VB_LV).map(([k, v]) => `<button role="radio" aria-checked="${k === lv}" class="${k === lv ? "on" : ""}" data-l="${k}">${v[0]}</button>`).join("")}</div>
@@ -5818,7 +5827,7 @@ route(/^lugat$/, () => {
   <div class="stack"><div class="sbox">${ICON.search}<input class="search" id="q" type="search" enterkeyhint="search" placeholder="${WORDS.length} ta so'zdan qidiring" autocomplete="off" aria-label="Lug'atdan qidirish"><button class="sclr hidden" id="qclr" aria-label="Qidiruvni tozalash">${ICON.x}</button></div>
   <div id="res"></div>
   ${xmCard()}${vbCard()}
-  <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Kitobda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${readyUnits().map(n => { const info = UNIT_INFO[n], st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${un(n)} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
+  <div class="list" id="ul"><a class="li mine" href="#mening"><span class="tx"><b>Mening so'zlarim</b><span>${S.my.length ? S.my.length + " ta so'z · darsdan va ishdan" : "Unitlarda yo'q so'zlarni o'zingiz qo'shing"}</span></span><span class="go">${ICON.chev}</span></a>${readyUnits().map(n => { const info = UNIT_INFO[n], st = unitStat(n); return `<a class="li" href="#soz-${n}"><span class="tx"><b>Unit ${un(n)} · ${esc(info[0])}</b><span>${st.words} so'z · ${st.mast} mustahkam</span></span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></div>`;
   $("#qclr").onclick = () => { const i = $("#q"); i.value = ""; i.dispatchEvent(new Event("input")); i.focus(); };
   $("#q").oninput = e => {
     LQ = e.target.value; $("#qclr").classList.toggle("hidden", !LQ);
@@ -5848,7 +5857,7 @@ route(/^soz-(\d+)$/, n => {
     <div class="card"><div class="lh"><h2 id="glh">Qaysi so'zlar?</h2><button id="gall"></button></div><ul class="gl" id="chips" role="group" aria-labelledby="glh"></ul></div>
     <div class="card"><p class="label" id="segl">Yoki bitta tur bilan</p><ul class="gl" aria-labelledby="segl">${SOLO.filter(x => x[0] !== "say" || canSpeak()).map(([m, t, ic, d]) => `<li><button class="mrow" data-m="${m}"><span class="pmi">${ICON[ic]}</span><span class="tx"><b>${t}</b><span>${d}</span></span><span class="go">${ICON.chev}</span></button></li>`).join("")}</ul></div>
     <div class="card"><p class="label">Lug'at ro'yxati</p>
-      <div class="legend">So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.</div>
+      <div class="legend">${n > 200 ? `So'z, tarjima va misol gap — ilova uchun tuzilgan to'plam (${unitSub(n)}). <b>[o'qilishi]</b> — o'zbekcha harflarda, urg'uli bo'g'in katta harfda.` : `So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.`}</div>
       <div id="list"></div></div>
   </div>`;
   // Har guruh — belgilash katakli qator: holat chizig'i (to'q — mustahkam, och — o'rganilmoqda) va mustahkam foizi
@@ -5890,7 +5899,7 @@ function wordLi(w) {
   const r = rec(w.id);
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
   return `<li><div class="h"><span class="w">${esc(w.w)}</span>${w.p ? `<span class="p">[${esc(w.p)}]</span>` : ""}${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
-    <div class="u">${w.star ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
+    <div class="u">${w.star && w.unit < 200 ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
     ${w.pe ? `<div class="e pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : ""}${w.e ? `<div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}
     ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}${S.hook[w.id] || isHard(w) ? hookBox(w) : ""}</li>`;
 }
@@ -6281,7 +6290,7 @@ function ask() {
     setLabel(Z.title + " · tanishing, keyin eslab topasiz");
     $("#qword").textContent = w.w; $("#qword").className = "q qbig"; $("#qpron").textContent = pr(w);
     $("#tools").classList.remove("hidden"); $("#h1").classList.add("hidden"); $("#h2").classList.add("hidden"); $("#h3").classList.add("hidden");
-    $("#intro").innerHTML = `<div class="iu">${w.star ? "★ " : ""}${esc(w.u)}</div>${myEx(w)}${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
+    $("#intro").innerHTML = `<div class="iu">${w.star && w.unit < 200 ? "★ " : ""}${esc(w.u)}</div>${myEx(w)}${w.e ? `<div class="ex">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}${hookBox(w, !S.hook[w.id])}`;
     $("#intro").classList.remove("hidden");
     say(spoken(w));
     Z.state = "next"; $("#next").classList.remove("hidden"); $("#next").innerHTML = "Tushundim " + ICON.arrow;
@@ -7249,7 +7258,7 @@ function welcomePage() {
   SYW = true; document.body.classList.add("welcome", "lp-on");
   const feats = [
     ["fel", "Yozasiz, tanlamaysiz", "Har bir so'zni klaviaturada yozasiz. Xato qilsangiz, qaysi harf noto'g'ri ekanini ko'rasiz va to'g'risini qayta yozasiz — shunda qo'l ham, ko'z ham eslab qoladi."],
-    ["xotira", "Unutishdan oldin qaytaradi", `So'z esdan chiqay deganda yana chiqadi: ertaga, 3 kundan keyin, bir haftadan keyin, bir oydan keyin. Kitobdagi ${WORDS.length} so'zning qanchasi mustahkam — har kuni ko'rinib turadi.`],
+    ["xotira", "Unutishdan oldin qaytaradi", `So'z esdan chiqay deganda yana chiqadi: ertaga, 3 kundan keyin, bir haftadan keyin, bir oydan keyin. Ilovadagi ${WORDS.length} so'zning qanchasi mustahkam — har kuni ko'rinib turadi.`],
     ["read", "Kitobdek o'qing", `${BOOKS.length} ta hikoya — uzun, qiziqarli, o'zimizning hayotdan. Tushunmagan gapingizni bossangiz, ostida o'zbekcha tarjimasi chiqadi.`],
     ["home", "Kuniga 15–25 daqiqa", "Bugungi dars o'zi tuziladi: yangi so'zlar, noto'g'ri fe'llar, qoida, gap tuzish va tinglash. Siz faqat «Boshlash»ni bosasiz."]];
   const ctas = `<div class="lp-ctas"><button class="gbtn lp-g" data-in type="button">${G_LOGO}<span>Google bilan kirish</span></button><button class="btn ghost" data-go>Mehmon sifatida boshlash</button></div>`;
@@ -7259,7 +7268,7 @@ function welcomePage() {
       <p class="lp-lead">Navigate (Oxford) kitobi bo'yicha kunlik mashq — so'zlar, fe'llar, grammatika va hikoyalar. O'zbek tilida, bepul, reklamasiz.</p>${ctas}
       <p class="lp-hint">Google bilan kirsangiz — telefon va kompyuterda bir xil progress. Mehmon bo'lsangiz — natijalar shu qurilmada saqlanadi, keyin kirsangiz hisobingizga qo'shiladi.</p></div>
       <div class="lp-hv">${lpPic("home", "tilt", true)}</div></section>
-    <div class="lp-lv" aria-label="Darajalar"><span>Noldan · alifbo</span><span>Beginner · A1</span><span>Pre-intermediate · B1</span><span class="soon">Elementary · tez orada</span></div>
+    <div class="lp-lv" aria-label="Darajalar"><span>Noldan · alifbo</span><span>Beginner · A1</span><span>Elementary · A2</span><span>Pre-intermediate · B1</span><span>Intermediate · B1+</span></div>
     ${feats.map(([n, t, d], i) => `<section class="lp-f${i % 2 ? " r" : ""}"><div class="lp-fv">${lpPic(n)}</div><div class="lp-fx"><h2>${t}</h2><p>${d}</p></div></section>`).join("")}
     <section class="lp-card"><h2>Telefonga ilova kabi o'rnating</h2><p>iPhone: Safari'da oching → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Internet bo'lmasa ham ishlaydi; hisobga kirsangiz, telefon va kompyuterda bir xil progress.</p></section>
     <section class="lp-card lp-end"><h2>Bugun birinchi 5 ta so'zni o'rganing</h2>${ctas}</section>

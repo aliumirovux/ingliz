@@ -2991,7 +2991,7 @@ document.addEventListener("visibilitychange", () => {
   else if (cloud.kind === "sb" && cloud.dirty && cloud.ref) sbSync(); // ilova yopilayotganda — kutmasdan yuboramiz
 });
 window.addEventListener("online", () => { lastWake = 0; wake(); });
-window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = JSON.parse(e.newValue || "null"); } catch (er) {} } });
+window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = JSON.parse(e.newValue || "null"); } catch (er) {} if (!AUTH && e.oldValue) { try { localStorage.removeItem(WKEY); } catch (er) {} location.hash = ""; render(); } } });
 /* kirish */
 const sbSend = email => sbFetch("/auth/v1/otp", { method: "POST", body: JSON.stringify({ email, create_user: true }) });
 async function sbVerify(email, code) {
@@ -3005,7 +3005,8 @@ async function sbLogout() {
   const t = AUTH && AUTH.at; authSave(null); cloud.ref = null; cloud.kind = ""; clearTimeout(cloud.timer); clearTimeout(cloud.rt);
   try { localStorage.removeItem(SYNCKEY); } catch (e) {}
   setStatus("local");
-  try { if (t) await sbFetch("/auth/v1/logout", { method: "POST" }, t); } catch (e) {}
+  /* sekin internetda landingga qaytish kutib qolmasin: so'rov ko'pi bilan 1,5 s kutiladi */
+  try { if (t) await Promise.race([sbFetch("/auth/v1/logout", { method: "POST" }, t), new Promise(r => setTimeout(r, 1500))]); } catch (e) {}
 }
 const agoText = t => { const s = Math.round((Date.now() - t) / 1000); return s < 60 ? "hozirgina" : s < 3600 ? Math.floor(s / 60) + " daq oldin" : s < 86400 ? Math.floor(s / 3600) + " soat oldin" : Math.floor(s / 86400) + " kun oldin"; };
 function statusText() {
@@ -3621,7 +3622,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061100";
+const APP_V = "202611061200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

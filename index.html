@@ -498,6 +498,11 @@ nav.tabs .lens.still{transition:none}
 /* sahifa almashishi: tab yo'nalishidan yumshoq kirib keladi */
 
 nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+/* «Gap tuzish» bo'limi faqat kompyuterda (klaviatura bilan uzun gap yozish qulay); telefonda Unitlar ichida */
+nav.tabs a.dsk{display:none}
+@media (min-width:980px){nav.tabs{max-width:540px}nav.tabs a.dsk{display:flex}}
+/* sahifa qisqa/uzun bo'lganda aylantirish chizig'i paydo bo'lib-yo'qolib, markazdagi menyu sakramasin */
+html{scrollbar-gutter:stable}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){ nav.tabs{background:var(--glass-solid)} }
 @media (prefers-reduced-transparency: reduce){ nav.tabs{background:var(--glass-solid);-webkit-backdrop-filter:none;backdrop-filter:none} }
 
@@ -1616,13 +1621,13 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .aiw button:focus-visible,.ai-inp textarea:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 @media (min-width:980px){
   /* katta ekranda tugma ekran burchagida emas, pastki menyuning yonida turadi (ko'z shu yerda) */
-  .aifab{right:auto;left:calc(50% + 232px);bottom:calc(12px + (var(--nav-h) - 56px) / 2 + env(safe-area-inset-bottom,0px))}
+  .aifab{right:auto;left:calc(50% + 282px);bottom:calc(12px + (var(--nav-h) - 56px) / 2 + env(safe-area-inset-bottom,0px))}
   body.has-aifab{padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px))}
   /* panel tugmadan o'sib chiqadi: o'ng cheti tugmaning o'ng cheti bilan bir chiziqda, pastki cheti tugmadan 12px yuqorida.
      Tugma ochiq paytda ham joyida qoladi va «yopish»ga aylanadi — ochish va yopish bitta joyda */
   .aiw{inset:0;pointer-events:none}
   .ai-bd,.ai-top .qs-grab{display:none}
-  .ai-p{pointer-events:auto;margin:0;left:auto;top:auto;right:max(16px,calc(50% - 288px));bottom:calc(12px + (var(--nav-h) - 56px) / 2 + 68px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100dvh - var(--nav-h) - 120px));border-radius:24px;box-shadow:0 24px 64px -18px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.12);transform-origin:calc(100% - 28px) calc(100% + 40px);transform:scale(.4);opacity:0;transition:transform .34s cubic-bezier(.2,.9,.25,1),opacity .16s ease}
+  .ai-p{pointer-events:auto;margin:0;left:auto;top:auto;right:max(16px,calc(50% - 338px));bottom:calc(12px + (var(--nav-h) - 56px) / 2 + 68px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100dvh - var(--nav-h) - 120px));border-radius:24px;box-shadow:0 24px 64px -18px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.12);transform-origin:calc(100% - 28px) calc(100% + 40px);transform:scale(.4);opacity:0;transition:transform .34s cubic-bezier(.2,.9,.25,1),opacity .16s ease}
   .aiw.on .ai-p{transform:none;opacity:1}
 }
 @media (prefers-reduced-motion:reduce){.ai-p,.aifab{transition:none}.ai-a .sk{animation:none}}
@@ -1910,6 +1915,7 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
   <span class="lens" aria-hidden="true"></span>
   <a href="#" data-tab="home"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span class="lb">Bugun</span></a>
   <a href="#unitlar" data-tab="unitlar"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2Z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M9 7h7"/></svg></span><span class="lb">Unitlar</span></a>
+  <a href="#tuz" data-tab="tuz" class="dsk"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="9" width="7" height="6" rx="1.8"/><rect x="11.5" y="9" width="10" height="6" rx="1.8"/><path d="M5 5h14M5 19h9"/></svg></span><span class="lb">Gap tuzish</span></a>
   <a href="#gap" data-tab="gap"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="lb">Gaplar</span></a>
   <a href="#lugat" data-tab="lugat"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span class="lb">Lug'at</span></a>
 </nav>
@@ -3386,7 +3392,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^tuz/.test(h) && wideNav() ? "tuz" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
@@ -3404,7 +3410,8 @@ document.addEventListener("click", e => {
   if ((a.getAttribute("href") || "#") === (location.hash || "#") && scrollY > 0) { e.preventDefault(); scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
 });
 /* tab bar linzasi va sahifa animatsiyasi */
-const TABS = ["home", "unitlar", "gap", "lugat"];
+const TABS = ["home", "unitlar", "tuz", "gap", "lugat"];
+const wideNav = () => matchMedia("(min-width:980px)").matches;
 let lastTab = null;
 /* menyu tugmalarining o'lchami bir marta o'lchanadi (o'lcham o'zgarganda qayta) — har sahifada sahifani majburan qayta hisoblamaslik uchun */
 let TABGEO = null;
@@ -3427,7 +3434,10 @@ function pageIn(tab) {
   if (pageAnim) pageAnim.cancel();
   pageAnim = app.animate([{ opacity: .92, transform: side ? `translateX(${i > j ? 12 : -12}px)` : "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" }); // butun ekran xiralashib-yorishmasin (qorong'i temada «yonib-o'chish» bo'lib ko'rinardi)
 }
-window.addEventListener("resize", () => { TABGEO = null; moveLens(lastTab, true); });
+window.addEventListener("resize", () => { TABGEO = null;
+  /* telefon ↔ kompyuter chegarasidan o'tganda «Gap tuzish» bo'limi Unitlar bilan almashadi */
+  const h = location.hash.replace(/^#/, ""); if (/^tuz/.test(h)) { const t = wideNav() ? "tuz" : "unitlar"; if (t !== lastTab) { document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === t); a.toggleAttribute("aria-current", a.dataset.tab === t); }); lastTab = t; } }
+  moveLens(lastTab, true); });
 
 /* ---------- UNITLAR: kitobdagi nomlar va progress ---------- */
 /* Navigate (Oxford) darajalari. Beginner (1–10) va Pre-intermediate (101–112) — kitob ro'yxatlari; Elementary (201–212) va Intermediate (301–312) — ilova to'plami (own) */
@@ -3690,7 +3700,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611062200";
+const APP_V = "202611062300";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7035,19 +7045,36 @@ function wordDiff(got, want) {
 }
 let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
+/* uzun gaplar: tanlangan darajadagi hikoyalardan 9–18 so'zli gaplar (tarjimasi bilan). Tuzoq so'zlar — o'quvchi adashadigan juftlar */
+const TZ_PAIRS = { was: "were", were: "was", is: "are", are: "is", has: "have", have: "has", did: "does", does: "did", went: "go", in: "on", on: "in", at: "in", to: "for", for: "to", the: "a", a: "the", an: "a", my: "me", his: "he", her: "she", their: "they", our: "we", this: "these", that: "what", which: "who", who: "which", much: "many", many: "much", than: "then", then: "than", would: "will", will: "would", could: "can", can: "could" };
+/* daraja oshgani sari «uzun» chegarasi ham oshadi: Beginner/Elementary hikoyalarida 12+ so'zli gap kam */
+const TZ_MIN = { "Pre-intermediate": 11, Intermediate: 11 };
+function longPool() {
+  const out = [], cl = curBk(), min = TZ_MIN[cl] || 9;
+  BOOKS.filter(b => b.lv === cl).forEach(b => b.p.forEach(para => para.forEach(([en, uz]) => {
+    const w = words(en); if (w.length < min || w.length > 18 || !/^[A-Za-z' ,.?!-]+$/.test(en) || / - /.test(en)) return;
+    const have = new Set(w.map(x => x.toLowerCase())), x = [];
+    w.forEach(t => { const d = TZ_PAIRS[t.toLowerCase()]; if (d && !have.has(d) && !x.includes(d) && x.length < 2) x.push(d); });
+    out.push({ u: uz, e: en, x, h: `«${b.t}» hikoyasidan`, unit: 0, long: 1 });
+  })));
+  return out;
+}
 route(/^tuz$/, () => {
-  const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-";
-  app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}
+  const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-", LP = longPool(), lk = "tuzl-" + curBk() + (tuzMode === "yoz" ? "-y" : ""), lb = S.pat[lk];
+  app.innerHTML = `${wideNav() ? nav(null, "", "Gap tuzish") : nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}
   <div class="stack">
     <div class="card"><p class="label">Mashq turi</p><div class="modes">
       ${modeBtn("tile", "So'zlardan yig'aman", "So'zlarni to'g'ri tartibda bosasiz. Orasida tuzoq so'zlar ham bor (am, do).")}
       ${modeBtn("yoz", "O'zim yozaman", "Gapni o'zingiz to'liq yozasiz. I'm va I am — ikkalasi ham to'g'ri.")}
     </div></div>
-    <button class="btn" id="mix">Aralash: hamma unitlardan 10 ta gap</button>
+    ${LP.length >= 8 ? `<div class="card tzl"><div class="tzl-h"><div><p class="label" style="margin:0 0 4px">Uzun gaplar · ${curBk()}</p><b>Hikoyalardagi ${TZ_MIN[curBk()] || 9}–18 so'zli gaplar</b><p class="muted" style="margin:6px 0 0">${LP.length} ta gap. ${tuzMode === "yoz" ? "Kompyuterda klaviatura bilan yozish qulay." : "Uzun gapda so'z tartibi va kichik so'zlar (the, a, in, on) tekshiriladi."}${lb != null ? ` Eng yaxshi natija: ${lb}/8.` : ""}</p></div></div>
+      <button class="btn" id="tzlong" style="margin-top:14px">8 ta uzun gap</button></div>` : ""}
+    <button class="btn ghost" id="mix">Aralash: hamma unitlardan 10 ta gap</button>
     <div class="units">${BUILD.filter(b => lvOf(b.unit) === curLvId()).map(b => { const best = S.pat[kp + b.unit]; return `<button class="unit" data-tu="${b.unit}"><div class="t"><b>Unit ${un(b.unit)}</b><span class="n">${b.items.length} gap${best != null ? " · eng yaxshi: " + best + "/" + b.items.length : ""}</span></div><div class="muted" style="margin-top:2px">${esc(b.items[0].u)} · ${esc(b.items[1].u)} …</div></button>`; }).join("")}</div>
   </div>`;
   document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === tuzMode); b.onclick = () => { tuzMode = b.dataset.m; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} render(); }; });
   $("#mix").onclick = () => startTuz(shuffle(BLD.filter(x => lvOf(x.unit) === curLvId())).slice(0, 10), "Aralash", null);
+  const tl = $("#tzlong"); if (tl) tl.onclick = () => startTuz(shuffle(LP).slice(0, 8), "Uzun gaplar", lk);
   document.querySelectorAll("[data-tu]").forEach(b => b.onclick = () => { const n = +b.dataset.tu; startTuz(BLD.filter(x => x.unit === n), "Unit " + un(n), kp + n); });
 });
 let T = null;

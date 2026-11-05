@@ -2287,24 +2287,6 @@ window.SPEAKING = [
 // Yangi gap qo'shish: kerakli bo'lim items ro'yxatiga yangi qator qo'shiladi.
 window.PHRASES = [
 {
-  id: "ish", title: "Ishda: Slack va uchrashuv",
-  items: [
-    {e:"Can you take a look?", p:"ken yu TEYK a luk", u:"Ko'rib chiqa olasizmi?"},
-    {e:"I'll get back to you.", p:"ayl get BEK tu yu", u:"Keyinroq javob beraman."},
-    {e:"Let's sync on this.", p:"lets SINK on this", u:"Shu bo'yicha gaplashib olaylik."},
-    {e:"Just following up on this.", p:"jast FO-lou-ing ap on this", u:"Shu bo'yicha eslatib qo'ymoqchi edim."},
-    {e:"Does this work for you?", p:"daz this UYOK for yu", u:"Sizga to'g'ri keladimi?"},
-    {e:"I'll take care of it.", p:"ayl teyk KEA ov it", u:"Men bu bilan shug'ullanaman."},
-    {e:"Got it, thanks!", p:"GOT it, thenks", u:"Tushundim, rahmat!"},
-    {e:"On it.", p:"ON it", u:"Hozir qilaman."},
-    {e:"Quick question.", p:"kuik KUES-chan", u:"Bir og'iz savol."},
-    {e:"It should look like this.", p:"it shud LUK layk this", u:"Bu shunday ko'rinishi kerak."},
-    {e:"Which one do you prefer?", p:"uich uan du yu pri-FYO", u:"Qaysi biri sizga ko'proq yoqadi?"},
-    {e:"I've done the UI flow.", p:"ayv DAN the yu-ay flou", u:"UI flowni tayyorladim."},
-    {e:"We need to split this into two screens.", p:"ui niid tu SPLIT this in-tu tuu SKRIINZ", u:"Buni ikkita ekranga bo'lish kerak."}
-  ]
-},
-{
   id: "tushun", title: "Tushunmaganda",
   items: [
     {e:"Sorry, could you say that again?", p:"SO-ri, kud yu sey thet a-GEN", u:"Kechirasiz, qaytarib aytasizmi?"},
@@ -3540,7 +3522,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611060400";
+const APP_V = "202611060500";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

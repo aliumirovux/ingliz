@@ -414,6 +414,9 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .sy input.code{font-size:24px;letter-spacing:.32em;text-align:center;font-variant-numeric:tabular-nums}
 .sy .sy-err{margin:0;font-size:14px;color:var(--bad)}.sy .sy-err:empty{display:none}
 .sy .sy-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+/* hisobdan chiqish — matnli havola emas, to'liq tugma: ilovaning neytral «ghost» tugmasi (asosiy harakat emas) */
+.sy .sy-out{margin-top:14px}
+.sy .sy-note{margin:8px 0 0;text-align:center;color:var(--muted);font-size:13px;line-height:1.4}
 .sy .tlink{background:none;border:0;padding:12px 4px;min-height:44px;font:inherit;font-size:15px;font-weight:500;color:var(--accent-text);cursor:pointer}.sy .tlink:disabled{color:var(--muted);cursor:default}
 .sy .sy-st{display:flex;align-items:center;gap:8px;margin:0 0 14px;font-size:15px;color:var(--muted)}
 .sy .sy-st::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--muted)}
@@ -3622,7 +3625,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061300";
+const APP_V = "202611061500";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7326,7 +7329,7 @@ function syncCardInner() {
     <div class="sy-acc">${avatar()}<span class="sy-who"><b title="${esc(nm || em)}">${esc(nm || em)}</b><span${nm && em ? ` title="${esc(em)}"` : ""}>${nm && em ? esc(em) : AUTH.via === "google" ? "Google hisobi" : "Email orqali kirilgan"}</span></span></div>
     <p class="sy-st" id="sync" data-s="${cloud.status}" role="status">${esc(statusText())}</p>
     ${relog ? `<button class="btn" id="syre">Qayta kirish</button>` : `<button class="btn ghost" id="synow"${cloud.status === "busy" ? " disabled" : ""}>Hozir sinxronlash</button>`}
-    <div class="sy-row"><button class="tlink" id="syout">Chiqish</button><span class="muted" style="font-size:13px">Chiqsangiz ham natijalar shu qurilmada qoladi</span></div>`;
+    <button class="btn ghost sy-out" id="syout" type="button">Chiqish</button><p class="sy-note">Chiqsangiz ham natijalar shu qurilmada qoladi</p>`;
   }
   if (SY.step === "code") {
     const left = Math.max(0, Math.ceil((SY.until - Date.now()) / 1000));
@@ -7340,7 +7343,7 @@ function syncCardInner() {
   return `${SYW ? `<p class="label" style="margin-bottom:12px">Kirsangiz, Mac va telefonda bir xil progress bo'ladi</p>` : SYS ? "" : head("Sinxronlash", "Mac va telefonda bir xil progress. Har qurilmada bir marta kirasiz.")}
     ${googleBtn()}${SY.err ? `<p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>` : ""}
     ${SYW ? "" : `<p class="gohint" style="text-align:left">Hozirgi natijalar o'chmaydi: kirgach, ikki qurilmadagisi birlashtiriladi.</p>`}
-    ${SYW || SYS ? "" : `<div class="sy-row"><button class="tlink" id="syguest">Chiqish</button><span class="muted" style="font-size:13px">Mehmon sifatida kirgansiz · natijalar shu qurilmada</span></div>`}`;
+    ${SYW || SYS ? "" : `<button class="btn ghost sy-out" id="syguest" type="button">Mehmon rejimidan chiqish</button><p class="sy-note">Mehmon sifatida kirgansiz · natijalar shu qurilmada qoladi</p>`}`;
 }
 let syTick = 0, SYW = false;
 /* birinchi ochilish: progress ham, hisob ham yo'q, ekran oldin yopilmagan bo'lsa (telefondagi mavjud tarix bor qurilmada chiqmaydi) */

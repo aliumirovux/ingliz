@@ -2791,7 +2791,7 @@ const AUTHKEY = "ingliz-auth", SYNCKEY = "ingliz-sync";
 const cloud = { ref: null, kind: "", status: "local", timer: null, busy: false, dirty: false, again: false, at: 0, retry: 0, rt: null };
 let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTHKEY) || "null"); } catch (e) {}
 if (AUTH && (!AUTH.rt || !AUTH.uid)) AUTH = null;
-const authSave = a => { AUTH = a; try { a ? localStorage.setItem(AUTHKEY, JSON.stringify(a)) : localStorage.removeItem(AUTHKEY); } catch (e) {} };
+const authSave = a => { AUTH = a; try { a ? localStorage.setItem(AUTHKEY, JSON.stringify(a)) : localStorage.removeItem(AUTHKEY); if (a) localStorage.setItem("ingliz-welcome", "in"); } catch (e) {} };
 /* JWT ichidagi user_metadata: Google'da surat (avatar_url/picture) va ism bor, email bilan kirganda odatda bo'sh */
 const jwtPl = t => { try { return JSON.parse(decodeURIComponent(escape(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))))) || {}; } catch (e) { return {}; } };
 const jwtMeta = t => { const m = jwtPl(t || "").user_metadata || {}, p = m.avatar_url || m.picture || ""; return { pic: /^https:\/\//.test(p) ? p : "", name: String(m.full_name || m.name || "").trim() }; };
@@ -2991,7 +2991,7 @@ document.addEventListener("visibilitychange", () => {
   else if (cloud.kind === "sb" && cloud.dirty && cloud.ref) sbSync(); // ilova yopilayotganda — kutmasdan yuboramiz
 });
 window.addEventListener("online", () => { lastWake = 0; wake(); });
-window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = JSON.parse(e.newValue || "null"); } catch (er) {} if (!AUTH && e.oldValue) { try { localStorage.removeItem(WKEY); } catch (er) {} location.hash = ""; render(); } } });
+window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = JSON.parse(e.newValue || "null"); } catch (er) {} if (!AUTH && e.oldValue) { try { localStorage.setItem(WKEY, "out"); } catch (er) {} location.hash = ""; render(); } } });
 /* kirish */
 const sbSend = email => sbFetch("/auth/v1/otp", { method: "POST", body: JSON.stringify({ email, create_user: true }) });
 async function sbVerify(email, code) {
@@ -3622,7 +3622,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061200";
+const APP_V = "202611061300";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7347,9 +7347,10 @@ let syTick = 0, SYW = false;
 const WKEY = "ingliz-welcome";
 const fresh = () => !Object.keys(S.srs).length && !S.course && !(S.my || []).length && !Object.keys(S.log || {}).length && !Object.keys(S.vb.known || {}).length;
 /* landing: hisobga kirilmagan va «Mehmon» tanlanmagan bo'lsa (chiqish ham shu holatga qaytaradi). Avval mehmon bo'lib ishlagan qurilma — bir marta «mehmon» deb belgilanadi, landing to'satdan chiqmasin */
-const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { return !localStorage.getItem(WKEY); } catch (e) { return false; } };
+/* WKEY: "in" — kirgan, "guest" — mehmon, "out" — hisobdan/mehmondan chiqqan (refresh qilinsa ham landing turadi), yo'q — birinchi marta */
+const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { const w = localStorage.getItem(WKEY); return !w || w === "out"; } catch (e) { return false; } };
 try { if (!AUTH && !localStorage.getItem(WKEY) && !fresh()) localStorage.setItem(WKEY, "guest"); } catch (e) {}
-const toLanding = () => { try { localStorage.removeItem(WKEY); } catch (e) {} SY.step = "email"; SY.err = ""; scrollTo(0, 0); location.hash = ""; render(); };
+const toLanding = () => { try { localStorage.setItem(WKEY, "out"); } catch (e) {} SY.step = "email"; SY.err = ""; scrollTo(0, 0); location.hash = ""; render(); };
 function loadingPage() {
   document.body.classList.add("welcome");
   app.innerHTML = `<div class="wel"><div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p role="status">Progress yuklanmoqda…</p></div><div class="wel-spin" aria-hidden="true"></div></div>`;

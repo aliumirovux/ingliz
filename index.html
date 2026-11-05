@@ -1075,6 +1075,9 @@ button.mchip{border:0;font-family:inherit;cursor:pointer;-webkit-tap-highlight-c
 .hbar .me::after{content:"";position:absolute;inset:-4px}
 .hbar .me svg{width:18px;height:18px;color:var(--muted)}
 .hbar .me.acc{background:none;overflow:visible}.hbar .me.acc .av{width:36px;height:36px;box-shadow:none} /* avatar ⚙️ bilan aynan bir o'lchamda */
+/* qorong'i fonda ⚙️ doirasi ko'rinmay, rasmdan kichik tuyulardi: ikkalasiga ham bir xil ingichka chegara */
+.hbar .me{box-shadow:inset 0 0 0 1px var(--line)}.hbar .me svg{width:20px;height:20px}
+.hbar .me.acc{box-shadow:none}.hbar .me.acc .av::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line);pointer-events:none}
 .hbar button.me{border:0;padding:0;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hdate{margin:4px 0 8px;font-size:14px;color:var(--muted)}
 .hello.hbar{align-items:center;margin:0 0 16px}
@@ -3530,7 +3533,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611060900";
+const APP_V = "202611061000";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

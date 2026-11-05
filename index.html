@@ -1618,18 +1618,12 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
   /* katta ekranda tugma ekran burchagida emas, pastki menyuning yonida turadi (ko'z shu yerda) */
   .aifab{right:auto;left:calc(50% + 232px);bottom:calc(12px + (var(--nav-h) - 56px) / 2 + env(safe-area-inset-bottom,0px))}
   body.has-aifab{padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px))}
-  .aiw{inset:0 0 0 auto;width:412px;pointer-events:none}
+  /* panel tugmadan o'sib chiqadi: o'ng cheti tugmaning o'ng cheti bilan bir chiziqda, pastki cheti tugmadan 12px yuqorida.
+     Tugma ochiq paytda ham joyida qoladi va «yopish»ga aylanadi — ochish va yopish bitta joyda */
+  .aiw{inset:0;pointer-events:none}
   .ai-bd,.ai-top .qs-grab{display:none}
-  .ai-p{pointer-events:auto;left:auto;right:16px;top:16px;bottom:16px;height:auto;width:380px;max-width:none;border-radius:24px;box-shadow:0 24px 60px -16px rgba(0,0,0,.45);transform:translateX(calc(100% + 32px))}
-  body.ai-open{padding-right:412px}
-  body.ai-open .aifab{display:none}
-}
-/* juda keng ekranda panel ekran chetida emas, kontent ustunining yonida ochiladi; kontent joyidan siljimaydi */
-@media (min-width:1880px){
-  .aiw{inset:0 auto 0 calc(50% + 520px)}
-  body.ai-open{padding-right:0}
-  .ai-p{left:16px;right:auto;opacity:0;transform:translateX(-12px);transition:transform .32s cubic-bezier(.16,1,.3,1),opacity .2s ease}
-  .aiw.on .ai-p{opacity:1;transform:none}
+  .ai-p{pointer-events:auto;margin:0;left:auto;top:auto;right:max(16px,calc(50% - 288px));bottom:calc(12px + (var(--nav-h) - 56px) / 2 + 68px + env(safe-area-inset-bottom,0px));width:400px;max-width:calc(100vw - 32px);height:min(680px,calc(100dvh - var(--nav-h) - 120px));border-radius:24px;box-shadow:0 24px 64px -18px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.12);transform-origin:calc(100% - 28px) calc(100% + 40px);transform:scale(.4);opacity:0;transition:transform .34s cubic-bezier(.2,.9,.25,1),opacity .16s ease}
+  .aiw.on .ai-p{transform:none;opacity:1}
 }
 @media (prefers-reduced-motion:reduce){.ai-p,.aifab{transition:none}.ai-a .sk{animation:none}}
 .pron.synh{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:6px;color:var(--muted);font-size:13px;text-align:center}
@@ -3696,7 +3690,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611062100";
+const APP_V = "202611062200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7243,7 +7237,7 @@ function aiOpen() {
   if (!wide) { history.pushState({ ai: 1 }, ""); addEventListener("popstate", aiPop); }
   aiDraw(); aiCtxDraw();
   requestAnimationFrame(() => { w.classList.add("on"); if (matchMedia("(pointer:fine)").matches) inp.focus({ preventScroll: true }); else w.querySelector(".ai-x").focus({ preventScroll: true }); });
-  const b = document.getElementById("aifab"); if (b) b.setAttribute("aria-expanded", "true");
+  const b = document.getElementById("aifab"); if (b) { b.setAttribute("aria-expanded", "true"); b.innerHTML = ICON.x; b.setAttribute("aria-label", "Yordamchini yopish"); }
 }
 const aiKey = e => { if (e.key === "Escape") { e.preventDefault(); aiClose(); } };
 const aiPop = () => aiClose(true);
@@ -7253,7 +7247,7 @@ function aiClose(fromNav) {
   if (!fromNav && history.state && history.state.ai) history.back();
   w.classList.remove("on"); document.body.classList.remove("ai-open");
   setTimeout(() => w.remove(), 320);
-  const b = document.getElementById("aifab"); if (b) { b.setAttribute("aria-expanded", "false"); if (!fromNav) b.focus({ preventScroll: true }); }
+  const b = document.getElementById("aifab"); if (b) { b.setAttribute("aria-expanded", "false"); b.innerHTML = ICON.spark; b.setAttribute("aria-label", "Yordamchi: tarjima va savollar"); if (!fromNav) b.focus({ preventScroll: true }); }
 }
 function aiCtxDraw() {
   const el = aiW && aiW.querySelector("#aictx"); if (!el) return;

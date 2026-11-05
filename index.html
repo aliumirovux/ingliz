@@ -763,13 +763,17 @@ body.lp-on{background:#0E0E10;padding-bottom:0}html:has(body.lp-on){background:#
 .lx-keys span{display:inline-grid;place-items:center;min-width:46px;height:56px;padding:0 10px;border-radius:12px;background:#222227;box-shadow:inset 0 -3px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);font:600 28px var(--font-body);color:var(--ink)}
 .lx-keys .bad{background:rgba(255,110,80,.16);color:#FF9C86}.lx-keys .ok{color:#7FD39B}
 .lx-path{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-.lx-path::before{content:"";position:absolute;left:18px;right:18px;top:20px;height:2px;background:linear-gradient(90deg,var(--line),var(--ac))}
-.lx-node{all:unset;box-sizing:border-box;position:relative;display:block;padding:8px;margin:-8px;border-radius:18px;cursor:pointer;transition:background .15s ease}
-.lx-node:hover{background:rgba(255,255,255,.03)}.lx-node:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.lx-node i{display:block;width:22px;height:22px;border-radius:50%;background:#0E0E10;border:2px solid var(--ac);margin:0 0 22px;transition:background .15s,transform .15s}
+/* nuqtalarni bog'lovchi chiziq: har tugundan keyingisining markazigacha bo'lak — chiziq doim nuqta markazidan o'tadi va oxirgisida tugaydi */
+.lx-node{all:unset;box-sizing:border-box;position:relative;display:block;cursor:pointer;border-radius:12px}
+.lx-node::after{content:"";position:absolute;left:11px;top:10px;width:calc(100% + 16px);height:2px;background:var(--ac);opacity:var(--o,.6)}
+.lx-node:last-child::after{display:none}
+.lx-node:nth-child(1){--o:.25}.lx-node:nth-child(2){--o:.45}.lx-node:nth-child(3){--o:.65}.lx-node:nth-child(4){--o:.85}
+.lx-node:focus-visible{outline:2px solid var(--ac);outline-offset:6px}
+.lx-node:hover .c{color:var(--act)}.lx-node:hover i{transform:scale(1.1)}
+.lx-node i{position:relative;z-index:1;display:block;width:22px;height:22px;border-radius:50%;background:#0E0E10;border:2px solid var(--ac);margin:0 0 22px;transition:background .15s,transform .15s}
 .lx-node:nth-child(1) i{border-color:#4a4a50}.lx-node:nth-child(2) i{border-color:#8a5a45}
 .lx-node.sel i{background:var(--ac);transform:scale(1.18)}
-.lx-node .c{display:block;font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.lx-node .c{display:block;font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink);transition:color .15s}
 .lx-node b{display:block;font-size:17px;margin:10px 0 6px}.lx-node .d{display:block;font-size:14px;color:var(--mu);line-height:1.45}
 .lx-node small{display:block;margin-top:12px;font-size:13px;color:var(--act);font-weight:600}
 @media (max-width:900px){
@@ -785,8 +789,8 @@ body.lp-on{background:#0E0E10;padding-bottom:0}html:has(body.lp-on){background:#
   .lx-steps b{grid-column:1;grid-row:1;margin:0 0 4px}.lx-steps .d{grid-column:1;grid-row:2}
   .lx-tot,.lx-mid,.lx-lvcta{flex-direction:column;align-items:stretch;gap:10px}.lx-tot{align-items:flex-start}
   .lx-path{grid-template-columns:1fr;gap:20px}
-  .lx-path::before{left:18px;right:auto;top:20px;bottom:20px;width:2px;height:auto;background:linear-gradient(180deg,var(--line),var(--ac))}
-  .lx-node{padding-left:48px}.lx-node i{position:absolute;left:8px;top:12px;margin:0}
+  .lx-node{padding-left:40px}.lx-node i{position:absolute;left:0;top:7px;margin:0}
+  .lx-node::after{left:10px;top:18px;width:2px;height:calc(100% + 20px)}
 }
 @media (prefers-reduced-motion:reduce){.lx-stick,.lx-tcta,.lx-node,.lx-node i{transition:none}}
 /* LANDING (kirmagan, birinchi marta) — saytning o'z tokenlari: yorug'/qorong'i avtomatik */
@@ -3692,7 +3696,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611062000";
+const APP_V = "202611062100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

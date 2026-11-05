@@ -722,6 +722,66 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
   .lx-foot{flex-direction:column}
 }
 @media (prefers-reduced-motion:reduce){.lx-snt{transition:none}}
+
+/* landing v2.1: yopishqoq panel, raqamlar ustunlari, vaqt chizig'i, vizual-ustun bento, darajalar yo'li */
+.lx{overflow:hidden}@supports (overflow:clip){.lx{overflow:clip}}
+.lx-stick{position:sticky;top:0;z-index:30;transition:background .2s ease,box-shadow .2s ease}
+.lx-stick.on{background:rgba(14,14,16,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line)}
+.lx-stick .lx-top{transition:padding .2s ease}.lx-stick.on .lx-top{padding:12px 0}
+.lx-tcta{min-height:42px;padding:0 18px;font-size:15px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease}
+.lx-stick.on .lx-tcta{opacity:1;pointer-events:auto;transform:none}
+.lx-proof{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin:0 0 8px;padding:0;border:0}
+.lx-proof div{border-top:1px solid var(--line);padding-top:18px}
+.lx-proof small{display:block;font-size:13px;color:var(--mu);margin-bottom:10px}
+.lx-proof b{display:block;font-size:44px;letter-spacing:-.03em;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}.lx-proof b i{font-style:normal;color:var(--ac)}
+.lx-mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px}
+.lx-track{display:flex;gap:4px;height:14px;border-radius:999px;overflow:hidden}.lx-track span{background:var(--ac)}
+.lx-steps{display:flex;gap:4px;margin:22px 0 0;padding:0;list-style:none}
+.lx-steps li{padding-right:12px}
+.lx-steps .t{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--mu)}
+.lx-steps b{display:block;font-size:18px;margin:8px 0 6px}.lx-steps .d{display:block;font-size:14px;color:var(--mu);line-height:1.4}
+.lx-tot{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:36px;padding-top:22px;border-top:1px solid var(--line);color:var(--mu);font-size:15px}.lx-tot b{color:var(--ink);font-size:22px}
+.lx-mid,.lx-lvcta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:28px;padding:16px 16px 16px 24px;border-radius:20px;font-size:16px}
+.lx-mid{background:rgba(232,121,74,.10);box-shadow:inset 0 0 0 1px rgba(232,121,74,.25)}.lx-lvcta{background:var(--card)}
+.lx-mid .lx-btn,.lx-lvcta .lx-btn{min-height:48px;font-size:16px}
+.lx-lvcta[hidden]{display:none}
+.lx-bento{grid-auto-rows:auto}
+.lx-tile{padding:0;gap:0;border:0;border-radius:28px}
+.lx-tile .lx-vis{margin:0;background:linear-gradient(180deg,#1E1E22,#18181B);padding:28px;min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+.lx-tile .lx-vs{justify-content:flex-start}
+.lx-tile .lx-verbs{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-content:center;align-items:flex-start;gap:8px}
+.lx-tx{padding:22px 28px 26px}.lx-tx h3{font-size:21px;line-height:1.2}.lx-tx p{color:var(--mu);font-size:15px;line-height:1.5;margin-top:6px}
+.lx-cap{font-size:12px;color:#6F6E69;text-transform:uppercase;letter-spacing:.08em}
+.lx-keys{display:flex;gap:6px;flex-wrap:wrap}
+.lx-keys span{display:inline-grid;place-items:center;min-width:46px;height:56px;padding:0 10px;border-radius:12px;background:#222227;box-shadow:inset 0 -3px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);font:600 28px var(--font-body);color:var(--ink)}
+.lx-keys .bad{background:rgba(255,110,80,.16);color:#FF9C86}.lx-keys .ok{color:#7FD39B}
+.lx-path{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.lx-path::before{content:"";position:absolute;left:18px;right:18px;top:20px;height:2px;background:linear-gradient(90deg,var(--line),var(--ac))}
+.lx-node{all:unset;box-sizing:border-box;position:relative;display:block;padding:8px;margin:-8px;border-radius:18px;cursor:pointer;transition:background .15s ease}
+.lx-node:hover{background:rgba(255,255,255,.03)}.lx-node:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.lx-node i{display:block;width:22px;height:22px;border-radius:50%;background:#0E0E10;border:2px solid var(--ac);margin:0 0 22px;transition:background .15s,box-shadow .15s}
+.lx-node:nth-child(1) i{border-color:#4a4a50}.lx-node:nth-child(2) i{border-color:#8a5a45}
+.lx-node.sel i{background:var(--ac);box-shadow:0 0 0 6px rgba(232,121,74,.2)}
+.lx-node .c{display:block;font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.lx-node b{display:block;font-size:17px;margin:10px 0 6px}.lx-node .d{display:block;font-size:14px;color:var(--mu);line-height:1.45}
+.lx-node small{display:block;margin-top:12px;font-size:13px;color:var(--act);font-weight:600}
+@media (max-width:900px){
+  .lx-tcta{display:none}
+  .lx-proof{grid-template-columns:1fr 1fr}.lx-proof b{font-size:36px}
+  /* telefonda gorizontal chiziq va 2 ustunli ro'yxat bir-biriga bog'lanmay qolardi: bitta vertikal jadval — har qadam chap tomonida o'z rangli bo'lagi */
+  .lx-track{display:none}
+  .lx-steps{flex-direction:column;gap:6px;margin-top:0}
+  .lx-steps li{position:relative;display:grid;grid-template-columns:1fr auto;column-gap:16px;padding:14px 0 14px 20px}
+  .lx-steps li::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:4px;border-radius:2px;background:var(--ac);opacity:var(--o)}
+  .lx-steps .t{grid-column:2;grid-row:1 / span 2;align-self:center;flex-direction:column;align-items:flex-end;gap:2px}
+  .lx-steps .t span:last-child{color:var(--act);font-weight:600;font-size:14px}
+  .lx-steps b{grid-column:1;grid-row:1;margin:0 0 4px}.lx-steps .d{grid-column:1;grid-row:2}
+  .lx-tot,.lx-mid,.lx-lvcta{flex-direction:column;align-items:stretch;gap:10px}.lx-tot{align-items:flex-start}
+  .lx-path{grid-template-columns:1fr;gap:20px}
+  .lx-path::before{left:18px;right:auto;top:20px;bottom:20px;width:2px;height:auto;background:linear-gradient(180deg,var(--line),var(--ac))}
+  .lx-node{padding-left:48px}.lx-node i{position:absolute;left:8px;top:12px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){.lx-stick,.lx-tcta,.lx-node,.lx-node i{transition:none}}
 /* LANDING (kirmagan, birinchi marta) — saytning o'z tokenlari: yorug'/qorong'i avtomatik */
 body.lp-on .wrap{max-width:1120px}
 .lp{padding:0 4px 8px}
@@ -3625,7 +3685,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061600";
+const APP_V = "202611061700";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7362,7 +7422,9 @@ function loadingPage() {
    Tuzilma (Duolingo kabi): hero + 2 tugma → darajalar → 4 afzallik (haqiqiy ekranlar) → o'rnatish → yakuniy chaqiriq.
    Faqat haqiqiy raqamlar va saytning o'z ekranlari; soxta foydalanuvchi soni yoki sharh yo'q. */
 const lpPic = (n, cls, eager) => `<div class="lp-ph${cls ? " " + cls : ""}"><picture><source media="(prefers-color-scheme: dark)" srcset="img/lp-${n}-dark.jpg"><img src="img/lp-${n}-light.jpg" alt="" width="290" height="628"${eager ? "" : ' loading="lazy"'} decoding="async"></picture></div>`;
+let WIO = null;
 function welcomePage() {
+  if (WIO) { WIO.disconnect(); WIO = null; }
   SYW = true; document.body.classList.add("welcome", "lp-on");
   const nW = Math.floor(WORDS.length / 100) * 100, I = (d, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const go = `<button class="lx-btn lx-p" data-in type="button">${G_LOGO}<span>Google bilan boshlash</span></button>`, guest = (t) => `<button class="lx-btn lx-s" data-go type="button">${t}</button>`;
@@ -7370,7 +7432,7 @@ function welcomePage() {
     ["Grammatika", "bitta qoida, o'zbekcha", 3, '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z"/>'], ["Gap tuzish", "so'zlardan gap yig'asiz", 3, '<rect x="3" y="9" width="6" height="6" rx="1.5"/><rect x="11" y="9" width="10" height="6" rx="1.5"/>'],
     ["Tayyor gaplar", "kundalik iboralar, ovoz chiqarib", 2, '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'], ["Tinglash", "video, gap-gap", 5, '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>']];
   const lv = [["A0", "Noldan", "Alifbo, tovushlar, sonlar va darsdagi birinchi gaplar", GUIDES.length + " ta qo'llanma"], ["A1", "Beginner", "O'zingiz, oilangiz va kuningiz haqida gapirish", "10 unit · Navigate"],
-    ["A2", "Elementary", "Xarid, sayohat, sog'liq, o'tgan voqealar", "12 unit"], ["B1", "Pre-intermediate", "Fikr bildirish, rejalar, tajriba haqida hikoya", "12 unit · Navigate"], ["B1+", "Intermediate", "Munozara, frazal fe'llar, shart gaplar", "12 unit"]];
+    ["A2", "Elementary", "Xarid, sayohat, sog'liq, o'tgan voqealar", "12 unit"], ["B1", "Pre-intermediate", "Fikr bildirish, rejalar, tajriba haqida hikoya", "12 unit · Navigate"], ["B1+", "Intermediate", "Munozara, frazal fe'llar, shart gaplar", "12 unit"]], LVID = ["zero", "beginner", "elementary", "pre", "inter"];
   const faq = [["Rostdan ham bepulmi?", "Ha. Obuna, reklama va pullik qism yo'q. Hamma darajalar, hikoyalar va mashqlar ochiq."],
     ["Internet kerakmi?", "Birinchi ochishda kerak. Keyin ilova qurilmangizda saqlanadi va internetsiz ham ishlaydi; ulanganda progress sinxronlanadi."],
     ["Nega Google bilan kirish kerak?", "Faqat progressni saqlash uchun: telefonda boshlab, kompyuterda davom etasiz. Xohlamasangiz — mehmon bo'lib boshlang."],
@@ -7378,17 +7440,18 @@ function welcomePage() {
     ["Telefonga qanday o'rnataman?", "iPhone: Safari → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Keyin oddiy ilova kabi ochiladi."],
     ["Kuniga qancha vaqt kerak?", "Odatda 15–25 daqiqa. Vaqt kam bo'lsa, «2 daqiqa» tezkor takrorini qiling."]];
   app.innerHTML = `<div class="lx"><div class="lx-glow" aria-hidden="true"></div>
-  <div class="lx-w">
+  <div class="lx-stick" id="lxst"><div class="lx-w">
     <header class="lx-top"><span class="lx-logo"><img src="icons/icon-192.png" alt="" width="34" height="34">Ingliz tili</span>
       <nav class="lx-nav" aria-label="Sahifa bo'limlari"><a href="#" data-to="lx-kun">Qanday ishlaydi</a><a href="#" data-to="lx-dar">Darajalar</a><a href="#" data-to="lx-sav">Savollar</a></nav>
-      <button class="lx-in" data-in type="button">Kirish</button></header>
-    <section class="lx-hero">
+      <button class="lx-in" data-in type="button">Kirish</button><button class="lx-btn lx-p lx-tcta" data-go type="button" tabindex="-1">Bepul boshlash</button></header>
+  </div></div>
+  <div class="lx-w">
+    <section class="lx-hero" id="lxhero">
       <div>
         <h1 class="lx-h1">Ingliz tilini <em>yozib</em> o'rganing</h1>
         <p class="lx-lead">Kuniga 20 daqiqa: so'z, fe'l, grammatika va hikoya. Har bir qoida o'zbekcha tushuntiriladi, so'z esdan chiqay deganda qaytib keladi.</p>
         <div class="lx-ctas">${go}${guest("Mehmon sifatida sinash")}</div>
         <p class="lx-hint">Google bilan — telefon va kompyuterda bir xil progress. Mehmon — natijalar shu qurilmada, keyin kirsangiz hisobga qo'shiladi.</p>
-        <div class="lx-proof"><div><b>${nW.toLocaleString("ru").replace(/\s/g, " ")}+</b><span>so'z va ibora</span></div><div><b>${BOOKS.length}</b><span>o'qish uchun hikoya</span></div><div><b>A0–B1+</b><span>5 ta daraja</span></div><div><b>0 so'm</b><span>obunasiz</span></div></div>
       </div>
       <div class="lx-stage">
         <div class="lx-phone"><img src="img/lx-home.jpg" alt="Ilovaning bosh sahifasi: bugungi dars rejasi" width="296" height="640" fetchpriority="high"></div>
@@ -7409,31 +7472,35 @@ function welcomePage() {
         </div>
       </div>
     </section>
+    <div class="lx-proof"><div><small>So'z va ibora</small><b>${nW.toLocaleString("ru").replace(/\s/g, " ")}<i>+</i></b></div><div><small>O'qish uchun hikoya</small><b>${BOOKS.length}</b></div><div><small>Daraja, A0 dan B1+ gacha</small><b>5</b></div><div><small>Narxi, obunasiz</small><b>0 so'm</b></div></div>
   </div>
   <section class="lx-sec" id="lx-kun"><div class="lx-w">
     <div class="lx-sh"><h2 class="lx-h2">Bir kunlik dars<br>o'zi tuziladi</h2><p>Siz faqat «Boshlash»ni bosasiz. Qadamlar qaysi unitda ekaningiz va nimani unutayotganingizga qarab tanlanadi.</p></div>
-    <div class="lx-day">${steps.map(([t, d, m, ic], i) => `<div class="lx-st"><span class="n">${i + 1}</span><span class="m">${m} daq</span><span class="ic">${I(ic)}</span><b>${t}</b><span class="d">${d}</span></div>`).join("")}</div>
-    <div class="lx-sum"><span>Jami: <b>~${steps.reduce((a, x) => a + x[2], 0)} daqiqa</b> · istalgan joyda to'xtab, keyin davom etasiz</span><span class="lx-mu">kun oxirigacha qilsangiz — seriya olovi yonadi</span></div>
+    <div class="lx-track" role="img" aria-label="Dars qadamlari, jami ${steps.reduce((a, x) => a + x[2], 0)} daqiqa">${steps.map((x, i) => `<span style="flex:${x[2]};opacity:${.5 + i * .1}"></span>`).join("")}</div>
+    <ol class="lx-steps">${steps.map(([t, d, m], i) => `<li style="flex:${m};--o:${.5 + i * .1}"><span class="t"><span class="lx-mono">0${i + 1}</span><span>${m} daq</span></span><b>${t}</b><span class="d">${d}</span></li>`).join("")}</ol>
+    <div class="lx-tot"><span>Jami <b>~${steps.reduce((a, x) => a + x[2], 0)} daqiqa</b> · istalgan joyda to'xtab, keyin davom etasiz</span><span>Kun oxirigacha qilsangiz — seriya olovi yonadi</span></div>
+    <div class="lx-mid"><span>Birinchi dars ~${steps.reduce((a, x) => a + x[2], 0)} daqiqa. Ro'yxatdan o'tish shart emas.</span><button class="lx-btn lx-p" data-go type="button">Hoziroq boshlash</button></div>
   </div></section>
   <section class="lx-sec lx-nt"><div class="lx-w">
     <div class="lx-sh"><h2 class="lx-h2">Tanlamaysiz —<br>eslab qolasiz</h2><p>Variantdan tanlash oson, lekin esda qolmaydi. Shuning uchun deyarli hamma mashqda javobni o'zingiz yozasiz.</p></div>
     <div class="lx-bento">
-      <div class="lx-tile t1"><h3>Xato harf darrov ko'rinadi</h3><p>Noto'g'ri yozsangiz, qaysi harf xato ekanini ko'rasiz va to'g'risini qayta yozasiz — qo'l ham, ko'z ham eslab qoladi.</p>
-        <div class="lx-vis lx-wr" aria-hidden="true"><div><small>sizniki</small><span>t<span class="x">ou</span>ld</span></div><div><small>to'g'ri</small><span class="g">told</span></div></div></div>
-      <div class="lx-tile t2"><h3>Unutishdan oldin qaytaradi</h3><p>So'z ertaga, 3 kundan, bir haftadan va bir oydan keyin yana chiqadi. Yaxshi bilganlaringiz kamroq qaytadi.</p>
-        <div class="lx-vis"><svg class="lx-curve" viewBox="0 0 520 150" role="img" aria-label="Takrorlash: 1, 3, 7, 14 va 30 kundan keyin"><path d="M20 130H500" stroke="currentColor" stroke-opacity=".18"/><path d="M30 30 C 60 90, 80 110, 110 112 M110 30 C 150 70, 180 92, 200 96 M200 30 C 250 55, 290 70, 320 74 M320 30 C 370 45, 410 52, 430 54 M430 30 C 460 36, 490 40, 505 41" fill="none" stroke="#E8794A" stroke-width="3" stroke-linecap="round"/><g fill="#E8794A"><circle cx="110" cy="30" r="6"/><circle cx="200" cy="30" r="6"/><circle cx="320" cy="30" r="6"/><circle cx="430" cy="30" r="6"/></g><g font-size="14" fill="currentColor" fill-opacity=".6" text-anchor="middle"><text x="30" y="148">bugun</text><text x="110" y="148">1 kun</text><text x="200" y="148">3 kun</text><text x="320" y="148">7 kun</text><text x="430" y="148">14 kun</text><text x="500" y="148">30</text></g></svg></div></div>
-      <div class="lx-tile t3"><h3>Gapni bossangiz — tarjima</h3>
-        <p class="lx-story"><button type="button" class="lx-snt" data-t="O'tgan shanba kuni uch do'stim bilan Chimyonga bordim." aria-expanded="false" lang="en">Last Saturday, I went to Chimgan with three friends.</button> <button type="button" class="lx-snt" data-t="Yo'llar bo'sh, osmon musaffo edi." aria-expanded="false" lang="en">The roads were empty, and the sky was clear.</button></p>
-        <div class="lx-tr" id="lxtr" aria-live="polite"></div><p class="lx-sm">Bosib ko'ring · ${BOOKS.length} ta hikoya, 4 darajada</p></div>
-      <div class="lx-tile t4"><h3>${FEL.length} ta noto'g'ri fe'l</h3><p>Tovush oilalari bo'yicha: bitta qoida — o'nta fe'l.</p>
-        <div class="lx-vis lx-verbs">${["go|went", "tell|told", "buy|bought", "see|saw", "find|found"].map(x => { const [a, b] = x.split("|"); return `<span lang="en">${a} → <em>${b}</em></span>`; }).join("")}<span>+${FEL.length - 5}</span></div></div>
-      <div class="lx-tile t5"><h3>Telefon va kompyuterda</h3><p>Ilova kabi o'rnatiladi, internetsiz ham ishlaydi.</p>
-        <div class="lx-vis lx-dev"><div>${I('<rect x="7" y="2" width="10" height="20" rx="2.5"/>')}Bosh ekranga qo'shiladi</div><div>${I('<path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/>')}Progress ikkala qurilmada bir xil</div><div>${I('<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>')}Internet bo'lmasa ham dars davom etadi</div></div></div>
+      <div class="lx-tile t1"><div class="lx-vis" aria-hidden="true"><span class="lx-cap">Siz yozdingiz</span><div class="lx-keys"><span>t</span><span class="bad">o</span><span class="bad">u</span><span>l</span><span>d</span></div><span class="lx-cap">To'g'risi</span><div class="lx-keys"><span class="ok">t</span><span class="ok">o</span><span class="ok">l</span><span class="ok">d</span></div></div>
+        <div class="lx-tx"><h3>Xato harf darrov ko'rinadi</h3><p>Qaysi harf noto'g'ri ekanini ko'rasiz va qayta yozasiz — qo'l ham, ko'z ham eslab qoladi.</p></div></div>
+      <div class="lx-tile t2"><div class="lx-vis"><svg class="lx-curve" viewBox="0 0 520 150" role="img" aria-label="Takrorlash: 1, 3, 7, 14 va 30 kundan keyin"><path d="M20 130H500" stroke="currentColor" stroke-opacity=".18"/><path d="M30 30 C 60 90, 80 110, 110 112 M110 30 C 150 70, 180 92, 200 96 M200 30 C 250 55, 290 70, 320 74 M320 30 C 370 45, 410 52, 430 54 M430 30 C 460 36, 490 40, 505 41" fill="none" stroke="#E8794A" stroke-width="3" stroke-linecap="round"/><g fill="#E8794A"><circle cx="110" cy="30" r="6"/><circle cx="200" cy="30" r="6"/><circle cx="320" cy="30" r="6"/><circle cx="430" cy="30" r="6"/></g><g font-size="14" fill="currentColor" fill-opacity=".6" text-anchor="middle"><text x="30" y="148">bugun</text><text x="110" y="148">1 kun</text><text x="200" y="148">3 kun</text><text x="320" y="148">7 kun</text><text x="430" y="148">14 kun</text><text x="500" y="148">30</text></g></svg></div>
+        <div class="lx-tx"><h3>Unutishdan oldin qaytaradi</h3><p>Ertaga, 3 kundan, bir haftadan va bir oydan keyin. Yaxshi bilganlaringiz kamroq qaytadi.</p></div></div>
+      <div class="lx-tile t3"><div class="lx-vis lx-vs"><p class="lx-story"><button type="button" class="lx-snt" data-t="O'tgan shanba kuni uch do'stim bilan Chimyonga bordim." aria-expanded="false" lang="en">Last Saturday, I went to Chimgan with three friends.</button> <button type="button" class="lx-snt" data-t="Yo'llar bo'sh, osmon musaffo edi." aria-expanded="false" lang="en">The roads were empty, and the sky was clear.</button></p>
+        <div class="lx-tr" id="lxtr" aria-live="polite"></div></div>
+        <div class="lx-tx"><h3>Gapni bossangiz — tarjima</h3><p>Bosib ko'ring ↑ · ${BOOKS.length} ta hikoya, 4 darajada</p></div></div>
+      <div class="lx-tile t4"><div class="lx-vis lx-verbs">${["go|went", "tell|told", "buy|bought", "see|saw", "find|found"].map(x => { const [a, b] = x.split("|"); return `<span lang="en">${a} → <em>${b}</em></span>`; }).join("")}<span>+${FEL.length - 5}</span></div>
+        <div class="lx-tx"><h3>${FEL.length} ta noto'g'ri fe'l</h3><p>Tovush oilalari bo'yicha: bitta qoida — o'nta fe'l.</p></div></div>
+      <div class="lx-tile t5"><div class="lx-vis lx-dev"><div>${I('<rect x="7" y="2" width="10" height="20" rx="2.5"/>')}Bosh ekranga qo'shiladi</div><div>${I('<path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/>')}Progress ikkala qurilmada bir xil</div><div>${I('<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>')}Internetsiz ham dars davom etadi</div></div>
+        <div class="lx-tx"><h3>Telefon va kompyuterda</h3><p>Ilova kabi o'rnatiladi, internetsiz ham ishlaydi.</p></div></div>
     </div>
   </div></section>
   <section class="lx-sec lx-nt" id="lx-dar"><div class="lx-w">
     <div class="lx-sh"><h2 class="lx-h2">Qayerdan boshlasangiz ham</h2><p>Darajani o'zingiz tanlaysiz va istalgan payt almashtirasiz. Bugungi reja, hikoyalar va so'z o'yini tanlangan darajaga moslashadi.</p></div>
-    <div class="lx-lad">${lv.map(([c, t, d, u]) => `<div class="lx-lv"><span class="c">${c}</span><b>${t}</b><span class="d">${d}</span><span class="u">${u}</span></div>`).join("")}</div>
+    <div class="lx-path" role="list">${lv.map(([c, t, d, u], i) => `<button class="lx-node" type="button" data-lv="${i}" role="listitem" aria-pressed="false"><i aria-hidden="true"></i><span class="c">${c}</span><b>${t}</b><span class="d">${d}</span><small>${u}</small></button>`).join("")}</div>
+    <div class="lx-lvcta" id="lxlv" hidden></div>
   </div></section>
   <section class="lx-sec lx-nt" id="lx-sav"><div class="lx-w">
     <div class="lx-sh"><h2 class="lx-h2">Savollar</h2></div>
@@ -7446,6 +7513,14 @@ function welcomePage() {
   </div></div>`;
   app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; scrollTo(0, 0); render(); });
   app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
+  /* yopishqoq panel: hero ko'rinmay qolganda tepada «Bepul boshlash» */
+  const stk = $("#lxst"), hero = $("#lxhero");
+  if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); const b = stk.querySelector(".lx-tcta"); if (b) b.tabIndex = on ? 0 : -1; }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero); WIO = io; }
+  /* darajani tanlash → shu darajadan mehmon sifatida boshlash */
+  app.querySelectorAll(".lx-node").forEach(n => n.onclick = () => { const i = +n.dataset.lv;
+    app.querySelectorAll(".lx-node").forEach(x => { const on = x === n; x.classList.toggle("sel", on); x.setAttribute("aria-pressed", on); });
+    const c = $("#lxlv"); c.hidden = false; c.innerHTML = `<span><b>${lv[i][1]}</b> tanlandi · ${lv[i][3]}</span><button class="lx-btn lx-p" type="button" id="lxlvgo">${lv[i][1]}'dan boshlash →</button>`;
+    $("#lxlvgo").onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} setLevel(LVID[i]); if (!S.course) { const r = readyUnits(LVID[i]); if (r.length) { S.course = r[0]; save(); } } SYW = false; scrollTo(0, 0); render(); }; });
   app.querySelectorAll("[data-to]").forEach(a => a.onclick = e => { e.preventDefault(); const t = document.getElementById(a.dataset.to); if (t) t.scrollIntoView({ behavior: calm() ? "auto" : "smooth" }); });
   /* jonli sinov: so'zni yozib, harfma-harf tekshirish (ilovadagi asosiy mashq) */
   const DW = [["kitob", "book", "[buk]"], ["do'st", "friend", "[frend]"], ["ertaga", "tomorrow", "[ta-MO-rou]"]];

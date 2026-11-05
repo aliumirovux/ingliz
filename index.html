@@ -3625,7 +3625,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061500";
+const APP_V = "202611061600";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7384,7 +7384,6 @@ function welcomePage() {
       <button class="lx-in" data-in type="button">Kirish</button></header>
     <section class="lx-hero">
       <div>
-        <span class="lx-eb"><b></b>Bepul · reklamasiz · o'zbek tilida</span>
         <h1 class="lx-h1">Ingliz tilini <em>yozib</em> o'rganing</h1>
         <p class="lx-lead">Kuniga 20 daqiqa: so'z, fe'l, grammatika va hikoya. Har bir qoida o'zbekcha tushuntiriladi, so'z esdan chiqay deganda qaytib keladi.</p>
         <div class="lx-ctas">${go}${guest("Mehmon sifatida sinash")}</div>

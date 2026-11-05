@@ -635,16 +635,21 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 
 
 /* LANDING v2 («Tun»): doim qorong'i, keng; ilova klasslari bilan to'qnashmasligi uchun hammasi lx- bilan */
-body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}body.lp-on #app.wrap{max-width:none;padding:0}
+body.lp-on{background:#0E0E10;padding-bottom:0}html:has(body.lp-on){background:#0E0E10;color-scheme:dark}
+.lx ::selection{background:rgba(232,121,74,.38);color:#fff}.lx-in2{caret-color:var(--ac)}body.lp-on .aura{display:none}body.lp-on #app.wrap{max-width:none;padding:0}
 .lx{--ink:#F2F1EC;--mu:#A2A19B;--line:#26262B;--card:#17171A;--chip:#212126;--ac:#E8794A;--act:#F09A72;color:var(--ink);position:relative;overflow:hidden;-webkit-user-select:text;user-select:text;color-scheme:dark}
 .lx *{box-sizing:border-box;min-width:0}.lx h1,.lx h2,.lx h3{margin:0;font-weight:700;letter-spacing:-.025em;color:var(--ink)}.lx p{margin:0}.lx a{color:inherit}
 .lx-mu{color:var(--mu)}
-.lx-glow{position:absolute;right:-120px;top:-220px;width:900px;height:700px;background:radial-gradient(closest-side,rgba(232,121,74,.26),transparent);pointer-events:none}
+.lx-glow{position:absolute;inset:0 0 auto 0;height:760px;background:linear-gradient(180deg,#17171A 0%,#0E0E10 100%);pointer-events:none}
 .lx-w{max-width:1180px;margin:0 auto;padding:0 max(32px,env(safe-area-inset-left,0px));position:relative}
-.lx-top{display:flex;align-items:center;gap:28px;padding:22px 0}
+.lx-top{display:flex;align-items:center;gap:32px;min-height:64px;padding:16px 0}
 .lx-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}.lx-logo img{border-radius:10px}
-.lx-nav{display:flex;gap:24px;margin-left:auto;font-size:15px}.lx-nav a{color:var(--mu);text-decoration:none;padding:10px 0}.lx-nav a:hover{color:var(--ink)}
-.lx-in{border:0;background:none;font:600 15px var(--font-body);color:var(--act);cursor:pointer;min-height:44px;padding:0 6px}
+.lx-nav{display:flex;gap:4px;margin-left:auto;font-size:15px;font-weight:500}
+.lx-nav a{color:var(--mu);text-decoration:none;display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:999px;transition:color .15s ease,background-color .15s ease}
+.lx-nav a:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+.lx-act{display:flex;align-items:center;gap:8px}
+.lx-in{border:0;background:none;font:600 15px var(--font-body);color:var(--ink);cursor:pointer;min-height:40px;padding:0 16px;border-radius:999px;transition:background-color .15s ease}
+.lx-in:hover{background:rgba(255,255,255,.06)}
 .lx-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 26px;border-radius:999px;font:600 17px var(--font-body);border:0;cursor:pointer;white-space:nowrap;text-decoration:none}
 .lx-btn svg{width:20px;height:20px}.lx-btn:disabled{opacity:.6;cursor:default}
 .lx-p{background:var(--ink);color:#111}.lx-s{background:var(--chip);color:var(--ink)}
@@ -657,9 +662,9 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 .lx-hint{font-size:14px;color:var(--mu);margin-top:14px!important;max-width:46ch;line-height:1.5}
 .lx-proof{display:flex;flex-wrap:wrap;gap:20px 32px;margin-top:40px;padding-top:26px;border-top:1px solid var(--line)}
 .lx-proof b{display:block;font-size:30px;letter-spacing:-.03em;font-weight:700;font-variant-numeric:tabular-nums}.lx-proof span{font-size:14px;color:var(--mu)}
-.lx-stage{position:relative;min-height:660px}
-.lx-phone{position:absolute;right:0;top:0;width:296px;border-radius:44px;overflow:hidden;border:8px solid #1d1d21;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}.lx-phone img{display:block;width:100%;height:auto}
-.lx-demo{position:absolute;left:0;bottom:24px;width:min(420px,100%);background:var(--card);border-radius:28px;padding:24px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7);border:1px solid var(--line)}
+.lx-stage{position:relative;min-height:680px}
+.lx-phone{position:absolute;right:32px;top:0;width:296px;border-radius:44px;overflow:hidden;border:8px solid #1d1d21;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}.lx-phone img{display:block;width:100%;height:auto}
+.lx-demo{position:absolute;right:0;bottom:0;width:min(440px,100%);background:var(--card);border-radius:28px;padding:24px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7);border:1px solid var(--line)}
 .lx-lbl{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 .lx-dots{display:flex;gap:6px}.lx-dots i{width:22px;height:4px;border-radius:2px;background:var(--line)}.lx-dots i.on{background:var(--ac)}
 .lx-uz{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:14px 0 4px}.lx-pr{font-size:15px;color:var(--mu)}
@@ -702,17 +707,18 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 .lx-faq summary{cursor:pointer;font-weight:600;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:16px}.lx-faq summary::-webkit-details-marker{display:none}
 .lx-faq summary::after{content:"+";color:var(--mu);font-weight:400;font-size:22px;line-height:1}.lx-faq details[open] summary::after{content:"–"}
 .lx-faq p{margin-top:12px;color:var(--mu);line-height:1.55;font-size:16px}
-.lx-final{margin:0 0 72px;border-radius:36px;padding:72px 56px;background:linear-gradient(135deg,#E8794A,#B9441F);color:#fff;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
-.lx-final .lx-h2{color:#fff}.lx-final p{opacity:.85;font-size:18px;margin-top:14px;line-height:1.5}
+.lx-final{margin:0 0 72px;border-radius:36px;padding:72px 56px;background:linear-gradient(135deg,#F0895C,#E06A39);color:#1A0D06;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+.lx-final .lx-h2{color:#1A0D06}.lx-final p{color:#3A1E10;font-size:18px;margin-top:14px;line-height:1.5}
 .lx-final .lx-ctas{flex-direction:column;align-items:stretch;justify-self:end;width:min(320px,100%);margin:0}
-.lx-final .lx-p{background:#111;color:#fff}.lx-final .lx-s{background:rgba(255,255,255,.16);color:#fff}
+.lx-final .lx-p{background:#111;color:#fff}.lx-final .lx-s{background:rgba(26,13,6,.10);color:#1A0D06;box-shadow:inset 0 0 0 1.5px rgba(26,13,6,.35)}
+.lx-final .lx-btn:focus-visible{outline-color:#1A0D06}
 .lx-foot{display:flex;justify-content:space-between;gap:16px;padding:28px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:14px;color:var(--mu)}
 @media (max-width:900px){
   .lx-w{padding:0 20px}.lx-nav{display:none}.lx-top{justify-content:space-between;padding:14px 0}
   .lx-hero{grid-template-columns:1fr;gap:32px;padding:20px 0 48px}.lx-lead{font-size:18px}
   .lx-ctas .lx-btn{flex:1 1 100%}
   .lx-proof{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-  .lx-stage{min-height:0}.lx-phone{display:none}.lx-demo{position:relative;bottom:auto;width:100%}
+  .lx-stage{min-height:0}.lx-phone{display:none}.lx-demo{position:relative;bottom:auto;right:auto;width:100%}
   .lx-sec{padding:64px 0}.lx-nt{padding-top:0}.lx-sh{flex-direction:column;align-items:flex-start;margin-bottom:28px}
   .lx-day{grid-template-columns:1fr 1fr}.lx-sum{flex-direction:column;align-items:flex-start;gap:6px}
   .lx-bento{grid-template-columns:1fr}.lx-tile.t1,.lx-tile.t2,.lx-tile.t3,.lx-tile.t4,.lx-tile.t5{grid-column:auto}
@@ -729,14 +735,13 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 .lx-sent{position:absolute;top:0;left:0;width:1px;height:8px;pointer-events:none}
 .lx-stick.sc,.lx-stick.on{background:rgba(14,14,16,.86);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.lx-stick.sc,.lx-stick.on{background:#0E0E10}}
-.lx-stick .lx-top{transition:padding .2s ease}.lx-stick.sc .lx-top,.lx-stick.on .lx-top{padding:12px 0}
-.lx-tcta{min-height:42px;padding:0 18px;font-size:15px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease}
-.lx-stick.on .lx-tcta{opacity:1;pointer-events:auto;transform:none}
+.lx-stick .lx-top{transition:padding .2s ease}.lx-stick.sc .lx-top,.lx-stick.on .lx-top{padding:10px 0}
+.lx-tcta{min-height:40px;padding:0 18px;font-size:15px}
 .lx-proof{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin:0 0 8px;padding:0;border:0}
 .lx-proof div{border-top:1px solid var(--line);padding-top:18px}
 .lx-proof small{display:block;font-size:13px;color:var(--mu);margin-bottom:10px}
 .lx-proof b{display:block;font-size:44px;letter-spacing:-.03em;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}.lx-proof b i{font-style:normal;color:var(--ac)}
-.lx-mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px}
+.lx-mono{font-variant-numeric:tabular-nums;font-weight:600;color:var(--mu)}
 .lx-track{display:flex;gap:4px;height:14px;border-radius:999px;overflow:hidden}.lx-track span{background:var(--ac)}
 .lx-steps{display:flex;gap:4px;margin:22px 0 0;padding:0;list-style:none}
 .lx-steps li{padding-right:12px}
@@ -753,7 +758,7 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 .lx-tile .lx-vs{justify-content:flex-start}
 .lx-tile .lx-verbs{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;align-content:center;align-items:flex-start;gap:8px}
 .lx-tx{padding:22px 28px 26px}.lx-tx h3{font-size:21px;line-height:1.2}.lx-tx p{color:var(--mu);font-size:15px;line-height:1.5;margin-top:6px}
-.lx-cap{font-size:12px;color:#6F6E69;text-transform:uppercase;letter-spacing:.08em}
+.lx-cap{font-size:12px;color:#8E8D87;text-transform:uppercase;letter-spacing:.08em}
 .lx-keys{display:flex;gap:6px;flex-wrap:wrap}
 .lx-keys span{display:inline-grid;place-items:center;min-width:46px;height:56px;padding:0 10px;border-radius:12px;background:#222227;box-shadow:inset 0 -3px 0 rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);font:600 28px var(--font-body);color:var(--ink)}
 .lx-keys .bad{background:rgba(255,110,80,.16);color:#FF9C86}.lx-keys .ok{color:#7FD39B}
@@ -761,14 +766,14 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 .lx-path::before{content:"";position:absolute;left:18px;right:18px;top:20px;height:2px;background:linear-gradient(90deg,var(--line),var(--ac))}
 .lx-node{all:unset;box-sizing:border-box;position:relative;display:block;padding:8px;margin:-8px;border-radius:18px;cursor:pointer;transition:background .15s ease}
 .lx-node:hover{background:rgba(255,255,255,.03)}.lx-node:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.lx-node i{display:block;width:22px;height:22px;border-radius:50%;background:#0E0E10;border:2px solid var(--ac);margin:0 0 22px;transition:background .15s,box-shadow .15s}
+.lx-node i{display:block;width:22px;height:22px;border-radius:50%;background:#0E0E10;border:2px solid var(--ac);margin:0 0 22px;transition:background .15s,transform .15s}
 .lx-node:nth-child(1) i{border-color:#4a4a50}.lx-node:nth-child(2) i{border-color:#8a5a45}
-.lx-node.sel i{background:var(--ac);box-shadow:0 0 0 6px rgba(232,121,74,.2)}
+.lx-node.sel i{background:var(--ac);transform:scale(1.18)}
 .lx-node .c{display:block;font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--ink)}
 .lx-node b{display:block;font-size:17px;margin:10px 0 6px}.lx-node .d{display:block;font-size:14px;color:var(--mu);line-height:1.45}
 .lx-node small{display:block;margin-top:12px;font-size:13px;color:var(--act);font-weight:600}
 @media (max-width:900px){
-  .lx-tcta{display:none}
+  .lx-tcta{display:none;min-height:36px;padding:0 14px;font-size:14px}.lx-stick.on .lx-tcta{display:inline-flex}.lx-stick.on .lx-in{padding:0 10px}
   .lx-proof{grid-template-columns:1fr 1fr}.lx-proof b{font-size:36px}
   /* telefonda gorizontal chiziq va 2 ustunli ro'yxat bir-biriga bog'lanmay qolardi: bitta vertikal jadval — har qadam chap tomonida o'z rangli bo'lagi */
   .lx-track{display:none}
@@ -3687,7 +3692,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061800";
+const APP_V = "202611062000";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7445,7 +7450,7 @@ function welcomePage() {
   <div class="lx-stick" id="lxst"><div class="lx-w">
     <header class="lx-top"><span class="lx-logo"><img src="icons/icon-192.png" alt="" width="34" height="34">Ingliz tili</span>
       <nav class="lx-nav" aria-label="Sahifa bo'limlari"><a href="#" data-to="lx-kun">Qanday ishlaydi</a><a href="#" data-to="lx-dar">Darajalar</a><a href="#" data-to="lx-sav">Savollar</a></nav>
-      <button class="lx-in" data-in type="button">Kirish</button><button class="lx-btn lx-p lx-tcta" data-go type="button" tabindex="-1">Bepul boshlash</button></header>
+      <div class="lx-act"><button class="lx-in" data-in type="button">Kirish</button><button class="lx-btn lx-p lx-tcta" data-go type="button">Bepul boshlash</button></div></header>
   </div></div>
   <div class="lx-w">
     <section class="lx-hero" id="lxhero">
@@ -7517,7 +7522,7 @@ function welcomePage() {
   app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
   /* yopishqoq panel: hero ko'rinmay qolganda tepada «Bepul boshlash» */
   const stk = $("#lxst"), hero = $("#lxhero");
-  if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); const b = stk.querySelector(".lx-tcta"); if (b) b.tabIndex = on ? 0 : -1; }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero);
+  if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero);
     /* sahifa sal pastga surilishi bilan panelga fon — yozuv ostidan ko'rinib qolmasin */
     const io2 = new IntersectionObserver(([e]) => stk.classList.toggle("sc", !e.isIntersecting)); io2.observe($("#lxsent")); WIO = { disconnect: () => { io.disconnect(); io2.disconnect(); } }; }
   /* darajani tanlash → shu darajadan mehmon sifatida boshlash */

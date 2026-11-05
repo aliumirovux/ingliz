@@ -1450,7 +1450,8 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .ai-note{flex:none;margin:0;padding:0 16px 10px;text-align:center;color:var(--muted);font-size:12px}
 .aiw button:focus-visible,.ai-inp textarea:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 @media (min-width:980px){
-  .aifab{right:24px;bottom:24px}
+  /* katta ekranda tugma ekran burchagida emas, pastki menyuning yonida turadi (ko'z shu yerda) */
+  .aifab{right:auto;left:calc(50% + 232px);bottom:calc(12px + (var(--nav-h) - 56px) / 2 + env(safe-area-inset-bottom,0px))}
   body.has-aifab{padding-bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px))}
   .aiw{inset:0 0 0 auto;width:412px;pointer-events:none}
   .ai-bd,.ai-top .qs-grab{display:none}
@@ -3522,7 +3523,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611060700";
+const APP_V = "202611060800";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

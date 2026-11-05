@@ -726,8 +726,10 @@ body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}bod
 /* landing v2.1: yopishqoq panel, raqamlar ustunlari, vaqt chizig'i, vizual-ustun bento, darajalar yo'li */
 .lx{overflow:hidden}@supports (overflow:clip){.lx{overflow:clip}}
 .lx-stick{position:sticky;top:0;z-index:30;transition:background .2s ease,box-shadow .2s ease}
-.lx-stick.on{background:rgba(14,14,16,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line)}
-.lx-stick .lx-top{transition:padding .2s ease}.lx-stick.on .lx-top{padding:12px 0}
+.lx-sent{position:absolute;top:0;left:0;width:1px;height:8px;pointer-events:none}
+.lx-stick.sc,.lx-stick.on{background:rgba(14,14,16,.86);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.lx-stick.sc,.lx-stick.on{background:#0E0E10}}
+.lx-stick .lx-top{transition:padding .2s ease}.lx-stick.sc .lx-top,.lx-stick.on .lx-top{padding:12px 0}
 .lx-tcta{min-height:42px;padding:0 18px;font-size:15px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease}
 .lx-stick.on .lx-tcta{opacity:1;pointer-events:auto;transform:none}
 .lx-proof{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin:0 0 8px;padding:0;border:0}
@@ -3685,7 +3687,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061700";
+const APP_V = "202611061800";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7439,7 +7441,7 @@ function welcomePage() {
     ["Navigate kitobi kerakmi?", "Shart emas. Beginner va Pre-intermediate kitob bilan mos, Elementary va Intermediate — ilova uchun alohida tuzilgan to'plam."],
     ["Telefonga qanday o'rnataman?", "iPhone: Safari → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Keyin oddiy ilova kabi ochiladi."],
     ["Kuniga qancha vaqt kerak?", "Odatda 15–25 daqiqa. Vaqt kam bo'lsa, «2 daqiqa» tezkor takrorini qiling."]];
-  app.innerHTML = `<div class="lx"><div class="lx-glow" aria-hidden="true"></div>
+  app.innerHTML = `<div class="lx"><div class="lx-glow" aria-hidden="true"></div><div class="lx-sent" id="lxsent" aria-hidden="true"></div>
   <div class="lx-stick" id="lxst"><div class="lx-w">
     <header class="lx-top"><span class="lx-logo"><img src="icons/icon-192.png" alt="" width="34" height="34">Ingliz tili</span>
       <nav class="lx-nav" aria-label="Sahifa bo'limlari"><a href="#" data-to="lx-kun">Qanday ishlaydi</a><a href="#" data-to="lx-dar">Darajalar</a><a href="#" data-to="lx-sav">Savollar</a></nav>
@@ -7515,7 +7517,9 @@ function welcomePage() {
   app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
   /* yopishqoq panel: hero ko'rinmay qolganda tepada «Bepul boshlash» */
   const stk = $("#lxst"), hero = $("#lxhero");
-  if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); const b = stk.querySelector(".lx-tcta"); if (b) b.tabIndex = on ? 0 : -1; }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero); WIO = io; }
+  if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); const b = stk.querySelector(".lx-tcta"); if (b) b.tabIndex = on ? 0 : -1; }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero);
+    /* sahifa sal pastga surilishi bilan panelga fon — yozuv ostidan ko'rinib qolmasin */
+    const io2 = new IntersectionObserver(([e]) => stk.classList.toggle("sc", !e.isIntersecting)); io2.observe($("#lxsent")); WIO = { disconnect: () => { io.disconnect(); io2.disconnect(); } }; }
   /* darajani tanlash → shu darajadan mehmon sifatida boshlash */
   app.querySelectorAll(".lx-node").forEach(n => n.onclick = () => { const i = +n.dataset.lv;
     app.querySelectorAll(".lx-node").forEach(x => { const on = x === n; x.classList.toggle("sel", on); x.setAttribute("aria-pressed", on); });

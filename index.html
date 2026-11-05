@@ -631,6 +631,94 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--marker);outline-offse
 .xm2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 
+/* LANDING v2 («Tun»): doim qorong'i, keng; ilova klasslari bilan to'qnashmasligi uchun hammasi lx- bilan */
+body.lp-on{background:#0E0E10;padding-bottom:0}body.lp-on .aura{display:none}body.lp-on #app.wrap{max-width:none;padding:0}
+.lx{--ink:#F2F1EC;--mu:#A2A19B;--line:#26262B;--card:#17171A;--chip:#212126;--ac:#E8794A;--act:#F09A72;color:var(--ink);position:relative;overflow:hidden;-webkit-user-select:text;user-select:text;color-scheme:dark}
+.lx *{box-sizing:border-box;min-width:0}.lx h1,.lx h2,.lx h3{margin:0;font-weight:700;letter-spacing:-.025em;color:var(--ink)}.lx p{margin:0}.lx a{color:inherit}
+.lx-mu{color:var(--mu)}
+.lx-glow{position:absolute;right:-120px;top:-220px;width:900px;height:700px;background:radial-gradient(closest-side,rgba(232,121,74,.26),transparent);pointer-events:none}
+.lx-w{max-width:1180px;margin:0 auto;padding:0 max(32px,env(safe-area-inset-left,0px));position:relative}
+.lx-top{display:flex;align-items:center;gap:28px;padding:22px 0}
+.lx-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}.lx-logo img{border-radius:10px}
+.lx-nav{display:flex;gap:24px;margin-left:auto;font-size:15px}.lx-nav a{color:var(--mu);text-decoration:none;padding:10px 0}.lx-nav a:hover{color:var(--ink)}
+.lx-in{border:0;background:none;font:600 15px var(--font-body);color:var(--act);cursor:pointer;min-height:44px;padding:0 6px}
+.lx-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 26px;border-radius:999px;font:600 17px var(--font-body);border:0;cursor:pointer;white-space:nowrap;text-decoration:none}
+.lx-btn svg{width:20px;height:20px}.lx-btn:disabled{opacity:.6;cursor:default}
+.lx-p{background:var(--ink);color:#111}.lx-s{background:var(--chip);color:var(--ink)}
+.lx button:focus-visible,.lx a:focus-visible,.lx summary:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+.lx-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:48px 0 72px}
+.lx-eb{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--act);background:var(--chip);padding:7px 12px;border-radius:999px;margin-bottom:22px}.lx-eb b{width:8px;height:8px;border-radius:50%;background:var(--ac)}
+.lx-h1{font-size:clamp(44px,5.6vw,84px);line-height:.98;text-wrap:balance}.lx-h1 em{font-style:normal;color:var(--ac)}
+.lx-lead{font-size:20px;line-height:1.5;color:var(--mu);margin-top:22px!important;max-width:34ch}
+.lx-ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.lx-hint{font-size:14px;color:var(--mu);margin-top:14px!important;max-width:46ch;line-height:1.5}
+.lx-proof{display:flex;flex-wrap:wrap;gap:20px 32px;margin-top:40px;padding-top:26px;border-top:1px solid var(--line)}
+.lx-proof b{display:block;font-size:30px;letter-spacing:-.03em;font-weight:700;font-variant-numeric:tabular-nums}.lx-proof span{font-size:14px;color:var(--mu)}
+.lx-stage{position:relative;min-height:660px}
+.lx-phone{position:absolute;right:0;top:0;width:296px;border-radius:44px;overflow:hidden;border:8px solid #1d1d21;box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}.lx-phone img{display:block;width:100%;height:auto}
+.lx-demo{position:absolute;left:0;bottom:24px;width:min(420px,100%);background:var(--card);border-radius:28px;padding:24px;box-shadow:0 30px 70px -20px rgba(0,0,0,.7);border:1px solid var(--line)}
+.lx-lbl{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.lx-dots{display:flex;gap:6px}.lx-dots i{width:22px;height:4px;border-radius:2px;background:var(--line)}.lx-dots i.on{background:var(--ac)}
+.lx-uz{font-size:34px;font-weight:700;letter-spacing:-.02em;margin:14px 0 4px}.lx-pr{font-size:15px;color:var(--mu)}
+.lx-in2{width:100%;height:58px;margin-top:18px;border-radius:16px;border:2px solid var(--line);background:#0E0E10;color:var(--ink);font:500 22px var(--font-body);padding:0 18px;outline:none;-webkit-user-select:text;user-select:text}.lx-in2:focus{border-color:var(--ac)}
+.lx-diff{display:flex;flex-wrap:wrap;gap:2px;font:600 24px var(--font-body);margin-top:14px;min-height:32px;letter-spacing:.02em}
+.lx-diff span{padding:0 3px;border-radius:6px}.lx-diff .ok{color:#7FD39B}.lx-diff .bad{background:rgba(255,110,80,.16);color:#FF9C86}.lx-diff .miss{color:var(--mu);text-decoration:underline}
+.lx-row{display:flex;gap:10px;margin-top:16px}.lx-row .lx-btn{min-height:50px;font-size:16px;flex:1}
+.lx-done{display:none}.lx-demo.fin .lx-q{display:none}.lx-demo.fin .lx-done{display:block}
+.lx-done h3{font-size:26px;margin:12px 0 8px}.lx-done p{color:var(--mu);line-height:1.5}
+.lx-sec{padding:96px 0}.lx-nt{padding-top:0}
+.lx-sh{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:40px}.lx-sh p{max-width:42ch;color:var(--mu);font-size:18px;line-height:1.5}
+.lx-h2{font-size:clamp(34px,3.9vw,56px);line-height:1.02}
+.lx-day{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.lx-st{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 18px 22px;position:relative}
+.lx-st .n{font-size:13px;color:var(--mu);font-weight:600}.lx-st .m{position:absolute;top:18px;right:16px;font-size:13px;font-weight:600;color:var(--act)}
+.lx-st .ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--chip);margin:14px 0 16px;color:var(--act)}.lx-st .ic svg{width:22px;height:22px}
+.lx-st b{display:block;font-size:17px}.lx-st .d{display:block;font-size:14px;color:var(--mu);margin-top:6px;line-height:1.4}
+.lx-sum{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;padding:18px 22px;border-radius:18px;background:var(--chip);font-size:16px}
+.lx-bento{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(240px,auto);gap:16px}
+.lx-tile{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.lx-tile h3{font-size:24px;line-height:1.15}.lx-tile p{color:var(--mu);font-size:16px;line-height:1.5}
+.lx-tile.t1,.lx-tile.t2{grid-column:span 3}.lx-tile.t3,.lx-tile.t4,.lx-tile.t5{grid-column:span 2}
+.lx-vis{margin-top:auto}
+.lx-wr{display:flex;flex-direction:column;gap:10px}.lx-wr div{display:flex;align-items:center;gap:12px;font:600 26px var(--font-body)}.lx-wr small{font:500 13px var(--font-body);color:var(--mu);width:76px}
+.lx-wr .x{background:rgba(255,110,80,.16);color:#FF9C86;border-radius:6px;padding:0 3px}.lx-wr .g{color:#7FD39B}
+.lx-curve{width:100%;height:auto;display:block;color:var(--ink)}
+.lx p.lx-story{color:var(--ink);font-size:18px;line-height:1.6}
+.lx-snt{all:unset;cursor:pointer;border-radius:6px;transition:background .15s}.lx-snt:hover{background:var(--chip)}.lx-snt[aria-expanded="true"]{background:rgba(232,121,74,.22)}
+.lx-snt:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.lx-tr{display:none;padding:12px 14px;border-radius:14px;background:var(--chip);font-size:15px}.lx-tr.on{display:block}
+.lx p.lx-sm{font-size:14px;margin-top:auto}
+.lx-verbs{display:flex;flex-wrap:wrap;gap:8px}.lx-verbs span{padding:9px 12px;border-radius:12px;background:var(--chip);font-weight:600;font-size:15px}.lx-verbs em{font-style:normal;color:var(--act)}
+.lx-dev{display:flex;flex-direction:column;gap:12px}.lx-dev div{display:flex;align-items:center;gap:12px;font-size:15px;font-weight:500}.lx-dev svg{width:22px;height:22px;flex:none;color:var(--act)}
+.lx-lad{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:end}
+.lx-lv{border-radius:22px;padding:22px 20px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.lx-lv .c{font-size:40px;font-weight:700;letter-spacing:-.03em;line-height:1}.lx-lv b{font-size:17px}.lx-lv .d{font-size:14px;color:var(--mu);line-height:1.45}.lx-lv .u{margin-top:auto;font-size:13px;font-weight:600;color:var(--act)}
+.lx-lv:nth-child(1){min-height:220px}.lx-lv:nth-child(2){min-height:250px}.lx-lv:nth-child(3){min-height:280px}.lx-lv:nth-child(4){min-height:310px}.lx-lv:nth-child(5){min-height:340px}
+.lx-faq{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.lx-faq details{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 22px}
+.lx-faq summary{cursor:pointer;font-weight:600;font-size:18px;list-style:none;display:flex;justify-content:space-between;gap:16px}.lx-faq summary::-webkit-details-marker{display:none}
+.lx-faq summary::after{content:"+";color:var(--mu);font-weight:400;font-size:22px;line-height:1}.lx-faq details[open] summary::after{content:"–"}
+.lx-faq p{margin-top:12px;color:var(--mu);line-height:1.55;font-size:16px}
+.lx-final{margin:0 0 72px;border-radius:36px;padding:72px 56px;background:linear-gradient(135deg,#E8794A,#B9441F);color:#fff;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+.lx-final .lx-h2{color:#fff}.lx-final p{opacity:.85;font-size:18px;margin-top:14px;line-height:1.5}
+.lx-final .lx-ctas{flex-direction:column;align-items:stretch;justify-self:end;width:min(320px,100%);margin:0}
+.lx-final .lx-p{background:#111;color:#fff}.lx-final .lx-s{background:rgba(255,255,255,.16);color:#fff}
+.lx-foot{display:flex;justify-content:space-between;gap:16px;padding:28px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:14px;color:var(--mu)}
+@media (max-width:900px){
+  .lx-w{padding:0 20px}.lx-nav{display:none}.lx-top{justify-content:space-between;padding:14px 0}
+  .lx-hero{grid-template-columns:1fr;gap:32px;padding:20px 0 48px}.lx-lead{font-size:18px}
+  .lx-ctas .lx-btn{flex:1 1 100%}
+  .lx-proof{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .lx-stage{min-height:0}.lx-phone{display:none}.lx-demo{position:relative;bottom:auto;width:100%}
+  .lx-sec{padding:64px 0}.lx-nt{padding-top:0}.lx-sh{flex-direction:column;align-items:flex-start;margin-bottom:28px}
+  .lx-day{grid-template-columns:1fr 1fr}.lx-sum{flex-direction:column;align-items:flex-start;gap:6px}
+  .lx-bento{grid-template-columns:1fr}.lx-tile.t1,.lx-tile.t2,.lx-tile.t3,.lx-tile.t4,.lx-tile.t5{grid-column:auto}
+  .lx-lad{grid-template-columns:1fr}.lx-lv{min-height:0!important}
+  .lx-faq{grid-template-columns:1fr}
+  .lx-final{grid-template-columns:1fr;padding:40px 24px;border-radius:28px}.lx-final .lx-ctas{justify-self:stretch;width:100%}
+  .lx-foot{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){.lx-snt{transition:none}}
 /* LANDING (kirmagan, birinchi marta) — saytning o'z tokenlari: yorug'/qorong'i avtomatik */
 body.lp-on .wrap{max-width:1120px}
 .lp{padding:0 4px 8px}
@@ -3533,7 +3621,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611061000";
+const APP_V = "202611061100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7271,25 +7359,105 @@ function loadingPage() {
 const lpPic = (n, cls, eager) => `<div class="lp-ph${cls ? " " + cls : ""}"><picture><source media="(prefers-color-scheme: dark)" srcset="img/lp-${n}-dark.jpg"><img src="img/lp-${n}-light.jpg" alt="" width="290" height="628"${eager ? "" : ' loading="lazy"'} decoding="async"></picture></div>`;
 function welcomePage() {
   SYW = true; document.body.classList.add("welcome", "lp-on");
-  const feats = [
-    ["fel", "Yozasiz, tanlamaysiz", "Har bir so'zni klaviaturada yozasiz. Xato qilsangiz, qaysi harf noto'g'ri ekanini ko'rasiz va to'g'risini qayta yozasiz — shunda qo'l ham, ko'z ham eslab qoladi."],
-    ["xotira", "Unutishdan oldin qaytaradi", `So'z esdan chiqay deganda yana chiqadi: ertaga, 3 kundan keyin, bir haftadan keyin, bir oydan keyin. Ilovadagi ${WORDS.length} so'zning qanchasi mustahkam — har kuni ko'rinib turadi.`],
-    ["read", "Kitobdek o'qing", `${BOOKS.length} ta hikoya — uzun, qiziqarli, o'zimizning hayotdan. Tushunmagan gapingizni bossangiz, ostida o'zbekcha tarjimasi chiqadi.`],
-    ["home", "Kuniga 15–25 daqiqa", "Bugungi dars o'zi tuziladi: yangi so'zlar, noto'g'ri fe'llar, qoida, gap tuzish va tinglash. Siz faqat «Boshlash»ni bosasiz."]];
-  const ctas = `<div class="lp-ctas"><button class="gbtn lp-g" data-in type="button">${G_LOGO}<span>Google bilan kirish</span></button><button class="btn ghost" data-go>Mehmon sifatida boshlash</button></div>`;
-  app.innerHTML = `<div class="lp">
-    <header class="lp-top"><span class="lp-logo"><img src="icons/icon-192.png" alt="" width="32" height="32">Ingliz tili</span><button class="lp-in" data-in>Kirish</button></header>
-    <section class="lp-hero"><div class="lp-hx"><h1>Ingliz tilini <em>yozib</em> o'rganing</h1>
-      <p class="lp-lead">Navigate (Oxford) kitobi bo'yicha kunlik mashq — so'zlar, fe'llar, grammatika va hikoyalar. O'zbek tilida, bepul, reklamasiz.</p>${ctas}
-      <p class="lp-hint">Google bilan kirsangiz — telefon va kompyuterda bir xil progress. Mehmon bo'lsangiz — natijalar shu qurilmada saqlanadi, keyin kirsangiz hisobingizga qo'shiladi.</p></div>
-      <div class="lp-hv">${lpPic("home", "tilt", true)}</div></section>
-    <div class="lp-lv" aria-label="Darajalar"><span>Noldan · alifbo</span><span>Beginner · A1</span><span>Elementary · A2</span><span>Pre-intermediate · B1</span><span>Intermediate · B1+</span></div>
-    ${feats.map(([n, t, d], i) => `<section class="lp-f${i % 2 ? " r" : ""}"><div class="lp-fv">${lpPic(n)}</div><div class="lp-fx"><h2>${t}</h2><p>${d}</p></div></section>`).join("")}
-    <section class="lp-card"><h2>Telefonga ilova kabi o'rnating</h2><p>iPhone: Safari'da oching → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Internet bo'lmasa ham ishlaydi; hisobga kirsangiz, telefon va kompyuterda bir xil progress.</p></section>
-    <section class="lp-card lp-end"><h2>Bugun birinchi 5 ta so'zni o'rganing</h2>${ctas}</section>
-    <footer class="lp-foot"><a href="privacy.html">Maxfiylik siyosati</a><span>Bepul · reklamasiz</span></footer></div>`;
+  const nW = Math.floor(WORDS.length / 100) * 100, I = (d, w) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const go = `<button class="lx-btn lx-p" data-in type="button">${G_LOGO}<span>Google bilan boshlash</span></button>`, guest = (t) => `<button class="lx-btn lx-s" data-go type="button">${t}</button>`;
+  const steps = [["Yangi so'zlar", "5 ta so'z, 3 xil mashqda", 5, '<path d="M12 5v14M5 12h14"/>'], ["Fe'llar", "go → went, yozib", 5, '<path d="M4 8h12l-3-3M20 16H8l3 3"/>'],
+    ["Grammatika", "bitta qoida, o'zbekcha", 3, '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z"/>'], ["Gap tuzish", "so'zlardan gap yig'asiz", 3, '<rect x="3" y="9" width="6" height="6" rx="1.5"/><rect x="11" y="9" width="10" height="6" rx="1.5"/>'],
+    ["Tayyor gaplar", "kundalik iboralar, ovoz chiqarib", 2, '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'], ["Tinglash", "video, gap-gap", 5, '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>']];
+  const lv = [["A0", "Noldan", "Alifbo, tovushlar, sonlar va darsdagi birinchi gaplar", GUIDES.length + " ta qo'llanma"], ["A1", "Beginner", "O'zingiz, oilangiz va kuningiz haqida gapirish", "10 unit · Navigate"],
+    ["A2", "Elementary", "Xarid, sayohat, sog'liq, o'tgan voqealar", "12 unit"], ["B1", "Pre-intermediate", "Fikr bildirish, rejalar, tajriba haqida hikoya", "12 unit · Navigate"], ["B1+", "Intermediate", "Munozara, frazal fe'llar, shart gaplar", "12 unit"]];
+  const faq = [["Rostdan ham bepulmi?", "Ha. Obuna, reklama va pullik qism yo'q. Hamma darajalar, hikoyalar va mashqlar ochiq."],
+    ["Internet kerakmi?", "Birinchi ochishda kerak. Keyin ilova qurilmangizda saqlanadi va internetsiz ham ishlaydi; ulanganda progress sinxronlanadi."],
+    ["Nega Google bilan kirish kerak?", "Faqat progressni saqlash uchun: telefonda boshlab, kompyuterda davom etasiz. Xohlamasangiz — mehmon bo'lib boshlang."],
+    ["Navigate kitobi kerakmi?", "Shart emas. Beginner va Pre-intermediate kitob bilan mos, Elementary va Intermediate — ilova uchun alohida tuzilgan to'plam."],
+    ["Telefonga qanday o'rnataman?", "iPhone: Safari → «Ulashish» → «Bosh ekranga». Android: Chrome menyusi → «Ilovani o'rnatish». Keyin oddiy ilova kabi ochiladi."],
+    ["Kuniga qancha vaqt kerak?", "Odatda 15–25 daqiqa. Vaqt kam bo'lsa, «2 daqiqa» tezkor takrorini qiling."]];
+  app.innerHTML = `<div class="lx"><div class="lx-glow" aria-hidden="true"></div>
+  <div class="lx-w">
+    <header class="lx-top"><span class="lx-logo"><img src="icons/icon-192.png" alt="" width="34" height="34">Ingliz tili</span>
+      <nav class="lx-nav" aria-label="Sahifa bo'limlari"><a href="#" data-to="lx-kun">Qanday ishlaydi</a><a href="#" data-to="lx-dar">Darajalar</a><a href="#" data-to="lx-sav">Savollar</a></nav>
+      <button class="lx-in" data-in type="button">Kirish</button></header>
+    <section class="lx-hero">
+      <div>
+        <span class="lx-eb"><b></b>Bepul · reklamasiz · o'zbek tilida</span>
+        <h1 class="lx-h1">Ingliz tilini <em>yozib</em> o'rganing</h1>
+        <p class="lx-lead">Kuniga 20 daqiqa: so'z, fe'l, grammatika va hikoya. Har bir qoida o'zbekcha tushuntiriladi, so'z esdan chiqay deganda qaytib keladi.</p>
+        <div class="lx-ctas">${go}${guest("Mehmon sifatida sinash")}</div>
+        <p class="lx-hint">Google bilan — telefon va kompyuterda bir xil progress. Mehmon — natijalar shu qurilmada, keyin kirsangiz hisobga qo'shiladi.</p>
+        <div class="lx-proof"><div><b>${nW.toLocaleString("ru").replace(/\s/g, " ")}+</b><span>so'z va ibora</span></div><div><b>${BOOKS.length}</b><span>o'qish uchun hikoya</span></div><div><b>A0–B1+</b><span>5 ta daraja</span></div><div><b>0 so'm</b><span>obunasiz</span></div></div>
+      </div>
+      <div class="lx-stage">
+        <div class="lx-phone"><img src="img/lx-home.jpg" alt="Ilovaning bosh sahifasi: bugungi dars rejasi" width="296" height="640" fetchpriority="high"></div>
+        <div class="lx-demo" id="lxd">
+          <div class="lx-q">
+            <div class="lx-lbl"><span>Hoziroq sinab ko'ring</span><span class="lx-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></span></div>
+            <div class="lx-uz" id="lxuz">kitob</div><div class="lx-pr">Inglizchasini yozing</div>
+            <input id="lxin" class="lx-in2" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="Shu yerga yozing…" aria-label="Inglizcha javob">
+            <div class="lx-diff" id="lxdf" aria-live="polite"></div>
+            <div class="lx-row"><button class="lx-btn lx-s" id="lxh" type="button">Birinchi harf</button><button class="lx-btn lx-p" id="lxg" type="button">Tekshirish</button></div>
+          </div>
+          <div class="lx-done">
+            <div class="lx-lbl"><span>3 / 3</span><span class="lx-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i></span></div>
+            <h3>Barakalla! Xuddi shunday yozasiz.</h3>
+            <p>Ilovada har kuni 5 ta yangi so'z — ertaga, 3 kundan keyin va bir haftadan keyin yana so'raladi.</p>
+            <div class="lx-row">${guest("Davom etish")}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <section class="lx-sec" id="lx-kun"><div class="lx-w">
+    <div class="lx-sh"><h2 class="lx-h2">Bir kunlik dars<br>o'zi tuziladi</h2><p>Siz faqat «Boshlash»ni bosasiz. Qadamlar qaysi unitda ekaningiz va nimani unutayotganingizga qarab tanlanadi.</p></div>
+    <div class="lx-day">${steps.map(([t, d, m, ic], i) => `<div class="lx-st"><span class="n">${i + 1}</span><span class="m">${m} daq</span><span class="ic">${I(ic)}</span><b>${t}</b><span class="d">${d}</span></div>`).join("")}</div>
+    <div class="lx-sum"><span>Jami: <b>~${steps.reduce((a, x) => a + x[2], 0)} daqiqa</b> · istalgan joyda to'xtab, keyin davom etasiz</span><span class="lx-mu">kun oxirigacha qilsangiz — seriya olovi yonadi</span></div>
+  </div></section>
+  <section class="lx-sec lx-nt"><div class="lx-w">
+    <div class="lx-sh"><h2 class="lx-h2">Tanlamaysiz —<br>eslab qolasiz</h2><p>Variantdan tanlash oson, lekin esda qolmaydi. Shuning uchun deyarli hamma mashqda javobni o'zingiz yozasiz.</p></div>
+    <div class="lx-bento">
+      <div class="lx-tile t1"><h3>Xato harf darrov ko'rinadi</h3><p>Noto'g'ri yozsangiz, qaysi harf xato ekanini ko'rasiz va to'g'risini qayta yozasiz — qo'l ham, ko'z ham eslab qoladi.</p>
+        <div class="lx-vis lx-wr" aria-hidden="true"><div><small>sizniki</small><span>t<span class="x">ou</span>ld</span></div><div><small>to'g'ri</small><span class="g">told</span></div></div></div>
+      <div class="lx-tile t2"><h3>Unutishdan oldin qaytaradi</h3><p>So'z ertaga, 3 kundan, bir haftadan va bir oydan keyin yana chiqadi. Yaxshi bilganlaringiz kamroq qaytadi.</p>
+        <div class="lx-vis"><svg class="lx-curve" viewBox="0 0 520 150" role="img" aria-label="Takrorlash: 1, 3, 7, 14 va 30 kundan keyin"><path d="M20 130H500" stroke="currentColor" stroke-opacity=".18"/><path d="M30 30 C 60 90, 80 110, 110 112 M110 30 C 150 70, 180 92, 200 96 M200 30 C 250 55, 290 70, 320 74 M320 30 C 370 45, 410 52, 430 54 M430 30 C 460 36, 490 40, 505 41" fill="none" stroke="#E8794A" stroke-width="3" stroke-linecap="round"/><g fill="#E8794A"><circle cx="110" cy="30" r="6"/><circle cx="200" cy="30" r="6"/><circle cx="320" cy="30" r="6"/><circle cx="430" cy="30" r="6"/></g><g font-size="14" fill="currentColor" fill-opacity=".6" text-anchor="middle"><text x="30" y="148">bugun</text><text x="110" y="148">1 kun</text><text x="200" y="148">3 kun</text><text x="320" y="148">7 kun</text><text x="430" y="148">14 kun</text><text x="500" y="148">30</text></g></svg></div></div>
+      <div class="lx-tile t3"><h3>Gapni bossangiz — tarjima</h3>
+        <p class="lx-story"><button type="button" class="lx-snt" data-t="O'tgan shanba kuni uch do'stim bilan Chimyonga bordim." aria-expanded="false" lang="en">Last Saturday, I went to Chimgan with three friends.</button> <button type="button" class="lx-snt" data-t="Yo'llar bo'sh, osmon musaffo edi." aria-expanded="false" lang="en">The roads were empty, and the sky was clear.</button></p>
+        <div class="lx-tr" id="lxtr" aria-live="polite"></div><p class="lx-sm">Bosib ko'ring · ${BOOKS.length} ta hikoya, 4 darajada</p></div>
+      <div class="lx-tile t4"><h3>${FEL.length} ta noto'g'ri fe'l</h3><p>Tovush oilalari bo'yicha: bitta qoida — o'nta fe'l.</p>
+        <div class="lx-vis lx-verbs">${["go|went", "tell|told", "buy|bought", "see|saw", "find|found"].map(x => { const [a, b] = x.split("|"); return `<span lang="en">${a} → <em>${b}</em></span>`; }).join("")}<span>+${FEL.length - 5}</span></div></div>
+      <div class="lx-tile t5"><h3>Telefon va kompyuterda</h3><p>Ilova kabi o'rnatiladi, internetsiz ham ishlaydi.</p>
+        <div class="lx-vis lx-dev"><div>${I('<rect x="7" y="2" width="10" height="20" rx="2.5"/>')}Bosh ekranga qo'shiladi</div><div>${I('<path d="M4 12a8 8 0 0 1 14-5l2 2M20 12a8 8 0 0 1-14 5l-2-2M20 4v5h-5M4 20v-5h5"/>')}Progress ikkala qurilmada bir xil</div><div>${I('<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/>')}Internet bo'lmasa ham dars davom etadi</div></div></div>
+    </div>
+  </div></section>
+  <section class="lx-sec lx-nt" id="lx-dar"><div class="lx-w">
+    <div class="lx-sh"><h2 class="lx-h2">Qayerdan boshlasangiz ham</h2><p>Darajani o'zingiz tanlaysiz va istalgan payt almashtirasiz. Bugungi reja, hikoyalar va so'z o'yini tanlangan darajaga moslashadi.</p></div>
+    <div class="lx-lad">${lv.map(([c, t, d, u]) => `<div class="lx-lv"><span class="c">${c}</span><b>${t}</b><span class="d">${d}</span><span class="u">${u}</span></div>`).join("")}</div>
+  </div></section>
+  <section class="lx-sec lx-nt" id="lx-sav"><div class="lx-w">
+    <div class="lx-sh"><h2 class="lx-h2">Savollar</h2></div>
+    <div class="lx-faq">${faq.map(([q, a], i) => `<details${i ? "" : " open"}><summary>${q}</summary><p>${a}</p></details>`).join("")}</div>
+  </div></section>
+  <div class="lx-w">
+    <section class="lx-final"><div><h2 class="lx-h2">Bugun birinchi<br>5 ta so'z</h2><p>Ro'yxatdan o'tish shart emas — mehmon bo'lib boshlang, natijani keyin saqlaysiz.</p></div>
+      <div class="lx-ctas">${go}${guest("Mehmon sifatida boshlash")}</div></section>
+    <footer class="lx-foot"><span>Ingliz tili · bepul, reklamasiz</span><a href="privacy.html">Maxfiylik siyosati</a></footer>
+  </div></div>`;
   app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; scrollTo(0, 0); render(); });
   app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
+  app.querySelectorAll("[data-to]").forEach(a => a.onclick = e => { e.preventDefault(); const t = document.getElementById(a.dataset.to); if (t) t.scrollIntoView({ behavior: calm() ? "auto" : "smooth" }); });
+  /* jonli sinov: so'zni yozib, harfma-harf tekshirish (ilovadagi asosiy mashq) */
+  const DW = [["kitob", "book", "[buk]"], ["do'st", "friend", "[frend]"], ["ertaga", "tomorrow", "[ta-MO-rou]"]];
+  let k = 0, hint = 0;
+  const inp = $("#lxin"), df = $("#lxdf");
+  const show = () => { $("#lxuz").textContent = DW[k][0]; inp.value = ""; df.innerHTML = ""; hint = 0; $("#lxd").querySelectorAll(".lx-q .lx-dots i").forEach((d, i) => d.classList.toggle("on", i <= k)); };
+  const check = () => {
+    const v = norm(inp.value), t = DW[k][1]; if (!v) { inp.focus(); return; }
+    let h = ""; for (let i = 0; i < Math.max(v.length, t.length); i++) { const a = v[i], c = t[i]; h += a === c ? `<span class="ok">${esc(c)}</span>` : c && !a ? `<span class="miss">${esc(c)}</span>` : `<span class="bad">${esc(a)}</span>`; }
+    df.innerHTML = h + (v === t ? ` <span class="ok">✓ ${DW[k][2]}</span>` : "");
+    if (v === t) setTimeout(() => { k++; if (k >= DW.length) { $("#lxd").classList.add("fin"); } else { show(); inp.focus(); } }, 900); else inp.select();
+  };
+  $("#lxg").onclick = check; inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); check(); } };
+  $("#lxh").onclick = () => { hint = Math.min(hint + 1, DW[k][1].length); inp.value = DW[k][1].slice(0, hint); inp.focus(); };
+  app.querySelectorAll(".lx-snt").forEach(sn => sn.onclick = () => { const on = sn.getAttribute("aria-expanded") !== "true";
+    app.querySelectorAll(".lx-snt").forEach(x => x.setAttribute("aria-expanded", "false")); sn.setAttribute("aria-expanded", on); const tr = $("#lxtr"); tr.textContent = on ? sn.dataset.t : ""; tr.classList.toggle("on", on); });
 }
 function syRedraw(focus) {
   const c = $("#sycard"); if (!c) return;

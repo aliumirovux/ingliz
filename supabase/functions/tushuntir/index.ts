@@ -1,5 +1,5 @@
 // «Tushuntir»: xatoni o'zbekcha tushuntiradi (mode: fix; gap tuzishda har bir farqni qadam-baqadam — mode: xato), o'quvchi gapini tekshiradi (mode: check), Tinglash bo'limida gapni (sentence) va so'zni (word) tushuntiradi,
-// saytdagi yordamchi (mode: chat) — tarjima, gapni tekshirish, so'z ma'nosi va savollar.
+// gap skeleti (mode: bolak) — gaplarni ma'no bo'laklariga ajratadi; saytdagi yordamchi (mode: chat) — tarjima, gapni tekshirish, so'z ma'nosi va savollar.
 // Faqat kirgan foydalanuvchi (verify_jwt), kuniga LIMIT ta (barcha rejimlar uchun umumiy). Kalit: Edge Function secret ANTHROPIC_API_KEY.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
@@ -64,8 +64,20 @@ function xatoPrompt(b: Record<string, unknown>) {
     `JSON: {"izoh": "1–2 gap umumiy xulosa yoki savolga javob", "qadamlar": [{"xato": "...", "togri": "...", "nega": "..."}], "eslatma": "...", "misol": {"en": "...", "uz": "..."}}`;
 }
 
+// gap skeleti: inglizcha gapni ma'no bo'laklariga ajratadi va har bo'lakka o'zbekcha gapdagi mos qismni beradi
+function bolakPrompt(b: Record<string, unknown>) {
+  const items = (Array.isArray(b.items) ? (b.items as Record<string, unknown>[]) : []).slice(0, 10);
+  const list = items.map((x, i) => `${i + 1}. O'zbekcha: ${clip(x.uz, 240)}\n   Inglizcha: ${clip(x.en, 240)}`).join("\n");
+  return `Gap tuzish mashqi uchun har bir inglizcha gapni ma'no bo'laklariga ajrat (gapga qarab 2–6 bo'lak; masalan: «There are» | «two beds» | «a desk» | «and a lot of toys»).\n` +
+    `Qoidalar:\n- Bo'laklar inglizcha gapdagi so'zlarni AYNAN shu tartibda, hech narsa qo'shmasdan va tashlamasdan qamrab olsin (vergul va nuqtani yozma).\n` +
+    `- uz — shu bo'lakka mos qism, o'zbekcha gapdan AYNAN o'sha so'zlar bilan ko'chirib ol (o'zgartirma); mos qism bo'lmasa (masalan «the»), qisqa ma'nosini yoz.\n` +
+    `- Kim, nima qiladi, nimani, qayerda, qachon kabi ma'no qismlariga ajrat; artikl va predlogni o'z otidan ajratma.\n\n${list}\n\n` +
+    `JSON: {"bolaklar": [[{"en": "...", "uz": "..."}], ...]} — gaplar tartibida, har gap uchun bitta ro'yxat.`;
+}
+
 function prompt(b: Record<string, unknown>) {
   if (b.mode === "chat") return chatPrompt(b);
+  if (b.mode === "bolak") return bolakPrompt(b);
   if (b.mode === "xato") return xatoPrompt(b);
   if (b.mode === "sentence") {
     // Tinglash: video darsdagi gapni tushuntirish
@@ -100,8 +112,8 @@ Deno.serve(async (req) => {
 
   let b: Record<string, unknown>;
   try { b = await req.json(); } catch { return json({ error: "bad_request" }, 400, origin); }
-  const chat = b.mode === "chat";
-  if (chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
+  const chat = b.mode === "chat", bolak = b.mode === "bolak";
+  if (bolak ? !(Array.isArray(b.items) && b.items.length) : chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
 
   // tokenni gateway tekshirgan (verify_jwt) — bu yerda faqat emailni o'qiymiz
   const auth0 = req.headers.get("Authorization") || "";
@@ -135,6 +147,7 @@ Deno.serve(async (req) => {
   const m = text.match(/\{[\s\S]*\}/);
   let out: Record<string, unknown>;
   try { out = JSON.parse(m ? m[0] : text); } catch { out = { izoh: text.trim().slice(0, 600) }; }
+  if (bolak) return Array.isArray(out.bolaklar) ? json({ bolaklar: out.bolaklar, left: LIMIT - used }, 200, origin) : json({ error: "empty" }, 502, origin);
   if (!String(out.izoh || "").trim() && !(chat && String(out.en || "").trim())) { console.error("empty", data.stop_reason, JSON.stringify(data.content).slice(0, 500)); return json({ error: "empty" }, 502, origin); }
   // kirill harfi tushib qolgan tarjimani ko'rsatmaymiz (o'quvchi lotin yozuvida o'qiydi)
   const cyr = /[Ѐ-ӿ]/;

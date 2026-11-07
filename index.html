@@ -492,7 +492,17 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 #gltip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:2px}
 #gltip.below::after{bottom:auto;top:-5px}
 @media (prefers-reduced-motion:reduce){#gltip{transition:none}}
-#tzre{margin-right:10px;flex:0 0 auto}
+#tzsk svg{width:18px;height:18px;flex:none}#tzsk[aria-pressed="true"]{background:var(--marker-soft);color:var(--accent-text)}
+.answer.sk{gap:8px;align-items:flex-start}
+.sk-ch{--h:#E0735A;border-radius:14px;padding:6px 6px 5px;background:color-mix(in srgb,var(--h) 12%,var(--surface));box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--h) 60%,var(--surface))}
+.sk-ch.k1,.bku.k1{--h:#3B7BD9}.sk-ch.k2,.bku.k2{--h:#3F8A3B}.sk-ch.k3,.bku.k3{--h:#8A5BC4}.sk-ch.k4,.bku.k4{--h:#B07A12}.sk-ch.k5,.bku.k5{--h:#1F9AA0}.sk-ch.kx{--h:#9A9AA0}
+.sk-ch.cur{outline:2px solid var(--marker);outline-offset:1px}
+.sk-cs{display:flex;flex-wrap:wrap;gap:4px}
+.sk-ch .tile{min-height:36px;padding:5px 10px;font-size:16px}
+.sk-sl{width:40px;height:36px;border-radius:10px;border:1.5px dashed color-mix(in srgb,var(--h) 55%,var(--line-strong));background:color-mix(in srgb,var(--surface) 70%,transparent)}
+.sk-ch small{display:block;margin:4px 3px 0;font-size:12px;line-height:1.25;color:var(--muted);max-width:260px}
+.bku{--h:#E0735A;text-decoration:none;box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--h) 60%,transparent)}
+.tz-skn{margin-top:6px;font-size:14px;opacity:.9}
 @media (min-width:600px){.rs-foot{padding:12px 16px 8px;border-radius:0 0 24px 24px}}
 
 .ai{margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--surface-2);font-size:15px;line-height:1.5;text-align:left}
@@ -3762,7 +3772,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611071800";
+const APP_V = "202611071900";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7379,10 +7389,55 @@ function tLoad() {
 function startTuz(list, title, key, tag) {
   if (!list.length) return;
   T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
+  if (list.some(x => x.long)) bkFetch(T.q);
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
 function tuzResult(it, ok) { if (!T.again.has(it)) { (T.res = T.res || []).push(!!ok); segBar(document.querySelector("#app > .top .bar"), T.total, T.res, -1); logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 const ICON_BOOK_GL = sv('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z"/>');
+/* ---------- GAP SKELETI: gapni ma'no bo'laklariga ajratib yig'ish ----------
+   Bo'laklar: AI hisobida seans boshida bir so'rov bilan tayyorlanadi va telefonda saqlanadi (inglizcha bo'lak + o'zbekcha gapdagi mos qism).
+   AI yo'q yoki javob kelmasa — ilova o'zi ajratadi (vergul, bog'lovchi va predloglar oldidan), o'zbekcha belgisi so'z ma'nolaridan. */
+const BKK = "ingliz-bolak"; let BKC = {};
+try { BKC = JSON.parse(localStorage.getItem(BKK) || "{}") || {}; } catch (e) { BKC = {}; }
+const bkSave = () => { try { const k = Object.keys(BKC); if (k.length > 600) k.slice(0, k.length - 600).forEach(x => delete BKC[x]); localStorage.setItem(BKK, JSON.stringify(BKC)); } catch (e) {} };
+const bkNorm = t => words(t).map(w => w.toLowerCase()).join(" ");
+function bkValid(ch, it) { return Array.isArray(ch) && ch.length > 1 && ch.every(c => c && typeof c.en === "string" && c.en.trim()) && bkNorm(ch.map(c => c.en).join(" ")) === bkNorm(it.e); }
+const BK_SPLIT = /^(and|but|or|because|so|when|then|if|while|in|on|at|to|from|with|for|about|near|after|before|under|into|behind|without|until|during|every)$/i;
+const BK_FN = /^(a|an|the|is|are|am|was|were|be|to|of|and|but|or|so|in|on|at|for|with|from|there|it|this|that|very|too|also|not|do|does|did|have|has|had|will|would|can|could)$/i;
+function bkAuto(it) {
+  const toks = String(it.e).split(/\s+/).filter(Boolean), out = []; let cur = [];
+  toks.forEach((t, i) => { const w = t.replace(/[.,?!;:]/g, ""); if (cur.length && BK_SPLIT.test(w) && !(w.toLowerCase() === "to" && cur.length < 2)) { out.push(cur); cur = []; } cur.push(w); if (/[,.!?;:]$/.test(t) && i < toks.length - 1) { out.push(cur); cur = []; } });
+  if (cur.length) out.push(cur);
+  // uzun bo'lakni (5+ so'z) aniqlovchi so'z oldidan bo'lamiz: «He loves | the smell of fresh bread»
+  for (let i = 0; i < out.length; i++) { const c = out[i]; if (c.length < 5) continue; const k = c.findIndex((w, x) => x >= 2 && /^(the|a|an|my|his|her|their|our|your|this|that|some)$/i.test(w)); if (k > 0) { out.splice(i, 1, c.slice(0, k), c.slice(k)); } }
+  // juda mayda (1 so'zli) bo'laklarni keyingisiga qo'shamiz, ko'pi bilan 6 bo'lak
+  for (let i = 0; i < out.length - 1; i++) if (out[i].length === 1 && out.length > 2) { out[i + 1] = out[i].concat(out[i + 1]); out.splice(i, 1); i--; }
+  while (out.length > 6) { const i = out.reduce((b, c, j, a) => j < a.length - 1 && c.length + a[j + 1].length < a[b].length + a[b + 1].length ? j : b, 0); out[i] = out[i].concat(out[i + 1]); out.splice(i + 1, 1); }
+  return out.map(ws => ({ en: ws.join(" "), uz: ws.filter(w => !BK_FN.test(w) && !/'/.test(w)).map(w => (gloss(w) || "").split(";")[0].trim()).filter(Boolean).slice(0, 3).join(" · ") || "", auto: 1 }));
+}
+const bkGet = it => BKC[voiceId(it.e)] || null;
+let BK_BUSY = null;
+async function bkFetch(list) {
+  if (!aiOn()) return;
+  const need = list.filter(it => !bkGet(it)).slice(0, 10); if (!need.length) return;
+  if (BK_BUSY) return BK_BUSY;
+  BK_BUSY = (async () => {
+    try {
+      const r = await aiAsk({ mode: "bolak", answer: "-", target: "-", items: need.map(it => ({ uz: it.u, en: it.e })) });
+      (Array.isArray(r.bolaklar) ? r.bolaklar : []).forEach((ch, i) => { const it = need[i]; if (it && bkValid(ch, it)) BKC[voiceId(it.e)] = ch.map(c => ({ en: String(c.en).trim(), uz: String(c.uz || "").trim() })); });
+      bkSave();
+    } catch (e) { /* AI bo'lmasa — avtomatik bo'laklar */ }
+    BK_BUSY = null;
+  })();
+  return BK_BUSY;
+}
+/* o'zbekcha gapdagi mos qismlarni bo'lak rangi bilan tagiga chizish */
+function bkMarkUz(u, ch) {
+  let html = esc(u);
+  ch.forEach((c, i) => { if (!c.uz || c.auto) return; const q = esc(c.uz), at = html.toLowerCase().indexOf(q.toLowerCase()); if (at < 0 || /<[^>]*$/.test(html.slice(0, at))) return; html = html.slice(0, at) + `<u class="bku k${i % 6}">` + html.slice(at, at + q.length) + "</u>" + html.slice(at + q.length); });
+  return html;
+}
+const ICON_SKEL = sv('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="14" y="5" width="7" height="5" rx="1.5"/><rect x="3" y="14" width="11" height="5" rx="1.5"/><path d="M18 14v5"/>');
 /* so'z ma'nosi pufakchasi: kompyuterda — kursor so'z ustida (0,15 s), telefonda — so'zni bosib turish (0,5 s), klaviaturada — fokus.
    Bosib turish so'zni javobga qo'shmaydi (keyingi «click» bekor qilinadi). Barcha [data-gl] elementlar uchun bitta. */
 (function glTip() {
@@ -7433,7 +7488,7 @@ route(/^tuzmashq$/, () => {
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
     : `<div class="answer" id="ans" aria-live="polite"></div><div class="tiles" id="bank"></div>`}
     <div class="fb hidden" id="tf"></div>
-    <div class="row" style="margin-top:14px"><button class="btn" id="chk" disabled>Tekshirish</button></div>
+    <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="tzsk" type="button" aria-pressed="false">${ICON_SKEL}<span>Bo'laklab</span></button>`}<button class="btn" id="chk" disabled>Tekshirish</button></div>
   </div>`;
   segBar(document.querySelector("#app > .top .bar"), T.total, T.res || [], T.i < T.total && !T.again.has(T.q[T.i]) ? (T.res || []).length : -1);
   $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; tSave(); location.hash = b; });
@@ -7481,9 +7536,32 @@ route(/^tuzmashq$/, () => {
   const want = words(it.e), have = new Set(want.map(w => w.toLowerCase()));
   const tiles = shuffle(want.concat((it.x || []).filter(x => !have.has(x.toLowerCase()))));
   const picked = [];
+  let sk = null, skUsed = false; // sk — ochiq skelet bo'laklari
+  const tileB = j => `<button class="tile" data-j="${j}" data-gl="${esc(tiles[picked[j]])}">${esc(tiles[picked[j]])}</button>`;
+  const skDraw = () => {
+    let j = 0, curSet = false;
+    const html = sk.map((c, i) => {
+      const n = words(c.en).length, cells = [];
+      for (let x = 0; x < n; x++, j++) cells.push(j < picked.length ? tileB(j) : `<span class="sk-sl" aria-hidden="true"></span>`);
+      const full = j <= picked.length, cur = !full && !curSet && !done; if (cur) curSet = true;
+      return `<div class="sk-ch k${i % 6}${cur ? " cur" : ""}" role="group" aria-label="${esc(c.uz || "")}: ${n} ta so'z"><div class="sk-cs">${cells.join("")}</div>${c.uz ? `<small>${esc(c.uz)}</small>` : ""}</div>`;
+    }).join("");
+    const extra = picked.slice(j).map((k, x) => tileB(j + x)).join("");
+    $("#ans").innerHTML = html + (extra ? `<div class="sk-ch kx"><div class="sk-cs">${extra}</div><small>ortiqcha</small></div>` : "");
+  };
+  const skToggle = async () => {
+    const b = $("#tzsk");
+    if (sk) { sk = null; b.setAttribute("aria-pressed", "false"); b.querySelector("span").textContent = "Bo'laklab"; $(".qcard .q").textContent = it.u; $("#ans").classList.remove("sk"); draw(); return; }
+    skUsed = true; b.setAttribute("aria-pressed", "true"); b.querySelector("span").textContent = "Skeletsiz";
+    if (!bkGet(it) && aiOn()) { b.disabled = true; $("#ans").innerHTML = `<span class="muted">Bo'laklar tayyorlanmoqda…</span>`; await bkFetch([it]); b.disabled = false; if (b.getAttribute("aria-pressed") !== "true" || !document.body.contains(b)) return; }
+    sk = bkGet(it) || bkAuto(it);
+    $(".qcard .q").innerHTML = bkMarkUz(it.u, sk); $("#ans").classList.add("sk"); draw();
+  };
+  if ($("#tzsk")) $("#tzsk").onclick = () => { if (!done) skToggle(); };
   const draw = () => {
     $("#ans").innerHTML = picked.length ? picked.map((k, j) => `<button class="tile" data-j="${j}">${esc(tiles[k])}</button>`).join("") : `<span class="muted">So'zlarni bosing…</span>`;
-    if (picked.length) $("#ans").innerHTML = picked.map((k, j) => `<button class="tile" data-j="${j}" data-gl="${esc(tiles[k])}">${esc(tiles[k])}</button>`).join("");
+    if (picked.length) $("#ans").innerHTML = picked.map((k, j) => tileB(j)).join("");
+    if (sk) skDraw();
     $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}" data-gl="${esc(t)}">${esc(t)}</button>`).join("");
     $("#ans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
     $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw(); });
@@ -7494,11 +7572,15 @@ route(/^tuzmashq$/, () => {
     done = true;
     const ok = picked.map(k => tiles[k].toLowerCase()).join(" ") === want.join(" ").toLowerCase();
     tuzResult(it, ok);
+    if ($("#tzsk")) $("#tzsk").remove();
+    // bo'laklab yig'ilgan to'g'ri gap seans oxirida yana beriladi — endi skeletsiz (natija baribir to'g'ri sanaladi)
+    if (ok && skUsed && !T.skAgain) { T.skAgain = new Set(); }
+    if (ok && skUsed && !T.skAgain.has(it) && T.q.indexOf(it, T.i + 1) < 0) { T.skAgain.add(it); T.q.push(it); T.again.add(it); }
     // javob qatori: to'g'ri tartibda turgan so'zlar — yashil, ortiqcha yoki joyi xato — qizil; to'g'ri bo'lsa to'lqin + belgi, xato bo'lsa silkinish
     const A = $("#ans"), keep = lcsKeep(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()));
     A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
     A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
-    show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>` : `To'g'risi: <b>${esc(it.e)}</b>`);
+    show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>${skUsed ? `<div class="tz-skn">Bo'laklab yig'dingiz — bu gap seans oxirida yana beriladi, endi skeletsiz.</div>` : ""}` : `To'g'risi: <b>${esc(it.e)}</b>`);
     if (!ok && it.long) ruleOpen(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()), picked.map(k => tiles[k]).join(" "), true, picked.map(k => tiles[k]));
     else if (!ok) whyButton($("#tf"), { uz: it.u, target: it.e, answer: picked.map(k => tiles[k]).join(" "), rule: it.h });
   };

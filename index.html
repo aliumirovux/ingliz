@@ -446,8 +446,8 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .rq-fx span{display:inline-flex;align-items:center;height:26px;padding:0 8px;border-radius:8px;font-weight:600}
 .rq-fx .s1{--h:#3B7BD9}.rq-fx .s2{--h:#C9452E}.rq-fx .s3{--h:#3F8A3B}.rq-fx .s4{--h:#8A5BC4}.rq-fx .s5{--h:#B07A12}
 .rq-fx span{background:color-mix(in srgb,var(--h) 16%,var(--surface));color:color-mix(in srgb,var(--h) 72%,var(--ink))}
-.rq-row{display:flex;flex-wrap:wrap;gap:4px}.rq-row span{display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:10px;background:var(--surface);font-size:15px;font-weight:500}
-.rq-row span.x{background:var(--bad-bg);color:var(--bad);text-decoration:none;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad-strong) 40%,transparent)}
+.rq-row{display:flex;flex-wrap:wrap;gap:4px}.rq-row>span{display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:10px;background:var(--surface);font-size:15px;font-weight:500}
+.rq-row>span.x{background:var(--bad-bg);color:var(--bad);text-decoration:none;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad-strong) 40%,transparent)}
 .rs-q{margin:16px 0 0;padding:14px 0 0;border-top:1px solid var(--line)}
 .rs .rs-qh{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--ink)}
 .rs-chips{display:flex;flex-wrap:wrap;gap:8px}.rs-chips:empty{display:none}
@@ -461,6 +461,26 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .rs-ask textarea{flex:1;min-height:32px;max-height:120px;padding:6px 0;border:0;background:none;color:var(--ink);font:inherit;font-size:16px;line-height:1.35;resize:none;outline:none}
 .rs-send{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:var(--marker);color:var(--on-marker);display:grid;place-items:center;cursor:pointer}.rs-send:disabled{background:var(--surface-2);color:var(--muted);cursor:default}.rs-send svg{width:18px;height:18px}
 .rs-foot{flex:none;padding:12px 20px 16px;border-top:1px solid var(--line);background:var(--surface)}.rs-foot .btn{width:100%}
+.rs-cmp{background:var(--surface-2);border-radius:18px;padding:4px 14px 14px;margin:0 0 12px}
+.rs-cmp.sm{background:var(--surface);padding:2px 12px 12px;margin:0 0 10px}.rs-cmp.sm .rq-row>span{height:28px;font-size:14px;padding:0 8px}.rs-cmp.sm .rq-row>span[class=""]{background:var(--surface-2)}
+.rq-row>span i{font-style:normal;font-weight:700;margin-right:2px}
+.rq-row>span.mv{background:color-mix(in srgb,#C98A12 18%,var(--surface));color:color-mix(in srgb,#9A6400 80%,var(--ink));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,#C98A12 55%,transparent);border:0;outline:1.5px dashed color-mix(in srgb,#C98A12 70%,transparent);outline-offset:-1.5px}
+.rq-row>span.add,.rq-row>span.fix{background:var(--ok-bg);color:var(--ok);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ok-strong) 45%,transparent);font-weight:600}
+.rq-row>span.x,.rq-row>span.sw{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px}
+.rq-row .sr{padding:0;position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.rs .rs-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;font-size:12.5px;color:var(--muted)}.rs-leg span{display:inline-flex;align-items:center;gap:6px}
+.rs-leg .lg{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:5px;font-style:normal;font-size:12px;font-weight:700}
+.rs-leg .lg.mv{background:color-mix(in srgb,#C98A12 18%,var(--surface));outline:1.5px dashed color-mix(in srgb,#C98A12 70%,transparent);outline-offset:-1.5px}.rs-leg .lg.add{background:var(--ok-bg);color:var(--ok)}.rs-leg .lg.x{background:var(--bad-bg);background-image:linear-gradient(var(--bad),var(--bad));background-size:10px 1.5px;background-repeat:no-repeat;background-position:center}
+.rs-fix{margin:0 0 14px}.rs-fix ol{margin:0;padding:0;list-style:none;counter-reset:fx;display:grid;gap:8px}
+.rs-fix li{counter-increment:fx;display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.45;color:var(--ink)}
+.rs-fix li::before{content:counter(fx);flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--hl,var(--surface-2));color:var(--accent-text)}
+.rs .rs-qr{margin:4px 0 8px}
+.rs-chip.ai{display:inline-flex;align-items:center;gap:6px;border-color:var(--marker);color:var(--accent-text);font-weight:600}.rs-chip.ai svg{width:16px;height:16px}
+.rs-st{margin:10px 0 0;padding:0;list-style:none;counter-reset:st;display:grid;gap:10px}
+.rs-st li{counter-increment:st;position:relative;padding-left:32px}
+.rs-st li::before{content:counter(st);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--surface);color:var(--accent-text)}
+.rs .rs-st p{margin:0;color:var(--muted);font-size:14px}.rs .rs-st .rs-st-h{color:var(--ink);font-size:15px;margin:0 0 2px}.rs-st s{color:var(--bad)}.rs-st b{color:var(--ok);font-weight:600}
+.rs .rs-tip{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--surface);font-size:14px}.rs-tip svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--accent-text)}
 @media (min-width:600px){.rs-foot{padding:12px 16px 8px;border-radius:0 0 24px 24px}}
 
 .ai{margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--surface-2);font-size:15px;line-height:1.5;text-align:left}
@@ -3730,7 +3750,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611071530";
+const APP_V = "202611071600";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7121,7 +7141,7 @@ function tzRules(A, W, raw, tile) {
   if (A.join(" ") === W.join(" ")) return [];
   if (!miss.length && !extra.length) {
     const keep = lcsKeep(A, W);
-    return [{ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi. Qizil — joyi xato so'zlar.", order: { got: A.map((w, j) => [w, keep.has(j)]), want: W } }];
+    return [{ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi.", order: { got: A.map((w, j) => [w, keep.has(j)]), want: W } }];
   }
   if (!tile && miss.length > W.length / 2) return [{ k: "part", t: "Boshqa gap chiqdi", h: "Gapning yarmidan ko'pi topshiriqdagidan farq qiladi", p: "O'zbekcha gapni qayta o'qing va bo'laklab tuzing: kim → nima qiladi → nimani → qayerda → qachon." }];
   if (tile && !extra.length && miss.length >= 3) return [{ k: "part", t: "Gap to'liq emas", h: `Yana ${miss.length} ta so'z qoldi`, p: "Uzun gapni bo'laklab yig'ing: kim → nima qiladi → nimani → qayerda → qachon." }];
@@ -7156,34 +7176,67 @@ function tzRules(A, W, raw, tile) {
   for (let i = 0; i < extra.length; i++) { const a = extra[i]; for (const [g, k] of TZ_GRP) { if (!g.includes(a) || k === "art") continue; const b = W.find(w => w !== a && g.includes(w)); if (!b) continue;
     add(k + "x", { n: k === "be" || k === "bepast" ? 2 : k === "conj" ? 4 : k === "has" ? 5 : 0, t: { be: "is / am / are", bepast: "was / were", has: "has / have", do: "do / does / did", prep: "in / on / at", tofor: "to / for", that: "that / what", this: "this / these", much: "much / many", than: "than / then", modal: "will / would · can / could", who: "who / which", conj: "Bog'lovchilar", pron: "my / me · he / his", past: "O'tgan ish" }[k] || g.join(" / "), h: `Bu gapda ${b} kerak, ${a} ortiqcha`, ex: `<s>${esc(a)}</s> · <b>${esc(b)}</b>` }); drops.push(a); extra.splice(i, 1); i--; break; } }
   const BE = ["is", "am", "are", "was", "were"], ART = ["a", "an", "the"];
-  const mb = miss.filter(x => BE.includes(x)); if (mb.length) add("be", { n: 2, t: "Har gapda fe'l bor", h: mb.join(", ") + " tushib qoldi", p: "O'zbekchada «Uyim katta» deyish yetadi. Inglizchada fe'l shart: My house is big." });
-  const ma = miss.filter(x => ART.includes(x)); if (ma.length) add("art", { n: 5, t: "a / an / the", h: ma.join(", ") + " tushib qoldi", p: "Bitta sanaladigan narsadan oldin a / an: a bank, an apple. Ma'lum narsadan oldin the." });
-  const xa = extra.filter(x => ART.includes(x)); if (xa.length) add("artx", { t: "a / the", h: "Bu yerda " + xa.join(", ") + " kerak emas", p: "Ismlar, umumiy ma'nodagi ko'plik va at home kabi iboralar oldidan a / the qo'yilmaydi." });
+  const mb = miss.filter(x => BE.includes(x)); if (mb.length) add("be", { n: 2, t: "Har gapda fe'l bor", h: [...new Set(mb)].join(", ") + " tushib qoldi", p: "O'zbekchada «Uyim katta» deyish yetadi. Inglizchada fe'l shart: My house is big." });
+  const ma = miss.filter(x => ART.includes(x)); if (ma.length) add("art", { n: 5, t: "a / an / the", h: [...new Set(ma)].join(", ") + " tushib qoldi", p: "Bitta sanaladigan narsadan oldin a / an: a bank, an apple. Ma'lum narsadan oldin the." });
+  const xa = extra.filter(x => ART.includes(x)); if (xa.length) add("artx", { t: "a / the", h: "Bu yerda " + [...new Set(xa)].join(", ") + " kerak emas", p: "Ismlar, umumiy ma'nodagi ko'plik va at home kabi iboralar oldidan a / the qo'yilmaydi." });
   const rm = miss.filter(x => !BE.includes(x) && !ART.includes(x)), rx = extra.filter(x => !ART.includes(x));
   if (rm.length || rx.length) add("words", { t: "So'zlar", h: rm.length ? (rm.length === 1 ? "Bitta so'z tushib qoldi" : rm.length + " ta so'z tushib qoldi") : "Ortiqcha so'z bor", ex: (rm.length ? "Kerak: <b>" + esc(rm.join(", ")) + "</b>" : "") + (rm.length && rx.length ? " · " : "") + (rx.length ? "Ortiqcha: <s>" + esc(rx.join(", ")) + "</s>" : "") });
   // ortiqchalar olib tashlangach so'zlar to'g'ri, lekin tartib xato bo'lsa — tartib qoidasi ham
   if (!miss.length && !rx.length && cards.length < 3) { const B = A.slice(); subs.forEach(([a, b]) => { const i = B.indexOf(a); if (i >= 0) B[i] = b; }); [...xa, ...drops].forEach(w => { const i = B.lastIndexOf(w); if (i >= 0) B.splice(i, 1); });
-    if (B.length === W.length && B.join(" ") !== W.join(" ")) { const keep = lcsKeep(B, W); cards.push({ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi. Qizil — joyi xato so'zlar.", ex: "", order: { got: B.map((w, j) => [w, keep.has(j)]), want: W } }); } }
+    if (B.length === W.length && B.join(" ") !== W.join(" ")) { const keep = lcsKeep(B, W); cards.push({ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi.", ex: "", order: { got: B.map((w, j) => [w, keep.has(j)]), want: W } }); } }
   const out = cards.slice(0, 3);
   if (raw) { const f = []; if (/^[a-z]/.test(raw.trim())) f.push("gap katta harf bilan boshlanadi"); if (/(^|[^a-z'])i([^a-z']|$)/.test(raw)) f.push("I doim katta yoziladi"); if (f.length) out.push({ k: "form", n: 5, t: "Yozib bo'lgach tekshiring", h: f[0][0].toUpperCase() + f.slice(0).join("; ").slice(1) }); }
   return out;
 }
-const tzCard = c => `<div class="rq"><p class="rq-k">${ICON_BULB}${c.n ? "Qoida " + c.n + " · " : ""}${esc(c.t)}</p><h3>${esc(c.h)}</h3>${c.p ? `<p>${esc(c.p)}</p>` : ""}${c.ex ? `<p class="rq-ex">${c.ex}</p>` : ""}${c.order ? `<div class="rq-fx" aria-label="Kim, nima qiladi, nimani, qayerda, qachon"><span class="s1">Kim</span>→<span class="s2">nima qiladi</span>→<span class="s3">nimani</span>→<span class="s4">qayerda</span>→<span class="s5">qachon</span></div>
-  <p class="rq-l">Sizda</p><div class="rq-row">${c.order.got.map(([w, ok]) => `<span class="${ok ? "" : "x"}">${esc(w)}</span>`).join("")}</div>
-  <p class="rq-l">To'g'risi</p><div class="rq-row">${c.order.want.map(w => `<span>${esc(w)}</span>`).join("")}</div>` : ""}</div>`;
-function ruleSheet(it, answer, cards, next) {
+const tzCard = c => `<div class="rq"><p class="rq-k">${ICON_BULB}${c.n ? "Qoida " + c.n + " · " : ""}${esc(c.t)}</p><h3>${esc(c.h)}</h3>${c.p ? `<p>${esc(c.p)}</p>` : ""}${c.ex ? `<p class="rq-ex">${c.ex}</p>` : ""}${c.order ? `<div class="rq-fx" aria-label="Kim, nima qiladi, nimani, qayerda, qachon"><span class="s1">Kim</span>→<span class="s2">nima qiladi</span>→<span class="s3">nimani</span>→<span class="s4">qayerda</span>→<span class="s5">qachon</span></div>` : ""}</div>`;
+/* Siz yozgan ↔ to'g'risi: so'zma-so'z solishtirish va aniq tuzatish qadamlari (AIsiz).
+   ok — joyida · mv — joyi almashgan · add — qo'shish kerak · x — ortiqcha · sub — boshqa so'z kerak */
+function tzFix(gotD, wantD) {
+  const g = gotD.map(w => w.toLowerCase()), w = wantD.map(x => x.toLowerCase()), n = g.length, m = w.length;
+  const L = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
+  for (let a = n - 1; a >= 0; a--) for (let b = m - 1; b >= 0; b--) L[a][b] = g[a] === w[b] ? L[a + 1][b + 1] + 1 : Math.max(L[a + 1][b], L[a][b + 1]);
+  const gs = Array(n).fill(""), ws = Array(m).fill(""), gTo = Array(n).fill(-1); let i = 0, j = 0;
+  while (i < n && j < m) { if (g[i] === w[j]) { gs[i] = ws[j] = "ok"; gTo[i] = j; i++; j++; } else if (L[i + 1][j] >= L[i][j + 1]) i++; else j++; }
+  for (let a = 0; a < n; a++) if (!gs[a]) { const b = w.findIndex((x, k) => !ws[k] && x === g[a]); if (b >= 0) { gs[a] = ws[b] = "mv"; gTo[a] = b; } }
+  const rel = (a, b) => tzS(a, b) || tzS(b, a) || tzEd(a, b) || tzEd(b, a) || TZ_GRP.some(([gr]) => gr.includes(a) && gr.includes(b));
+  const subs = [];
+  for (let a = 0; a < n; a++) if (!gs[a]) { const b = w.findIndex((x, k) => !ws[k] && rel(g[a], x)); if (b >= 0) { gs[a] = ws[b] = "sub"; subs.push([a, b]); } }
+  gs.forEach((s, a) => { if (!s) gs[a] = "x"; }); ws.forEach((s, b) => { if (!s) ws[b] = "add"; });
+  // qadamlar: to'g'ri gap tartibida
+  const q = s => `«${esc(s)}»`, steps = [], plain = [];
+  const runs = st => { const r = []; ws.forEach((s, b) => { if (s !== st) return; const last = r[r.length - 1]; if (last && last[1] === b - 1) last[1] = b; else r.push([b, b]); }); return r; };
+  const words = ([a, b]) => wantD.slice(a, b + 1).join(" ");
+  const anchorBefore = a => { for (let k = a - 1; k >= 0; k--) if (ws[k] === "ok") return k; return -1; };
+  const anchorAfter = b => { for (let k = b + 1; k < m; k++) if (ws[k] === "ok") return k; return -1; };
+  // chapdan o'ngga: har qadam to'g'ri gapdagi oldingi so'zga tayanadi (oldingi qadamlar bajarilgach u joyida bo'ladi)
+  const subAt = new Map(subs.map(([a, b]) => [b, a])), seq = [];
+  runs("mv").forEach(r => seq.push(["mv", r])); runs("add").forEach(r => seq.push(["add", r])); subs.forEach(([a, b]) => seq.push(["sub", [b, b]]));
+  seq.sort((x, y) => x[1][0] - y[1][0]).forEach(([k, r]) => {
+    const p = r[0] > 0 ? wantD[r[0] - 1] : null;
+    const where = p ? `${q(p)} dan keyin` : "gap boshiga";
+    steps.push([k, k === "sub" ? `${q(gotD[subAt.get(r[0])])} o'rniga ${q(wantD[r[0]])} yozing` : `${q(words(r))} ni ${where} ${k === "mv" ? "qo'ying" : "qo'shing"}`]);
+  });
+  gs.forEach((s, a) => { if (s === "x") steps.push(["x", `${q(gotD[a])} ni olib tashlang`]); });
+  return { got: gotD.map((x, a) => [x, gs[a] === "sub" ? "sw" : gs[a]]), want: wantD.map((x, b) => [x, ws[b] === "sub" ? "fix" : ws[b]]), steps: steps.slice(0, 6), moved: gs.filter(s => s === "mv").length, plain: steps.slice(0, 6).map(s => s[1].replace(/<[^>]+>/g, "")) };
+}
+const tzRow = toks => `<div class="rq-row">${toks.map(([w, s]) => `<span class="${s === "ok" ? "" : s}">${s === "add" ? '<i aria-hidden="true">+</i>' : ""}${esc(w)}${s === "add" ? '<span class="sr"> (qo\'shish kerak)</span>' : s === "mv" ? '<span class="sr"> (joyi xato)</span>' : s === "x" || s === "sw" ? '<span class="sr"> (xato)</span>' : ""}</span>`).join("")}</div>`;
+const tzCmp = (fx, en, small) => `<div class="rs-cmp${small ? " sm" : ""}"><p class="rq-l">Siz yozdingiz</p>${tzRow(fx.got)}
+  <p class="rq-l">To'g'risi</p>${tzRow(fx.want)}${small ? "" : `<p class="rs-leg"><span><i class="lg mv"></i>joyi almashgan</span><span><i class="lg add">+</i>qo'shish kerak</span><span><i class="lg x"></i>ortiqcha yoki boshqa so'z</span></p>`}</div>`;
+function ruleSheet(it, answer, cards, next, fx) {
   if (document.getElementById("rsheet")) return;
   const qa = []; cards.forEach(c => (TZ_QA[c.k] || TZ_QA[c.k.replace(/x$/, "")] || []).forEach(q => { if (qa.length < 3 && !qa.some(x => x[0] === q[0])) qa.push(q); }));
   const ai = aiOn(), hist = [];
   const wrap = document.createElement("div"); wrap.id = "rsheet"; wrap.className = "qsheet ksheet rsheet";
   wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs ks rs" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="rsh">
-    <div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="rsh">${cards.length > 1 && cards[0].k !== "form" ? "Xato · " + cards.filter(c => c.k !== "form").length + " ta qoida" : "Xato · qoida"}</h2><button class="ks-x" data-x aria-label="Yopish">${ICON.x}</button></div></div>
+    <div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="rsh">${fx.steps.length > 1 ? "Xato · " + fx.steps.length + " ta tuzatish" : "Xato"}</h2><button class="ks-x" data-x aria-label="Yopish">${ICON.x}</button></div></div>
     <div class="ks-body">
-      <div class="rs-ans"><p class="rq-l">To'g'risi</p><p class="rs-e"><b>${esc(it.e)}</b><button class="icon" data-say="${esc(it.e)}" aria-label="Tinglash">${ICON.vol}</button></p></div>
-      ${cards.map(tzCard).join("")}
+      <div class="rs-ans"><p class="rs-e"><b>${esc(it.e)}</b><button class="icon" data-say="${esc(it.e)}" aria-label="To'g'ri gapni tinglash">${ICON.vol}</button></p></div>
+      ${tzCmp(fx)}
+      ${fx.steps.length ? `<div class="rs-fix"><p class="rs-qh">Qanday to'g'rilash</p><ol>${fx.steps.map(([k, t]) => `<li>${t}</li>`).join("")}</ol></div>` : ""}
+      ${cards.length ? `<p class="rs-qh rs-qr">Qoida</p>` : ""}${cards.map(tzCard).join("")}
       <section class="rs-q" aria-labelledby="rsqh"><p class="rs-qh" id="rsqh">Savolingiz bormi?</p>
         <div class="rs-th" aria-live="polite"></div>
-        <div class="rs-chips">${qa.map((q, i) => `<button class="rs-chip" type="button" data-q="${i}">${esc(q[0])}</button>`).join("")}</div>
+        <div class="rs-chips">${ai ? `<button class="rs-chip ai" type="button" data-ai>${ICON_BULB}Xatoimni to'liq tushuntiring</button>` : ""}${qa.map((q, i) => `<button class="rs-chip" type="button" data-q="${i}">${esc(q[0])}</button>`).join("")}</div>
         ${ai ? `<form class="rs-ask" id="rsform"><textarea id="rsq" rows="1" placeholder="O'z savolingizni yozing…" aria-label="Savolingiz"></textarea><button class="rs-send" type="submit" aria-label="Yuborish" disabled>${ICON_UP}</button></form>` : ""}
       </section>
     </div>
@@ -7193,22 +7246,30 @@ function ruleSheet(it, answer, cards, next) {
   const sheet = wrap.querySelector(".ks"), body = wrap.querySelector(".ks-body"), th = wrap.querySelector(".rs-th"), prev = document.activeElement;
   const bubble = (q, html) => { const d = document.createElement("div"); d.className = "rs-qa"; d.innerHTML = `<p class="rs-my">${esc(q)}</p><div class="rs-an">${html}</div>`; th.appendChild(d); bindSay(d); d.scrollIntoView({ block: "nearest", behavior: "smooth" }); return d; };
   wrap.querySelectorAll(".rs-chip").forEach(b => b.onclick = () => { const q = qa[+b.dataset.q]; b.remove(); bubble(q[0], `<p>${esc(q[1])}</p>`); });
+  /* AI: har bir farqni alohida tushuntiradi (mode «xato»); birinchi javobda «Siz yozdingiz / To'g'risi» solishtiruvi ham chiqadi */
+  let shown = false;
+  const askAI = async (q, lock) => {
+    const d = bubble(q || "Xatoimni to'liq tushuntiring", `<div class="sk"></div><div class="sk" style="width:72%"></div><div class="sk" style="width:84%"></div>`), an = d.querySelector(".rs-an");
+    if (lock) lock(true);
+    try {
+      const r = await aiAsk({ mode: "xato", uz: it.u, target: it.e, answer, steps: fx.plain.join("; "), rule: cards.map(c => c.t + " — " + c.h).join("; "), text: q || "", history: hist.slice(-4) });
+      hist.push({ q: q || "Xatoimni to'liq tushuntiring", a: [r.izoh, ...(Array.isArray(r.qadamlar) ? r.qadamlar.map(x => x && x.nega) : [])].filter(Boolean).join(" ") });
+      const st = Array.isArray(r.qadamlar) ? r.qadamlar.filter(x => x && (x.togri || x.nega)).slice(0, 6) : [];
+      an.innerHTML = `${shown ? "" : tzCmp(fx, it.e, true)}${r.izoh ? `<p>${esc(r.izoh)}</p>` : ""}
+        ${st.length ? `<ol class="rs-st">${st.map(x => `<li><p class="rs-st-h">${x.xato ? `<s>${esc(x.xato)}</s> → ` : ""}<b>${esc(x.togri || "")}</b></p>${x.nega ? `<p>${esc(x.nega)}</p>` : ""}</li>`).join("")}</ol>` : ""}
+        ${r.eslatma ? `<p class="rs-tip">${ICON_BULB}<span>${esc(r.eslatma)}</span></p>` : ""}${aiExample(r.misol)}`;
+      shown = true; bindSay(an);
+    } catch (er) { an.innerHTML = `<p class="ai-err" role="alert">${aiErr(er.code)}</p>`; }
+    if (lock) lock(false);
+  };
+  const aiChip = wrap.querySelector(".rs-chip[data-ai]"); if (aiChip) aiChip.onclick = () => { aiChip.remove(); askAI(""); };
   if (ai) {
     const f = wrap.querySelector("#rsform"), t = wrap.querySelector("#rsq"), s = wrap.querySelector(".rs-send");
     const grow = () => { t.style.height = "auto"; t.style.height = Math.min(t.scrollHeight, 120) + "px"; };
     t.oninput = () => { s.disabled = !t.value.trim(); grow(); };
     t.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!s.disabled) f.requestSubmit(); } });
-    f.onsubmit = async e => {
-      e.preventDefault(); const q = t.value.trim(); if (!q) return;
-      t.value = ""; grow(); s.disabled = true; t.disabled = true;
-      const d = bubble(q, `<div class="sk"></div><div class="sk" style="width:72%"></div>`), an = d.querySelector(".rs-an");
-      try {
-        const r = await aiAsk({ mode: "chat", text: q, history: hist.slice(-4), page: `Gap tuzish mashqi (uzun gap). O'zbekcha: ${it.u}. To'g'ri javob: ${it.e}. O'quvchi javobi: ${answer}. Ko'rsatilgan qoida: ${cards.map(c => c.t + " — " + c.h).join("; ")}. O'quvchi shu xato haqida savol beryapti.` });
-        hist.push({ q, a: r.izoh || "" });
-        an.innerHTML = `${r.izoh ? `<p>${esc(r.izoh)}</p>` : ""}${aiExample(r.misol)}`; bindSay(an);
-      } catch (er) { an.innerHTML = `<p class="ai-err" role="alert">${aiErr(er.code)}</p>`; }
-      t.disabled = false; t.focus();
-    };
+    f.onsubmit = e => { e.preventDefault(); const q = t.value.trim(); if (!q) return; t.value = ""; grow(); s.disabled = true;
+      askAI(q, on => { t.disabled = on; if (!on) t.focus(); }); };
   }
   let closed = false;
   const close = (fromPop) => { if (closed) return; closed = true; wrap.classList.remove("on"); document.removeEventListener("keydown", key, true); removeEventListener("popstate", pop);
@@ -7304,8 +7365,12 @@ route(/^tuzmashq$/, () => {
     $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
   };
   /* uzun gap xato bo'lsa: qoida varag'i ochiladi; yopilsa — javob ostida «Qoidani ko'rish» qoladi */
-  const ruleOpen = (A, W, ans, tile) => {
-    const cards = tzRules(A, W, tile ? "" : ans, tile), open = () => ruleSheet(it, ans || "(bo'sh)", cards, tuzNext);
+  const ruleOpen = (A, W, ans, tile, gotD) => {
+    const fx = tzFix(gotD || words(ans), words(it.e));
+    let cards = tzRules(A, W, tile ? "" : ans, tile).filter(c => c.k !== "words");
+    if (fx.moved && !cards.some(c => c.k === "order")) cards.unshift({ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi.", order: 1 });
+    cards = cards.slice(0, 3);
+    const open = () => ruleSheet(it, ans || "(bo'sh)", cards, tuzNext, fx);
     const slot = document.createElement("div"); slot.className = "why-slot"; slot.innerHTML = `<button class="why" type="button">${ICON_BULB}<span>Qoidani ko'rish</span></button>`; $("#tf").appendChild(slot);
     slot.querySelector(".why").onclick = open; setTimeout(() => { if (T && T.q[T.i] === it && location.hash === "#tuzmashq") open(); }, 380);
   };
@@ -7352,7 +7417,7 @@ route(/^tuzmashq$/, () => {
     A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
     A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
     show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>` : `To'g'risi: <b>${esc(it.e)}</b>`);
-    if (!ok && it.long) ruleOpen(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()), picked.map(k => tiles[k]).join(" "), true);
+    if (!ok && it.long) ruleOpen(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()), picked.map(k => tiles[k]).join(" "), true, picked.map(k => tiles[k]));
     else if (!ok) whyButton($("#tf"), { uz: it.u, target: it.e, answer: picked.map(k => tiles[k]).join(" "), rule: it.h });
   };
   draw();

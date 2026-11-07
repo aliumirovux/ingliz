@@ -1,4 +1,4 @@
-// «Tushuntir»: xatoni o'zbekcha tushuntiradi (mode: fix), o'quvchi gapini tekshiradi (mode: check), Tinglash bo'limida gapni (sentence) va so'zni (word) tushuntiradi,
+// «Tushuntir»: xatoni o'zbekcha tushuntiradi (mode: fix; gap tuzishda har bir farqni qadam-baqadam — mode: xato), o'quvchi gapini tekshiradi (mode: check), Tinglash bo'limida gapni (sentence) va so'zni (word) tushuntiradi,
 // saytdagi yordamchi (mode: chat) — tarjima, gapni tekshirish, so'z ma'nosi va savollar.
 // Faqat kirgan foydalanuvchi (verify_jwt), kuniga LIMIT ta (barcha rejimlar uchun umumiy). Kalit: Edge Function secret ANTHROPIC_API_KEY.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -47,8 +47,26 @@ function chatPrompt(b: Record<string, unknown>) {
     `"pron": "...", "uz": "o'zbekcha ma'nosi (soz va tarjimada qisqa)", "izoh": "...", "misol": {"en": "...", "uz": "..."}, "qosh": [{"w": "...", "u": "..."}]}`;
 }
 
+// gap tuzish: o'quvchi javobidagi HAR BIR farqni alohida, qadam-baqadam tushuntiradi (qoida varag'idagi chat)
+function xatoPrompt(b: Record<string, unknown>) {
+  const hist = Array.isArray(b.history) ? (b.history as Record<string, unknown>[]).slice(-4) : [];
+  const h = hist.map((x) => `O'quvchi: ${clip(x.q, 300)}\nSen: ${clip(x.a, 400)}`).join("\n");
+  return `Gap tuzish mashqi.\nO'zbekcha topshiriq: ${clip(b.uz, 240)}\nTo'g'ri inglizcha javob: ${clip(b.target, 240)}\nO'quvchi javobi: ${clip(b.answer, 240)}\n` +
+    (b.steps ? `Sayt aniqlagan farqlar (ishonchli, shularga tayan): ${clip(b.steps, 600)}\n` : "") +
+    (b.rule ? `Saytda ko'rsatilgan qoida: ${clip(b.rule, 240)}\n` : "") +
+    (h ? `Oldingi suhbat:\n${h}\n` : "") +
+    (clip(b.text, 600) ? `O'quvchining savoli: ${clip(b.text, 600)}\n\n` : `O'quvchi so'radi: «Xatoimni to'liq tushuntiring».\n\n`) +
+    `BU REJIMDA «qisqa bo'l, faqat eng muhim xato» qoidasi amal qilmaydi. O'quvchi javobidagi HAR BIR farqni alohida qadam qilib, gapdagi tartibda tushuntir:\n` +
+    `- xato: o'quvchi aynan nima yozgan (inglizcha bo'lak, qisqa);\n- togri: qanday bo'lishi kerak (inglizcha bo'lak, kerak bo'lsa atrofidagi 1–2 so'z bilan, masalan «We talk about»);\n` +
+    `- nega: 1–2 oddiy gap — nega shunday. So'z joyi almashgan bo'lsa, inglizcha tartibni ayt: kim → nima qiladi → nimani → qayerda → qachon. So'z tushib qolgan bo'lsa — u nima uchun kerakligini ayt.\n` +
+    `Faqat haqiqiy farqlarni ayt; to'g'ri qismni xato dema; vergul va katta harfni farq hisoblama. Savol berilgan bo'lsa — izohda avval aynan savolga javob ber, qadamlar savolga tegishli bo'lsin (kerak bo'lmasa bo'sh ro'yxat).\n` +
+    `eslatma — keyingi safar eslab qolish uchun bitta qisqa qoida. misol — shu qoidani ko'rsatadigan BOSHQA oddiy gap.\n` +
+    `JSON: {"izoh": "1–2 gap umumiy xulosa yoki savolga javob", "qadamlar": [{"xato": "...", "togri": "...", "nega": "..."}], "eslatma": "...", "misol": {"en": "...", "uz": "..."}}`;
+}
+
 function prompt(b: Record<string, unknown>) {
   if (b.mode === "chat") return chatPrompt(b);
+  if (b.mode === "xato") return xatoPrompt(b);
   if (b.mode === "sentence") {
     // Tinglash: video darsdagi gapni tushuntirish
     return `Video darsdagi (VOA, A1) inglizcha gap: ${clip(b.answer, 240)}\n` +
@@ -83,7 +101,7 @@ Deno.serve(async (req) => {
   let b: Record<string, unknown>;
   try { b = await req.json(); } catch { return json({ error: "bad_request" }, 400, origin); }
   const chat = b.mode === "chat";
-  if (chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || !b.mode ? !clip(b.target, 200) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
+  if (chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
 
   // tokenni gateway tekshirgan (verify_jwt) — bu yerda faqat emailni o'qiymiz
   const auth0 = req.headers.get("Authorization") || "";
@@ -124,6 +142,8 @@ Deno.serve(async (req) => {
   if (mis && cyr.test(String(mis.uz || ""))) delete mis.uz;
   if (out.tarjima && cyr.test(String(out.tarjima))) return json({ error: "empty" }, 502, origin);
   if (cyr.test(String(out.izoh || "")) || cyr.test(String(out.uz || ""))) return json({ error: "empty" }, 502, origin);
+  if (Array.isArray(out.qadamlar)) out.qadamlar = (out.qadamlar as Record<string, unknown>[]).filter((x) => x && !cyr.test(String(x.nega || "")) && (clip(x.togri, 200) || clip(x.nega, 400))).slice(0, 6);
+  if (out.eslatma && cyr.test(String(out.eslatma))) delete out.eslatma;
   if (chat && Array.isArray(out.qosh)) out.qosh = (out.qosh as Record<string, unknown>[]).filter((x) => x && clip(x.w, 60) && clip(x.u, 80) && !cyr.test(String(x.u))).slice(0, 3);
   return json({ ...out, left: LIMIT - used }, 200, origin);
 });

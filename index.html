@@ -503,6 +503,17 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .sk-ch small{display:block;margin:4px 3px 0;font-size:12px;line-height:1.25;color:var(--muted);max-width:260px}
 .bku{--h:#E0735A;text-decoration:none;box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--h) 60%,transparent)}
 .tz-skn{margin-top:6px;font-size:14px;opacity:.9}
+.ks .opt{display:flex;align-items:center;gap:8px}.ks .opt .mk{margin-left:auto;display:none}.ks .opt .mk svg{width:20px;height:20px}.ks .opt.ok .mk,.ks .opt.bad .mk,.ks .opt.right .mk{display:flex}
+.ks-uz{margin:0 0 10px;font-size:15px;color:var(--muted);line-height:1.45}
+.ks-en{margin:0 0 16px;font-size:21px;font-weight:600;line-height:1.55;letter-spacing:-.01em}
+.ks-gap{display:inline-block;min-width:64px;padding:0 8px;border-bottom:2.5px solid var(--marker);border-radius:4px;text-align:center;color:var(--accent-text);background:var(--marker-soft)}
+.ks-gap.ok{border-color:var(--ok-strong);color:var(--ok);background:var(--ok-bg)}.ks-gap.fix{border-color:var(--ok-strong);color:var(--ok);background:var(--ok-bg)}
+.ks-o{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ks-rule{margin:14px 0 12px;padding:12px 14px;border-radius:16px;background:var(--surface-2)}.ks-rule p{margin:0;font-size:14.5px;line-height:1.45}
+.ks-rule .ks-rh{font-size:16px;margin:0 0 2px}.ks-rule .ks-ex{margin-top:6px;color:var(--muted)}.ks-rule .ks-vs{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);color:var(--muted)}
+.ks-rule.ok .ks-rh b{color:var(--ok)}.ks-rule.bad .ks-rh b{color:var(--ok)}
+.ks-map{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}.ks-map span{display:inline-flex;gap:6px;align-items:center;height:28px;padding:0 10px;border-radius:14px;background:var(--surface-2);font-size:13px;color:var(--muted)}.ks-map b{color:var(--ink);font-weight:600}
+.ks-sum .ks-li{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-top:1px solid var(--line)}.ks-sum .ks-li:first-of-type{border-top:0}.ks-li .sub{grid-column:1/-1;font-size:13px;color:var(--muted)}
 @media (min-width:600px){.rs-foot{padding:12px 16px 8px;border-radius:0 0 24px 24px}}
 
 .ai{margin-top:10px;padding:14px 16px;border-radius:18px;background:var(--surface-2);font-size:15px;line-height:1.5;text-align:left}
@@ -3464,7 +3475,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^tuz/.test(h) && wideNav() ? "tuz" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
@@ -3772,7 +3783,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611071900";
+const APP_V = "202611072000";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7339,6 +7350,85 @@ function ruleSheet(it, answer, cards, next, fx, retry) {
   top.addEventListener("pointerup", up); top.addEventListener("pointercancel", up);
   requestAnimationFrame(() => { wrap.classList.add("on"); if (!matchMedia("(pointer:coarse)").matches) wrap.querySelector("#rsgo").focus({ preventScroll: true }); else sheet.focus({ preventScroll: true }); body.scrollTop = 0; });
 }
+/* ---------- KICHIK SO'ZLAR: in, on, at, to, from, of, with, for, about, the, a/an ----------
+   Hikoya va gap tuzish gaplaridan bitta kichik so'z olib tashlanadi — o'quvchi 3–4 variantdan tanlaydi.
+   Asosiy fikr: bu so'zlar — o'zbekchadagi qo'shimchalar (-da, -ga, -dan, -ning…), faqat so'zning OLDIDA turadi. */
+const KS_RULE = {
+  in: ["-da (ichida)", "ichida; shahar, xona, oy, yil", "in the box · in Tashkent · in May"],
+  on: ["-da (ustida)", "ustida; hafta kuni", "on the table · on Sunday"],
+  at: ["-da (aniq joy, soat)", "aniq nuqta yoki soat", "at home · at the door · at 7"],
+  to: ["-ga", "qayerga yoki kimga", "to school · give it to me"],
+  from: ["-dan", "qayerdan yoki kimdan", "from Tashkent · a letter from my friend"],
+  of: ["-ning · miqdor", "kimniki / nimaning qismi; «bir piyola …», «ko'p …»", "the end of the film · a cup of tea · a lot of toys"],
+  with: ["bilan", "kim yoki nima bilan", "with my friend · tea with sugar"],
+  for: ["uchun · … davomida", "kim uchun yoki qancha vaqt", "a gift for you · for two hours"],
+  about: ["haqida", "nima haqida", "a book about cats · talk about football"],
+  the: ["o'sha (ma'lum)", "ikkalamiz biladigan yoki avval aytilgan narsa", "I have a cat. The cat is black."],
+  a: ["bitta, qaysidir", "birinchi marta aytilgan bitta narsa (undosh tovush oldidan)", "a cat · a big house"],
+  an: ["bitta (unli oldidan)", "keyingi so'z unli tovush bilan boshlansa", "an apple · an old car · an hour"]
+};
+const KS_ALT = { in: ["on", "at", "to"], on: ["in", "at", "to"], at: ["in", "on", "to"], to: ["from", "at", "for"], from: ["to", "of", "at"], of: ["for", "with", "from"], with: ["for", "of", "to"], for: ["to", "of", "with"], about: ["of", "for", "on"], the: ["a", "an"], a: ["the", "an"], an: ["a", "the"] };
+const KS_N = 10;
+let KS = null;
+function ksPool() {
+  const cl = curBk(), out = [];
+  const add = (en, uz, src) => {
+    const toks = String(en).split(/\s+/).filter(Boolean); if (toks.length < 4 || toks.length > 18 || !uz) return;
+    toks.forEach((t, i) => { const w = t.replace(/[.,?!;:"]/g, "").toLowerCase(); if (KS_RULE[w] && !/['’]/.test(t)) out.push({ en, uz, toks, i, w, src }); });
+  };
+  BOOKS.filter(b => b.lv === cl).forEach(b => b.p.forEach(pa => pa.forEach(([en, uz]) => add(en, uz, b.t))));
+  BLD.filter(x => lvOf(x.unit) === curLvId()).forEach(x => add(x.e, x.u, ""));
+  return out;
+}
+function ksRound() {
+  const pool = shuffle(ksPool()), by = {}, used = new Set(), q = [];
+  pool.forEach(x => { (by[x.w] = by[x.w] || []).push(x); });
+  const keys = shuffle(Object.keys(by));
+  for (let r = 0; q.length < KS_N && r < 40; r++) keys.forEach(k => { if (q.length >= KS_N) return; const x = by[k].find(y => !used.has(y.en)); if (x) { used.add(x.en); q.push(x); } });
+  return shuffle(q).map(x => { const cap = x.i === 0, f = w => cap ? w[0].toUpperCase() + w.slice(1) : w; return Object.assign({}, x, { o: shuffle([x.w, ...KS_ALT[x.w]]).map(f), ans: f(x.w) }); });
+}
+const ksSent = (x, fill, cls) => x.toks.map((t, i) => i === x.i ? `<span class="ks-gap${cls ? " " + cls : ""}">${fill ? esc(t.replace(/[.,?!;:"]/g, "")) + esc((t.match(/[.,?!;:"]+$/) || [""])[0]) : "&nbsp;"}</span>` : `<span data-gl="${esc(t.replace(/[.,?!;:"]/g, ""))}">${esc(t)}</span>`).join(" ");
+route(/^ksmashq$/, () => {
+  if (!KS) { go("tuz"); return; }
+  if (KS.i >= KS.q.length) return ksFinish();
+  const x = KS.q[KS.i], N = KS.q.length;
+  app.innerHTML = `<div class="top"><button class="icon" id="ksx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" id="ksbar"><i style="width:${KS.i / N * 100}%"></i></div><span class="cnt">${KS.i + 1}/${N}</span></div>
+  <div class="card qcard ks"><p class="label">Kichik so'zlar · bo'sh joyga mos so'z</p>
+    <p class="ks-uz">${esc(x.uz)}</p>
+    <p class="ks-en" lang="en">${ksSent(x)}</p>
+    <div class="opts ks-o" id="kso">${x.o.map((o, k) => `<button class="opt" lang="en" data-k="${k}">${esc(o)}<span class="mk" aria-hidden="true">${o === x.ans ? ICON.check : ICON.x}</span></button>`).join("")}</div>
+    <div id="ksf"></div></div>`;
+  segBar($("#ksbar"), N, KS.res, KS.i);
+  $("#ksx").onclick = () => confirmQuit(KS.i, N, () => { KS = null; go("tuz"); });
+  app.querySelectorAll("#kso .opt").forEach(b => b.onclick = () => ksPick(+b.dataset.k));
+});
+function ksPick(k) {
+  const x = KS.q[KS.i], ok = x.o[k] === x.ans, R = KS_RULE[x.w], pick = x.o[k].toLowerCase();
+  app.querySelectorAll("#kso .opt").forEach((b, j) => { b.disabled = true; b.classList.add(j === k ? (ok ? "ok" : "bad") : x.o[j] === x.ans ? "right" : "dim"); });
+  $(".ks-en").innerHTML = ksSent(x, true, ok ? "ok" : "fix");
+  KS.res[KS.i] = ok; segBar($("#ksbar"), KS.q.length, KS.res, -1); buzz(ok); logAns(ok); touchStreak(); save();
+  if (!ok) { KS.wrong.push(x); if (!KS.again.has(x)) { KS.again.add(x); KS.q.push(Object.assign({}, x, { o: shuffle(x.o) })); } }
+  const P = KS_RULE[pick];
+  $("#ksf").innerHTML = `<div class="ks-rule ${ok ? "ok" : "bad"}" role="status">
+    <p class="ks-rh"><b lang="en">${esc(x.w)}</b> = ${esc(R[0])}</p><p>${esc(R[1])}</p><p class="ks-ex" lang="en">${esc(R[2])}</p>
+    ${!ok && P ? `<p class="ks-vs"><b lang="en">${esc(pick)}</b> esa = ${esc(P[0])} — ${esc(P[1])}</p>` : ""}</div>
+    <button class="btn" id="ksnx">${KS.i + 1 < KS.q.length ? "Keyingisi" : "Natijani ko'rish"}</button>`;
+  say(x.en);
+  const b = $("#ksnx"); b.focus({ preventScroll: true });
+  b.onclick = () => { KS.i++; if (location.hash === "#ksmashq") render(); };
+}
+function ksFinish() {
+  const first = KS.res.slice(0, KS.n), N = KS.n, ok = first.filter(Boolean).length, C = 2 * Math.PI * 52, key = "ks-" + curBk();
+  S.pat = S.pat || {}; S.pat[key] = Math.max(S.pat[key] || 0, ok); save();
+  const miss = {}; KS.wrong.forEach(x => { miss[x.w] = (miss[x.w] || 0) + 1; });
+  const top = Object.entries(miss).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  app.innerHTML = `<div class="oy-res"><div class="oy-ring" role="img" aria-label="${N} tadan ${ok} ta to'g'ri"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="10"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ok-strong)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C * ok / N} ${C}" transform="rotate(-90 60 60)"/></svg><b>${ok}/${N}</b></div>
+    <h2>${ok === N ? "Hammasi to'g'ri!" : "Raund tugadi"}</h2><p class="muted">${top.length ? "Xato qilingan so'zlar pastda — qoidasini yana bir ko'zdan kechiring" : "Bironta ham xato qilmadingiz"}</p></div>
+  ${top.length ? `<div class="card ks-sum"><p class="label">Qiyin bo'lgan so'zlar</p>${top.map(([w]) => `<div class="ks-li"><b lang="en">${esc(w)}</b><span>= ${esc(KS_RULE[w][0])}</span><span class="sub" lang="en">${esc(KS_RULE[w][2])}</span></div>`).join("")}</div>` : ""}
+  <div class="oy-acts"><button class="btn" id="ksre">Yana ${KS_N} ta</button><a class="btn ghost" href="#tuz">Tayyor</a></div>`;
+  $("#ksre").onclick = ksStart;
+}
+function ksStart() { const q = ksRound(); if (q.length < 4) { toast("Bu darajada gap kam", null, null, { type: "info" }); return; } KS = { q, n: q.length, i: 0, res: [], wrong: [], again: new Set() }; if (location.hash === "#ksmashq") render(); else go("ksmashq"); }
 /* daraja oshgani sari «uzun» chegarasi ham oshadi: Beginner/Elementary hikoyalarida 12+ so'zli gap kam */
 const TZ_MIN = { "Pre-intermediate": 11, Intermediate: 11 };
 function longPool() {
@@ -7361,11 +7451,16 @@ route(/^tuz$/, () => {
     </div></div>
     ${LP.length >= 8 ? `<div class="card tzl"><div class="tzl-h"><div><p class="label" style="margin:0 0 4px">Uzun gaplar · ${curBk()}</p><b>Hikoyalardagi ${TZ_MIN[curBk()] || 9}–18 so'zli gaplar</b><p class="muted" style="margin:6px 0 0">${LP.length} ta gap. ${tuzMode === "yoz" ? "Kompyuterda klaviatura bilan yozish qulay." : "Uzun gapda so'z tartibi va kichik so'zlar (the, a, in, on) tekshiriladi."}${lb != null ? ` Eng yaxshi natija: ${lb}/8.` : ""}</p></div></div>
       <button class="btn" id="tzlong" style="margin-top:14px">8 ta uzun gap</button></div>` : ""}
+    <div class="card ksc"><p class="label" style="margin:0 0 4px">Kichik so'zlar</p><b>in, on, at, to, from, of, the…</b>
+      <p class="muted" style="margin:6px 0 0">Bu so'zlar — o'zbekchadagi qo'shimchalar (-da, -ga, -dan, -ning), faqat so'zning <b>oldida</b> turadi. Gapdagi bo'sh joyga mosini tanlang.${S.pat && S.pat["ks-" + curBk()] != null ? ` Eng yaxshi natija: ${S.pat["ks-" + curBk()]}/${KS_N}.` : ""}</p>
+      <div class="ks-map" aria-hidden="true"><span><b>in · on · at</b> -da</span><span><b>to</b> -ga</span><span><b>from</b> -dan</span><span><b>of</b> -ning</span><span><b>with</b> bilan</span><span><b>for</b> uchun</span></div>
+      <button class="btn" id="ksgo" style="margin-top:14px">${KS_N} ta savol</button></div>
     <button class="btn ghost" id="mix">Aralash: hamma unitlardan 10 ta gap</button>
     <div class="units">${BUILD.filter(b => lvOf(b.unit) === curLvId()).map(b => { const best = S.pat[kp + b.unit]; return `<button class="unit" data-tu="${b.unit}"><div class="t"><b>Unit ${un(b.unit)}</b><span class="n">${b.items.length} gap${best != null ? " · eng yaxshi: " + best + "/" + b.items.length : ""}</span></div><div class="muted" style="margin-top:2px">${esc(b.items[0].u)} · ${esc(b.items[1].u)} …</div></button>`; }).join("")}</div>
   </div>`;
   document.querySelectorAll(".mode").forEach(b => { b.classList.toggle("on", b.dataset.m === tuzMode); b.onclick = () => { tuzMode = b.dataset.m; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} render(); }; });
   $("#mix").onclick = () => startTuz(shuffle(BLD.filter(x => lvOf(x.unit) === curLvId())).slice(0, 10), "Aralash", null);
+  $("#ksgo").onclick = ksStart;
   const tl = $("#tzlong"); if (tl) tl.onclick = () => startTuz(shuffle(LP).slice(0, 8), "Uzun gaplar", lk);
   document.querySelectorAll("[data-tu]").forEach(b => b.onclick = () => { const n = +b.dataset.tu; startTuz(BLD.filter(x => x.unit === n), "Unit " + un(n), kp + n); });
 });

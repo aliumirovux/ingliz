@@ -466,7 +466,7 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .rq-row>span i{font-style:normal;font-weight:700;margin-right:2px}
 .rq-row>span.mv{background:color-mix(in srgb,#C98A12 18%,var(--surface));color:color-mix(in srgb,#9A6400 80%,var(--ink));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,#C98A12 55%,transparent);border:0;outline:1.5px dashed color-mix(in srgb,#C98A12 70%,transparent);outline-offset:-1.5px}
 .rq-row>span.add,.rq-row>span.fix{background:var(--ok-bg);color:var(--ok);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ok-strong) 45%,transparent);font-weight:600}
-.rq-row>span.x,.rq-row>span.sw{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px}
+.rq-row>span.x,.rq-row>span.rw{background:var(--bad-bg);color:var(--bad);text-decoration:line-through;text-decoration-thickness:1.5px}
 .rq-row .sr{padding:0;position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .rs .rs-leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin:10px 0 0;font-size:12.5px;color:var(--muted)}.rs-leg span{display:inline-flex;align-items:center;gap:6px}
 .rs-leg .lg{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:5px;font-style:normal;font-size:12px;font-weight:700}
@@ -481,15 +481,17 @@ a.tx{color:inherit;text-decoration:none;padding-block:4px}
 .rs-st li::before{content:counter(st);position:absolute;left:0;top:0;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--surface);color:var(--accent-text)}
 .rs .rs-st p{margin:0;color:var(--muted);font-size:14px}.rs .rs-st .rs-st-h{color:var(--ink);font-size:15px;margin:0 0 2px}.rs-st s{color:var(--bad)}.rs-st b{color:var(--ok);font-weight:600}
 .rs .rs-tip{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--surface);font-size:14px}.rs-tip svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--accent-text)}
-.rq-row.gl>span{height:auto;min-height:30px;padding:5px 10px;flex-direction:column;align-items:flex-start;gap:1px}.rq-row.gl>span b{font-weight:500;line-height:1.2}.rq-row.gl>span small{font-size:11.5px;line-height:1.2;color:var(--muted);font-weight:400}
-.rq-row.gl>span.add small,.rq-row.gl>span.fix small{color:color-mix(in srgb,var(--ok) 75%,var(--muted))}.rq-row.gl>span.mv small{color:color-mix(in srgb,#9A6400 65%,var(--muted))}
-.rs .rq-lh{font-weight:400}
+
 .rs-foot{display:flex;gap:10px}.rs-foot .btn{flex:1}.rs-foot .btn svg,#tzre svg{width:18px;height:18px;margin-right:6px;vertical-align:-3px}
 .tz-re{display:flex;align-items:center;gap:6px;margin:-2px 0 8px;font-size:13px;color:var(--accent-text);font-weight:500}.tz-re svg{width:16px;height:16px}
-.tz-gl{width:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;margin:4px 0 0;padding:0 12px;border:1px solid var(--line-strong);border-radius:18px;background:none;color:var(--muted);font:inherit;font-size:13px;font-weight:500;cursor:pointer}.tz-gl svg{width:16px;height:16px}
-.tz-gl[aria-pressed="true"]{background:var(--marker-soft);border-color:transparent;color:var(--accent-text)}
-.tiles.gl .tile,.answer.gl .tile{display:inline-flex;align-items:center;justify-content:center;flex-direction:column;height:auto;min-height:44px;padding-top:5px;padding-bottom:5px;gap:1px;line-height:1.15}.tile small{font-size:11px;font-weight:400;opacity:.72;line-height:1.15}
-.tiles.gl .tile.used small{opacity:0}
+.tz-glh{display:flex;align-items:center;gap:6px;margin:6px 0 0;font-size:13px;color:var(--muted)}.tz-glh svg{width:15px;height:15px;flex:none}
+[data-gl]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#gltip{position:fixed;z-index:2147483000;left:0;top:0;max-width:min(280px,calc(100vw - 16px));padding:7px 11px;border-radius:10px;background:var(--ink);color:var(--surface);font-size:14px;line-height:1.3;box-shadow:0 8px 24px -8px rgba(0,0,0,.35);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;display:flex;gap:8px;align-items:baseline}
+#gltip.on{opacity:1;transform:none}#gltip.below{transform:translateY(-4px)}#gltip.below.on{transform:none}
+#gltip b{font-weight:600}#gltip span{opacity:.85}
+#gltip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:2px}
+#gltip.below::after{bottom:auto;top:-5px}
+@media (prefers-reduced-motion:reduce){#gltip{transition:none}}
 #tzre{margin-right:10px;flex:0 0 auto}
 @media (min-width:600px){.rs-foot{padding:12px 16px 8px;border-radius:0 0 24px 24px}}
 
@@ -3760,7 +3762,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611071700";
+const APP_V = "202611071800";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7254,11 +7256,11 @@ function tzFix(gotD, wantD) {
     steps.push([k, k === "sub" ? `${q(gotD[subAt.get(r[0])])} o'rniga ${q(wantD[r[0]])} yozing` : `${q(words(r))} ni ${where} ${k === "mv" ? "qo'ying" : "qo'shing"}`]);
   });
   gs.forEach((s, a) => { if (s === "x") steps.push(["x", `${q(gotD[a])} ni olib tashlang`]); });
-  return { got: gotD.map((x, a) => [x, gs[a] === "sub" ? "sw" : gs[a]]), want: wantD.map((x, b) => [x, ws[b] === "sub" ? "fix" : ws[b]]), steps: steps.slice(0, 6), moved: gs.filter(s => s === "mv").length, plain: steps.slice(0, 6).map(s => s[1].replace(/<[^>]+>/g, "")) };
+  return { got: gotD.map((x, a) => [x, gs[a] === "sub" ? "rw" : gs[a]]), want: wantD.map((x, b) => [x, ws[b] === "sub" ? "fix" : ws[b]]), steps: steps.slice(0, 6), moved: gs.filter(s => s === "mv").length, plain: steps.slice(0, 6).map(s => s[1].replace(/<[^>]+>/g, "")) };
 }
-const tzRow = (toks, gl) => `<div class="rq-row${gl ? " gl" : ""}">${toks.map(([w, s]) => `<span class="${s === "ok" ? "" : s}">${gl ? `<b>${s === "add" ? '<i aria-hidden="true">+</i>' : ""}${esc(w)}</b><small>${esc(gloss(w)) || "&nbsp;"}</small>` : (s === "add" ? '<i aria-hidden="true">+</i>' : "") + esc(w)}${s === "add" ? '<span class="sr"> (qo\'shish kerak)</span>' : s === "mv" ? '<span class="sr"> (joyi xato)</span>' : s === "x" || s === "sw" ? '<span class="sr"> (xato)</span>' : ""}</span>`).join("")}</div>`;
+const tzRow = toks => `<div class="rq-row">${toks.map(([w, s]) => `<span class="${s === "ok" ? "" : s}" data-gl="${esc(w)}" tabindex="0">${(s === "add" ? '<i aria-hidden="true">+</i>' : "") + esc(w)}${s === "add" ? '<span class="sr"> (qo\'shish kerak)</span>' : s === "mv" ? '<span class="sr"> (joyi xato)</span>' : s === "x" || s === "rw" ? '<span class="sr"> (xato)</span>' : ""}</span>`).join("")}</div>`;
 const tzCmp = (fx, en, small) => `<div class="rs-cmp${small ? " sm" : ""}"><p class="rq-l">Siz yozdingiz</p>${tzRow(fx.got)}
-  <p class="rq-l">To'g'risi${small ? "" : ` <span class="rq-lh">· so'z ma'nolari bilan</span>`}</p>${tzRow(fx.want, !small)}${small ? "" : `<p class="rs-leg"><span><i class="lg mv"></i>joyi almashgan</span><span><i class="lg add">+</i>qo'shish kerak</span><span><i class="lg x"></i>ortiqcha yoki boshqa so'z</span></p>`}</div>`;
+  <p class="rq-l">To'g'risi</p>${tzRow(fx.want)}${small ? "" : `<p class="rs-leg"><span><i class="lg mv"></i>joyi almashgan</span><span><i class="lg add">+</i>qo'shish kerak</span><span><i class="lg x"></i>ortiqcha yoki boshqa so'z</span></p>`}</div>`;
 function ruleSheet(it, answer, cards, next, fx, retry) {
   if (document.getElementById("rsheet")) return;
   const qa = []; cards.forEach(c => (TZ_QA[c.k] || TZ_QA[c.k.replace(/x$/, "")] || []).forEach(q => { if (qa.length < 3 && !qa.some(x => x[0] === q[0])) qa.push(q); }));
@@ -7380,8 +7382,43 @@ function startTuz(list, title, key, tag) {
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
 function tuzResult(it, ok) { if (!T.again.has(it)) { (T.res = T.res || []).push(!!ok); segBar(document.querySelector("#app > .top .bar"), T.total, T.res, -1); logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
-const glOn = () => { try { return localStorage.getItem("ingliz-tzgl") !== "0"; } catch (e) { return true; } };
 const ICON_BOOK_GL = sv('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z"/>');
+/* so'z ma'nosi pufakchasi: kompyuterda — kursor so'z ustida (0,15 s), telefonda — so'zni bosib turish (0,5 s), klaviaturada — fokus.
+   Bosib turish so'zni javobga qo'shmaydi (keyingi «click» bekor qilinadi). Barcha [data-gl] elementlar uchun bitta. */
+(function glTip() {
+  let tipEl = null, tmr = 0, lpEl = null, lpXY = null, hideT = 0;
+  const box = () => { if (!tipEl) { tipEl = document.createElement("div"); tipEl.id = "gltip"; tipEl.setAttribute("role", "tooltip"); document.body.appendChild(tipEl); } return tipEl; };
+  const show = el => {
+    if (!el || !el.isConnected) return; clearTimeout(hideT);
+    const w = el.dataset.gl, g = gloss(w), t = box();
+    t.innerHTML = `<b>${esc(w)}</b><span>${g ? esc(g) : "lug'atda yo'q"}</span>`; t.className = "on";
+    const r = el.getBoundingClientRect(), tw = t.offsetWidth, th = t.offsetHeight, vw = document.documentElement.clientWidth;
+    let x = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2), vw - tw - 8), y = r.top - th - 8, below = y < 8;
+    if (below) y = r.bottom + 8;
+    t.style.left = x + "px"; t.style.top = y + "px"; t.classList.toggle("below", below);
+    t.style.setProperty("--ax", (r.left + r.width / 2 - x) + "px");
+    el.setAttribute("aria-describedby", "gltip");
+  };
+  const hide = (delay = 0) => { clearTimeout(tmr); clearTimeout(hideT); hideT = setTimeout(() => { if (tipEl) tipEl.className = ""; document.querySelectorAll("[aria-describedby=gltip]").forEach(e => e.removeAttribute("aria-describedby")); }, delay); };
+  document.addEventListener("pointerover", e => { if (e.pointerType !== "mouse") return; const el = e.target.closest && e.target.closest("[data-gl]"); if (!el) return; clearTimeout(tmr); tmr = setTimeout(() => show(el), 150); });
+  document.addEventListener("pointerout", e => { if (e.pointerType !== "mouse") return; const el = e.target.closest && e.target.closest("[data-gl]"); if (el && !el.contains(e.relatedTarget)) hide(); });
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse") { hide(); return; }
+    const el = e.target.closest && e.target.closest("[data-gl]"); hide(); if (!el) return;
+    lpEl = null; lpXY = [e.clientX, e.clientY];
+    tmr = setTimeout(() => { lpEl = el; show(el); try { navigator.vibrate && navigator.vibrate(8); } catch (er) {} }, 500);
+  }, { passive: true });
+  document.addEventListener("pointermove", e => { if (e.pointerType === "mouse" || !lpXY || lpEl) return; if (Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 10) { clearTimeout(tmr); lpXY = null; } }, { passive: true });
+  const end = () => { clearTimeout(tmr); lpXY = null; if (lpEl) hide(1600); };
+  document.addEventListener("pointerup", end, { passive: true }); document.addEventListener("pointercancel", end, { passive: true });
+  // bosib turilgan so'z javobga qo'shilmasin
+  document.addEventListener("click", e => { if (lpEl && e.target.closest && e.target.closest("[data-gl]") === lpEl) { e.preventDefault(); e.stopImmediatePropagation(); } lpEl = null; }, true);
+  document.addEventListener("contextmenu", e => { if (e.target.closest && e.target.closest("[data-gl]")) e.preventDefault(); });
+  document.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest("[data-gl]"); if (el && el.matches(":focus-visible")) show(el); });
+  document.addEventListener("focusout", () => hide());
+  addEventListener("scroll", () => hide(), { passive: true, capture: true });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
+})();
 function tuzNext() { T.retryOf = null; T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
 /* xato gapni darhol qayta yozish: natija (ball) o'zgarmaydi — faqat to'g'ri yozishni mashq qilish uchun */
 function tuzRetry() { if (!T) return; stopVoice(); T.retryOf = T.q[T.i]; render(); }
@@ -7391,7 +7428,7 @@ route(/^tuzmashq$/, () => {
   const it = T.q[T.i], yoz = T.mode === "yoz";
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
   <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p>${T.retryOf === it ? `<p class="tz-re">${ICON_RETRY}Qayta urinish — natijaga ta'sir qilmaydi</p>` : ""}<div class="q qsmall">${esc(it.u)}</div>
-    ${yoz ? "" : `<button class="tz-gl" id="tzgl" type="button" aria-pressed="${glOn()}">${ICON_BOOK_GL}So'z ma'nolari</button>`}
+    ${yoz ? "" : `<p class="tz-glh">${ICON_BOOK_GL}${matchMedia("(hover:hover)").matches ? "So'z ma'nosi: kursorni so'z ustiga olib boring" : "So'z ma'nosi: so'zni bosib turing"}</p>`}
     ${yoz ? `<textarea class="spell" id="tin" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…"></textarea>
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
     : `<div class="answer" id="ans" aria-live="polite"></div><div class="tiles" id="bank"></div>`}
@@ -7442,15 +7479,12 @@ route(/^tuzmashq$/, () => {
     return;
   }
   const want = words(it.e), have = new Set(want.map(w => w.toLowerCase()));
-  $("#tzgl").onclick = e => { const on = !glOn(); try { localStorage.setItem("ingliz-tzgl", on ? "1" : "0"); } catch (er) {} e.currentTarget.setAttribute("aria-pressed", on); draw(); };
   const tiles = shuffle(want.concat((it.x || []).filter(x => !have.has(x.toLowerCase()))));
   const picked = [];
   const draw = () => {
     $("#ans").innerHTML = picked.length ? picked.map((k, j) => `<button class="tile" data-j="${j}">${esc(tiles[k])}</button>`).join("") : `<span class="muted">So'zlarni bosing…</span>`;
-    const g = glOn(), tl = t => g ? `<span class="tw">${esc(t)}</span><small>${esc(gloss(t)) || "&nbsp;"}</small>` : esc(t);
-    $("#ans").classList.toggle("gl", g); $("#bank").classList.toggle("gl", g);
-    if (g && picked.length) $("#ans").innerHTML = picked.map((k, j) => `<button class="tile" data-j="${j}">${tl(tiles[k])}</button>`).join("");
-    $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}">${tl(t)}</button>`).join("");
+    if (picked.length) $("#ans").innerHTML = picked.map((k, j) => `<button class="tile" data-j="${j}" data-gl="${esc(tiles[k])}">${esc(tiles[k])}</button>`).join("");
+    $("#bank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}" data-gl="${esc(t)}">${esc(t)}</button>`).join("");
     $("#ans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
     $("#bank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw(); });
     if (!done) $("#chk").disabled = !picked.length;

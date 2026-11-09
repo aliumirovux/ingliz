@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><script>/* Hotjar — Ease English (6838847): faqat jonli domenlarda; ism/email/avatar data-hj-suppress bilan yashirilgan */if(/^(www\.)?easywords\.uz$|^aliumirovux\.github\.io$/.test(location.hostname)){(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:6838847,hjsv:6};a=o.getElementsByTagName("head")[0];r=o.createElement("script");r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r)})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=")}</script><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ingliz tili</title>
 <script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
 (function () {
@@ -7931,14 +7931,14 @@ function syncCardInner() {
   if (AUTH) {
     const relog = cloud.status === "relogin", nm = AUTH.name || "", em = AUTH.email || "";
     return `${SYS ? "" : head("Sinxronlash", "Mac va telefonda bir xil progress")}
-    <div class="sy-acc">${avatar()}<span class="sy-who"><b title="${esc(nm || em)}">${esc(nm || em)}</b><span${nm && em ? ` title="${esc(em)}"` : ""}>${nm && em ? esc(em) : AUTH.via === "google" ? "Google hisobi" : "Email orqali kirilgan"}</span></span></div>
+    <div class="sy-acc" data-hj-suppress>${avatar()}<span class="sy-who"><b title="${esc(nm || em)}">${esc(nm || em)}</b><span${nm && em ? ` title="${esc(em)}"` : ""}>${nm && em ? esc(em) : AUTH.via === "google" ? "Google hisobi" : "Email orqali kirilgan"}</span></span></div>
     <p class="sy-st" id="sync" data-s="${cloud.status}" role="status">${esc(statusText())}</p>
     ${relog ? `<button class="btn" id="syre">Qayta kirish</button>` : `<button class="btn ghost" id="synow"${cloud.status === "busy" ? " disabled" : ""}>Hozir sinxronlash</button>`}
     <button class="btn ghost sy-out" id="syout" type="button">Chiqish</button><p class="sy-note">Chiqsangiz ham natijalar shu qurilmada qoladi</p>`;
   }
   if (SY.step === "code") {
     const left = Math.max(0, Math.ceil((SY.until - Date.now()) / 1000));
-    return `${head("Kodni kiriting", `Kod <em class="sy-em">${esc(SY.email)}</em> manziliga yuborildi. Ko'rinmasa, «Spam» papkasini tekshiring.`)}
+    return `${head("Kodni kiriting", `Kod <em class="sy-em" data-hj-suppress>${esc(SY.email)}</em> manziliga yuborildi. Ko'rinmasa, «Spam» papkasini tekshiring.`)}
     <form id="syf2" novalidate><label class="sr-only" for="sycode">Pochtadagi kod</label>
       <input class="search code" id="sycode" inputmode="numeric" autocomplete="one-time-code" enterkeyhint="go" maxlength="8" placeholder="••••••" value="">
       <p class="sy-err" id="syerr" role="alert">${esc(SY.err)}</p>
@@ -8096,7 +8096,7 @@ const ICON_USER = sv('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 
 const inClaude = () => cloud.kind === "claude" || !!(window.claude && window.claude.use);
 function avatar() {
   const a = AUTH || {}, ch = [...String(a.name || a.email || "?").trim()][0] || "?";
-  return `<span class="av" aria-hidden="true"><span class="av-i">${esc(ch.toUpperCase())}</span>${a.pic ? `<img src="${esc(a.pic)}" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>`;
+  return `<span class="av" aria-hidden="true" data-hj-suppress><span class="av-i">${esc(ch.toUpperCase())}</span>${a.pic ? `<img src="${esc(a.pic)}" alt="" referrerpolicy="no-referrer" loading="lazy" decoding="async" onerror="this.remove()">` : ""}</span>`;
 }
 function meBtn() {
   const gear = `<a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a>`;

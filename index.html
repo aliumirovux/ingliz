@@ -4815,7 +4815,7 @@ route(/^hikoya-(\d+)$/, n => {
   if (LES) { mark(); bindLesson(); }
 });
 /* ---------- eslatma: telefon kalendariga har kungi voqea (sayt o'zi bildirishnoma yubora olmaydi) ---------- */
-const SITE = "https://aliumirovux.github.io/ingliz/";
+const SITE = "https://easywords.uz/";
 function calLinks(title, hhmm, details) {
   const t = addDays(1).replace(/-/g, ""), [h, m] = hhmm.split(":"), end = new Date(2000, 0, 1, +h, +m + 10);
   const st = t + "T" + h + m + "00", en = t + "T" + String(end.getHours()).padStart(2, "0") + String(end.getMinutes()).padStart(2, "0") + "00";

@@ -3,7 +3,7 @@
 // Widget faqat raqamlarni oladi: bugungi takror soni, seriya va hafta kunlari.
 const KEY = "__KEY__";
 const API = "https://rqeirdempadfwirefyit.supabase.co/functions/v1/widget";
-const APP = "https://aliumirovux.github.io/ingliz/#quiz";
+const APP = "https://easywords.uz/#quiz";
 const dyn = (l, d) => Color.dynamic(new Color(l), new Color(d));
 const C = {
   bg: dyn("#FFFFFF", "#1C1C20"), ink: dyn("#17171B", "#F2F2EE"), mut: dyn("#6B6C73", "#9C9DA4"),
@@ -85,7 +85,7 @@ function build(d) {
     header(w, null, "Ingliz tili"); w.addSpacer();
     txt(w, d.error === "key" ? "Kalit eskirgan. Ilovadan skriptni qayta nusxalang." : "Internet yo'q. Keyinroq yangilanadi.", 14, "s");
     w.addSpacer(); txt(w, "Sozlamalar → Telefon widgeti", 11, "", C.mut);
-    w.url = "https://aliumirovux.github.io/ingliz/#sozlama"; return w;
+    w.url = "https://easywords.uz/#sozlama"; return w;
   }
   const m = main(d);
   if (fam === "small") {

@@ -7,7 +7,7 @@ const LIMIT = 120;
 const MODEL = "claude-haiku-5-5";
 // «Nega xato?» va yordamchi faqat shu hisoblar uchun (Ali'ning API krediti boshqalarga sarflanmasin). Qo'shish: shu ro'yxatga email.
 const ALLOW = ["aliumirov.me@gmail.com"];
-const ORIGINS = ["https://aliumirovux.github.io", "http://localhost:8766"];
+const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
 
 const cors = (origin: string | null) => ({
   "Access-Control-Allow-Origin": origin && ORIGINS.includes(origin) ? origin : ORIGINS[0],

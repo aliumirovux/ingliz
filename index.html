@@ -1,8 +1,8 @@
 <!doctype html><html><head><meta charset=utf8><script>/* Hotjar — Ease English (6838847): faqat jonli domenlarda; ism/email/avatar data-hj-suppress bilan yashirilgan */if(/^(www\.)?easywords\.uz$|^aliumirovux\.github\.io$/.test(location.hostname)){(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:6838847,hjsv:6};a=o.getElementsByTagName("head")[0];r=o.createElement("script");r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r)})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=")}</script><meta name="color-scheme" content="light dark"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#F3F4F1" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F3F4F1;color:#17171B}@media (prefers-color-scheme:dark){html,body{background:#111113;color:#EEEEE9}}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Ingliz tili</title>
-<script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat GitHub Pages va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
+<script>/* PWA: telefonda "ilova" qilib o'rnatish. Faqat jonli sayt (easywords.uz, eski GitHub Pages manzili) va lokal serverda ishlaydi, Claude sahifasida kerak emas. */
 (function () {
-  if (!/github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) return;
+  if (!/^(www\.)?easywords\.uz$|github\.io$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) return;
   window.INGLIZ_PWA = true;
   const add = (tag, attrs) => { const e = document.createElement(tag); for (const k in attrs) e.setAttribute(k, attrs[k]); document.head.appendChild(e); };
   add("link", { rel: "manifest", href: "manifest.webmanifest" });
@@ -3815,10 +3815,10 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611121200";
+const APP_V = "202611121710";
 let updAt = 0, updShown = false;
 function checkUpdate() {
-  if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
+  if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
   fetch("./index.html?v=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.text() : "").then(t => {
     const m = t.match(/const APP_V = "(\d+)"/); if (!m || m[1] <= APP_V) return;
     const put = "caches" in window ? caches.open("ingliz-v2").then(c => Promise.all(["./", "./index.html"].map(u => c.put(u, new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }))))).catch(() => {}) : Promise.resolve();

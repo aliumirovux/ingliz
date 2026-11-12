@@ -133,6 +133,15 @@ h2{font:700 22px/1.2 var(--font-display);letter-spacing:-.02em;margin:0;text-wra
 .qtag{display:inline-block;background:var(--surface-2);color:var(--ink);font-weight:600;border-radius:999px;padding:2px 9px;margin-right:6px;font-size:12px}
 .qtag.re{background:var(--marker-soft);color:var(--accent-text)}
 .qbig{font-size:34px}
+/* rasmli savol */
+.qpicw{display:flex;flex-direction:column;align-items:center;gap:10px;margin:2px 0 0}
+.qpic{width:168px;height:168px;border-radius:28px;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 20%,var(--surface) 0%,var(--surface-2) 100%);box-shadow:inset 0 0 0 1px var(--line)}
+.qpic img{display:block;width:128px;height:128px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.16));animation:lt-in .35s cubic-bezier(.16,1,.3,1) both}
+.qpic-cap{margin:2px 0 0;font:500 15px/1.3 var(--font-body);color:var(--muted)}
+.qpeek{font-size:13px;min-height:36px;padding:6px 12px}.qpeek svg{width:16px;height:16px}
+.qpeek-uz{font:500 16px/1.3 var(--font-body);color:var(--muted);min-height:36px;display:flex;align-items:center;animation:lt-in .3s cubic-bezier(.16,1,.3,1) both}
+@media (prefers-reduced-motion:reduce){.qpic img,.qpeek-uz{animation:none}}
+html.typing .qpic{width:120px;height:120px;border-radius:22px}html.typing .qpic img{width:92px;height:92px}
 .pron.tr{color:var(--muted);font-family:inherit;font-style:italic}
 .q .gap{color:var(--accent-text);letter-spacing:.06em}
 .intro .iu{font:600 19px/1.35 var(--font-display);margin-top:14px}
@@ -3206,7 +3215,7 @@ const rec = id => S.srs[id];
 function grade(w, ok, spelled, hinted) {
   const prev = S.srs[w.id];
   // eslab qolish: oldingi kunlarda ko'rilgan so'zning shu kundagi birinchi javobi
-  if (prev && (prev.ls ? prev.ls < today() : !isToday(prev.lt))) logRet(ok);
+  if (prev && (prev.ls ? prev.ls < today() : !isToday(prev.lt))) { logRet(ok); pilotLog(w, ok); }
   const r = prev || { b: 0, due: today(), ok: 0, bad: 0 };
   if (!prev) untomb("srs:" + w.id);
   r.ls = today();
@@ -3396,6 +3405,29 @@ function speakOne(text, done) {
 function say(text) { stopVoice(); speakOne(text); }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 const pr = w => w.p ? "[" + w.p + "]" : "";
+/* ---------- rasmli savol (pilot, 3-unit): rasm ko'rsatiladi → inglizcha nomi yoziladi ----------
+   Rasmlar: Microsoft Fluent Emoji 3D (MIT, img/soz/LICENSE-fluent-emoji.txt).
+   Pilot: PIC so'zlari rasm oladi (yozish savollarining yarmi rasmli), PIC_C so'zlari rasmsiz qoladi.
+   Ikkala guruhning odatdagi (rasmsiz) savollardagi eslab qolishi kunlik log'da alohida sanaladi: ipv/ipk — rasmli, icv/ick — rasmsiz.
+   alt — rasmga mos, lekin darslikdagi so'z emas: xato hisoblanmaydi, kerakli so'z so'raladi. */
+const PIC = {
+  "bicycle": { f: "bicycle", alt: ["bike"] },
+  "cat": { f: "cat", alt: ["kitten", "kitty"] },
+  "coffee": { f: "coffee", alt: ["tea", "cup", "mug", "drink"] },
+  "house": { f: "house", alt: ["home", "building", "hut"] },
+  "mobile phone": { f: "mobile-phone", alt: ["phone", "mobile", "smartphone", "telephone", "cell phone", "tablet"] },
+  "cold": { f: "cold", alt: ["freezing", "frozen", "cool"] },
+  "seat": { f: "seat", alt: ["chair", "armchair"] }
+};
+const PIC_C = new Set(["car", "dog", "tv", "painting", "shop", "hot", "artist"]);
+const picKey = w => w && w.unit === 3 ? norm(spoken(w)) : "";
+const picOf = w => PIC[picKey(w)] || null;
+function pilotLog(w, ok) {
+  const k = picKey(w), g = PIC[k] ? "ip" : PIC_C.has(k) ? "ic" : "";
+  if (!g || (Z && Z.qmode === "pic")) return; // rasmli savolning o'zi hisobga kirmaydi — faqat odatdagi savollardagi xotira solishtiriladi
+  const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 });
+  L[g + "v"] = (L[g + "v"] || 0) + 1; if (ok) L[g + "k"] = (L[g + "k"] || 0) + 1;
+}
 
 /* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
 function nav(back, label, title, act) {
@@ -3783,7 +3815,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611072000";
+const APP_V = "202611121200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -6480,7 +6512,7 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
   // izoh yoki yordam qatori paydo bo'lsa, karta qayta joylashadi
   if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(fit)).observe(app);
 })();
-const typedQ = () => !!Z && (Z.qmode === "spell" || Z.qmode === "cloze" || Z.qmode === "listen");
+const typedQ = () => !!Z && (Z.qmode === "spell" || Z.qmode === "cloze" || Z.qmode === "listen" || Z.qmode === "pic");
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
   const m = qmodeRaw(w), r = rec(w.id), b = r ? r.b : 0;
@@ -6524,9 +6556,28 @@ function distractors(w, f) {
   for (const x of sameG.concat(rest)) { if (out.length === 3) break; const k = norm(x[f]); if (!seen.has(k) && norm(spoken(x)) !== norm(spoken(w)) && norm(x.u) !== norm(w.u) && !synClash(w, x)) { seen.add(k); out.push(x); } }
   return out;
 }
+const EYE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" transform="translate(2 4)" d="M10.0029,0.0005 C14.1389,0.0035 17.8529,2.9025 19.9389,7.7565 C20.0209,7.9455 20.0209,8.1595 19.9389,8.3485 C17.8539,13.2035 14.1389,16.1025 10.0029,16.1055 L9.9969,16.1055 C5.8609,16.1025 2.1469,13.2035 0.0609,8.3485 C-0.0201,8.1595 -0.0201,7.9455 0.0609,7.7565 C2.1469,2.9025 5.8619,0.0035 9.9969,0.0005 Z M9.9999,1.5005 C6.5639,1.5015 3.4299,3.9445 1.5699,8.0525 C3.4299,12.1615 6.5629,14.6045 9.9999,14.6055 C13.4369,14.6045 16.5699,12.1615 18.4299,8.0525 C16.5699,3.9445 13.4369,1.5015 9.9999,1.5005 Z M9.9996,4.1413 C12.1566,4.1413 13.9116,5.8963 13.9116,8.0533 C13.9116,10.2093 12.1566,11.9633 9.9996,11.9633 C7.8426,11.9633 6.0886,10.2093 6.0886,8.0533 C6.0886,5.8963 7.8426,4.1413 9.9996,4.1413 Z M9.9996,5.6413 C8.6696,5.6413 7.5886,6.7233 7.5886,8.0533 C7.5886,9.3823 8.6696,10.4633 9.9996,10.4633 C11.3296,10.4633 12.4116,9.3823 12.4116,8.0533 C12.4116,6.7233 11.3296,5.6413 9.9996,5.6413 Z"/></svg>`;
+/* rasmli savol: rasm + «Tarjimani ko'rish» (bosilsa o'zbekcha so'z chiqadi — odatdagi yozish savoliga aylanadi, jarima yo'q).
+   Rasm yuklanmasa (oflayn, birinchi marta) — savol odatdagi yozish savoliga o'tadi */
+function picAsk(w, pq) {
+  $("#qword").className = "q qpicw"; $("#qpron").textContent = "";
+  $("#qword").innerHTML = `<div class="qpic"><img src="img/soz/${pq.f}.png" alt="Rasm — inglizcha nomini yozing" width="128" height="128" decoding="async"></div><p class="qpic-cap">Bu nima? Inglizcha yozing</p><button class="icon qpeek" id="qpeek" type="button">${EYE}Tarjimani ko'rish</button>`;
+  $("#qpeek").onclick = () => { picReveal(); const sp = $("#spell"); if (sp && !useLetters()) sp.focus(); };
+  app.querySelector(".qpic img").onerror = () => {
+    if (!Z || Z.cur !== w || Z.qmode !== "pic") return;
+    Z.qmode = "spell"; $("#qword").className = "q"; $("#qword").textContent = w.u;
+    setLabel(Z.title + " · inglizcha yozing");
+  };
+}
+function picReveal() {
+  if (!Z || Z.qmode !== "pic") return;
+  const b = $("#qpeek"); if (b) b.outerHTML = `<div class="qpeek-uz" id="qpeek">${esc(Z.cur.u)}</div>`;
+}
 function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
-  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; zSave(); Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); Z.qmode = Z.force || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
+  const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; zSave(); Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); const fq = Z.force; Z.qmode = fq || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
+  // rasmli so'z: yozish savollarining yarmi rasm bilan (o'zbekcha so'z o'rniga rasm); qolgani odatdagidek
+  if (!fq && Z.qmode === "spell" && (Z.learn || Z.mode === "auto") && picOf(w) && Math.random() < .5) Z.qmode = "pic";
   if (t) {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
@@ -6571,9 +6622,10 @@ function ask() {
     return;
   }
   if (typedQ()) {
-    const cz = Z.qmode === "cloze" ? clozeOf(w) : null, ls = Z.qmode === "listen"; Z.cz = cz && cz.word;
-    setLabel(Z.title + (cz ? " · gapni to'ldiring" : ls ? " · eshitib yozing" : " · inglizcha yozing"));
-    if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
+    const cz = Z.qmode === "cloze" ? clozeOf(w) : null, ls = Z.qmode === "listen", pq = Z.qmode === "pic" ? picOf(w) : null; Z.cz = cz && cz.word;
+    setLabel(Z.title + (cz ? " · gapni to'ldiring" : ls ? " · eshitib yozing" : pq ? " · rasmdagi narsani inglizcha yozing" : " · inglizcha yozing"));
+    if (pq) picAsk(w, pq);
+    else if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
     else if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
     else { $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
       // ma'nosi bir xil so'z bor (yaxshi: good / nice / well) — qaysi biri kerakligini gap-misol ko'rsatadi
@@ -6712,7 +6764,7 @@ function choose(btn, o, f) {
   feedback(ok, (ok ? "To'g'ri! " : "To'g'ri javob: ") + `<b>${esc(w.w)}</b> ${esc(pr(w))} — ${esc(w.u)}`);
   toNext();
 }
-function feedback(ok, html) { const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
+function feedback(ok, html) { if (ok) { const sa = $("#hint .synalt"); if (sa) sa.remove(); } const fb = $("#fb"); fb.className = "fb " + (ok ? "ok" : "bad"); fb.innerHTML = html.replace(/^(To'g'ri!|To'g'ri javob:)/, '<span class="fbh">$1</span>'); const w = Z.cur; $("#ex").innerHTML = (w.pe ? `<span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small><div class="exsep"></div>` : "") + (w.e ? esc(w.e) + "<small>" + esc(w.t) + "</small>" : "") + (ok ? "" : hookBox(w)); $("#ex").classList.toggle("hidden", !$("#ex").innerHTML); }
 function toNext() { Z.state = "next"; zSave(); quizBar(); const h3 = $("#h3"); if (h3) h3.classList.add("hidden"); $("#pts").textContent = "✓ " + Z.right; $("#next").classList.remove("hidden"); $("#next").textContent = Z.i + 1 < Z.q.length ? (!Z.learn && (Z.mainN || 0) >= Z.base && !Z.done.has(Z.cur.id) && Z.done.has(Z.q[Z.i + 1].id) ? "Xatolarni takrorlash" : "Keyingisi") : "Natijani ko'rish"; setTimeout(() => { const b = $("#next"); if (b && document.activeElement !== $("#spell")) b.focus(); }, 30); }
 function diffHTML(typed, target) {
   const a = norm(typed), bl = target.toLowerCase(), n = a.length, m = bl.length;
@@ -6763,7 +6815,8 @@ function spWin(head) {
   const sp = $("#spell"), w = Z.cur; Z.ph = null;
   bankLock(); buzz(true); sp.className = "spell ok"; sp.dataset.lock = sp.value; say(spoken(w));
   $("#cv").className = "cv hidden"; $("#skip").classList.add("hidden");
-  feedback(true, `${head} <b>${esc(w.w)}</b> ${esc(pr(w))}${Z.qmode === "listen" ? " — " + esc(w.u) : ""}`);
+  picReveal();
+  feedback(true, `${head} <b>${esc(w.w)}</b> ${esc(pr(w))}${Z.qmode === "listen" || Z.qmode === "pic" ? " — " + esc(w.u) : ""}`);
   if (!Z.learn && Z.need && Z.need[w.id] > 0) $("#fb").insertAdjacentHTML("beforeend", `<span class="you">3 savoldan keyin yana so'raladi</span>`);
   toNext();
 }
@@ -6773,7 +6826,7 @@ function coverShow(typed) {
   const w = Z.cur, t = spTarget(), sp = $("#spell"); if (typed != null) Z.cvTyped = typed;
   const tp = Z.cvTyped || "", d0 = tp ? diffHTML(tp, t) : null, nx = d0 ? (d0.html.match(/class="x"/g) || []).length : 0;
   const df = d0 && nx && nx <= Math.ceil(t.length / 2) ? d0 : { html: esc(t) }, dbl = (t.match(/([a-z])\1/i) || [])[1];
-  Z.ph = "show"; const n = Z.cvN = (Z.cvN || 0) + 1;
+  Z.ph = "show"; const n = Z.cvN = (Z.cvN || 0) + 1; picReveal();
   bankLock(); $("#bank").classList.add("hidden"); $("#kbt").classList.add("hidden");
   Z.ltUsed = []; sp.value = ""; sp.dataset.lock = ""; sp.dataset.lt = ""; sp.className = "spell" + (useLetters() ? " hidden" : ""); sp.placeholder = "So'zni eslab qoling…"; ltDraw();
   $("#hint").textContent = ""; $("#h2").disabled = true; $("#h3").classList.add("hidden"); $("#skip").classList.add("hidden"); $("#ex").classList.add("hidden");
@@ -6809,6 +6862,13 @@ function check() {
   if (!val) return useLetters() ? bankNudge() : sp.focus();
   const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
   const ok = cands.some(x => norm(x) === val), t = spTarget(), n = t.replace(/[ -]/g, "").length;
+  // rasmga mos, lekin darslikdagi so'z emas (bike ↔ bicycle) — xato hisoblanmaydi, kerakli so'z so'raladi
+  if (!ok && Z.qmode === "pic" && Z.ph !== "cover") {
+    const pq = picOf(w), typed = sp.value.trim();
+    if (pq && pq.alt.some(a => norm(a) === val)) { buzz(false); sp.value = ""; sp.className = "spell";
+      $("#hint").innerHTML = `<span class="synalt"><b lang="en">${esc(typed)}</b> — rasmga mos, lekin darslikdagi so'z boshqa. Yana o'ylang yoki tarjimani ko'ring</span>`;
+      if (!useLetters()) sp.focus(); return; }
+  }
   // ma'nosi to'g'ri, lekin boshqa so'z (hi ↔ hello) — xato hisoblanmaydi, kerakli so'z so'raladi
   if (!ok && Z.qmode === "spell" && Z.ph !== "cover") {
     const alt = synOf(w).find(x => (x.a || [x.w]).some(a => norm(a) === val) || norm(spoken(x)) === val);
@@ -6825,8 +6885,8 @@ function check() {
   }
   if (ok) {
     const h = Z.hintN > 0;
-    bankLock(); result(true, h); buzz(true); say(spoken(w)); sp.className = "spell ok"; sp.dataset.lock = sp.value;
-    feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}${Z.qmode === "listen" ? " — " + esc(w.u) : ""}${h ? ` <span class="htag">${Z.hintN} harf yordamida</span>` : ""}`);
+    bankLock(); result(true, h); buzz(true); say(spoken(w)); sp.className = "spell ok"; sp.dataset.lock = sp.value; picReveal();
+    feedback(true, `To'g'ri! <b>${esc(w.w)}</b> ${esc(pr(w))}${Z.qmode === "listen" || Z.qmode === "pic" ? " — " + esc(w.u) : ""}${h ? ` <span class="htag">${Z.hintN} harf yordamida</span>` : ""}`);
     const nd = !Z.learn && Z.need ? Z.need[w.id] : null;
     if (h && !Z.learn) $("#fb").insertAdjacentHTML("beforeend", `<span class="you">${Z.re ? "Yordam bilan — keyinroq yana so'raladi" : "Yordam bilan topildi — ertaga yana so'raladi"}</span>`);
     else if (Z.re && nd != null) $("#fb").insertAdjacentHTML("beforeend", `<span class="you">${nd > 0 ? "Yana bir marta, keyinroq." : "Bugun 2 marta yordamsiz yozdingiz ✓"}</span>`);

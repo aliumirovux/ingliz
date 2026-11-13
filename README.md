@@ -4,7 +4,15 @@ Navigate Beginner kitobi bo'yicha shaxsiy ingliz tili mashq sayti: bugungi reja,
 
 Sayt: https://easywords.uz/
 
-Hammasi bitta faylda: `index.html`. O'zgartirib push qilinsa, sayt bir-ikki daqiqada yangilanadi.
+Kod `index.html` da, ma'lumotlar (so'zlar, qoliplar, hikoyalar, so'z bazasi) `data/*.js` fayllarida. O'zgartirib push qilinsa, sayt bir-ikki daqiqada yangilanadi.
+
+`data/` dagi biror faylni o'zgartirgandan keyin push qilishdan oldin:
+
+```bash
+python3 tools/versiya.py
+```
+
+Bu `index.html` dagi fayl versiyalarini (`?v=...`) va `APP_V` ni yangilaydi — shunda brauzer va telefondagi ilova yangi ma'lumotni yuklab oladi.
 
 ## So'z boyligi bazasi
 

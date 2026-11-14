@@ -2700,22 +2700,98 @@ function speakOne(text, done) {
 function say(text) { stopVoice(); speakOne(text); }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 const pr = w => w.p ? "[" + w.p + "]" : "";
-/* ---------- rasmli savol (pilot, 3-unit): rasm ko'rsatiladi → inglizcha nomi yoziladi ----------
+/* ---------- rasmli savol (pilot, Beginner 1–10-unit): rasm ko'rsatiladi → inglizcha nomi yoziladi ----------
    Rasmlar: Microsoft Fluent Emoji 3D (MIT, img/soz/LICENSE-fluent-emoji.txt).
-   Pilot: PIC so'zlari rasm oladi (yozish savollarining yarmi rasmli), PIC_C so'zlari rasmsiz qoladi.
-   Ikkala guruhning odatdagi (rasmsiz) savollardagi eslab qolishi kunlik log'da alohida sanaladi: ipv/ipk — rasmli, icv/ick — rasmsiz.
+   Pilot: PIC so'zlari rasm oladi (yozish savollarining yarmi rasmli), PIC_C so'zlari rasmsiz qoladi (nazorat guruhi).
+   Har unitda rasm qo'yish mumkin bo'lgan so'zlar tasodifiy teng ikkiga bo'lingan (3-unitdagi dastlabki 7+7 o'zgarmagan).
+   Ikkala guruhning odatdagi (rasmsiz) savollardagi eslab qolishi kunlik log'da alohida sanaladi: ipv/ipk — rasmli, icv/ick — rasmsiz;
+   natija: Statistika → «Rasmli so'zlar tajribasi».
    alt — rasmga mos, lekin darslikdagi so'z emas: xato hisoblanmaydi, kerakli so'z so'raladi. */
 const PIC = {
+  // 3-unit (dastlabki pilot, 12-noyabr)
   "bicycle": { f: "bicycle", alt: ["bike"] },
   "cat": { f: "cat", alt: ["kitten", "kitty"] },
   "coffee": { f: "coffee", alt: ["tea", "cup", "mug", "drink"] },
   "house": { f: "house", alt: ["home", "building", "hut"] },
   "mobile phone": { f: "mobile-phone", alt: ["phone", "mobile", "smartphone", "telephone", "cell phone", "tablet"] },
   "cold": { f: "cold", alt: ["freezing", "frozen", "cool"] },
-  "seat": { f: "seat", alt: ["chair", "armchair"] }
+  "seat": { f: "seat", alt: ["chair", "armchair"] },
+  // 1-unit
+  "hotel": { f: "hotel", alt: ["building", "hospital", "motel"] },
+  // 2-unit
+  "book": { f: "book", alt: ["notebook", "notepad", "textbook"] },
+  "bag": { f: "bag", alt: ["handbag", "purse", "wallet"] },
+  "key": { f: "key", alt: ["keys"] },
+  "email": { f: "email", alt: ["e-mail", "mail", "letter", "envelope", "message"] },
+  "apple": { f: "apple", alt: ["fruit"] },
+  "train": { f: "train", alt: ["locomotive", "railway", "steam train"] },
+  "road": { f: "road", alt: ["street", "highway", "motorway", "way"] },
+  "station": { f: "station", alt: ["train", "train station", "railway", "metro"] },
+  // 3-unit
+  "toilet": { f: "toilet", alt: ["wc", "bathroom"] },
+  "boy": { f: "boy", alt: ["child", "kid", "man", "son"] },
+  "man": { f: "man", alt: ["person", "guy", "boy", "men"] },
+  // 4-unit
+  "basketball": { f: "basketball", alt: ["ball"] },
+  "newspaper": { f: "newspaper", alt: ["paper", "news", "magazine"] },
+  "factory": { f: "factory", alt: ["plant", "building"] },
+  "baseball": { f: "baseball", alt: ["ball"] },
+  "ticket": { f: "ticket", alt: ["tickets"] },
+  "dollar": { f: "dollar", alt: ["dollars", "money", "cash"] },
+  "ferry": { f: "ferry", alt: ["ship", "boat"] },
+  // 5-unit
+  "jeans": { f: "jeans", alt: ["trousers", "pants"] },
+  "hand": { f: "hand", alt: ["hands", "palm", "arm"] },
+  "wind": { f: "wind", alt: ["windy", "air"] },
+  "jacket": { f: "jacket", alt: ["coat"] },
+  "leg": { f: "leg", alt: ["legs", "foot"] },
+  "stadium": { f: "stadium", alt: [] },
+  "sun": { f: "sun", alt: ["sunny"] },
+  "bank": { f: "bank", alt: ["building"] },
+  "cinema": { f: "cinema", alt: ["film", "movie", "camera"] },
+  // 6-unit
+  "bath": { f: "bath", alt: ["bathtub", "bathroom", "shower"] },
+  "lift": { f: "lift", alt: ["elevator"] },
+  "sofa": { f: "sofa", alt: ["couch", "lamp", "armchair"] },
+  "bed": { f: "bed", alt: ["bedroom"] },
+  "tea": { f: "tea", alt: ["cup", "coffee", "drink"] },
+  // 7-unit
+  "parrot": { f: "parrot", alt: ["bird"] },
+  "paintbrush": { f: "paintbrush", alt: ["brush"] },
+  "box": { f: "box", alt: ["package", "parcel"] },
+  "bird": { f: "bird", alt: ["parrot"] },
+  "run": { f: "run", alt: ["running", "runner"] },
+  // 8-unit
+  "horse": { f: "horse", alt: [] },
+  "birthday": { f: "birthday", alt: ["cake", "party"] },
+  // 9-unit
+  "rainy": { f: "rainy", alt: ["rain", "raining"] },
+  "knife": { f: "knife", alt: [] },
+  "temperature": { f: "temperature", alt: ["thermometer", "hot", "cold", "fever"] },
+  "stormy": { f: "stormy", alt: ["storm", "rain", "rainy", "thunder", "lightning"] },
+  // 10-unit
+  "doughnut": { f: "doughnut", alt: ["donut"] },
+  "milk": { f: "milk", alt: ["glass"] },
+  "cupcake": { f: "cupcake", alt: ["cake", "muffin"] },
+  "island": { f: "island", alt: ["beach"] },
+  "burger": { f: "burger", alt: ["hamburger", "cheeseburger"] },
+  "hot dog": { f: "hot-dog", alt: ["hotdog"] },
+  "croissant": { f: "croissant", alt: [] }
 };
-const PIC_C = new Set(["car", "dog", "tv", "painting", "shop", "hot", "artist"]);
-const picKey = w => w && w.unit === 3 ? norm(spoken(w)) : "";
+const PIC_C = new Set([
+  /* 3 (dastlabki) */ "car", "dog", "tv", "painting", "shop", "hot", "artist",
+  /* 1 */ "map",
+  /* 2 */ "laptop", "school", "bus", "notepad", "hospital", "pen", "umbrella",
+  /* 3 */ "woman", "child", "world", "girl",
+  /* 4 */ "beach", "tennis", "pound", "department store", "euro", "motorbike", "guitar",
+  /* 5 */ "dress", "flower", "wood", "trainers", "shoes", "t-shirt", "music", "shawl",
+  /* 6 */ "mountains", "shower", "theatre", "fishing", "chair", "pizza",
+  /* 7 */ "gorilla", "dolphin", "swim", "electric piano",
+  /* 8 */ "party", "scientist", "astronaut",
+  /* 9 */ "cloudy", "meat", "receipt", "snowy",
+  /* 10 */ "rice", "sandwich", "cake", "chips", "salad", "flight", "biscuit"
+]);
+const picKey = w => w && w.unit >= 1 && w.unit <= 10 ? norm(spoken(w)) : "";
 const picOf = w => PIC[picKey(w)] || null;
 function pilotLog(w, ok) {
   const k = picKey(w), g = PIC[k] ? "ip" : PIC_C.has(k) ? "ic" : "";
@@ -3110,7 +3186,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611132300";
+const APP_V = "202611141100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -6328,8 +6404,19 @@ route(/^natija$/, () => {
     ${row("O'rtacha mashq", "Maqsad: kuniga 15 daqiqagacha", r.days ? avgMin(r) + " daq" : "—", r.days && avgMin(r) <= 15)}
     ${row("Muddati o'tgan so'zlar", "Maqsad: 20 tadan oshmasin", od, od <= 20)}
   </div></section>
-  <section class="sec"><div class="sec-h"><h2>Oxirgi 7 kun</h2></div><div class="list">${days.join("")}</div></section>`;
+  <section class="sec"><div class="sec-h"><h2>Oxirgi 7 kun</h2></div><div class="list">${days.join("")}</div></section>${picStat(row)}`;
 });
+/* rasmli so'zlar tajribasi (pilot): rasm bilan o'rganilgan va rasmsiz so'zlarning keyingi kunlardagi odatdagi savollarda esda qolishi (butun davr) */
+function picStat(row) {
+  const t = { ipv: 0, ipk: 0, icv: 0, ick: 0 };
+  for (const k in S.log) for (const f in t) t[f] += S.log[k][f] || 0;
+  if (!t.ipv && !t.icv) return "";
+  const a = pctOf(t.ipk, t.ipv), b = pctOf(t.ick, t.icv), few = t.ipv < 30 || t.icv < 30;
+  const verdict = few ? "Hali ma'lumot kam — har guruhda kamida 30 ta javob kerak." : Math.abs(a - b) < 5 ? "Farq kichik: rasm sezilarli ta'sir qilmayapti." : a > b ? `Rasmli so'zlar ${a - b}% yaxshiroq esda qolyapti.` : `Rasmsiz so'zlar ${b - a}% yaxshiroq esda qolyapti.`;
+  return `<section class="sec"><div class="sec-h"><h2>Rasmli so'zlar tajribasi</h2></div>
+  <div class="list">${row("Rasm bilan o'rganilgan so'zlar", t.ipv + " ta javob", t.ipv ? a + "%" : "—", false)}${row("Rasmsiz so'zlar", t.icv + " ta javob", t.icv ? b + "%" : "—", false)}</div>
+  <p class="muted" style="margin:10px 2px 0">Keyingi kunlarda birinchi urinishda to'g'ri yozilganlar. ${verdict}</p></section>`;
+}
 
 route(/^xato$/, () => {
   const mw = misWords(), mg = misGram(), mb = misBuild(), hw = WORDS.filter(isHard).sort((a, b) => rec(b.id).bad - rec(a.id).bad);

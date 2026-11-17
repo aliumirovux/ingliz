@@ -2053,6 +2053,8 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .ds-up .btn,.ds-up .ds-act{margin-top:12px}
 .ds-up.err > b{color:var(--bad)}
 .ds-act{display:flex;flex-wrap:wrap;gap:8px}
+.ds-cx{margin-top:12px}.ds-up .ds-cx .btn{margin-top:0}
+.ds-cxh{margin:8px 2px 0;font-size:13px;color:var(--muted);line-height:1.4}
 .ds-act .btn{flex:1 1 180px;margin:0}
 .ds-bar{height:6px;border-radius:6px;background:var(--surface-2);overflow:hidden;margin-top:12px}
 .ds-bar i{display:block;height:100%;width:100%;background:var(--marker);border-radius:6px;transition:transform .3s}
@@ -3953,10 +3955,10 @@ function dsUpCard() {
   if (DUP && DUP.phase === "up") return `<section class="card ds-up" id="dsup"><b>Yuklanmoqda · ${Math.round((DUP.pct || 0) * 100)}%</b><span>Internet uzilsa, qolgan joyidan davom etadi. Sahifadan chiqmang.</span><div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((DUP.pct || 0) * 100)}"><i style="transform:translateX(${Math.round((DUP.pct || 0) * 100) - 100}%)"></i></div></section>`;
   if (a) {
     const [t, s] = dsStage(a), k = DS_ACTIVE.indexOf(a.status);
-    if (rsIsPhoto(a)) return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 1 daqiqa — tayyor bo'lganda Bugun sahifasida va Telegram'da chiqadi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
+    if (rsIsPhoto(a)) return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 1 daqiqa — tayyor bo'lganda Bugun sahifasida va Telegram'da chiqadi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>${dsCancelBtn(a)}</section>`;
     return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 6–10 daqiqa. Sahifani yopsangiz ham davom etadi — tayyor bo'lganda Telegram'ga xabar keladi.</span>
       <ol class="ds-steps">${["Yuklandi", "Matn", "Tahlil"].map((x, i) => `<li class="${i === 0 || i < k ? "ok" : i === k || (k === 0 && i === 1) ? "now" : ""}">${i === 0 || i < k ? ICON.check : ""}${x}</li>`).join("")}</ol>
-      <div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
+      <div class="ds-bar ind" aria-hidden="true"><i></i></div>${dsCancelBtn(a)}</section>`;
   }
   if (DUP && (DUP.phase === "pick" || DUP.phase === "err")) {
     const d = DUP.date;
@@ -3973,19 +3975,19 @@ function dsUpCard() {
 function dsListRow(r) {
   const a = r.analysis, n = a ? a.mistakes.length : 0, dn = dsDone(r);
   const sub = [dsDate(r.day), a && a.content && a.content.unit, dsDur(r.duration_s)].filter(Boolean).join(" · ");
-  const title = r.status === "done" ? a.headline : r.status === "error" ? "Tahlil chiqmadi" : r.status === "uploading" ? "Yuklash tugamagan" : dsStage(r)[0];
+  const title = r.status === "done" ? a.headline : r.status === "cancelled" ? "Bekor qilingan" : r.status === "error" ? "Tahlil chiqmadi" : r.status === "uploading" ? "Yuklash tugamagan" : dsStage(r)[0];
   if (rsIsPhoto(r)) {
     const ps = [dsDate(r.day), a && a.content && a.content.unit, "doska rasmlari"].filter(Boolean).join(" · ");
     const need = r.status === "done" && !rsReviewed(r) ? `<span class="st">Tasdiqlang</span>` : "";
-    return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "error" ? ICON.info : r.status === "done" ? ICON_CAM : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(ps)}</span></span>${need}<span class="go">${ICON.chev}</span></a>`;
+    return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "cancelled" ? ICON.x : r.status === "error" ? ICON.info : r.status === "done" ? ICON_CAM : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(ps)}</span></span>${need}<span class="go">${ICON.chev}</span></a>`;
   }
   const st = r.status === "done" && n ? `<span class="st${dn === n ? " full" : ""}">${dn === n ? ICON.check : ""}${dn}/${n}</span>` : "";
-  return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "done" ? ICON.pen : r.status === "error" ? ICON.info : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${st}<span class="go">${ICON.chev}</span></a>`;
+  return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "done" ? ICON.pen : r.status === "cancelled" ? ICON.x : r.status === "error" ? ICON.info : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${st}<span class="go">${ICON.chev}</span></a>`;
 }
 route(/^dars$/, () => {
   if (!darsOn()) return go("");
   darsLoad();
-  const list = DS.list.filter(r => r.status === "done" || r.status === "error" || (r.status === "uploading" && !(DUP && DUP.id === r.id) && Date.now() - Date.parse(r.created_at) > 6 * 3600e3));
+  const list = DS.list.filter(r => r.status === "done" || r.status === "error" || r.status === "cancelled" || (r.status === "uploading" && !(DUP && DUP.id === r.id) && Date.now() - Date.parse(r.created_at) > 6 * 3600e3));
   yzScan();
   const saved = YZ_SAVED.filter(r => !(DUP && DUP.rec === r.id));
   const savedCards = saved.map(r => { const d = new Date(r.t0); return `<section class="card ds-up"><b>Saqlangan yozuv · ${yzClock(r.dur)}${r.np ? ` · ${r.np} ta rasm` : ""}</b><span>${d.getDate()}-${MONTHS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} da boshlangan. Hali tahlilga yuborilmagan.</span>
@@ -4009,7 +4011,7 @@ route(/^dars$/, () => {
     if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Rostdan o'chirilsinmi?"; return; }
     await yzDel(b.dataset.yzd).catch(() => {}); YZ_SAVED = YZ_SAVED.filter(x => x.id !== b.dataset.yzd); render();
   });
-  dsWatch();
+  bindDsCancel(); dsWatch();
 });
 
 /* --- saytda yozib olish: MediaRecorder (32 kbps mono → 80 daqiqa ≈ 20 MB), ekran yoniq turadi (Wake Lock),
@@ -4854,21 +4856,50 @@ function dsContent(c, r) {
   return `${mk}<section class="card dt-fold"><button class="dt-more" id="dtcm" aria-expanded="${!!DT.cm}" aria-controls="dtcml">Darsda nima o'tildi${ICON.down}</button><div id="dtcml"${DT.cm ? "" : " hidden"}>${parts}</div></section>`;
 }
 function dsPending(r) {
-  const err = r.status === "error", up = r.status === "uploading";
-  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<h2 class="pg-h">${err ? "Tahlil chiqmadi" : up ? "Yuklash tugamagan" : dsStage(r)[0]}</h2>
+  const err = r.status === "error", up = r.status === "uploading", cx = r.status === "cancelled", del = `<button class="btn ghost" id="dsdel" type="button">O'chirish</button>`;
+  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<h2 class="pg-h">${cx ? "Bekor qilingan" : err ? "Tahlil chiqmadi" : up ? "Yuklash tugamagan" : dsStage(r)[0]}</h2>
   <div class="stack"><section class="card ds-up${err ? " err" : ""}">
-    ${err ? `<b>${esc(dsErrText(r))}</b><span>${rsIsPhoto(r) ? "Rasmlar serverda saqlangan, qayta urinsa bo'ladi." : r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
+    ${cx ? `<b>Tahlil to'xtatilgan</b><span>${rsIsPhoto(r) ? "Rasmlar saqlangan — qayta boshlasa bo'ladi." : r.audio_path ? "Yozuv serverda 3 kun saqlanadi — shu vaqt ichida qayta boshlasa bo'ladi, keyin o'zi o'chadi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta boshlash</button>${del}</div><p class="ds-cxh" id="dsdelh" hidden>Yozuv va rasmlar butunlay o'chadi, qaytarib bo'lmaydi.</p>`
+    : err ? `<b>${esc(dsErrText(r))}</b><span>${rsIsPhoto(r) ? "Rasmlar serverda saqlangan, qayta urinsa bo'ladi." : r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button>${del}</div><p class="ds-cxh" id="dsdelh" hidden>Yozuv va rasmlar butunlay o'chadi, qaytarib bo'lmaydi.</p>`
     : up && rsIsPhoto(r) ? `<b>Rasmlar oxirigacha yuklanmagan</b><span>Bugun sahifasidan doskani qayta suratga oling.</span><div class="ds-act"><a class="btn" href="#">Bugun</a></div>`
     : up ? `<b>Yozuv oxirigacha yuklanmagan</b><span>«Dars tahlili» sahifasida o'sha faylni qayta tanlang — qolgan joyidan davom etadi.</span><div class="ds-act"><a class="btn" href="#dars">Dars tahlili</a></div>`
-    : rsIsPhoto(r) ? `<b>${dsStage(r)[1]}</b><span>Odatda 1 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`
-    : `<b>${DS_STAGE[r.status][1]}</b><span>${/^kutilmoqda/.test(r.error || "") ? (/limit/i.test(r.error) ? "Gemini limiti: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas." : "Google serveri hozir band: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas.") : "Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi."}</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
+    : rsIsPhoto(r) ? `<b>${dsStage(r)[1]}</b><span>Odatda 1 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>${dsCancelBtn(r)}`
+    : `<b>${DS_STAGE[r.status][1]}</b><span>${/^kutilmoqda/.test(r.error || "") ? (/limit/i.test(r.error) ? "Gemini limiti: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas." : "Google serveri hozir band: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas.") : "Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi."}</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>${dsCancelBtn(r)}`}
   </section></div>`;
   const b = $("#dsre"); if (b) b.onclick = async () => {
     b.disabled = true;
     try { await darsApi("retry", { id: r.id }); await darsLoad(true); render(); }
     catch (e) { b.disabled = false; toast(e.code === "no_audio" ? "Yozuvni qayta yuklang" : "Bo'lmadi", null, null, { type: "info", sub: e.code === "no_audio" ? "Audio o'chirilgan" : e.message }); }
   };
-  darsLoad(); dsWatch();
+  const d = $("#dsdel"); if (d) d.onclick = async () => {
+    if (!d.dataset.sure) { d.dataset.sure = "1"; d.textContent = "Ha, o'chirish"; $("#dsdelh").hidden = false; return; }
+    d.disabled = true;
+    try { await darsApi("delete", { id: r.id }); DS.list = DS.list.filter(x => x.id !== r.id); dsSave(); toast("Dars o'chirildi"); go("dars"); }
+    catch (e) { d.disabled = false; toast("O'chirib bo'lmadi", null, null, { type: "info", sub: e.message }); }
+  };
+  bindDsCancel(); darsLoad(); dsWatch();
+}
+/* ishlovni to'xtatish: ikki bosishda (birinchisi tasdiq so'raydi, 5 soniyadan keyin o'z holiga qaytadi).
+   Yozuv serverda 3 kun turadi — «Bekor qilingan» sahifasidan qayta boshlasa bo'ladi */
+function dsCancelBtn(r) {
+  return `<div class="ds-cx"><button class="btn ghost" type="button" data-dscx="${r.id}">Bekor qilish</button><p class="ds-cxh" hidden>${rsIsPhoto(r) ? "Rasmlar saqlanadi" : "Yozuv 3 kun saqlanadi"} — keyin qayta boshlasa bo'ladi.</p></div>`;
+}
+function bindDsCancel() {
+  app.querySelectorAll("[data-dscx]").forEach(b => b.onclick = async () => {
+    const h = b.parentElement.querySelector(".ds-cxh");
+    if (!b.dataset.sure) {
+      b.dataset.sure = "1"; b.textContent = "Ha, to'xtatish"; h.hidden = false;
+      setTimeout(() => { if (b.isConnected && !b.disabled) { delete b.dataset.sure; b.textContent = "Bekor qilish"; h.hidden = true; } }, 5000);
+      return;
+    }
+    b.disabled = true;
+    try {
+      await darsApi("cancel", { id: b.dataset.dscx });
+      const r = dsRow(b.dataset.dscx); if (r) { r.status = "cancelled"; r.error = "bekor qilindi"; dsSave(); }
+      toast("Tahlil to'xtatildi", null, null, { sub: "«Oldingi darslar»da turibdi — qayta boshlasa bo'ladi" });
+      render(); darsLoad(true);
+    } catch (e) { b.disabled = false; toast("To'xtatib bo'lmadi", null, null, { type: "info", sub: e.status === 0 ? "Internet yo'q" : e.message }); }
+  });
 }
 /* ---------- YOZUVSIZ DARS: faqat doska rasmlari (B varianti) ----------
    Dars kunlari «Bugun» sahifasida karta → sahifa ichidagi kamera ketma-ket suratga oladi (yoki galereya) → «dars» funksiyasi
@@ -5112,7 +5143,7 @@ function darsCard() {
   if (YZ_SAVED.length) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Saqlangan yozuv tahlilga yuborilmagan</b><span>${yzClock(YZ_SAVED[0].dur)} · yuborish uchun oching</span></span><span class="go">${ICON.chev}</span></a>`;
   if (a) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.clock}</span><span class="tx"><b>Dars tahlil qilinmoqda</b><span>${DS_STAGE[a.status][0]} · tayyor bo'lganda Telegram'ga xabar keladi</span></span><span class="go">${ICON.chev}</span></a>`;
   if (last && !rsIsPhoto(last)) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
-  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading") && !rsSkipped()) return rsCard();
+  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading" && x.status !== "cancelled") && !rsSkipped()) return rsCard();
   return "";
 }
 

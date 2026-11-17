@@ -3549,7 +3549,7 @@ async function tusUpload(file, path, mime, onPct) {
 async function dsPick(file) {
   const ext = (file.name.split(".").pop() || "").toLowerCase();
   if (!DS_EXT.includes(ext)) return toast("Bu audio fayl emas", null, null, { type: "info", sub: "m4a, mp3, wav, aac, ogg yoki webm tanlang" });
-  if (file.size > 50 * 1048576) return toast("Fayl 50 MB dan katta", null, null, { type: "info", sub: "Diktofon sozlamalarida «Siqilgan» sifatni tanlang" });
+  if (file.size > 50 * 1048576) return toast("Fayl 50 MB dan katta", null, null, { type: "info", sub: "Diktofon sozlamalarida yozish sifatini pasaytiring (iPhone: «Siqilgan»)" });
   DUP = { phase: "pick", file, ext, size: file.size, name: file.name, dur: 0, date: file.lastModified ? new Date(file.lastModified) : new Date() };
   render();
   DUP.dur = await dsDuration(file); if (DUP && DUP.phase === "pick") render();
@@ -3607,7 +3607,7 @@ function dsUpCard() {
       <div class="ds-act"><button class="btn" id="dsgo">${DUP.phase === "err" ? "Davom etish" : "Yuklash va tahlil qilish"} ${ICON.arrow}</button><button class="btn ghost" id="dsx">Bekor qilish</button></div></section>`;
   }
   return `<section class="card ds-up idle"><b>Darsdan keyin yozuvni yuklang</b>
-    <span>iPhone: Diktofon → yozuv → <b>⋯</b> → «Fayllarga saqlash». Keyin shu yerda tanlaysiz. 50 MB gacha (80 daqiqa ≈ 40 MB).</span>
+    <span>${/Android/i.test(navigator.userAgent) ? "Android: «Yozuvni tanlash» → diktofon yozuvlari papkasi (Recordings / Voice Recorder). " : /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone: Diktofon → yozuv → <b>⋯</b> → «Fayllarga saqlash», keyin shu yerda tanlaysiz. " : "Yozuvni telefondan shu kompyuterga o'tkazib, shu yerda tanlang. "}50 MB gacha (80 daqiqa ≈ 40 MB).</span>
     <label class="btn" for="dsfile">${ICON.mic}Yozuvni tanlash</label><input type="file" id="dsfile" class="sr-only" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac"></section>`;
 }
 function dsListRow(r) {

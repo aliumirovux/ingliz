@@ -3693,6 +3693,7 @@ const DS_STAGE = { queued: ["Navbatda", "Bir daqiqa ichida boshlanadi"], transcr
 function dsErrText(r) {
   const e = String(r.error || "");
   if (/GEMINI_API_KEY/.test(e)) return "Matnga o'girish kaliti hali ulanmagan.";
+  if (/uzoq vaqt band|\b503\b|high demand/.test(e)) return "Google'ning Gemini serveri uzoq vaqt band bo'ldi. Keyinroq «Qayta urinish»ni bosing — yozuv saqlanib turibdi.";
   if (/bepul limiti tugadi/.test(e)) return "Gemini'ning bugungi bepul limiti tugadi. Ertaga «Qayta urinish»ni bosing — yozuv saqlanib turibdi.";
   if (/yuklash tugamadi/.test(e)) return "Yozuv oxirigacha yuklanmagan edi.";
   if (/o'quvchi gaplari topilmadi/.test(e)) return "Yozuvda sizning gaplaringiz topilmadi. Telefon sizga yaqinroq tursin.";
@@ -4137,7 +4138,7 @@ function dsPending(r) {
   <div class="stack"><section class="card ds-up${err ? " err" : ""}">
     ${err ? `<b>${esc(dsErrText(r))}</b><span>${r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
     : up ? `<b>Yozuv oxirigacha yuklanmagan</b><span>«Dars tahlili» sahifasida o'sha faylni qayta tanlang — qolgan joyidan davom etadi.</span><div class="ds-act"><a class="btn" href="#dars">Dars tahlili</a></div>`
-    : `<b>${DS_STAGE[r.status][1]}</b><span>Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
+    : `<b>${DS_STAGE[r.status][1]}</b><span>${/^kutilmoqda/.test(r.error || "") ? (/limit/i.test(r.error) ? "Gemini limiti: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas." : "Google serveri hozir band: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas.") : "Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi."}</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
   </section></div>`;
   const b = $("#dsre"); if (b) b.onclick = async () => {
     b.disabled = true;

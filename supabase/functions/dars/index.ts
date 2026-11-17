@@ -23,9 +23,15 @@ const MAX_TRIES = 3;
 // Gemini bepul rejimi: daqiqasiga 250K token, kuniga 20 so'rov. Har so'rov butun audioni o'qiydi (80 daq ≈ 157K token),
 // shuning uchun bo'laklar bittadan, kamida 62 s oraliq bilan yuboriladi. Pullik rejimda GEMINI_PARALLEL=1 — hammasi birga.
 const G_PARALLEL = Deno.env.get("GEMINI_PARALLEL") === "1";
-const G_GAP = +(Deno.env.get("GEMINI_GAP_MS") || 62e3), G_WIN_FREE = 20 * 60, G_MAX_WAITS = 12;
+const G_GAP = +(Deno.env.get("GEMINI_GAP_MS") || 62e3), G_WIN_FREE = 20 * 60, G_MAX_WAITS = +(Deno.env.get("GEMINI_MAX_WAITS") || 20), MAX_WAITS = 15;
 const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
+// asosiy model band (503) yoki limiti tugagan (429) bo'lsa — navbatdagi model (bepul limit har modelda alohida)
+const G_MODELS = [G_MODEL, ...(Deno.env.get("GEMINI_FALLBACK") ?? "gemini-3.7-flash,gemini-3.5-flash").split(",").map((x) => x.trim()).filter((x) => x && x !== G_MODEL)];
+// vaqtinchalik xatolar: limit, server band yoki ishlamay turibdi — kutib qayta urinamiz, urinish sanalmaydi
+const TRANSIENT = new Set([429, 500, 502, 503, 504, 529]);
+const isTransient = (e: unknown) => TRANSIENT.has(+(e as Row)?.status) || /\b(gemini|anthropic|storage)[^:]{0,24}\b(429|50[0234]|529)\b|overloaded|UNAVAILABLE|high demand/i.test(String((e as Error)?.message || e));
+const backoff = (n: number) => G_GAP * Math.min(2 ** Math.max(0, n - 1), 5);
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
 const C_MODEL = Deno.env.get("DARS_MODEL") || "claude-opus-5-5";
 const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
@@ -112,7 +118,7 @@ async function stageSend(row: Row) {
   const up = await fetch(url, { method: "POST", headers: { "X-Goog-Upload-Offset": "0", "X-Goog-Upload-Command": "upload, finalize" }, body: buf });
   const d = await up.json().catch(() => ({}));
   if (!up.ok || !d.file || !d.file.name) throw new Error(`gemini upload ${up.status}: ${JSON.stringify(d).slice(0, 200)}`);
-  await patch(row.id, { gemini_file: d.file.name, gemini_uri: d.file.uri, mime, status: "transcribing", attempts: 0, error: null, locked_until: null });
+  await patch(row.id, { gemini_file: d.file.name, gemini_uri: d.file.uri, mime, status: "transcribing", attempts: 0, waits: 0, error: null, locked_until: null });
   return "next";
 }
 
@@ -151,16 +157,30 @@ Qoidalar:
 Javob faqat JSON.`;
 }
 async function transcribeWindow(row: Row, from: number, to: number | null, thinking: boolean): Promise<Row[]> {
+  let last: unknown = null, limited = false;
+  for (const model of G_MODELS) {
+    try { return await transcribeWith(model, row, from, to, thinking); } catch (e) {
+      const st = +(e as Row).status;
+      // model topilmasa (404) yoki band/limit bo'lsa — keyingi model; boshqa xato — darhol
+      if (!(isTransient(e) || st === 404)) throw e;
+      if (st === 429) limited = true;
+      console.error("gemini", model, st);
+      last = e;
+    }
+  }
+  throw Object.assign(last as Error, { status: limited ? 429 : +(last as Row).status || 503 });
+}
+async function transcribeWith(model: string, row: Row, from: number, to: number | null, thinking: boolean): Promise<Row[]> {
   const body: Row = {
     contents: [{ role: "user", parts: [{ file_data: { mime_type: row.mime, file_uri: row.gemini_uri } }, { text: txPrompt(from, to) }] }],
     generationConfig: { responseMimeType: "application/json", responseSchema: TX_SCHEMA, maxOutputTokens: 32768, ...(thinking ? { thinkingConfig: { thinkingLevel: "low" } } : {}) },
   };
   let d: Row;
   try {
-    d = await gem(`/v1beta/models/${G_MODEL}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    d = await gem(`/v1beta/models/${model}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   } catch (e) {
     // modelda «thinkingLevel» bo'lmasa — usiz qayta
-    if (thinking && (e as Row).status === 400 && /thinking/i.test(String((e as Row).body))) return transcribeWindow(row, from, to, false);
+    if (thinking && (e as Row).status === 400 && /thinking/i.test(String((e as Row).body))) return transcribeWith(model, row, from, to, false);
     throw e;
   }
   const c = d.candidates && d.candidates[0];
@@ -201,16 +221,17 @@ async function stageTranscribe(row: Row) {
         pend.parts[i] = await transcribeWindow(row, parts[i][0], parts[i][1], true);
         pend.waits = 0;
       } catch (e) {
-        if ((e as Row).status !== 429) throw e;
-        // limit: keyingi daqiqada qayta; juda ko'p bo'lsa — kunlik limit tugagan
+        if (!isTransient(e)) throw e;
+        // limit yoki server band: kutib qayta (1, 2, 4, 5, 5… daqiqa); juda uzoq cho'zilsa — to'xtaymiz
+        const lim = +(e as Row).status === 429;
         pend.waits = (pend.waits || 0) + 1;
-        if (pend.waits > G_MAX_WAITS) throw Object.assign(new Error("Gemini bepul limiti tugadi (kunlik 20 so'rov) — ertaga «Qayta urinish»"), { final: true });
+        if (pend.waits > G_MAX_WAITS) throw Object.assign(new Error(lim ? "Gemini bepul limiti tugadi (kunlik 20 so'rov) — ertaga «Qayta urinish»" : "Gemini serverlari uzoq vaqt band — keyinroq «Qayta urinish»"), { final: true });
         pend.last = Date.now();
-        await patch(row.id, { transcript: pend });
-        return { wait: G_GAP };
+        await patch(row.id, { transcript: pend, error: lim ? "kutilmoqda: Gemini limiti" : "kutilmoqda: Gemini band" });
+        return { wait: backoff(pend.waits) };
       }
       pend.last = Date.now();
-      if (parts.some((_, k) => !pend.parts[k])) { await patch(row.id, { transcript: pend, attempts: 0, error: null }); return { wait: G_GAP }; }
+      if (parts.some((_, k) => !pend.parts[k])) { await patch(row.id, { transcript: pend, attempts: 0, waits: 0, error: null }); return { wait: G_GAP }; }
     }
     res = pend.parts;
   }
@@ -219,7 +240,7 @@ async function stageTranscribe(row: Row) {
   const seen = new Set<string>(), out: Row[] = [];
   for (const x of turns.sort((p, q) => toSec(p.t) - toSec(q.t))) { const k = x.s + "|" + x.x.toLowerCase().slice(0, 80); if (seen.has(k)) continue; seen.add(k); out.push(x); }
   if (out.filter((x) => x.s === "S").length < 3) throw new Error("yozuvda o'quvchi gaplari topilmadi");
-  await patch(row.id, { transcript: { turns: out, model: G_MODEL, parts: res.length }, status: "analyzing", attempts: 0, error: null, locked_until: null });
+  await patch(row.id, { transcript: { turns: out, model: G_MODELS.join("|"), parts: res.length }, status: "analyzing", attempts: 0, waits: 0, error: null, locked_until: null });
   // audio endi kerak emas: Gemini'dagi nusxa va bucket'dagi fayl o'chiriladi
   try { await gem(`/v1beta/${row.gemini_file}`, { method: "DELETE" }); } catch (e) { console.error("gemini delete", e); }
   await patch(row.id, { gemini_file: null, gemini_uri: null });
@@ -419,7 +440,7 @@ async function stageAnalyze(row: Row) {
     prev = p && p[0] && p[0].metrics || null;
   } catch (e) { console.error("prev", e); }
   an.speech = cleanSpeech(C, speechMetrics(turns), prev, dur);
-  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, error: null, locked_until: null });
+  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null });
   const top = an.rules[0];
   const mins = Math.max(3, Math.round(an.mistakes.length * 0.6));
   const sm = an.speech.metrics;
@@ -433,9 +454,18 @@ async function stageAnalyze(row: Row) {
 async function fail(row: Row, e: unknown) {
   const msg = clip(String((e as Error)?.message || e), 300);
   console.error("dars", row.id, row.status, msg);
+  // vaqtinchalik (server band, limit): urinish sanalmaydi, kutib qayta — MAX_WAITS gacha
+  if (!(e as Row)?.final && isTransient(e) && (row.waits || 0) < MAX_WAITS) {
+    const w = (row.waits || 0) + 1;
+    await patch(row.id, { attempts: Math.max(0, row.attempts - 1), waits: w, error: `kutilmoqda: ${msg}`, locked_until: new Date(Date.now() + backoff(w)).toISOString() });
+    return;
+  }
   if (row.attempts >= MAX_TRIES || (e as Row)?.final) {
     await patch(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null });
-    const why = (e as Row)?.final ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing." : `${stageName(row.status)} bosqichida xato. Saytda «Qayta urinish» bor.`;
+    const m = String(msg);
+    const why = /bepul limiti/.test(m) ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing."
+      : /uzoq vaqt band/.test(m) || isTransient(e) ? "Gemini serverlari uzoq vaqt band bo'ldi (bu Google tomonida). Yozuv saqlanib turibdi — keyinroq saytda «Qayta urinish»ni bosing."
+      : `${stageName(row.status)} bosqichida xato. Saytda «Qayta urinish» bor.`;
     try { await tgSend(`<b>Dars tahlili chiqmadi</b>\n${esc(why)}`, "Ochish", `${SITE}-${row.id}`); } catch { /* */ }
   } else {
     await patch(row.id, { error: msg, locked_until: new Date(Date.now() + 30e3 * row.attempts).toISOString() });
@@ -516,7 +546,7 @@ Deno.serve(async (req) => {
       const done = row.transcript && !row.transcript.pending;
       const next = done ? "analyzing" : row.audio_path ? "queued" : "";
       if (!next) return json({ error: "no_audio", detail: "Audio o'chirilgan — yozuvni qayta yuklang." }, 409, o);
-      await patch(id, { status: next, attempts: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) });
+      await patch(id, { status: next, attempts: 0, waits: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) });
       bg(kick());
       return json({ ok: true, status: next }, 200, o);
     }

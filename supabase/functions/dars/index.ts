@@ -16,7 +16,7 @@ const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const BUCKET = "dars-audio";
 const MAX_BYTES = 50 * 1024 * 1024;
-const PER_DAY = 3;
+const PER_DAY = 4;
 const MAX_TRIES = 3;
 const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
@@ -228,7 +228,9 @@ JSON shakli:
 - fix faqat bitta gap; yangi ma'no qo'shma. Xato bo'lmasa: {"rules": [], "mistakes": []}.`;
 }
 function promptContent(row: Row, ctx: string) {
-  return `${ctx}Quyida darsning matni. Darsda nima o'tilganini Ali uchun qisqa yozib ber.
+  const mk = (Array.isArray(row.marks) ? row.marks : []) as number[];
+  const marks = mk.length ? `\nAli dars paytida shu daqiqalarda «Muhim» tugmasini bosgan: ${mk.map(mmss).join(", ")}. Har biri uchun shu vaqtdan taxminan 1 daqiqa oldin va keyin o'qituvchi nimani tushuntirganini "marked" ga yoz.\n` : "";
+  return `${ctx}Quyida darsning matni. Darsda nima o'tilganini Ali uchun qisqa yozib ber.${marks}
 
 <dars>
 ${txText(row)}
@@ -242,7 +244,8 @@ JSON shakli:
   "words": [{"en": "so'z yoki ibora", "uz": "tarjima"}] — o'qituvchi tushuntirgan yangi so'zlar, ko'pi bilan 16,
   "phrases": [{"en": "darsdagi foydali gap", "uz": "tarjima"}] — ko'pi bilan 6,
   "tips": ["o'qituvchining maslahati yoki eslatmasi, o'zbekcha"] — ko'pi bilan 4,
-  "homework": "uy vazifasi (bet, mashq) yoki null"
+  "homework": "uy vazifasi (bet, mashq) yoki null",
+  "marked": [{"t": "MM:SS", "note": "o'sha joyda o'qituvchi nimani tushuntirdi — 1–2 gap, o'zbekcha; inglizcha misol bo'lsa «» ichida"}] — faqat belgilangan joylar bo'lsa, aks holda []
 }
 Faqat darsda bor narsani yoz, to'qima.`;
 }
@@ -281,6 +284,7 @@ function clean(A: Row, B: Row, row: Row) {
       unit: B.unit ? clip(B.unit, 30) : null, summary: uzOk(clip(B.summary, 500)) ? clip(B.summary, 500) : "",
       topics: strs(B.topics, 5, 80), words: pairs(B.words, 16), phrases: pairs(B.phrases, 6), tips: strs(B.tips, 4, 200),
       homework: B.homework && uzOk(clip(B.homework, 200)) ? clip(B.homework, 200) : null,
+      marked: (Array.isArray(B.marked) ? B.marked : []).map((x: Row) => ({ t: clip(x && x.t, 10), note: clip(x && x.note, 400) })).filter((x: Row) => x.t && uzOk(x.note)).slice(0, 50),
     },
     model: C_MODEL, at: new Date().toISOString(),
   };
@@ -356,7 +360,8 @@ Deno.serve(async (req) => {
       const today = await db(`class_lessons?user_id=eq.${uid}&day=eq.${tashkentDay()}&status=neq.uploading&select=id`);
       if ((today || []).length >= PER_DAY) return json({ error: "limit", per_day: PER_DAY }, 429, o);
       const dur = Math.round(+b.duration_s || 0);
-      const ins = await db("class_lessons", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: uid, status: "uploading", audio_bytes: bytes, duration_s: dur > 0 && dur < 6 * 3600 ? dur : null }) });
+      const marks = (Array.isArray(b.marks) ? b.marks : []).map((x: unknown) => Math.round(+(x as number))).filter((x: number) => x >= 0 && x < 6 * 3600).slice(0, 50);
+      const ins = await db("class_lessons", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: uid, status: "uploading", audio_bytes: bytes, duration_s: dur > 0 && dur < 6 * 3600 ? dur : null, marks }) });
       const id = ins[0].id, path = `${uid}/${id}.${ext}`;
       await patch(id, { audio_path: path });
       return json({ id, bucket: BUCKET, path }, 200, o);

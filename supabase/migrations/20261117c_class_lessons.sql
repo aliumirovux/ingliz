@@ -16,6 +16,7 @@ create table if not exists public.class_lessons (
   transcript jsonb,           -- {turns: [{t: "MM:SS", s: "T"|"S", x}], model}
   analysis jsonb,             -- {headline, said, rules[], mistakes[], content{}, model}
   answers jsonb not null default '{}'::jsonb,   -- sayt: xatoni qayta yozish natijalari {m0: {ok, a}}
+  marks jsonb not null default '[]'::jsonb,     -- saytda yozishda «Muhim» bosilgan soniyalar
   attempts int not null default 0,
   error text,
   locked_until timestamptz,

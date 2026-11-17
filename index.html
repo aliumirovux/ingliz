@@ -2129,6 +2129,33 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .dt-hw b{display:block;font-size:12.5px;color:var(--accent-text);margin-bottom:2px}
 .dt-list q{display:block;quotes:"«" "»";color:var(--muted)}
 .dt-pl .pp{flex:1;display:flex;flex-direction:column;gap:2px}.dt-pl .pp span{flex:none}
+.ds-alt{display:block;margin-top:12px;text-align:center;font-size:14px;font-weight:600;color:var(--accent-text);cursor:pointer;padding:8px 4px;line-height:1.4}
+.yz-tips ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.yz-tips li{font-size:15px;line-height:1.45;color:var(--muted)}.yz-tips li b{color:var(--ink);font-weight:600}
+.yz{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;min-height:calc(100dvh - 80px);justify-content:center;padding:24px 4px}
+.yz-st{display:flex;align-items:center;gap:8px;margin:0;font-weight:600;color:var(--bad-strong)}
+.yz-st svg{width:20px;height:20px}
+.yz-dot{width:12px;height:12px;border-radius:50%;background:var(--bad-strong);animation:yzb 1.6s ease-in-out infinite}
+@keyframes yzb{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.yz-dot{animation:none}}
+.yz-t{margin:0;font:700 64px/1 var(--font-display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.yz-lv{width:min(280px,80%);height:8px;border-radius:8px;background:var(--surface-2);overflow:hidden}
+.yz-lv i{display:block;height:100%;background:var(--ok-strong);transform-origin:left;transform:scaleX(.02);transition:transform .2s}
+.yz-q{margin:0;font-size:14px;font-weight:600;color:var(--bad)}
+.yz-n{margin:0;max-width:34ch;font-size:14px;line-height:1.45;color:var(--muted)}
+.yz-m{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:148px;height:148px;margin:18px 0 12px;border-radius:50%;border:0;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-size:19px;font-weight:700;cursor:pointer;flex-direction:column}
+.yz-m svg{width:28px;height:28px}
+.yz-m span{min-width:28px;padding:2px 8px;border-radius:999px;background:var(--marker);color:var(--on-marker);font-size:14px}
+.yz-m.hit{animation:yzh .35s ease-out}
+@keyframes yzh{40%{transform:scale(.93)}}
+.yz .btn{max-width:360px}
+.yz-broke .yz-st{color:var(--bad)}
+.yz-broke .btn+.btn{margin-top:4px}
+.yzc .lic{background:var(--bad-bg);color:var(--bad-strong)}
+.dt-mk ul{list-style:none;margin:0;padding:0}
+.dt-mk li{display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
+.dt-mk li:first-child{border-top:0}
+.dt-mk b{flex:none;font-variant-numeric:tabular-nums;color:var(--accent-text)}
 .dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
 .dt-okl svg{width:18px;height:18px;flex:none}
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
@@ -3009,10 +3036,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^dars/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3563,11 +3590,12 @@ async function dsStart() {
       let st = null; try { st = JSON.parse(localStorage.getItem(DS_UP) || "null"); } catch (e) {}
       const old = st && st.size === u.size && st.id && dsRow(st.id);
       if (old && old.status === "uploading") { u.id = st.id; u.path = st.path; }
-      else { const r = await darsApi("new", { bytes: u.size, ext: u.ext, duration_s: u.dur }); u.id = r.id; u.path = r.path; }
+      else { const r = await darsApi("new", { bytes: u.size, ext: u.ext, duration_s: u.dur, marks: u.marks || [] }); u.id = r.id; u.path = r.path; }
     }
-    await tusUpload(u.file, u.path, u.file.type || DS_MIME[u.ext] || "audio/mp4", p => { u.pct = p; dsUpPaint(); });
+    await tusUpload(u.file, u.path, (u.file.type || DS_MIME[u.ext] || "audio/mp4").split(";")[0], p => { u.pct = p; dsUpPaint(); });
     await darsApi("start", { id: u.id });
     try { localStorage.removeItem(DS_UP); } catch (e) {}
+    if (u.rec) { await yzDel(u.rec).catch(() => {}); YZ_SAVED = YZ_SAVED.filter(r => r.id !== u.rec); }
     DUP = null; await darsLoad(true); render();
   } catch (e) {
     u.phase = "err";
@@ -3606,9 +3634,10 @@ function dsUpCard() {
       <span>${DUP.phase === "err" ? esc(DUP.err) : `${d.getDate()}-${MONTHS[d.getMonth()]} · ${DUP.dur ? dsDur(DUP.dur) + " · " : ""}${dsMB(DUP.size)}`}</span>
       <div class="ds-act"><button class="btn" id="dsgo">${DUP.phase === "err" ? "Davom etish" : "Yuklash va tahlil qilish"} ${ICON.arrow}</button><button class="btn ghost" id="dsx">Bekor qilish</button></div></section>`;
   }
-  return `<section class="card ds-up idle"><b>Darsdan keyin yozuvni yuklang</b>
-    <span>${/Android/i.test(navigator.userAgent) ? "Android: «Yozuvni tanlash» → diktofon yozuvlari papkasi (Recordings / Voice Recorder). " : /iPhone|iPad/i.test(navigator.userAgent) ? "iPhone: Diktofon → yozuv → <b>⋯</b> → «Fayllarga saqlash», keyin shu yerda tanlaysiz. " : "Yozuvni telefondan shu kompyuterga o'tkazib, shu yerda tanlang. "}50 MB gacha (80 daqiqa ≈ 40 MB).</span>
-    <label class="btn" for="dsfile">${ICON.mic}Yozuvni tanlash</label><input type="file" id="dsfile" class="sr-only" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac"></section>`;
+  return `<section class="card ds-up idle"><b>Darsni shu yerda yozib oling</b>
+    <span>Darsda «Yozishni boshlash», oxirida «Darsni tugatish». Yozuv o'zi yuklanadi, 3–6 daqiqada xatolaringiz chiqadi.</span>
+    <a class="btn${YZ_SAVED.length ? " ghost" : ""}" href="#yozish">${ICON.mic}${YZ_SAVED.length ? "Yangi dars yozish" : "Darsni yozib olish"}</a>
+    <label class="ds-alt" for="dsfile">yoki diktofondagi tayyor yozuvni yuklash${/Android/i.test(navigator.userAgent) ? " (Recordings papkasi)" : /iPhone|iPad/i.test(navigator.userAgent) ? " (Diktofon → ⋯ → «Fayllarga saqlash»)" : ""} · 50 MB gacha</label><input type="file" id="dsfile" class="sr-only" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac"></section>`;
 }
 function dsListRow(r) {
   const a = r.analysis, n = a ? a.mistakes.length : 0, dn = dsDone(r);
@@ -3621,14 +3650,189 @@ route(/^dars$/, () => {
   if (!darsOn()) return go("");
   darsLoad();
   const list = DS.list.filter(r => r.status === "done" || r.status === "error" || (r.status === "uploading" && !(DUP && DUP.id === r.id) && Date.now() - Date.parse(r.created_at) > 6 * 3600e3));
+  yzScan();
+  const saved = YZ_SAVED.filter(r => !(DUP && DUP.rec === r.id));
+  const savedCards = saved.map(r => { const d = new Date(r.t0); return `<section class="card ds-up"><b>Saqlangan yozuv · ${yzClock(r.dur)}</b><span>${d.getDate()}-${MONTHS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} da boshlangan. Hali tahlilga yuborilmagan.</span>
+    <div class="ds-act"><button class="btn" data-yzs="${r.id}">Tahlilga yuborish</button><button class="btn ghost" data-yzd="${r.id}">O'chirish</button></div></section>`; }).join("");
   app.innerHTML = `${nav("#", "Bugun", "Dars tahlili")}<h2 class="pg-h">Dars tahlili</h2>
   <p class="sub">Inter Nation darsining yozuvidan: siz aytgan gaplardagi xatolar va darsda o'tilganlar. Audio matnga o'girilgach o'chiriladi.</p>
-  <div class="stack">${dsUpCard()}
+  <div class="stack">${REC && REC.state === "rec" ? `<a class="card ds-up dsc" href="#yozish"><b>Dars yozilmoqda · ${yzClock(yzElapsed())}</b><span>Yozish ekraniga qaytish</span></a>` : savedCards + dsUpCard()}
   ${list.length ? `<section class="sec"><div class="sec-h"><h2>Oldingi darslar</h2><span class="n">${list.length} ta</span></div><div class="list">${list.map(dsListRow).join("")}</div></section>` : ""}</div>`;
   const f = $("#dsfile"); if (f) f.onchange = () => { if (f.files && f.files[0]) dsPick(f.files[0]); };
   const g = $("#dsgo"); if (g) g.onclick = dsStart;
-  const x = $("#dsx"); if (x) x.onclick = () => { DUP = null; render(); };
+  const x = $("#dsx"); if (x) x.onclick = () => { DUP = null; yzScan(); render(); };
+  app.querySelectorAll("[data-yzs]").forEach(b => b.onclick = () => { const r = YZ_SAVED.find(x => x.id === b.dataset.yzs); if (r) yzUpload(r); });
+  app.querySelectorAll("[data-yzd]").forEach(b => b.onclick = async () => {
+    if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Rostdan o'chirilsinmi?"; return; }
+    await yzDel(b.dataset.yzd).catch(() => {}); YZ_SAVED = YZ_SAVED.filter(x => x.id !== b.dataset.yzd); render();
+  });
   dsWatch();
+});
+
+/* --- saytda yozib olish: MediaRecorder (32 kbps mono → 80 daqiqa ≈ 20 MB), ekran yoniq turadi (Wake Lock),
+   yozuv har 10 soniyada IndexedDB'ga saqlanadi: sahifa yopilsa ham shu joygacha bo'lgan qism qoladi. «Muhim» — dars paytidagi belgilar. --- */
+const YZ_DB = "ingliz-yozuv";
+let REC = null, yzTick = null, YZ_SAVED = [];
+const yzIdb = () => new Promise((res, rej) => {
+  const r = indexedDB.open(YZ_DB, 1);
+  r.onupgradeneeded = () => { const d = r.result; d.createObjectStore("recs", { keyPath: "id" }); d.createObjectStore("chunks", { autoIncrement: true }).createIndex("rec", "rec"); };
+  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+});
+const yzReq = q => new Promise((res, rej) => { q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+async function yzPutRec(o) { const d = await yzIdb(); await yzReq(d.transaction("recs", "readwrite").objectStore("recs").put(o)); }
+async function yzAddChunk(rec, blob) { const d = await yzIdb(); await yzReq(d.transaction("chunks", "readwrite").objectStore("chunks").add({ rec, blob })); }
+async function yzRecs() { try { const d = await yzIdb(); return await yzReq(d.transaction("recs").objectStore("recs").getAll()); } catch (e) { return []; } }
+async function yzBlob(rec) {
+  const d = await yzIdb(), all = await yzReq(d.transaction("chunks").objectStore("chunks").index("rec").getAll(rec));
+  return new Blob(all.map(x => x.blob), { type: rec.mime || (all[0] && all[0].blob.type) || "audio/webm" });
+}
+async function yzDel(id) {
+  const d = await yzIdb(), t = d.transaction(["recs", "chunks"], "readwrite");
+  t.objectStore("recs").delete(id);
+  const ix = t.objectStore("chunks").index("rec"), keys = await yzReq(ix.getAllKeys(id));
+  keys.forEach(k => t.objectStore("chunks").delete(k));
+  await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
+}
+/* sahifa ochilganda: tugallanmagan (yuklanmagan) yozuvlar */
+async function yzScan() {
+  const list = (await yzRecs()).filter(r => !(REC && REC.id === r.id) && r.dur > 0).sort((a, b) => b.t0 - a.t0);
+  const was = YZ_SAVED.map(r => r.id + r.dur).join();
+  YZ_SAVED = list;
+  if (was !== list.map(r => r.id + r.dur).join() && /^dars$/.test(location.hash.replace(/^#/, ""))) render();
+}
+const yzClock = s => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : String(m).padStart(2, "0")) + ":" + String(x).padStart(2, "0"); };
+const yzMime = () => ["audio/webm;codecs=opus", "audio/webm", "audio/mp4;codecs=mp4a.40.2", "audio/mp4"].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
+const yzElapsed = () => REC ? (REC.acc + (REC.mr && REC.mr.state === "recording" ? (Date.now() - REC.t1) / 1000 : 0)) : 0;
+async function yzLock() {
+  if (!REC || !("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+  try { REC.lock = await navigator.wakeLock.request("screen"); } catch (e) { REC.lock = null; }
+}
+async function yzStart() {
+  const mime = yzMime();
+  if (!mime || !navigator.mediaDevices) { REC = { err: "nosupport" }; return render(); }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: true } }); }
+  catch (e) { REC = { err: e.name === "NotAllowedError" ? "denied" : "nomic" }; return render(); }
+  const id = "r" + Date.now().toString(36), t0 = Date.now();
+  REC = { id, t0, t1: t0, acc: 0, mime: mime.split(";")[0], marks: [], stream, saving: Promise.resolve(), n: 0, quiet: 0, state: "rec" };
+  await yzPutRec({ id, t0, mime: REC.mime, dur: 0, marks: [] }).catch(() => {});
+  const mr = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
+  REC.mr = mr;
+  mr.ondataavailable = e => {
+    if (!e.data || !e.data.size) return;
+    const r = REC; r.n++;
+    r.saving = r.saving.then(() => yzAddChunk(r.id, e.data)).then(() => yzPutRec({ id: r.id, t0: r.t0, mime: r.mime, dur: Math.round(yzElapsed()), marks: r.marks })).catch(() => { r.saveErr = true; });
+  };
+  mr.onerror = () => yzBroke();
+  stream.getAudioTracks().forEach(t => t.onended = () => yzBroke());
+  mr.start(10000);
+  // ovoz darajasi: mikrofon haqiqatan eshityaptimi
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC(), an = ctx.createAnalyser();
+    an.fftSize = 1024; ctx.createMediaStreamSource(stream).connect(an); REC.ctx = ctx; REC.an = an; REC.buf = new Uint8Array(an.fftSize);
+  } catch (e) {}
+  await yzLock();
+  render();
+}
+function yzBroke() {
+  if (!REC || REC.state !== "rec") return;
+  REC.acc = yzElapsed(); REC.state = "broke";
+  try { if (REC.mr.state !== "inactive") REC.mr.stop(); } catch (e) {}
+  if (location.hash.replace(/^#/, "") === "yozish") render();
+}
+function yzRelease() {
+  if (!REC) return;
+  clearInterval(yzTick); yzTick = null;
+  try { REC.stream && REC.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  try { REC.ctx && REC.ctx.close(); } catch (e) {}
+  try { REC.lock && REC.lock.release(); } catch (e) {}
+}
+async function yzFinish() {
+  const r = REC; if (!r || r.state === "done") return;
+  r.acc = yzElapsed(); r.state = "done";
+  if (r.mr && r.mr.state !== "inactive") { await new Promise(res => { r.mr.addEventListener("stop", res, { once: true }); r.mr.stop(); }); }
+  await r.saving;
+  await yzPutRec({ id: r.id, t0: r.t0, mime: r.mime, dur: Math.round(r.acc), marks: r.marks }).catch(() => {});
+  yzRelease(); REC = null;
+  await yzUpload({ id: r.id, t0: r.t0, mime: r.mime, dur: Math.round(r.acc), marks: r.marks });
+}
+/* saqlangan yozuvni yuklash oqimiga beramiz (fayl yuklash bilan bir xil yo'l) */
+async function yzUpload(rec) {
+  let blob; try { blob = await yzBlob(rec); } catch (e) { blob = null; }
+  if (!blob || !blob.size) { toast("Yozuv topilmadi", null, null, { type: "info", sub: "Telefon xotirasida saqlanmagan" }); return go("dars"); }
+  const ext = rec.mime === "audio/mp4" ? "mp4" : "webm", d = new Date(rec.t0);
+  const file = new File([blob], `dars-${d.getDate()}-${MONTHS[d.getMonth()]}.${ext}`, { type: rec.mime, lastModified: rec.t0 });
+  DUP = { phase: "pick", file, ext, size: file.size, name: file.name, dur: rec.dur, date: d, marks: rec.marks || [], rec: rec.id };
+  if (location.hash.replace(/^#/, "") !== "dars") go("dars");
+  dsStart();
+}
+document.addEventListener("visibilitychange", () => {
+  if (!REC || REC.state !== "rec") return;
+  if (document.visibilityState === "visible") {
+    yzLock();
+    // iPhone'da sahifa fonga o'tsa mikrofon to'xtaydi
+    const tr = REC.stream && REC.stream.getAudioTracks()[0];
+    if (!REC.mr || REC.mr.state === "inactive" || (tr && tr.readyState === "ended")) yzBroke();
+  }
+});
+addEventListener("beforeunload", e => { if (REC && REC.state === "rec") { e.preventDefault(); e.returnValue = ""; } });
+function yzPaint() {
+  if (!REC || REC.state !== "rec") return;
+  const t = $("#yzt"); if (!t) return;
+  t.textContent = yzClock(yzElapsed());
+  if (REC.an) {
+    REC.an.getByteTimeDomainData(REC.buf);
+    let s = 0; for (let i = 0; i < REC.buf.length; i++) { const v = (REC.buf[i] - 128) / 128; s += v * v; }
+    const rms = Math.sqrt(s / REC.buf.length), lv = Math.min(1, rms * 6);
+    const bar = $("#yzlv"); if (bar) bar.style.transform = `scaleX(${Math.max(.02, lv)})`;
+    REC.quiet = rms < .004 ? REC.quiet + 1 : 0;
+    const q = $("#yzq"); if (q) q.hidden = REC.quiet < 60; // ~15 soniya jimlik
+  }
+  const n = $("#yzsv"); if (n) n.textContent = REC.saveErr ? "Telefon xotirasiga saqlab bo'lmayapti — yozish davom etmoqda" : REC.n ? `Saqlandi: ${yzClock(REC.n * 10)} gacha` : "Birinchi 10 soniya saqlanmoqda…";
+}
+route(/^yozish$/, () => {
+  if (!darsOn()) return go("");
+  clearInterval(yzTick); yzTick = null;
+  if (!REC || REC.err) {
+    const er = REC && REC.err, msg = { denied: "Mikrofonga ruxsat berilmadi. Brauzer sozlamalarida easywords.uz uchun mikrofonni yoqing.", nomic: "Mikrofon topilmadi.", nosupport: "Bu brauzer yozib olishni qo'llamaydi. Chrome yoki Safari'ning yangi versiyasida oching." }[er];
+    app.innerHTML = `${nav("#dars", "Dars tahlili", "Darsni yozib olish")}<h2 class="pg-h">Darsni yozib olish</h2>
+    <p class="sub">Dars tugagach «Darsni tugatish»ni bosasiz — yozuv o'zi yuklanadi va tahlilga ketadi.</p>
+    <div class="stack"><section class="card yz-tips"><ul>
+      <li><b>Telefonni stolga, siz bilan o'qituvchi o'rtasiga qo'ying.</b> Ikki ovoz ham aniq eshitilsin.</li>
+      <li><b>Ekran yoniq turadi.</b> Yorug'likni eng pastga tushiring. Boshqa ilovaga o'tmang${/iPhone|iPad/i.test(navigator.userAgent) ? " — iPhone'da yozish to'xtaydi" : ""}.</li>
+      <li><b>Yozuv har 10 soniyada telefonga saqlanadi.</b> Sahifa yopilib qolsa ham, shu joygacha bo'lgan qism qoladi.</li>
+      <li><b>«Muhim»</b> — o'qituvchi muhim narsa aytganda bosing, tahlilda o'sha joylar alohida chiqadi.</li>
+    </ul></section>
+    ${er ? `<section class="card ds-up err"><b>Yozib bo'lmadi</b><span>${msg}</span></section>` : ""}
+    <button class="btn" id="yzgo">${ICON.mic}Yozishni boshlash</button></div>`;
+    $("#yzgo").onclick = async () => { const b = $("#yzgo"); b.disabled = true; REC = null; await yzStart(); };
+    return;
+  }
+  if (REC.state === "broke") {
+    app.innerHTML = `<div class="yz yz-broke" role="alert"><p class="yz-st">${ICON.info}Yozish to'xtadi</p><p class="yz-t">${yzClock(REC.acc)}</p>
+      <p class="yz-n">Shu joygacha bo'lgan qism telefonda saqlangan. Uni hozir tahlilga yuborish yoki yangi yozuvni boshlash mumkin — saqlangani o'chmaydi.</p>
+      <button class="btn" id="yzsend">Saqlanganini tahlilga yuborish</button><button class="btn ghost" id="yznew">${ICON.mic}Yangi yozuvni boshlash</button></div>`;
+    $("#yzsend").onclick = () => yzFinish();
+    $("#yznew").onclick = async () => { const old = REC; old.state = "done"; await old.saving; await yzPutRec({ id: old.id, t0: old.t0, mime: old.mime, dur: Math.round(old.acc), marks: old.marks }).catch(() => {}); yzRelease(); REC = null; await yzStart(); };
+    return;
+  }
+  app.innerHTML = `<div class="yz" aria-live="off">
+    <p class="yz-st"><i class="yz-dot" aria-hidden="true"></i>Yozilmoqda</p>
+    <p class="yz-t" id="yzt" role="timer" aria-label="Yozuv vaqti">${yzClock(yzElapsed())}</p>
+    <div class="yz-lv" aria-hidden="true"><i id="yzlv"></i></div>
+    <p class="yz-q" id="yzq" hidden>Ovoz eshitilmayapti — mikrofon yopilmaganini tekshiring</p>
+    <p class="yz-n" id="yzsv"></p>
+    <p class="yz-n">${REC.lock ? "Ekran o'chmaydi." : "Ekran o'zi o'chib qolmasligi uchun telefonga tegib turing yoki sozlamada ekran kutish vaqtini oshiring."}</p>
+    <button class="yz-m" id="yzm" type="button">${ICON.plus}Muhim${REC.marks.length ? `<span>${REC.marks.length}</span>` : ""}</button>
+    <button class="btn" id="yzend">Darsni tugatish</button></div>`;
+  $("#yzm").onclick = () => {
+    REC.marks.push(Math.round(yzElapsed()));
+    const b = $("#yzm"); b.innerHTML = `${ICON.plus}Muhim<span>${REC.marks.length}</span>`; b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit");
+    if (navigator.vibrate) navigator.vibrate(30);
+  };
+  // tasodifan bosilmasin: ikkinchi bosishda tugaydi
+  $("#yzend").onclick = () => { const b = $("#yzend"); if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Tugatish uchun yana bosing"; setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = "Darsni tugatish"; } }, 4000); return; } yzFinish(); };
+  yzPaint(); yzTick = setInterval(yzPaint, 250);
 });
 
 /* --- natija: avval xatolar (variant B) --- */
@@ -3702,8 +3906,9 @@ function dsContent(c) {
     c.phrases && c.phrases.length ? `<h3 class="dt-h">Foydali gaplar</h3><ul class="dt-wl dt-pl">${c.phrases.map(w => `<li><span class="pp"><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span></span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash">${ICON.vol}</button></li>`).join("")}</ul>` : "",
     c.tips && c.tips.length ? `<h3 class="dt-h">O'qituvchi maslahati</h3><ul class="dt-tips">${c.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "",
     c.homework ? `<p class="dt-hw"><b>Uy vazifasi</b>${esc(c.homework)}</p>` : ""].join("");
-  if (!parts) return "";
-  return `<section class="card dt-fold"><button class="dt-more" id="dtcm" aria-expanded="${!!DT.cm}" aria-controls="dtcml">Darsda nima o'tildi${ICON.down}</button><div id="dtcml"${DT.cm ? "" : " hidden"}>${parts}</div></section>`;
+  const mk = c.marked && c.marked.length ? `<section class="card dt-mk"><p class="dt-sec">Siz «Muhim» degan joylar · ${c.marked.length}</p><ul>${c.marked.map(x => `<li><b>${esc(x.t)}</b><span>${esc(x.note)}</span></li>`).join("")}</ul></section>` : "";
+  if (!parts) return mk;
+  return `${mk}<section class="card dt-fold"><button class="dt-more" id="dtcm" aria-expanded="${!!DT.cm}" aria-controls="dtcml">Darsda nima o'tildi${ICON.down}</button><div id="dtcml"${DT.cm ? "" : " hidden"}>${parts}</div></section>`;
 }
 function dsPending(r) {
   const err = r.status === "error", up = r.status === "uploading";
@@ -3724,9 +3929,11 @@ function dsPending(r) {
 function darsCard() {
   if (!darsOn()) return "";
   const a = dsActive(), d = new Date(), last = DS.list.find(x => x.status === "done" && dayDiff(x.day, today()) <= 1);
+  if (REC && REC.state === "rec") return `<a class="cls dsc yzc" href="#yozish"><span class="lic">${ICON.mic}</span><span class="tx"><b>Dars yozilmoqda · ${yzClock(yzElapsed())}</b><span>Yozish ekraniga qaytish</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (YZ_SAVED.length) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Saqlangan yozuv tahlilga yuborilmagan</b><span>${yzClock(YZ_SAVED[0].dur)} · yuborish uchun oching</span></span><span class="go">${ICON.chev}</span></a>`;
   if (a) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.clock}</span><span class="tx"><b>Dars tahlil qilinmoqda</b><span>${DS_STAGE[a.status][0]} · tayyor bo'lganda Telegram'ga xabar keladi</span></span><span class="go">${ICON.chev}</span></a>`;
   if (last) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
-  if (clsDays().includes(d.getDay()) && d.getHours() >= 17 && !DS.list.some(x => x.day === today() && x.status !== "uploading")) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Bugungi darsni yuklang</b><span>Diktofon yozuvidan xatolaringiz va darsda o'tilganlar chiqadi</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading")) return `<a class="cls dsc" href="#yozish"><span class="lic">${ICON.mic}</span><span class="tx"><b>Bugun dars kuni: darsni yozib oling</b><span>Darsdan keyin xatolaringiz va o'tilganlar chiqadi</span></span><span class="go">${ICON.chev}</span></a>`;
   return "";
 }
 
@@ -3734,7 +3941,7 @@ function darsCard() {
 route(/^$/, () => {
   if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
-  LES = false; repLoad(); darsLoad();
+  LES = false; repLoad(); darsLoad(); if (darsOn()) yzScan();
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
   const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
@@ -3795,7 +4002,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611172200";
+const APP_V = "202611172330";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7779,7 +7986,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|repetitor|dars-|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

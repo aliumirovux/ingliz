@@ -52,3 +52,10 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 - `supabase/functions/dars`: Gemini (`GEMINI_API_KEY`, model `gemini-3.8-flash`) matn + ikki ovoz → audio darhol o'chiriladi → Claude (`claude-opus-5-5`) xatolar va mazmun → Telegram.
 - Har bosqich alohida chaqiruv (150 s chegarasi), pg_cron `dars-ishlov` har daqiqa navbatni suradi. 3 urinishdan keyin `error`, saytda «Qayta urinish».
 - `/repetitor/data` → `class_lessons`: agent ertangi darsning birinchi bo'limini shu xatolardan tuzadi.
+
+## Darsdagi lahza (ovoz chiqarib mashq)
+- Sahifa: `#lahza-<dars id>` — «Dars tahlili» → «Tutilgan joylar» oxiridagi «Ovoz chiqarib mashq» tugmasi.
+- O'qituvchi savoli (`stuck[].q`) eshitiladi, javob yashirin; mikrofon yoqilgandan birinchi so'zgacha vaqt (`lat_ms`) darsdagi jimlik (`stuck[].gap`) bilan solishtiriladi. Yordam 3 bosqich, keyin namunani 2 marta takrorlash.
+- Tekshiruv — brauzerning nutqni tanishi (Chrome Android, iPhone Safari), kredit sarflanmaydi; ishlamasa yozib javob beriladi.
+- Natijalar `speak_log` jadvaliga (src `dars` | `rep`): bosh sahifadagi «Bu hafta gapirdingiz» (darsdagi `metrics.talk_s` + saytdagi `secs`) va repetitorning `speaking.practice` shundan.
+- Repetitor «Gapirish» bo'limidagi `type` savollarga ham ovoz bilan javob berish mumkin (so'zlarning 85% i to'g'ri bo'lsa qabul).

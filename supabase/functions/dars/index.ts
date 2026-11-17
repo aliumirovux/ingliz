@@ -323,7 +323,7 @@ ${txText(row)}
 JSON shakli:
 {
   "off": [{"from": "MM:SS", "to": "MM:SS", "about": "nima haqida, 2–5 so'z", "lang": "en" | "uz" | "mix", "by": "S" | "T", "before": "chetga chiqishdan oldin nima bo'ldi, 1 gap (masalan: o'qituvchi «ago» bilan gap so'radi, Ali 2 marta to'xtab qoldi)", "useful": true agar inglizcha erkin suhbat bo'lib, gapirish mashqi bo'lgan bo'lsa, "why": "ehtimoliy sabab — faqat matndagi dalil bilan, 1 gap", "tip": "keyingi safar nima qilish, 1 gap"}],
-  "stuck": [{"t": "MM:SS", "kind": "pause" | "uz" | "drop" | "filler", "you": "Ali aytgan (yoki aytmoqchi bo'lgan) gap, aynan", "en": "shuni oddiy inglizcha qanday aytsa bo'lardi"}],
+  "stuck": [{"t": "MM:SS", "kind": "pause" | "uz" | "drop" | "filler", "q": "shu joydan oldin o'qituvchi bergan savol yoki aytgan gap, aynan, inglizcha (bo'lmasa null)", "gap": jim qolgan soniyalar (matndagi «[pauza N s]» bo'yicha, bo'lmasa 0), "you": "Ali aytgan (yoki aytmoqchi bo'lgan) gap, aynan", "en": "shuni oddiy inglizcha qanday aytsa bo'lardi"}],
   "patterns": ["takrorlangan odat — dalil soni bilan, masalan: 3 ta chetga chiqishning 2 tasi qiyin savoldan keyin boshlandi"],
   "rescue": ["gapni to'xtatmay davom ettirish uchun 3 ta qisqa inglizcha ibora, Alining aynan shu darsdagi holatlariga mos"],
   "plan": {"class": ["keyingi darsda qiladigan 2–3 aniq ish"], "home": ["uyda har kuni 5–10 daqiqalik 2 ta mashq, daqiqasi bilan"]},
@@ -333,7 +333,7 @@ Qoidalar:
 - off: dars mavzusidan (darslik, mashq, o'qituvchi rejasi) tashqaridagi 1 daqiqadan uzun suhbatlar. Mavzu ichidagi qisqa savollar emas. Bo'lmasa [].
 - Inglizcha erkin suhbat ham mashq: uni ayblama, useful: true.
 - why: Alining fikrini o'qima, faqat matnda ko'ringanini ayt («ehtimol …»). Dalil bo'lmasa — null.
-- stuck: eng muhim 6 tagacha joy.
+- stuck: eng muhim 6 tagacha joy. Ali bu joylarni uyda ovoz chiqarib qayta mashq qiladi: q — o'qituvchining o'sha savoli, en — A1–A2 darajadagi qisqa, aytish oson javob (12 so'zdan oshmasin).
 - patterns: 1–3 ta. Hech biri dangasalik yoki xarakter haqida emas — faqat holat va natija.
 - Hamma o'zbekcha matn lotin yozuvida, «siz» bilan, grammatik atamalarsiz.`;
 }
@@ -341,7 +341,9 @@ Qoidalar:
 const FILL = /\b(e+|ee+|mm+|uh+|um+|eh+|aa+|hmm+)\b/gi;
 function speechMetrics(turns: Row[]) {
   const words = (x: string) => x.replace(/\[[^\]]*\]/g, " ").replace(FILL, " ").split(/\s+/).filter((w) => /[A-Za-z'ʻʼ]/.test(w)).length;
-  let sw = 0, tw = 0, en = 0, fill = 0, pauses = 0, ans = 0, ansW = 0;
+  let sw = 0, tw = 0, en = 0, fill = 0, pauses = 0, ans = 0, ansW = 0, talk = 0;
+  // siz gapirgan vaqt: har bir S gapining boshidan keyingi gapgacha (ko'pi bilan 60 s)
+  turns.forEach((x, i) => { if (x.s === "S" && turns[i + 1]) talk += Math.max(0, Math.min(60, toSec(turns[i + 1].t) - toSec(x.t))); });
   for (const x of turns) {
     const n = words(x.x);
     if (x.s === "S") {
@@ -350,7 +352,7 @@ function speechMetrics(turns: Row[]) {
       if (x.l !== "uz" && n > 0) { ans++; ansW += n; }
     } else tw += n;
   }
-  return { share: sw + tw ? Math.round(sw / (sw + tw) * 100) : 0, en: sw ? Math.round(en / sw * 100) : 0, avg: ans ? Math.round(ansW / ans * 10) / 10 : 0, stops: fill + pauses, words: sw };
+  return { share: sw + tw ? Math.round(sw / (sw + tw) * 100) : 0, en: sw ? Math.round(en / sw * 100) : 0, avg: ans ? Math.round(ansW / ans * 10) / 10 : 0, stops: fill + pauses, words: sw, talk_s: Math.round(talk) };
 }
 function b64(buf: Uint8Array) {
   let s = ""; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
@@ -414,7 +416,7 @@ function cleanSpeech(C: Row, m: Row, prev: Row | null, dur: number) {
     from: tm(o.from), to: tm(o.to), about: clip(o.about, 60), lang: ["en", "uz", "mix"].includes(o.lang) ? o.lang : "uz", by: o.by === "T" ? "T" : "S",
     before: clip(o.before, 240), useful: o.useful === true, why: o.why ? clip(o.why, 240) : "", tip: clip(o.tip, 240),
   })).filter((o: Row) => o.from && o.to && toSec(o.to) > toSec(o.from) && o.about && uzOk(o.about + o.before + o.why + o.tip)).sort((a: Row, b: Row) => toSec(a.from) - toSec(b.from)).slice(0, 8);
-  const stuck = (Array.isArray(C.stuck) ? C.stuck : []).map((x: Row) => ({ t: tm(x.t), kind: ["pause", "uz", "drop", "filler"].includes(x.kind) ? x.kind : "pause", you: clip(x.you, 240), en: clip(x.en, 240) }))
+  const stuck = (Array.isArray(C.stuck) ? C.stuck : []).map((x: Row) => ({ t: tm(x.t), kind: ["pause", "uz", "drop", "filler"].includes(x.kind) ? x.kind : "pause", q: x.q && !CYR.test(String(x.q)) ? clip(x.q, 200) : "", gap: Math.max(0, Math.min(120, Math.round(+x.gap || 0))), you: clip(x.you, 240), en: clip(x.en, 240) }))
     .filter((x: Row) => x.t && x.you && x.en && !CYR.test(x.you + x.en)).slice(0, 6);
   const strs = (v: unknown, n: number, len: number) => (Array.isArray(v) ? v : []).map((x) => clip(x, len)).filter((x) => x && !CYR.test(x)).slice(0, n);
   const P = C.plan || {};

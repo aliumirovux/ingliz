@@ -45,7 +45,10 @@ async function data(owner: string) {
   // Inter Nation darslari (dars funksiyasi tahlil qilgan): oxirgi 10 kun, ko'pi bilan 3 ta
   let cls: Record<string, unknown>[] = [];
   try {
-    const c = await db(`class_lessons?user_id=eq.${owner}&status=eq.done&day=gte.${tashkentDay(-10)}&select=day,analysis,answers&order=day.desc&limit=3`);
+    const c = await db(`class_lessons?user_id=eq.${owner}&status=eq.done&day=gte.${tashkentDay(-10)}&select=id,day,analysis,answers&order=day.desc&limit=3`);
+    // saytda ovoz chiqarib mashq: har gap uchun eng oxirgi urinish
+    let sp: Record<string, any>[] = [];
+    try { sp = await db(`speak_log?user_id=eq.${owner}&src=eq.dars&day=gte.${tashkentDay(-10)}&select=lesson_id,item,lat_ms,hints,score,at&order=at.desc&limit=200`) || []; } catch (e) { console.error("speak_log", e); }
     cls = (c || []).map((r: Record<string, any>) => {
       const a = r.analysis || {}, ct = a.content || {}, ans = r.answers || {};
       return {
@@ -55,7 +58,9 @@ async function data(owner: string) {
         mistakes: (a.mistakes || []).map((m: Record<string, unknown>, i: number) => ({ kind: m.kind, rule: m.rule, you: m.you, fix: m.fix, why: m.why, retyped: ans["m" + i] ? !!ans["m" + i].ok : null })),
         words: ct.words || [], homework: ct.homework || null,
         // gapirish: tutilib qolgan gaplar (siz aytgan → oddiy inglizchasi), qutqaruvchi iboralar, raqamlar
-        speaking: a.speech ? { metrics: a.speech.metrics, stuck: (a.speech.stuck || []).map((x: Record<string, unknown>) => ({ kind: x.kind, you: x.you, en: x.en })), rescue: a.speech.rescue || [], patterns: a.speech.patterns || [] } : null,
+        speaking: a.speech ? { metrics: a.speech.metrics, stuck: (a.speech.stuck || []).map((x: Record<string, unknown>) => ({ kind: x.kind, you: x.you, en: x.en })), rescue: a.speech.rescue || [], patterns: a.speech.patterns || [],
+          // practice: uyda ovoz bilan aytgani — lat_ms gapni boshlagungacha, hints 0–3, score aytilgan so'zlar %
+          practice: (a.speech.stuck || []).map((x: Record<string, unknown>) => { const p = sp.find((y) => y.lesson_id === r.id && y.item === x.en); return p ? { en: x.en, lat_ms: p.lat_ms, hints: p.hints, score: p.score, at: p.at } : null; }).filter(Boolean) } : null,
       };
     });
   } catch (e) { console.error("class_lessons", e); }

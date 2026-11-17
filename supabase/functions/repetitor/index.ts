@@ -64,11 +64,16 @@ function check(L: Record<string, unknown>): string | null {
   if (typeof L.minutes !== "number" || L.minutes < 3 || L.minutes > 30) return "minutes 3–30 oralig'ida bo'lsin";
   if (L.focus !== undefined && !(Array.isArray(L.focus) && L.focus.length <= 60 && L.focus.every((x) => str(x, 60)))) return "focus: ≤60 ta id";
   if (L.feedback !== undefined && !(Array.isArray(L.feedback) && L.feedback.length <= 6 && L.feedback.every((f: Record<string, unknown>) => str(f.you, 300) && str(f.fix, 300) && str(f.izoh, 400)))) return "feedback: [{you, fix, izoh}] ≤6";
+  if (L.plan !== undefined) {
+    const P = L.plan as Record<string, unknown>;
+    if (!P || typeof P !== "object" || ![10, 20, 30].includes(P.recommend as number) || !Array.isArray(P.order) || P.order.length > 24 || !P.order.every((x) => typeof x === "string" && /^(rep\d|esla|rev|new|fel|gram|tuz|gap|kech|story|tl)$/.test(x))) return "plan: {recommend: 10|20|30, order: [rep0.., esla, rev, new, fel, gram, tuz, gap, kech, story, tl]}";
+  }
   const secs = L.sections as Record<string, unknown>[];
   if (!Array.isArray(secs) || secs.length < 1 || secs.length > 6) return "sections: 1–6 ta";
   let n = 0;
   for (const [si, s] of secs.entries()) {
     if (!str(s.t, 60) || (s.s !== undefined && !str(s.s, 120))) return `sections[${si}]: t (≤60), s (≤120)`;
+    if (s.m !== undefined && !(typeof s.m === "number" && s.m >= 1 && s.m <= 15)) return `sections[${si}].m: 1–15 daqiqa`;
     const items = s.items as Record<string, unknown>[];
     if (!Array.isArray(items) || !items.length || items.length > 10) return `sections[${si}].items: 1–10 ta`;
     for (const [ii, it] of items.entries()) {

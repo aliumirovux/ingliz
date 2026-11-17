@@ -1044,6 +1044,12 @@ svg.xm-ch .hit:focus-visible{stroke:var(--marker);stroke-width:2}
 .tl .now .m{color:var(--accent-text);font-weight:600}
 .tl .done .m{color:var(--ok)}
 /* Repetitor (agent darsi) */
+.bseg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--surface-2);border-radius:14px;padding:4px;margin:14px 0 4px}
+.bseg button{border:0;background:transparent;border-radius:10px;min-height:44px;font:600 15px var(--font-body, inherit);color:var(--muted);cursor:pointer}
+.bseg button[aria-checked="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bseg-n{margin:6px 2px 0;font-size:13px;color:var(--muted)}
+.tl li.off{opacity:.42}
+.tl .tx b .src{display:inline-block;font-style:normal;font-size:11px;font-weight:600;line-height:1.5;padding:0 6px;border-radius:6px;background:var(--marker-soft);color:var(--accent-text);margin-left:6px;vertical-align:2px}
 .rep-chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--accent-text);background:var(--marker-soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
 .rep-chip svg{width:14px;height:14px}
 .rep .dh .rep-why{color:var(--muted);font-size:14px;line-height:1.45;font-variant-numeric:normal}
@@ -3079,11 +3085,41 @@ let GX = null; // rejadan kelgan grammatika takrorlash savollari
 /* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
    Har bir mashq natijasida keyingi qadam tugmasi chiqadi; bosh sahifaga qaytilsa seans tugaydi. */
 let LES = false;
-const nextStep = () => { const done = dayDone(); return todayPlan(curUnit().n).find(x => !done.includes(x.tag) && !x.lock); };
+/* ---------- BUGUNGI REJA: repetitor bo'limlari + sayt qadamlari bitta ro'yxatda ----------
+   Tartibni repetitor agenti beradi (lesson.plan.order), bo'lmasa — repetitor bo'limlari birinchi. Kun uchun vaqt chegarasi 10/20/30 daqiqa:
+   sig'magan qadamlar xira ko'rinadi va «Boshlash» ketma-ketligiga kirmaydi. Tanlov shu kunga eslab qolinadi. */
+const BUDGETS = [10, 20, 30], BKEY = "ingliz-budget";
+const repSecMin = s => s.m > 0 ? Math.round(s.m) : Math.max(2, Math.round((s.items || []).reduce((a, it) => a + (it.type === "story" ? 2 : it.type === "write" ? 1 : .6), 0)));
+const repSecDone = (r, si) => !!r && (r.lesson.sections[si].items || []).every((_, ii) => r.answers[si + "." + ii]);
+const repRec = () => { const r = repToday(), v = r && r.lesson.plan && +r.lesson.plan.recommend; return BUDGETS.includes(v) ? v : 0; };
+function planBudget() {
+  try { const o = JSON.parse(localStorage.getItem(BKEY) || "null"); if (o && o.d === today() && BUDGETS.includes(o.m)) return o.m; } catch (e) {}
+  return repRec() || 20;
+}
+const setBudget = m => { try { localStorage.setItem(BKEY, JSON.stringify({ d: today(), m })); } catch (e) {} };
+function dayPlan(n) {
+  const r = repToday(), done = dayDone();
+  const rs = r ? r.lesson.sections.map((s, si) => {
+    const its = s.items || [], k = its.filter(it => it.type === "choice" || it.type === "type").length, st = its.some(it => it.type === "story"), w = its.filter(it => it.type === "write").length;
+    const sub = [s.s, k ? k + " savol" : "", st ? "hikoya" : "", w ? w + " gap yozasiz" : ""].filter(Boolean).join(" · ");
+    return { tag: "rep" + si, rep: si, t: s.t, s: sub, min: repSecMin(s), ic: "spark", run: () => { RP = { start: si, only: si }; go("repetitor"); } };
+  }) : [];
+  let all = rs.concat(todayPlan(n));
+  const order = r && r.lesson.plan && Array.isArray(r.lesson.plan.order) ? r.lesson.plan.order : null;
+  if (order) { const rank = x => { const i = order.indexOf(x.tag); return i < 0 ? 999 : i; }; all = all.map((x, i) => [x, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(a => a[0]); }
+  const B = planBudget(); let cum = 0, first = true;
+  all.forEach(x => {
+    x.done = x.rep != null ? repSecDone(r, x.rep) : done.includes(x.tag);
+    if (x.lock && !x.done) return;
+    if (first || cum + x.min <= B + 1) { x.off = false; cum += x.min; first = false; } else x.off = !x.done;
+  });
+  return all;
+}
+const nextStep = () => dayPlan(curUnit().n).find(x => !x.done && !x.lock && !x.off);
 function lessonBtn(tag) {
   if (!LES || !tag) return "";
   const nx = nextStep();
-  return `<button class="btn" id="lnext">${nx ? "Keyingisi: " + STEP_NAME[nx.tag] + " " + ICON.arrow : "Darsni yakunlash " + ICON.check}</button><div style="height:10px"></div>`;
+  return `<button class="btn" id="lnext">${nx ? "Keyingisi: " + (STEP_NAME[nx.tag] || nx.t) + " " + ICON.arrow : "Darsni yakunlash " + ICON.check}</button><div style="height:10px"></div>`;
 }
 function bindLesson() {
   const b = $("#lnext"); if (!b) return;
@@ -3236,22 +3272,24 @@ route(/^repetitor$/, () => {
   const items = repItems(r), L = r.lesson;
   if (!RP) RP = {};
   if (RP.i == null) {
-    if (RP.start != null) RP.i = items.findIndex(x => x.si === RP.start);
+    if (RP.start != null) { RP.i = items.findIndex(x => x.si === RP.start && !r.answers[x.k]); if (RP.i < 0) { RP.i = items.findIndex(x => x.si === RP.start); RP.review = true; } }
     else { const f = items.findIndex(x => !r.answers[x.k]); RP.i = f < 0 ? 0 : f; RP.review = !!r.done_at; }
     if (RP.i < 0) RP.i = 0;
   }
   // kechagi gaplarga izoh — darsdan oldin bir marta
   if (!RP.fbSeen && Array.isArray(L.feedback) && L.feedback.length && !r.answers.fb) return repFeedback(r);
+  if (RP.only != null && (RP.i >= items.length || items[RP.i].si !== RP.only)) return repSectionEnd(r);
   if (RP.i >= items.length) return repFinish(r);
-  const x = items[RP.i], it = x.it, prev = r.answers[x.k], pct = Math.round(RP.i / items.length * 100);
-  const sec = `${esc(x.s.t)} · ${RP.i + 1} / ${items.length}`;
+  const x = items[RP.i], it = x.it, prev = r.answers[x.k];
+  const scope = RP.only != null ? items.filter(y => y.si === RP.only) : items, pos = scope.indexOf(x), pct = Math.round(pos / scope.length * 100);
+  const sec = `${esc(x.s.t)} · ${pos + 1} / ${scope.length}`;
   let body = "";
   if (it.type === "choice") body = `<div class="q">${esc(it.q)}</div><div class="opts" id="rpo">${it.o.map((o, k) => `<button class="opt" lang="en" data-k="${k}">${esc(o)}</button>`).join("")}</div>`;
   else if (it.type === "type") body = `<div class="q">${esc(it.q)}</div><textarea class="spell rp-in" id="rpi" rows="1" lang="en" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Inglizcha javob"></textarea><button class="btn" id="rpc">Tekshirish</button>`;
   else if (it.type === "story") body = `<div class="q">${esc(it.t)}</div><ol class="rp-story">${it.lines.map(l => `<li><span><b lang="en">${esc(l.en)}</b><small>${esc(l.uz)}</small></span><button class="icon" data-say="${esc(l.en)}" aria-label="Tinglash">${ICON.vol}</button></li>`).join("")}</ol><button class="btn" id="rpn">O'qidim ${ICON.arrow}</button>`;
   else body = `<div class="q rp-wq">${esc(it.q)}</div><textarea class="spell rp-in rp-w" id="rpi" rows="3" lang="en" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="Gapingiz">${esc(prev && prev.a || "")}</textarea><p class="rp-note">Repetitor gapingizni ertaga ertalab o'qiydi va izoh beradi.</p><button class="btn" id="rpw">Saqlash ${ICON.arrow}</button>`;
-  app.innerHTML = `<div class="top"><button class="icon" id="rpquit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Dars"><i style="transform:translateX(${pct - 100}%)"></i></div><span class="cnt">${RP.i + 1}/${items.length}</span></div>
-  <div class="card qcard rp"><p class="label">${sec}</p>${body}<div class="rp-fb hidden" id="rpf" aria-live="polite"></div><button class="btn hidden" id="rpnext">${RP.i + 1 < items.length ? "Keyingisi " + ICON.arrow : "Darsni tugatish " + ICON.check}</button></div>`;
+  app.innerHTML = `<div class="top"><button class="icon" id="rpquit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Dars"><i style="transform:translateX(${pct - 100}%)"></i></div><span class="cnt">${pos + 1}/${scope.length}</span></div>
+  <div class="card qcard rp"><p class="label">${sec}</p>${body}<div class="rp-fb hidden" id="rpf" aria-live="polite"></div><button class="btn hidden" id="rpnext">${RP.only != null && (RP.i + 1 >= items.length || items[RP.i + 1].si !== RP.only) ? (LES ? "Davom etish " + ICON.arrow : "Bo'limni tugatish " + ICON.check) : RP.i + 1 < items.length ? "Keyingisi " + ICON.arrow : "Darsni tugatish " + ICON.check}</button></div>`;
   $("#rpquit").onclick = () => { RP = null; go(""); };
   bindSay(app);
   const next = () => { RP.i++; render(); };
@@ -3276,6 +3314,15 @@ route(/^repetitor$/, () => {
     $("#rpw").onclick = () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } repAnswer(x.k, { a: v.slice(0, 300) }); next(); };
   }
 });
+function repMarkDone(r) {
+  if (r.done_at || !repItems(r).every(x => r.answers[x.k])) return;
+  r.done_at = new Date().toISOString(); REP.done_at = r.done_at; REP.dirty = true; repSave(); repPush();
+}
+function repSectionEnd(r) {
+  repMarkDone(r); RP = null;
+  if (LES) { const nx = nextStep(); if (nx) return nx.run(); LES = false; return go("yakun"); }
+  go("");
+}
 function repFeedback(r) {
   const L = r.lesson;
   app.innerHTML = `<div class="top"><button class="icon" id="rpquit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button></div>
@@ -3304,7 +3351,7 @@ route(/^$/, () => {
   LES = false; repLoad();
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
-  const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag) && !x.lock);
+  const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
   const mins = left.reduce((a, x) => a + x.min, 0);
   const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
@@ -3316,14 +3363,14 @@ route(/^$/, () => {
   </div>${meBtn()}</div>
   <div class="stack">
     ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
-    <div class="lcol">${lvReady && !askUnit && !lv.zero ? repCard() : ""}${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
+    <div class="lcol">${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
       ${levelPicker()}
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
     </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
-    ${lv.zero ? "" : felCard()}${lv.zero ? "" : ibCard()}${lv.zero ? "" : hikCard()}</div>
+    ${lv.zero || (lvReady && !askUnit) ? "" : felCard() + ibCard() + hikCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
@@ -3335,7 +3382,8 @@ route(/^$/, () => {
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
-  bindLevelPicker(); bindHomeCards(); bindClass(cu); bindRepCard();
+  bindLevelPicker(); bindHomeCards(); bindClass(cu);
+  app.querySelectorAll(".bseg button").forEach(b => b.onclick = () => { if (+b.dataset.m === planBudget()) return; setBudget(+b.dataset.m); render(); });
   app.querySelectorAll("#kursb,#unitb").forEach(b => b.onclick = () => courseSheet(b.dataset.k));
   const ib = $("#inb"); if (ib) ib.onclick = () => signSheet();
   const acb = $("#accb"); if (acb) acb.onclick = () => signSheet(); askSignIn();
@@ -3360,7 +3408,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611171700";
+const APP_V = "202611171900";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4478,15 +4526,20 @@ function stepView(x) {
 /* qo'llanmalar progressi: kichik halqa ichida «0/8» */
 const nwRing = (d, n) => `<span class="nwr" role="img" aria-label="${n} tadan ${d} tasi o'rganilgan">${arcRing(40, 4, n ? d / n * 100 : 0, "")}<b>${d}/${n}</b></span>`;
 function lessonCard(cu, st, info, plan, done, left, mins) {
-  const dn = plan.filter(x => done.includes(x.tag)).length, all = plan.length, next = left[0], lock = plan.find(x => x.lock && !done.includes(x.tag));
-  const started = left.length < plan.filter(x => !x.lock).length;
+  const vis = plan.filter(x => !x.off), dn = vis.filter(x => done.includes(x.tag)).length, all = vis.length, next = left[0], lock = plan.find(x => x.lock && !done.includes(x.tag));
+  const started = left.length < vis.filter(x => !x.lock).length, rp = repToday(), B = planBudget(), rec = repRec();
+  const fbn = rp && Array.isArray(rp.lesson.feedback) && rp.lesson.feedback.length && !rp.answers.fb ? rp.lesson.feedback.length : 0;
   const sub = !left.length ? (lock ? stepView(lock).sub : all + " qadam · hammasi bajarildi") : started ? mins + " daqiqa qoldi" : all + " qadam · " + mins + " daqiqa";
   const li = plan.map((x, i) => {
     const d = done.includes(x.tag), lk = x.lock && !d, now = x === next, v = stepView(x);
-    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa"))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : (x.ic && ICON[x.ic] || i + 1)}</span><span class="bx"><span class="tx"><b>${esc(v.title)}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${lk ? "" : x.min + " daq"}</span></span></button></li>`;
+    return `<li class="${d ? "done" : lk ? "lock" : now ? "now" : ""}${x.off ? " off" : ""}"><button data-i="${i}"${lk ? " disabled" : ""} aria-label="${esc(v.title + ". " + (d ? "Bajarildi" : lk ? v.sub : v.sub + ", " + x.min + " daqiqa" + (x.off ? ", bugungi vaqtga sig'madi" : "")))}"><span class="dot">${d ? ICON.check : lk ? ICON.lock : (x.ic && ICON[x.ic] || i + 1)}</span><span class="bx"><span class="tx"><b>${esc(v.title)}${x.rep != null ? '<i class="src">Repetitor</i>' : ""}</b><span>${esc(now ? v.more : v.sub)}</span></span><span class="m">${lk ? "" : x.min + " daq"}</span></span></button></li>`;
   }).join("");
   return `<section class="lesson dars">
-    <div class="dh"><div><h2>Bugungi dars</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
+    ${rp ? `<span class="rep-chip">${ICON.spark}Repetitor tuzdi${rp.at ? " · " + repHHMM(rp.at) : ""}</span>` : ""}
+    <div class="dh"><div><h2>Bugungi reja</h2><p>${esc(sub)}</p></div><span class="cnt${!left.length && !lock ? " ok" : ""}" role="img" aria-label="${dn} / ${all} qadam bajarildi">${arcRing(58, 7, all ? dn / all * 100 : 0, "")}<b>${dn}/${all}</b></span></div>
+    <div class="bseg" role="radiogroup" aria-label="Bugun qancha vaqtingiz bor">${BUDGETS.map(m => `<button role="radio" aria-checked="${m === B}" data-m="${m}">${m} daq</button>`).join("")}</div>
+    ${rec ? `<p class="bseg-n">Repetitor tavsiyasi: ${rec} daqiqa${rec !== B ? " · siz " + B + " daqiqa tanladingiz" : ""}</p>` : ""}
+    ${fbn ? `<p class="rep-fbn">${ICON.pen}Kechagi ${fbn} ta gapingizga izoh bor — repetitor bo'limida</p>` : ""}
     <ol class="tl">${li}</ol>
     ${left.length ? `<button class="btn" id="les">${started ? "Davom etish" : "Boshlash"} · ${mins} daq ${ICON.arrow}</button>` : `<a class="btn ghost" href="#unit-${cu.n}">Unit ${un(cu.n)} da yana mashq qilish</a>`}
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${un(cu.n)} · ${esc(info[0])}</b><span>${esc(info[1])} · ${unitSub(cu.n)}</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>

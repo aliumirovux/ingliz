@@ -2,64 +2,245 @@
   "title": "Shaxsiy dars",
   "why": "Kecha Unit 9 da 11 ta yangi xato bo'ldi, tartib sonlar esa 3 haftadan beri qiyin. Bugun shularni yopamiz.",
   "minutes": 12,
-  "focus": ["8|twelfth", "8|twentieth", "6|shower", "6|bath", "5|trousers", "8|scientist", "7|bored", "9|come", "9|happen", "9|receipt"],
+  "focus": [
+    "8|twelfth",
+    "8|twentieth",
+    "6|shower",
+    "6|bath",
+    "5|trousers",
+    "8|scientist",
+    "7|bored",
+    "9|come",
+    "9|happen",
+    "9|receipt"
+  ],
   "feedback": [
-    { "you": "Yesterday a funny thing happen in the bus.", "fix": "Yesterday a funny thing happened on the bus.", "izoh": "O'tgan ish haqida fe'lga -ed qo'shiladi: happen → happened. Avtobus ichida «on the bus» deyiladi." }
+    {
+      "you": "Yesterday a funny thing happen in the bus.",
+      "fix": "Yesterday a funny thing happened on the bus.",
+      "izoh": "O'tgan ish haqida fe'lga -ed qo'shiladi: happen → happened. Avtobus ichida «on the bus» deyiladi."
+    }
   ],
   "sections": [
     {
       "t": "Chalkash juftliklar",
       "s": "shower ↔ bath, shirt ↔ skirt",
       "items": [
-        { "type": "choice", "q": "«Ertalab dush qabul qilaman.»", "o": ["I have a bath in the morning.", "I have a shower in the morning."], "a": 1, "izoh": "shower — dush (tik turib), bath — vanna (yotib)." },
-        { "type": "choice", "q": "«Bolalar kechqurun vannada cho'miladi.»", "o": ["The children have a bath in the evening.", "The children have a shower in the evening."], "a": 0, "izoh": "Vannada yotib cho'milish — bath." },
-        { "type": "choice", "q": "«Uning yubkasi qizil.»", "o": ["Her shirt is red.", "Her skirt is red."], "a": 1, "izoh": "skirt — yubka, shirt — ko'ylak. Farqi bitta harf: sKirt." },
-        { "type": "choice", "q": "«Akamning ko'ylagi oq.»", "o": ["My brother's shirt is white.", "My brother's skirt is white."], "a": 0, "izoh": "Erkaklar ko'ylagi — shirt." }
+        {
+          "type": "choice",
+          "q": "«Ertalab dush qabul qilaman.»",
+          "o": [
+            "I have a bath in the morning.",
+            "I have a shower in the morning."
+          ],
+          "a": 1,
+          "izoh": "shower — dush (tik turib), bath — vanna (yotib)."
+        },
+        {
+          "type": "choice",
+          "q": "«Bolalar kechqurun vannada cho'miladi.»",
+          "o": [
+            "The children have a bath in the evening.",
+            "The children have a shower in the evening."
+          ],
+          "a": 0,
+          "izoh": "Vannada yotib cho'milish — bath."
+        },
+        {
+          "type": "choice",
+          "q": "«Uning yubkasi qizil.»",
+          "o": [
+            "Her shirt is red.",
+            "Her skirt is red."
+          ],
+          "a": 1,
+          "izoh": "skirt — yubka, shirt — ko'ylak. Farqi bitta harf: sKirt."
+        },
+        {
+          "type": "choice",
+          "q": "«Akamning ko'ylagi oq.»",
+          "o": [
+            "My brother's shirt is white.",
+            "My brother's skirt is white."
+          ],
+          "a": 0,
+          "izoh": "Erkaklar ko'ylagi — shirt."
+        }
       ]
     },
     {
       "t": "Tartib sonlar",
       "s": "twelfth, twentieth, September",
       "items": [
-        { "type": "type", "q": "«12-chi» inglizcha", "a": "twelfth", "acc": ["12th"], "izoh": "twelve → twelfth: «ve» o'rniga «f» keladi." },
-        { "type": "type", "q": "«20-chi» inglizcha", "a": "twentieth", "acc": ["20th"], "izoh": "twenty → twentieth: «y» o'rniga «ie» va oxiriga «th»." },
-        { "type": "choice", "q": "«Mening tug'ilgan kunim — 12-sentyabr.»", "o": ["My birthday is on the twelve of September.", "My birthday is on the twelfth of September."], "a": 1, "izoh": "Sanada tartib son ishlatiladi: the twelfth of September." },
-        { "type": "type", "q": "«Sentyabr» inglizcha", "a": "September", "acc": ["september"], "izoh": "Oy nomlari katta harf bilan yoziladi: September." },
-        { "type": "choice", "q": "«Bugun 20-noyabr.»", "o": ["Today is the twentieth of November.", "Today is the twenty of November."], "a": 0, "izoh": "Sanada doim tartib son: the twentieth." }
+        {
+          "type": "type",
+          "q": "«12-chi» inglizcha",
+          "a": "twelfth",
+          "acc": [
+            "12th"
+          ],
+          "izoh": "twelve → twelfth: «ve» o'rniga «f» keladi."
+        },
+        {
+          "type": "type",
+          "q": "«20-chi» inglizcha",
+          "a": "twentieth",
+          "acc": [
+            "20th"
+          ],
+          "izoh": "twenty → twentieth: «y» o'rniga «ie» va oxiriga «th»."
+        },
+        {
+          "type": "choice",
+          "q": "«Mening tug'ilgan kunim — 12-sentyabr.»",
+          "o": [
+            "My birthday is on the twelve of September.",
+            "My birthday is on the twelfth of September."
+          ],
+          "a": 1,
+          "izoh": "Sanada tartib son ishlatiladi: the twelfth of September."
+        },
+        {
+          "type": "type",
+          "q": "«Sentyabr» inglizcha",
+          "a": "September",
+          "acc": [
+            "september"
+          ],
+          "izoh": "Oy nomlari katta harf bilan yoziladi: September."
+        },
+        {
+          "type": "choice",
+          "q": "«Bugun 20-noyabr.»",
+          "o": [
+            "Today is the twentieth of November.",
+            "Today is the twenty of November."
+          ],
+          "a": 0,
+          "izoh": "Sanada doim tartib son: the twentieth."
+        }
       ]
     },
     {
       "t": "Kechagi xatolar yangi gapda",
       "s": "come, happen, receipt, terrible, event",
       "items": [
-        { "type": "type", "q": "«Uyimga osh yeyishga keling!» — bo'sh joy: ___ to my house for plov!", "a": "Come", "acc": ["come"], "izoh": "come — kelmoq. Taklifda gap shu so'z bilan boshlanadi." },
-        { "type": "choice", "q": "«Kecha nima bo'ldi?»", "o": ["What happened yesterday?", "What happen yesterday?"], "a": 0, "izoh": "O'tgan ish: happen → happened." },
-        { "type": "choice", "q": "«Chekni bera olasizmi, iltimos?»", "o": ["Can I have the receipt, please?", "Can I have the recipe, please?"], "a": 0, "izoh": "receipt — chek (o'qilishi: ri-SIIT, «p» o'qilmaydi). recipe — ovqat retsepti." },
-        { "type": "choice", "q": "«Ob-havo dahshatli edi.»", "o": ["The weather was terrible.", "The weather was terrific."], "a": 0, "izoh": "terrible — juda yomon, dahshatli." },
-        { "type": "type", "q": "«Navro'z — katta voqea.» — Navruz is a big ___.", "a": "event", "izoh": "event — voqea, tadbir." }
+        {
+          "type": "type",
+          "q": "«Uyimga osh yeyishga keling!» — bo'sh joy: ___ to my house for plov!",
+          "a": "Come",
+          "acc": [
+            "come"
+          ],
+          "izoh": "come — kelmoq. Taklifda gap shu so'z bilan boshlanadi."
+        },
+        {
+          "type": "choice",
+          "q": "«Kecha nima bo'ldi?»",
+          "o": [
+            "What happened yesterday?",
+            "What happen yesterday?"
+          ],
+          "a": 0,
+          "izoh": "O'tgan ish: happen → happened."
+        },
+        {
+          "type": "choice",
+          "q": "«Chekni bera olasizmi, iltimos?»",
+          "o": [
+            "Can I have the receipt, please?",
+            "Can I have the recipe, please?"
+          ],
+          "a": 0,
+          "izoh": "receipt — chek (o'qilishi: ri-SIIT, «p» o'qilmaydi). recipe — ovqat retsepti."
+        },
+        {
+          "type": "choice",
+          "q": "«Ob-havo dahshatli edi.»",
+          "o": [
+            "The weather was terrible.",
+            "The weather was terrific."
+          ],
+          "a": 0,
+          "izoh": "terrible — juda yomon, dahshatli."
+        },
+        {
+          "type": "type",
+          "q": "«Navro'z — katta voqea.» — Navruz is a big ___.",
+          "a": "event",
+          "izoh": "event — voqea, tadbir."
+        }
       ]
     },
     {
       "t": "Mini hikoya",
       "s": "Unit 9 so'zlari bilan, 6 gap",
       "items": [
-        { "type": "story", "t": "A rainy day off", "lines": [
-          { "en": "It was a rainy Sunday in Tashkent.", "uz": "Toshkentda yomg'irli yakshanba edi." },
-          { "en": "My friend Aziz came to my house at ten.", "uz": "Do'stim Aziz soat o'nda uyimga keldi." },
-          { "en": "We watched a comedy and had a good time.", "uz": "Biz komediya ko'rdik va yaxshi vaqt o'tkazdik." },
-          { "en": "Then something terrible happened.", "uz": "Keyin dahshatli narsa bo'ldi." },
-          { "en": "I forgot the plov on the cooker!", "uz": "Oshni plitada unutib qo'ydim!" },
-          { "en": "We ate bread and laughed a lot.", "uz": "Biz non yedik va ko'p kuldik." }
-        ] }
+        {
+          "type": "story",
+          "t": "A rainy day off",
+          "lines": [
+            {
+              "en": "It was a rainy Sunday in Tashkent.",
+              "uz": "Toshkentda yomg'irli yakshanba edi."
+            },
+            {
+              "en": "My friend Aziz came to my house at ten.",
+              "uz": "Do'stim Aziz soat o'nda uyimga keldi."
+            },
+            {
+              "en": "We watched a comedy and had a good time.",
+              "uz": "Biz komediya ko'rdik va yaxshi vaqt o'tkazdik."
+            },
+            {
+              "en": "Then something terrible happened.",
+              "uz": "Keyin dahshatli narsa bo'ldi."
+            },
+            {
+              "en": "I forgot the plov on the cooker!",
+              "uz": "Oshni plitada unutib qo'ydim!"
+            },
+            {
+              "en": "We ate bread and laughed a lot.",
+              "uz": "Biz non yedik va ko'p kuldik."
+            }
+          ]
+        }
       ]
     },
     {
       "t": "O'z gapingiz",
       "s": "2 ta gap, ertaga izoh olasiz",
       "items": [
-        { "type": "write", "q": "«happen» so'zi bilan kecha bo'lgan bir voqea haqida bitta gap yozing.", "w": "happen" },
-        { "type": "write", "q": "Sevgan faslingiz va ob-havosi haqida bitta gap yozing (sunny, rainy, cold…).", "w": "weather" }
+        {
+          "type": "write",
+          "q": "«happen» so'zi bilan kecha bo'lgan bir voqea haqida bitta gap yozing.",
+          "w": "happen"
+        },
+        {
+          "type": "write",
+          "q": "Sevgan faslingiz va ob-havosi haqida bitta gap yozing (sunny, rainy, cold…).",
+          "w": "weather"
+        }
       ]
     }
-  ]
+  ],
+  "plan": {
+    "recommend": 20,
+    "order": [
+      "rep0",
+      "rep1",
+      "rev",
+      "rep2",
+      "esla",
+      "tuz",
+      "fel",
+      "gram",
+      "tl",
+      "gap",
+      "story",
+      "rep3",
+      "rep4"
+    ]
+  }
 }

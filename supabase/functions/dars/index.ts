@@ -1,7 +1,9 @@
 // «Dars tahlili»: Inter Nation darsining yozuvi (siz + o'qituvchi, ~80 daqiqa) → xatolar va dars mazmuni.
 //   POST /dars/new    (sayt, egasi) — yozuv uchun qator ochadi, yuklash yo'lini beradi; {photo: true} — yozuvsiz dars (faqat doska rasmlari)
 //   POST /dars/start  (sayt, egasi) — fayl yuklangach navbatga qo'yadi
-//   POST /dars/retry  (sayt, egasi) — xato bilan to'xtagan ishni qayta navbatga qo'yadi
+//   POST /dars/retry  (sayt, egasi) — xato bilan to'xtagan yoki bekor qilingan ishni qayta navbatga qo'yadi
+//   POST /dars/cancel (sayt, egasi) — ishlovni to'xtatadi (status = cancelled); yozuv va rasmlar 3 kun turadi, qayta boshlasa bo'ladi
+//   POST /dars/delete (sayt, egasi) — tugamagan (xato / bekor qilingan / yuklanmagan) darsni yozuvi va rasmlari bilan o'chiradi
 //   POST /dars/tick   (pg_cron har daqiqa + o'zini o'zi) — navbatdan bitta bosqichni bajaradi
 // Bosqichlar (har biri alohida chaqiruvda, 150 s chegarasiga sig'ishi uchun):
 //   queued → audio Gemini Files API'ga → transcribing → Gemini: matn + ikki ovoz (S = Ali, T = o'qituvchi) → audio o'chiriladi
@@ -61,7 +63,10 @@ async function db(path: string, init: RequestInit = {}) {
   if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const t = await r.text(); return t ? JSON.parse(t) : null;
 }
-const patch = (id: string, v: Row) => db(`class_lessons?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ...v, updated_at: new Date().toISOString() }) });
+// bekor qilingan qatorni ishlovchi qayta yozmasin: oddiy patch «cancelled» qatorni o'zgartirmaydi; any = true — faqat cancel/retry/o'chirish uchun
+const patch = (id: string, v: Row, any = false) => db(`class_lessons?id=eq.${id}${any ? "" : "&status=neq.cancelled"}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ...v, updated_at: new Date().toISOString() }) });
+// natijani yozadi va qator hali bekor qilinmaganmi — shuni qaytaradi (bekor qilingan bo'lsa Telegram xabari yuborilmaydi)
+const patchDone = async (id: string, v: Row) => ((await db(`class_lessons?id=eq.${id}&status=neq.cancelled&select=id`, { method: "PATCH", headers: { Prefer: "return=representation" }, body: JSON.stringify({ ...v, updated_at: new Date().toISOString() }) })) || []).length > 0;
 async function storage(method: string, path: string, body?: BodyInit) {
   return fetch(`${SB_URL}/storage/v1/${path}`, { method, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, ...(body ? { "Content-Type": "application/json" } : {}) }, body });
 }
@@ -69,7 +74,7 @@ async function dropAudio(row: Row) {
   if (!row.audio_path) return;
   const r = await storage("DELETE", `object/${BUCKET}`, JSON.stringify({ prefixes: [row.audio_path] }));
   if (!r.ok) throw new Error(`storage delete ${r.status}`);
-  await patch(row.id, { audio_path: null, audio_deleted_at: new Date().toISOString() });
+  await patch(row.id, { audio_path: null, audio_deleted_at: new Date().toISOString() }, true);
 }
 
 // --- foydalanuvchi: faqat egasi ---
@@ -484,7 +489,7 @@ async function stagePhotos(row: Row) {
   const B = await claude(promptBoard(await courseCtx(row), imgs), 6000, row.attempts > 1 ? "low" : "medium");
   const an = cleanBoard(B, imgs.length);
   if (!an.content.board.length && !an.content.words.length) throw Object.assign(new Error("rasmda yozuv topilmadi"), { final: true });
-  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null });
+  if (!await patchDone(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null })) return "done";
   const w = an.content.words.length, r = an.rules.length;
   const line = [w ? `${w} ta so'z` : "", r ? `${r} ta qoida` : "", an.unread.length ? `${an.unread.length} ta rasm o'qilmadi` : ""].filter(Boolean).join(" · ");
   try { await tgSend(`<b>Doskadan konspekt tayyor: ${esc(an.headline)}</b>\n${esc(line)}\nQaysi so'zlar qo'shilishini saytda tasdiqlang.`, "Tasdiqlash", `${SITE}-${row.id}`); } catch (e) { console.error("tg", e); }
@@ -506,7 +511,7 @@ async function stageAnalyze(row: Row) {
     prev = p && p[0] && p[0].metrics || null;
   } catch (e) { console.error("prev", e); }
   an.speech = cleanSpeech(C, speechMetrics(turns), prev, dur);
-  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null });
+  if (!await patchDone(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null })) return "done";
   const top = an.rules[0];
   const mins = Math.max(3, Math.round(an.mistakes.length * 0.6));
   const sm = an.speech.metrics;
@@ -527,7 +532,7 @@ async function fail(row: Row, e: unknown) {
     return;
   }
   if (row.attempts >= MAX_TRIES || (e as Row)?.final) {
-    await patch(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null });
+    if (!await patchDone(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null })) return;
     const m = String(msg);
     const why = row.kind === "photo" ? (/yozuv topilmadi|rasmlar topilmadi/.test(m) ? "Rasmlarda yozuv o'qilmadi — juda xira yoki yaltiroq. Saytda qayta suratga oling." : "Rasmlarni o'qishda xato. Saytda «Qayta urinish» bor.")
       : /bepul limiti/.test(m) ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing."
@@ -595,7 +600,7 @@ Deno.serve(async (req) => {
     }
     const id = String(b.id || "");
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: "id" }, 400, o);
-    const rows = await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}&select=id,status,kind,audio_path,transcript`);
+    const rows = await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}&select=id,status,kind,audio_path,transcript,gemini_file,photos`);
     const row = rows && rows[0]; if (!row) return json({ error: "not_found" }, 404, o);
     if (p === "start") {
       if (row.status !== "uploading") return json({ ok: true, status: row.status }, 200, o);
@@ -625,15 +630,33 @@ Deno.serve(async (req) => {
       return json({ ok: true, status: "queued" }, 200, o);
     }
     if (p === "retry") {
-      if (row.status !== "error") return json({ ok: true, status: row.status }, 200, o);
+      if (row.status !== "error" && row.status !== "cancelled") return json({ ok: true, status: row.status }, 200, o);
       const done = row.kind === "photo" || (row.transcript && !row.transcript.pending);
       const next = done ? "analyzing" : row.audio_path ? "queued" : "";
       if (!next) return json({ error: "no_audio", detail: "Audio o'chirilgan — yozuvni qayta yuklang." }, 409, o);
-      await patch(id, { status: next, attempts: 0, waits: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) });
+      await patch(id, { status: next, attempts: 0, waits: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) }, true);
       bg(kick());
       return json({ ok: true, status: next }, 200, o);
     }
-    return json({ error: "not_found", use: ["POST /dars/new", "POST /dars/start", "POST /dars/retry", "POST /dars/tick"] }, 404, o);
+    if (p === "cancel") {
+      if (!["uploading", "queued", "transcribing", "analyzing"].includes(row.status)) return json({ ok: true, status: row.status }, 200, o);
+      await patch(id, { status: "cancelled", error: "bekor qilindi", locked_until: null, gemini_file: null, gemini_uri: null }, true);
+      // Gemini'dagi nusxa kerak emas (qayta boshlansa, yozuv qaytadan yuboriladi); bucket'dagi yozuv 3 kun turadi
+      if (row.gemini_file) { try { await gem(`/v1beta/${row.gemini_file}`, { method: "DELETE" }); } catch (e) { console.error("gemini delete", e); } }
+      return json({ ok: true, status: "cancelled" }, 200, o);
+    }
+    if (p === "delete") {
+      // tugagan tahlil o'chirilmaydi (xatolar va mashqlar unga bog'langan); faqat to'xtagan yoki yuklanmagan dars
+      if (!["error", "cancelled", "uploading"].includes(row.status)) return json({ error: "not_allowed", status: row.status }, 409, o);
+      if (row.gemini_file) { try { await gem(`/v1beta/${row.gemini_file}`, { method: "DELETE" }); } catch (e) { console.error("gemini delete", e); } }
+      if (row.audio_path) { const r = await storage("DELETE", `object/${BUCKET}`, JSON.stringify({ prefixes: [row.audio_path] })); if (!r.ok) throw new Error(`storage delete ${r.status}`); }
+      const lp = await storage("POST", `object/list/${PHOTOS}`, JSON.stringify({ prefix: `${uid}/${id}`, limit: 50 }));
+      const ph = lp.ok ? (await lp.json()).map((x: Row) => `${uid}/${id}/${x.name}`) : [];
+      if (ph.length) { const r = await storage("DELETE", `object/${PHOTOS}`, JSON.stringify({ prefixes: ph })); if (!r.ok) throw new Error(`storage delete ${r.status}`); }
+      await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+      return json({ ok: true, deleted: true }, 200, o);
+    }
+    return json({ error: "not_found", use: ["POST /dars/new", "POST /dars/start", "POST /dars/retry", "POST /dars/cancel", "POST /dars/delete", "POST /dars/tick"] }, 404, o);
   } catch (e) {
     console.error(e);
     return json({ error: "server", detail: clip(String(e), 200) }, 500, o);

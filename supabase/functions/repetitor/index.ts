@@ -182,6 +182,9 @@ Deno.serve(async (req) => {
       const err = L && typeof L === "object" ? check(L) : "lesson obyekti kerak";
       if (err) return json({ error: "invalid", detail: err }, 422);
       if (JSON.stringify(L).length > 60000) return json({ error: "too_big" }, 413);
+      // boshlangan darsning ustiga yozilmaydi (javoblar o'chib ketmasin); majburan — {force: true}
+      const ex = await db(`agent_lessons?user_id=eq.${owner}&day=eq.${day}&select=answers`);
+      if (ex && ex[0] && Object.keys(ex[0].answers || {}).length && b.force !== true) return json({ error: "already_started", detail: "Bu kungi dars boshlangan, ustiga yozilmadi." }, 409);
       await db("agent_lessons?on_conflict=user_id,day", {
         method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ user_id: owner, day, lesson: L, answers: {}, done_at: null }),

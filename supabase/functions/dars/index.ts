@@ -6,6 +6,7 @@
 // Bosqichlar (har biri alohida chaqiruvda, 150 s chegarasiga sig'ishi uchun):
 //   queued → audio Gemini Files API'ga → transcribing → Gemini: matn + ikki ovoz (S = Ali, T = o'qituvchi) → audio o'chiriladi
 //   → analyzing → Claude: xatolar, mazmun va gapirish (uchta parallel so'rov) → done → Telegram xabari.
+// Gemini bepul rejimda bo'laklar bittadan (62 s oraliq) o'giriladi; billing ulansa GEMINI_PARALLEL=1 secret bilan parallel.
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
 // verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -19,6 +20,10 @@ const PHOTOS = "dars-rasm", MAX_PHOTOS = 8;
 const MAX_BYTES = 50 * 1024 * 1024;
 const PER_DAY = 4;
 const MAX_TRIES = 3;
+// Gemini bepul rejimi: daqiqasiga 250K token, kuniga 20 so'rov. Har so'rov butun audioni o'qiydi (80 daq ≈ 157K token),
+// shuning uchun bo'laklar bittadan, kamida 62 s oraliq bilan yuboriladi. Pullik rejimda GEMINI_PARALLEL=1 — hammasi birga.
+const G_PARALLEL = Deno.env.get("GEMINI_PARALLEL") === "1";
+const G_GAP = +(Deno.env.get("GEMINI_GAP_MS") || 62e3), G_WIN_FREE = 20 * 60, G_MAX_WAITS = 12;
 const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
@@ -177,18 +182,44 @@ async function stageTranscribe(row: Row) {
     if (f.state === "FAILED") throw new Error("gemini fayl FAILED");
     await sleep(4000);
   }
-  if (f.state !== "ACTIVE") return "wait";
-  // uzun yozuv bo'laklarga bo'linib parallel o'giriladi (har biri 150 s ichida tugashi uchun); qayta urinishda bo'laklar kichrayadi
+  if (f.state !== "ACTIVE") return { wait: 15e3 };
   const dur = row.duration_s || Math.round((row.audio_bytes || 0) / 8000);
-  const win = (row.attempts > 1 ? 20 : 40) * 60, n = Math.max(1, Math.ceil(dur / win));
-  const parts = Array.from({ length: n }, (_, i) => [Math.round(i * dur / n), i === n - 1 ? null : Math.round((i + 1) * dur / n)] as [number, number | null]);
-  const res = await Promise.all(parts.map(([a, b]) => transcribeWindow(row, a, b, true)));
+  const split = (win: number) => { const n = Math.max(1, Math.ceil(dur / win)); return Array.from({ length: n }, (_, i) => [Math.round(i * dur / n), i === n - 1 ? null : Math.round((i + 1) * dur / n)] as [number, number | null]); };
+  let res: Row[][];
+  if (G_PARALLEL) {
+    // pullik rejim: bo'laklar parallel (har biri 150 s ichida tugashi uchun); qayta urinishda bo'laklar kichrayadi
+    res = await Promise.all(split((row.attempts > 1 ? 20 : 40) * 60).map(([a, b]) => transcribeWindow(row, a, b, true)));
+  } else {
+    // bepul rejim: har chaqiruvda bitta bo'lak, oraliq natija transcript.pending da saqlanadi
+    const pend: Row = row.transcript && row.transcript.pending ? row.transcript : { pending: true, parts: [], waits: 0, last: 0 };
+    const parts = split(G_WIN_FREE);
+    const since = Date.now() - (pend.last || 0);
+    if (since < G_GAP) return { wait: G_GAP - since };
+    const i = parts.findIndex((_, k) => !pend.parts[k]);
+    if (i >= 0) {
+      try {
+        pend.parts[i] = await transcribeWindow(row, parts[i][0], parts[i][1], true);
+        pend.waits = 0;
+      } catch (e) {
+        if ((e as Row).status !== 429) throw e;
+        // limit: keyingi daqiqada qayta; juda ko'p bo'lsa — kunlik limit tugagan
+        pend.waits = (pend.waits || 0) + 1;
+        if (pend.waits > G_MAX_WAITS) throw Object.assign(new Error("Gemini bepul limiti tugadi (kunlik 20 so'rov) — ertaga «Qayta urinish»"), { final: true });
+        pend.last = Date.now();
+        await patch(row.id, { transcript: pend });
+        return { wait: G_GAP };
+      }
+      pend.last = Date.now();
+      if (parts.some((_, k) => !pend.parts[k])) { await patch(row.id, { transcript: pend, attempts: 0, error: null }); return { wait: G_GAP }; }
+    }
+    res = pend.parts;
+  }
   const turns = res.flat();
   // bo'laklar chegarasidagi takrorlarni olib tashlaymiz
   const seen = new Set<string>(), out: Row[] = [];
   for (const x of turns.sort((p, q) => toSec(p.t) - toSec(q.t))) { const k = x.s + "|" + x.x.toLowerCase().slice(0, 80); if (seen.has(k)) continue; seen.add(k); out.push(x); }
   if (out.filter((x) => x.s === "S").length < 3) throw new Error("yozuvda o'quvchi gaplari topilmadi");
-  await patch(row.id, { transcript: { turns: out, model: G_MODEL, parts: n }, status: "analyzing", attempts: 0, error: null, locked_until: null });
+  await patch(row.id, { transcript: { turns: out, model: G_MODEL, parts: res.length }, status: "analyzing", attempts: 0, error: null, locked_until: null });
   // audio endi kerak emas: Gemini'dagi nusxa va bucket'dagi fayl o'chiriladi
   try { await gem(`/v1beta/${row.gemini_file}`, { method: "DELETE" }); } catch (e) { console.error("gemini delete", e); }
   await patch(row.id, { gemini_file: null, gemini_uri: null });
@@ -402,9 +433,10 @@ async function stageAnalyze(row: Row) {
 async function fail(row: Row, e: unknown) {
   const msg = clip(String((e as Error)?.message || e), 300);
   console.error("dars", row.id, row.status, msg);
-  if (row.attempts >= MAX_TRIES) {
+  if (row.attempts >= MAX_TRIES || (e as Row)?.final) {
     await patch(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null });
-    try { await tgSend(`<b>Dars tahlili chiqmadi</b>\n${esc(stageName(row.status))} bosqichida xato. Saytda «Qayta urinish» bor.`, "Ochish", `${SITE}-${row.id}`); } catch { /* */ }
+    const why = (e as Row)?.final ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing." : `${stageName(row.status)} bosqichida xato. Saytda «Qayta urinish» bor.`;
+    try { await tgSend(`<b>Dars tahlili chiqmadi</b>\n${esc(why)}`, "Ochish", `${SITE}-${row.id}`); } catch { /* */ }
   } else {
     await patch(row.id, { error: msg, locked_until: new Date(Date.now() + 30e3 * row.attempts).toISOString() });
   }
@@ -417,11 +449,11 @@ async function work() {
   const row = got && got[0];
   if (!row) return cleanup();
   if (!GK() && row.status !== "analyzing") return fail({ ...row, attempts: MAX_TRIES }, new Error("GEMINI_API_KEY kiritilmagan"));
-  let r = "";
+  let r: string | Row = "";
   try {
     r = row.status === "queued" ? await stageSend(row) : row.status === "transcribing" ? await stageTranscribe(row) : await stageAnalyze(row);
   } catch (e) { return fail(row, e); }
-  if (r === "wait") await patch(row.id, { attempts: Math.max(0, row.attempts - 1), locked_until: new Date(Date.now() + 15e3).toISOString() });
+  if (r && typeof r === "object") await patch(row.id, { attempts: Math.max(0, row.attempts - 1), locked_until: new Date(Date.now() + r.wait).toISOString() });
   if (r === "next") await kick();
 }
 // 3 kundan eski, ishlanmay qolgan audio (masalan, xato bilan to'xtagan) o'chiriladi
@@ -481,9 +513,10 @@ Deno.serve(async (req) => {
     }
     if (p === "retry") {
       if (row.status !== "error") return json({ ok: true, status: row.status }, 200, o);
-      const next = row.transcript ? "analyzing" : row.audio_path ? "queued" : "";
+      const done = row.transcript && !row.transcript.pending;
+      const next = done ? "analyzing" : row.audio_path ? "queued" : "";
       if (!next) return json({ error: "no_audio", detail: "Audio o'chirilgan — yozuvni qayta yuklang." }, 409, o);
-      await patch(id, { status: next, attempts: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null });
+      await patch(id, { status: next, attempts: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) });
       bg(kick());
       return json({ ok: true, status: next }, 200, o);
     }

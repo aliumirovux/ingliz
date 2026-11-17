@@ -3693,6 +3693,7 @@ const DS_STAGE = { queued: ["Navbatda", "Bir daqiqa ichida boshlanadi"], transcr
 function dsErrText(r) {
   const e = String(r.error || "");
   if (/GEMINI_API_KEY/.test(e)) return "Matnga o'girish kaliti hali ulanmagan.";
+  if (/bepul limiti tugadi/.test(e)) return "Gemini'ning bugungi bepul limiti tugadi. Ertaga «Qayta urinish»ni bosing — yozuv saqlanib turibdi.";
   if (/yuklash tugamadi/.test(e)) return "Yozuv oxirigacha yuklanmagan edi.";
   if (/o'quvchi gaplari topilmadi/.test(e)) return "Yozuvda sizning gaplaringiz topilmadi. Telefon sizga yaqinroq tursin.";
   return /^transcribing|^queued/.test(e) ? "Matnga o'girishda xato bo'ldi." : "Tahlilda xato bo'ldi.";
@@ -3702,7 +3703,7 @@ function dsUpCard() {
   if (DUP && DUP.phase === "up") return `<section class="card ds-up" id="dsup"><b>Yuklanmoqda · ${Math.round((DUP.pct || 0) * 100)}%</b><span>Internet uzilsa, qolgan joyidan davom etadi. Sahifadan chiqmang.</span><div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((DUP.pct || 0) * 100)}"><i style="transform:translateX(${Math.round((DUP.pct || 0) * 100) - 100}%)"></i></div></section>`;
   if (a) {
     const [t, s] = DS_STAGE[a.status], k = DS_ACTIVE.indexOf(a.status);
-    return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 3–6 daqiqa. Sahifani yopsangiz ham davom etadi — tayyor bo'lganda Telegram'ga xabar keladi.</span>
+    return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 6–10 daqiqa. Sahifani yopsangiz ham davom etadi — tayyor bo'lganda Telegram'ga xabar keladi.</span>
       <ol class="ds-steps">${["Yuklandi", "Matn", "Tahlil"].map((x, i) => `<li class="${i === 0 || i < k ? "ok" : i === k || (k === 0 && i === 1) ? "now" : ""}">${i === 0 || i < k ? ICON.check : ""}${x}</li>`).join("")}</ol>
       <div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
   }
@@ -3714,7 +3715,7 @@ function dsUpCard() {
       <div class="ds-act"><button class="btn" id="dsgo">${DUP.phase === "err" ? "Davom etish" : "Yuklash va tahlil qilish"} ${ICON.arrow}</button><button class="btn ghost" id="dsx">Bekor qilish</button></div></section>`;
   }
   return `<section class="card ds-up idle"><b>Darsni shu yerda yozib oling</b>
-    <span>Darsda «Yozishni boshlash», oxirida «Darsni tugatish». Yozuv o'zi yuklanadi, 3–6 daqiqada xatolaringiz chiqadi.</span>
+    <span>Darsda «Yozishni boshlash», oxirida «Darsni tugatish». Yozuv o'zi yuklanadi, ~10 daqiqada xatolaringiz chiqadi.</span>
     <a class="btn${YZ_SAVED.length ? " ghost" : ""}" href="#yozish">${ICON.mic}${YZ_SAVED.length ? "Yangi dars yozish" : "Darsni yozib olish"}</a>
     <label class="ds-alt" for="dsfile">yoki diktofondagi tayyor yozuvni yuklash${/Android/i.test(navigator.userAgent) ? " (Recordings papkasi)" : /iPhone|iPad/i.test(navigator.userAgent) ? " (Diktofon → ⋯ → «Fayllarga saqlash»)" : ""} · 50 MB gacha</label><input type="file" id="dsfile" class="sr-only" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac"></section>`;
 }
@@ -4136,7 +4137,7 @@ function dsPending(r) {
   <div class="stack"><section class="card ds-up${err ? " err" : ""}">
     ${err ? `<b>${esc(dsErrText(r))}</b><span>${r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
     : up ? `<b>Yozuv oxirigacha yuklanmagan</b><span>«Dars tahlili» sahifasida o'sha faylni qayta tanlang — qolgan joyidan davom etadi.</span><div class="ds-act"><a class="btn" href="#dars">Dars tahlili</a></div>`
-    : `<b>${DS_STAGE[r.status][1]}</b><span>Odatda 3–6 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
+    : `<b>${DS_STAGE[r.status][1]}</b><span>Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
   </section></div>`;
   const b = $("#dsre"); if (b) b.onclick = async () => {
     b.disabled = true;
@@ -4222,7 +4223,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611180030";
+const APP_V = "202611180100";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

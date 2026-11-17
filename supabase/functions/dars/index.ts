@@ -5,7 +5,7 @@
 //   POST /dars/tick   (pg_cron har daqiqa + o'zini o'zi) — navbatdan bitta bosqichni bajaradi
 // Bosqichlar (har biri alohida chaqiruvda, 150 s chegarasiga sig'ishi uchun):
 //   queued → audio Gemini Files API'ga → transcribing → Gemini: matn + ikki ovoz (S = Ali, T = o'qituvchi) → audio o'chiriladi
-//   → analyzing → Claude: xatolar va mazmun (ikkita parallel so'rov) → done → Telegram xabari.
+//   → analyzing → Claude: xatolar, mazmun va gapirish (uchta parallel so'rov) → done → Telegram xabari.
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
 // verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";

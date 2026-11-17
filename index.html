@@ -2201,6 +2201,32 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .sp-plan li{counter-increment:t;position:relative;padding:9px 0 9px 36px;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
 .sp-plan li:first-child{border-top:0;padding-top:2px}.sp-plan li:first-child::before{top:2px}
 .sp-plan li::before{content:counter(t);position:absolute;left:0;top:9px;width:26px;height:26px;border-radius:50%;background:var(--marker-soft);color:var(--accent-text);font-weight:700;font-size:13px;display:grid;place-items:center}
+.yz-cam{position:fixed;inset:0;z-index:60;background:#000;display:flex;flex-direction:column}
+.yz-cam video{flex:1;min-height:0;width:100%;object-fit:contain;background:#000}
+.yz-cam-t{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;margin:0;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.yz-cam-b{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));background:#000}
+.yz-cam-b .btn{width:auto;justify-self:start;min-height:48px;padding:0 18px}
+#app .yz-cam-b .btn.ghost{background:rgba(255,255,255,.2);color:#fff}
+.yz-shot{width:76px;height:76px;border-radius:50%;border:4px solid #fff;background:#fff;box-shadow:inset 0 0 0 3px #000;cursor:pointer}
+.yz-shot:active{transform:scale(.94)}
+.yz-cam-n{justify-self:end;color:#fff;font-weight:600;font-size:15px}
+.yz-cam.flash video{animation:yzf .25s ease-out}
+@keyframes yzf{0%{filter:brightness(2.2)}100%{filter:none}}
+.yz #yzcam{max-width:360px}
+.dt-ph{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.dt-ph button{flex:none;position:relative;width:112px;height:84px;border:0;padding:0;border-radius:12px;overflow:hidden;background:var(--surface-2);cursor:zoom-in}
+.dt-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.dt-ph span{position:absolute;left:6px;bottom:6px;padding:1px 7px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.dt-bd{list-style:none;margin:0 0 4px;padding:0}
+.dt-bd li{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.dt-bd li:first-child{border-top:0}
+.dt-bd .n{flex:none;width:22px;height:22px;border-radius:7px;background:var(--surface-2);font-size:12px;font-weight:700;display:grid;place-items:center;color:var(--muted)}
+.dt-bd b{display:block;font-weight:600;font-size:15px;white-space:pre-line}
+.dt-bd div span{display:block;color:var(--muted);font-size:14px}
+.dt-lb{border:0;padding:0;background:transparent;max-width:100vw;max-height:100vh}
+.dt-lb::backdrop{background:rgba(0,0,0,.85)}
+.dt-lb img{display:block;max-width:96vw;max-height:88vh;border-radius:12px}
+.dt-lb .icon{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px}
 .dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
 .dt-okl svg{width:18px;height:18px;flex:none}
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
@@ -3526,7 +3552,7 @@ async function darsLoad(force) {
   if (!force && Date.now() - dsAt < 6e4) return;
   dsAt = Date.now();
   try {
-    const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,status,error,duration_s,audio_bytes,audio_path,analysis,answers,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
+    const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,status,error,duration_s,audio_bytes,audio_path,analysis,answers,photos,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
     const before = JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis]));
     // shu qurilmada yuborilmagan javoblar saqlanib qoladi
     DS.list = (rows || []).map(r => { const o = dsRow(r.id); return o && o.dirty ? Object.assign(r, { answers: o.answers, dirty: true }) : r; });
@@ -3638,7 +3664,14 @@ async function dsStart() {
       else { const r = await darsApi("new", { bytes: u.size, ext: u.ext, duration_s: u.dur, marks: u.marks || [] }); u.id = r.id; u.path = r.path; }
     }
     await tusUpload(u.file, u.path, (u.file.type || DS_MIME[u.ext] || "audio/mp4").split(";")[0], p => { u.pct = p; dsUpPaint(); });
-    await darsApi("start", { id: u.id });
+    const photos = [];
+    for (const [i, ph] of (u.photos || []).slice(0, 8).entries()) {
+      const path = `${AUTH.uid}/${u.id}/${i + 1}.jpg`;
+      const r = await fetch(SB.url + "/storage/v1/object/dars-rasm/" + path, { method: "POST", headers: { Authorization: "Bearer " + await sbToken(), apikey: SB.key, "Content-Type": "image/jpeg", "x-upsert": "false" }, body: ph.blob });
+      // qayta urinishda allaqachon yuklangan rasm — xato emas
+      if (r.ok || r.status === 409 || r.status === 400) photos.push({ path, t: ph.t });
+    }
+    await darsApi("start", { id: u.id, photos });
     try { localStorage.removeItem(DS_UP); } catch (e) {}
     if (u.rec) { await yzDel(u.rec).catch(() => {}); YZ_SAVED = YZ_SAVED.filter(r => r.id !== u.rec); }
     DUP = null; await darsLoad(true); render();
@@ -3677,6 +3710,7 @@ function dsUpCard() {
     const d = DUP.date;
     return `<section class="card ds-up${DUP.phase === "err" ? " err" : ""}"><b>${DUP.phase === "err" ? "Yuklash to'xtadi" : "Yozuv tanlandi"}</b>
       <span>${DUP.phase === "err" ? esc(DUP.err) : `${d.getDate()}-${MONTHS[d.getMonth()]} · ${DUP.dur ? dsDur(DUP.dur) + " · " : ""}${dsMB(DUP.size)}`}</span>
+      ${DUP.phase === "pick" ? `<label class="ds-alt" for="dsimg">${DUP.photos && DUP.photos.length ? `Doska rasmlari: ${DUP.photos.length} ta · yana qo'shish` : "+ Doska rasmlarini qo'shish (ixtiyoriy)"}</label><input type="file" id="dsimg" class="sr-only" accept="image/*" multiple>` : ""}
       <div class="ds-act"><button class="btn" id="dsgo">${DUP.phase === "err" ? "Davom etish" : "Yuklash va tahlil qilish"} ${ICON.arrow}</button><button class="btn ghost" id="dsx">Bekor qilish</button></div></section>`;
   }
   return `<section class="card ds-up idle"><b>Darsni shu yerda yozib oling</b>
@@ -3697,7 +3731,7 @@ route(/^dars$/, () => {
   const list = DS.list.filter(r => r.status === "done" || r.status === "error" || (r.status === "uploading" && !(DUP && DUP.id === r.id) && Date.now() - Date.parse(r.created_at) > 6 * 3600e3));
   yzScan();
   const saved = YZ_SAVED.filter(r => !(DUP && DUP.rec === r.id));
-  const savedCards = saved.map(r => { const d = new Date(r.t0); return `<section class="card ds-up"><b>Saqlangan yozuv · ${yzClock(r.dur)}</b><span>${d.getDate()}-${MONTHS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} da boshlangan. Hali tahlilga yuborilmagan.</span>
+  const savedCards = saved.map(r => { const d = new Date(r.t0); return `<section class="card ds-up"><b>Saqlangan yozuv · ${yzClock(r.dur)}${r.np ? ` · ${r.np} ta rasm` : ""}</b><span>${d.getDate()}-${MONTHS[d.getMonth()]}, ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")} da boshlangan. Hali tahlilga yuborilmagan.</span>
     <div class="ds-act"><button class="btn" data-yzs="${r.id}">Tahlilga yuborish</button><button class="btn ghost" data-yzd="${r.id}">O'chirish</button></div></section>`; }).join("");
   app.innerHTML = `${nav("#", "Bugun", "Dars tahlili")}<h2 class="pg-h">Dars tahlili</h2>
   <p class="sub">Inter Nation darsining yozuvidan: siz aytgan gaplardagi xatolar va darsda o'tilganlar. Audio matnga o'girilgach o'chiriladi.</p>
@@ -3705,6 +3739,13 @@ route(/^dars$/, () => {
   ${list.length ? `<section class="sec"><div class="sec-h"><h2>Oldingi darslar</h2><span class="n">${list.length} ta</span></div><div class="list">${list.map(dsListRow).join("")}</div></section>` : ""}</div>`;
   const f = $("#dsfile"); if (f) f.onchange = () => { if (f.files && f.files[0]) dsPick(f.files[0]); };
   const g = $("#dsgo"); if (g) g.onclick = dsStart;
+  const im = $("#dsimg"); if (im) im.onchange = async () => {
+    const fs = [...(im.files || [])].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|webp)$/i.test(f.name));
+    DUP.photos = DUP.photos || [];
+    for (const f of fs) { if (DUP.photos.length >= 8) break; try { const b = await dsJpeg(f); if (b) DUP.photos.push({ t: null, blob: b }); } catch (e) {} }
+    if (fs.length && DUP.photos.length >= 8) toast("Ko'pi bilan 8 ta rasm", null, null, { type: "info" });
+    render();
+  };
   const x = $("#dsx"); if (x) x.onclick = () => { DUP = null; yzScan(); render(); };
   app.querySelectorAll("[data-yzs]").forEach(b => b.onclick = () => { const r = YZ_SAVED.find(x => x.id === b.dataset.yzs); if (r) yzUpload(r); });
   app.querySelectorAll("[data-yzd]").forEach(b => b.onclick = async () => {
@@ -3719,32 +3760,56 @@ route(/^dars$/, () => {
 const YZ_DB = "ingliz-yozuv";
 let REC = null, yzTick = null, YZ_SAVED = [];
 const yzIdb = () => new Promise((res, rej) => {
-  const r = indexedDB.open(YZ_DB, 1);
-  r.onupgradeneeded = () => { const d = r.result; d.createObjectStore("recs", { keyPath: "id" }); d.createObjectStore("chunks", { autoIncrement: true }).createIndex("rec", "rec"); };
+  const r = indexedDB.open(YZ_DB, 2);
+  r.onupgradeneeded = () => {
+    const d = r.result, has = n => d.objectStoreNames.contains(n);
+    if (!has("recs")) d.createObjectStore("recs", { keyPath: "id" });
+    if (!has("chunks")) d.createObjectStore("chunks", { autoIncrement: true }).createIndex("rec", "rec");
+    if (!has("photos")) d.createObjectStore("photos", { autoIncrement: true }).createIndex("rec", "rec");
+  };
   r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
 });
 const yzReq = q => new Promise((res, rej) => { q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
 async function yzPutRec(o) { const d = await yzIdb(); await yzReq(d.transaction("recs", "readwrite").objectStore("recs").put(o)); }
 async function yzAddChunk(rec, blob) { const d = await yzIdb(); await yzReq(d.transaction("chunks", "readwrite").objectStore("chunks").add({ rec, blob })); }
+async function yzAddPhoto(rec, t, blob) { const d = await yzIdb(); await yzReq(d.transaction("photos", "readwrite").objectStore("photos").add({ rec, t, blob })); }
+async function yzPhotos(rec) { try { const d = await yzIdb(); return (await yzReq(d.transaction("photos").objectStore("photos").index("rec").getAll(rec))).map(x => ({ t: x.t, blob: x.blob })); } catch (e) { return []; } }
 async function yzRecs() { try { const d = await yzIdb(); return await yzReq(d.transaction("recs").objectStore("recs").getAll()); } catch (e) { return []; } }
 async function yzBlob(rec) {
   const d = await yzIdb(), all = await yzReq(d.transaction("chunks").objectStore("chunks").index("rec").getAll(rec));
   return new Blob(all.map(x => x.blob), { type: rec.mime || (all[0] && all[0].blob.type) || "audio/webm" });
 }
 async function yzDel(id) {
-  const d = await yzIdb(), t = d.transaction(["recs", "chunks"], "readwrite");
+  const d = await yzIdb(), t = d.transaction(["recs", "chunks", "photos"], "readwrite");
   t.objectStore("recs").delete(id);
-  const ix = t.objectStore("chunks").index("rec"), keys = await yzReq(ix.getAllKeys(id));
-  keys.forEach(k => t.objectStore("chunks").delete(k));
+  for (const st of ["chunks", "photos"]) { const keys = await yzReq(t.objectStore(st).index("rec").getAllKeys(id)); keys.forEach(k => t.objectStore(st).delete(k)); }
   await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
 }
 /* sahifa ochilganda: tugallanmagan (yuklanmagan) yozuvlar */
 async function yzScan() {
   const list = (await yzRecs()).filter(r => !(REC && REC.id === r.id) && r.dur > 0).sort((a, b) => b.t0 - a.t0);
   const was = YZ_SAVED.map(r => r.id + r.dur).join();
+  for (const r of list) r.np = (await yzPhotos(r.id)).length;
   YZ_SAVED = list;
   if (was !== list.map(r => r.id + r.dur).join() && /^dars$/.test(location.hash.replace(/^#/, ""))) render();
 }
+async function dsJpeg(src) {
+  let w, h, img = src;
+  if (src instanceof HTMLVideoElement) { w = src.videoWidth; h = src.videoHeight; }
+  else { img = await createImageBitmap(src); w = img.width; h = img.height; }
+  const k = Math.min(1, 1600 / Math.max(w, h)), c = document.createElement("canvas");
+  c.width = Math.round(w * k); c.height = Math.round(h * k); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  return new Promise(res => c.toBlob(res, "image/jpeg", .82));
+}
+const ICON_CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.6-2h6.8L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>';
+/* sahifa ichidagi kamera: alohida ilova ochilmaydi, shuning uchun ovoz yozish uzilmaydi */
+async function yzCamOpen() {
+  if (!REC || REC.state !== "rec") return;
+  try { REC.cam = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+  catch (e) { return toast("Kamera ochilmadi", null, null, { type: "info", sub: "Brauzer sozlamalarida kameraga ruxsat bering" }); }
+  render();
+}
+function yzCamClose() { if (!REC || !REC.cam) return; REC.cam.getTracks().forEach(t => t.stop()); REC.cam = null; render(); }
 const yzClock = s => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : String(m).padStart(2, "0")) + ":" + String(x).padStart(2, "0"); };
 const yzMime = () => ["audio/webm;codecs=opus", "audio/webm", "audio/mp4;codecs=mp4a.40.2", "audio/mp4"].find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
 const yzElapsed = () => REC ? (REC.acc + (REC.mr && REC.mr.state === "recording" ? (Date.now() - REC.t1) / 1000 : 0)) : 0;
@@ -3759,7 +3824,7 @@ async function yzStart() {
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: true } }); }
   catch (e) { REC = { err: e.name === "NotAllowedError" ? "denied" : "nomic" }; return render(); }
   const id = "r" + Date.now().toString(36), t0 = Date.now();
-  REC = { id, t0, t1: t0, acc: 0, mime: mime.split(";")[0], marks: [], stream, saving: Promise.resolve(), n: 0, quiet: 0, state: "rec" };
+  REC = { id, t0, t1: t0, acc: 0, mime: mime.split(";")[0], marks: [], photos: 0, stream, saving: Promise.resolve(), n: 0, quiet: 0, state: "rec" };
   await yzPutRec({ id, t0, mime: REC.mime, dur: 0, marks: [] }).catch(() => {});
   const mr = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
   REC.mr = mr;
@@ -3782,12 +3847,14 @@ async function yzStart() {
 function yzBroke() {
   if (!REC || REC.state !== "rec") return;
   REC.acc = yzElapsed(); REC.state = "broke";
+  try { REC.cam && REC.cam.getTracks().forEach(t => t.stop()); REC.cam = null; } catch (e) {}
   try { if (REC.mr.state !== "inactive") REC.mr.stop(); } catch (e) {}
   if (location.hash.replace(/^#/, "") === "yozish") render();
 }
 function yzRelease() {
   if (!REC) return;
   clearInterval(yzTick); yzTick = null;
+  try { REC.cam && REC.cam.getTracks().forEach(t => t.stop()); REC.cam = null; } catch (e) {}
   try { REC.stream && REC.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
   try { REC.ctx && REC.ctx.close(); } catch (e) {}
   try { REC.lock && REC.lock.release(); } catch (e) {}
@@ -3807,7 +3874,7 @@ async function yzUpload(rec) {
   if (!blob || !blob.size) { toast("Yozuv topilmadi", null, null, { type: "info", sub: "Telefon xotirasida saqlanmagan" }); return go("dars"); }
   const ext = rec.mime === "audio/mp4" ? "mp4" : "webm", d = new Date(rec.t0);
   const file = new File([blob], `dars-${d.getDate()}-${MONTHS[d.getMonth()]}.${ext}`, { type: rec.mime, lastModified: rec.t0 });
-  DUP = { phase: "pick", file, ext, size: file.size, name: file.name, dur: rec.dur, date: d, marks: rec.marks || [], rec: rec.id };
+  DUP = { phase: "pick", file, ext, size: file.size, name: file.name, dur: rec.dur, date: d, marks: rec.marks || [], rec: rec.id, photos: await yzPhotos(rec.id) };
   if (location.hash.replace(/^#/, "") !== "dars") go("dars");
   dsStart();
 }
@@ -3823,6 +3890,7 @@ document.addEventListener("visibilitychange", () => {
 addEventListener("beforeunload", e => { if (REC && REC.state === "rec") { e.preventDefault(); e.returnValue = ""; } });
 function yzPaint() {
   if (!REC || REC.state !== "rec") return;
+  const ct = $("#yzct"); if (ct) ct.textContent = yzClock(yzElapsed());
   const t = $("#yzt"); if (!t) return;
   t.textContent = yzClock(yzElapsed());
   if (REC.an) {
@@ -3847,6 +3915,7 @@ route(/^yozish$/, () => {
       <li><b>Ekran yoniq turadi.</b> Yorug'likni eng pastga tushiring. Boshqa ilovaga o'tmang${/iPhone|iPad/i.test(navigator.userAgent) ? " — iPhone'da yozish to'xtaydi" : ""}.</li>
       <li><b>Yozuv har 10 soniyada telefonga saqlanadi.</b> Sahifa yopilib qolsa ham, shu joygacha bo'lgan qism qoladi.</li>
       <li><b>«Muhim»</b> — o'qituvchi muhim narsa aytganda bosing, tahlilda o'sha joylar alohida chiqadi.</li>
+      <li><b>«Doskani rasmga olish»</b> — kamera shu sahifada ochiladi, yozish to'xtamaydi. Doskadagi so'z va qoidalar tahlilga qo'shiladi.</li>
     </ul></section>
     ${er ? `<section class="card ds-up err"><b>Yozib bo'lmadi</b><span>${msg}</span></section>` : ""}
     <button class="btn" id="yzgo">${ICON.mic}Yozishni boshlash</button></div>`;
@@ -3861,6 +3930,23 @@ route(/^yozish$/, () => {
     $("#yznew").onclick = async () => { const old = REC; old.state = "done"; await old.saving; await yzPutRec({ id: old.id, t0: old.t0, mime: old.mime, dur: Math.round(old.acc), marks: old.marks }).catch(() => {}); yzRelease(); REC = null; await yzStart(); };
     return;
   }
+  if (REC.cam) {
+    app.innerHTML = `<div class="yz-cam"><video id="yzv" autoplay playsinline muted></video><p class="yz-cam-t"><i class="yz-dot" aria-hidden="true"></i>Ovoz yozilmoqda · <span id="yzct">${yzClock(yzElapsed())}</span></p>
+      <div class="yz-cam-b"><button class="btn ghost" id="yzcx" type="button">Tayyor${REC.photos ? ` · ${REC.photos} ta rasm` : ""}</button><button class="yz-shot" id="yzshot" type="button" aria-label="Doskani rasmga olish"></button><span class="yz-cam-n" id="yzcn" aria-live="polite">${REC.photos ? REC.photos + " ta" : ""}</span></div></div>`;
+    const v = $("#yzv"); v.srcObject = REC.cam;
+    clearInterval(yzTick); yzTick = setInterval(yzPaint, 1000);
+    $("#yzcx").onclick = yzCamClose;
+    $("#yzshot").onclick = async () => {
+      if (!v.videoWidth) return;
+      const t = Math.round(yzElapsed()), blob = await dsJpeg(v); if (!blob) return;
+      await yzAddPhoto(REC.id, t, blob).catch(() => {}); REC.photos++;
+      const a = $(".yz-cam"); if (a) { a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); }
+      const n = $("#yzcn"); if (n) n.textContent = REC.photos + " ta";
+      const c = $("#yzcx"); if (c) c.textContent = `Tayyor · ${REC.photos} ta rasm`;
+      if (navigator.vibrate) navigator.vibrate(20);
+    };
+    return;
+  }
   app.innerHTML = `<div class="yz" aria-live="off">
     <p class="yz-st"><i class="yz-dot" aria-hidden="true"></i>Yozilmoqda</p>
     <p class="yz-t" id="yzt" role="timer" aria-label="Yozuv vaqti">${yzClock(yzElapsed())}</p>
@@ -3869,7 +3955,9 @@ route(/^yozish$/, () => {
     <p class="yz-n" id="yzsv"></p>
     <p class="yz-n">${REC.lock ? "Ekran o'chmaydi." : "Ekran o'zi o'chib qolmasligi uchun telefonga tegib turing yoki sozlamada ekran kutish vaqtini oshiring."}</p>
     <button class="yz-m" id="yzm" type="button">${ICON.plus}Muhim${REC.marks.length ? `<span>${REC.marks.length}</span>` : ""}</button>
+    <button class="btn ghost" id="yzcam" type="button">${ICON_CAM}Doskani rasmga olish${REC.photos ? ` · ${REC.photos}` : ""}</button>
     <button class="btn" id="yzend">Darsni tugatish</button></div>`;
+  $("#yzcam").onclick = yzCamOpen;
   $("#yzm").onclick = () => {
     REC.marks.push(Math.round(yzElapsed()));
     const b = $("#yzm"); b.innerHTML = `${ICON.plus}Muhim<span>${REC.marks.length}</span>`; b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit");
@@ -3979,14 +4067,15 @@ route(/^dars-([0-9a-f-]{36})$/, id => {
     ${ms.length > 1 ? `<section class="card dt-fold"><button class="dt-more" id="dtall" aria-expanded="${DT.all}" aria-controls="dtalll">Barcha xatolar · ${dn}/${ms.length} qayta yozildi${ICON.down}</button>
       <ol class="dt-list" id="dtalll"${DT.all ? "" : " hidden"}>${ms.map((x, i) => { const ok = ans["m" + i] && ans["m" + i].ok; return `<li><button data-mi="${i}" class="${i === DT.i ? "on" : ""}" aria-label="${i + 1}-xato${ok ? ", qayta yozilgan" : ""}"><span class="dot">${ok ? ICON.check : i + 1}</span><span class="tx">${x.kind === "uz" ? `<q>${esc(x.you)}</q>` : `<s lang="en">${esc(x.you)}</s>`}<b lang="en">${esc(x.fix)}</b></span></button></li>`; }).join("")}</ol></section>` : ""}
     ${dsSpeech(r)}
-    ${dsContent(c)}
+    ${dsContent(c, r)}
     ${age <= 1 && ms.length ? `<p class="dt-okl">${ICON.check}${age === 0 ? "Ertaga" : "Bugun"} 06:30 dagi repetitor darsiga shu xatolar${r.analysis.speech && r.analysis.speech.stuck && r.analysis.speech.stuck.length ? " va tutilgan gaplar" : ""} qo'shiladi</p>` : ""}
   </div>`;
   bindSay(app); bindSpeech(r);
   const nxt = $("#dtnext"); if (nxt) nxt.onclick = () => { DT.i = nxi; render(); };
   const al = $("#dtall"); if (al) al.onclick = () => { DT.all = !DT.all; al.setAttribute("aria-expanded", DT.all); $("#dtalll").hidden = !DT.all; };
   app.querySelectorAll("[data-mi]").forEach(b => b.onclick = () => { DT.i = +b.dataset.mi; render(); requestAnimationFrame(() => { const e = $(".dt-m"); if (e) e.scrollIntoView({ block: "start", behavior: calm() ? "auto" : "smooth" }); }); });
-  const cm = $("#dtcm"); if (cm) cm.onclick = () => { const o = cm.getAttribute("aria-expanded") !== "true"; cm.setAttribute("aria-expanded", o); $("#dtcml").hidden = !o; DT.cm = o; };
+  const cm = $("#dtcm"); if (cm) cm.onclick = () => { const o = cm.getAttribute("aria-expanded") !== "true"; cm.setAttribute("aria-expanded", o); $("#dtcml").hidden = !o; DT.cm = o; if (o) dsImgLoad(); };
+  if (DT.cm) dsImgLoad();
   if (!m) return;
   const inp = $("#dtin"), fix = $("#dtfix"), res = $("#dtres");
   $("#dtshow").onclick = () => { fix.classList.remove("veil"); };
@@ -4007,8 +4096,30 @@ route(/^dars-([0-9a-f-]{36})$/, id => {
   };
   inp.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#dtchk").click(); } };
 });
-function dsContent(c) {
+const DS_IMG = {};
+async function dsImg(path) {
+  if (DS_IMG[path]) return DS_IMG[path];
+  const r = await fetch(SB.url + "/storage/v1/object/authenticated/dars-rasm/" + path, { headers: { Authorization: "Bearer " + await sbToken(), apikey: SB.key } });
+  if (!r.ok) throw new Error("img " + r.status);
+  return (DS_IMG[path] = URL.createObjectURL(await r.blob()));
+}
+function dsImgLoad() {
+  app.querySelectorAll(".dt-ph img[data-p]").forEach(im => dsImg(im.dataset.p).then(u => { im.src = u; im.closest("button").dataset.u = u; }).catch(() => { im.closest("button").hidden = true; }));
+  app.querySelectorAll(".dt-ph button").forEach(b => b.onclick = () => { if (b.dataset.u) dsLight(b.dataset.u, b.getAttribute("aria-label")); });
+}
+function dsLight(u, label) {
+  const d = document.createElement("dialog"); d.className = "dt-lb"; d.setAttribute("aria-label", label);
+  d.innerHTML = `<img src="${u}" alt="${esc(label)}"><button class="icon" aria-label="Yopish">${ICON.x}</button>`;
+  document.body.appendChild(d); d.showModal();
+  const close = () => { d.close(); d.remove(); };
+  d.querySelector("button").onclick = close; d.onclick = e => { if (e.target === d) close(); }; d.addEventListener("cancel", () => setTimeout(() => d.remove()));
+}
+function dsContent(c, r) {
+  const ph = (r && Array.isArray(r.photos) ? r.photos : []);
   const parts = [
+    (c.board && c.board.length) || ph.length ? `<h3 class="dt-h">Doskadan${ph.length ? ` · ${ph.length} ta rasm` : ""}</h3>
+      ${ph.length ? `<div class="dt-ph">${ph.map((p, i) => `<button type="button" aria-label="Doska rasmi ${i + 1}${p.t != null ? ", " + yzClock(p.t) : ""}"><img alt="" data-p="${esc(p.path)}"><span>${i + 1}${p.t != null ? " · " + yzClock(p.t) : ""}</span></button>`).join("")}</div>` : ""}
+      ${c.board && c.board.length ? `<ul class="dt-bd">${c.board.map(b => `<li><span class="n" aria-label="${b.photo}-rasm">${b.photo}</span><div><b lang="en">${esc(b.text)}</b><span>${esc(b.uz)}</span></div></li>`).join("")}</ul>` : ""}` : "",
     c.summary ? `<p class="dt-sum">${esc(c.summary)}</p>` : "",
     c.topics && c.topics.length ? `<div class="dt-tags">${c.topics.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : "",
     c.words && c.words.length ? `<h3 class="dt-h">Yangi so'zlar · ${c.words.length}</h3><ul class="dt-wl">${c.words.map(w => `<li><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash: ${esc(w.en)}">${ICON.vol}</button></li>`).join("")}</ul>` : "",
@@ -4111,7 +4222,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611180000";
+const APP_V = "202611180030";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

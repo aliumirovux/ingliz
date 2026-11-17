@@ -15,6 +15,7 @@ const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const BUCKET = "dars-audio";
+const PHOTOS = "dars-rasm", MAX_PHOTOS = 8;
 const MAX_BYTES = 50 * 1024 * 1024;
 const PER_DAY = 4;
 const MAX_TRIES = 3;
@@ -228,10 +229,17 @@ JSON shakli:
 - mistakes: eng foydalilari, ko'pi bilan 14 ta; tartib: eng ko'p takrorlangan qoidaning xatolari birinchi, keyin vaqt bo'yicha. Bir xil xatoni ikki marta karta qilma.
 - fix faqat bitta gap; yangi ma'no qo'shma. Xato bo'lmasa: {"rules": [], "mistakes": []}.`;
 }
-function promptContent(row: Row, ctx: string) {
+function promptContent(row: Row, ctx: string, imgs: Row[] = []): string | Row[] {
+  const text = promptContentText(row, ctx, imgs.length);
+  if (!imgs.length) return text;
+  // rasmlar avval, har biri olingan vaqti bilan
+  return [...imgs.flatMap((im, i) => [{ type: "text", text: `Doska rasmi ${i + 1}${im.t != null ? ` (darsning ${mmss(im.t)} da olingan)` : ""}:` }, { type: "image", source: { type: "base64", media_type: "image/jpeg", data: im.data } }]), { type: "text", text }];
+}
+function promptContentText(row: Row, ctx: string, nImg: number) {
   const mk = (Array.isArray(row.marks) ? row.marks : []) as number[];
   const marks = mk.length ? `\nAli dars paytida shu daqiqalarda «Muhim» tugmasini bosgan: ${mk.map(mmss).join(", ")}. Har biri uchun shu vaqtdan taxminan 1 daqiqa oldin va keyin o'qituvchi nimani tushuntirganini "marked" ga yoz.\n` : "";
-  return `${ctx}Quyida darsning matni. Darsda nima o'tilganini Ali uchun qisqa yozib ber.${marks}
+  const board = nImg ? `\nYuqorida o'qituvchi doskaga yozganlarining ${nImg} ta rasmi bor. Ularni o'qi: "board" ga yoz, yangi so'zlar va qoidalarni "words"/"phrases" ga ham qo'sh. Rasmda o'qib bo'lmaydigan joyni to'qima.\n` : "";
+  return `${ctx}Quyida darsning matni. Darsda nima o'tilganini Ali uchun qisqa yozib ber.${marks}${board}
 
 <dars>
 ${txText(row)}
@@ -246,6 +254,7 @@ JSON shakli:
   "phrases": [{"en": "darsdagi foydali gap", "uz": "tarjima"}] — ko'pi bilan 6,
   "tips": ["o'qituvchining maslahati yoki eslatmasi, o'zbekcha"] — ko'pi bilan 4,
   "homework": "uy vazifasi (bet, mashq) yoki null",
+  "board": [{"photo": rasm raqami, "text": "doskada yozilgani — aynan, inglizcha qismi o'zgarmasin", "uz": "bu nima: 1 gap, o'zbekcha"}] — rasm bo'lmasa [],
   "marked": [{"t": "MM:SS", "note": "o'sha joyda o'qituvchi nimani tushuntirdi — 1–2 gap, o'zbekcha; inglizcha misol bo'lsa «» ichida"}] — faqat belgilangan joylar bo'lsa, aks holda []
 }
 Faqat darsda bor narsani yoz, to'qima.`;
@@ -291,7 +300,22 @@ function speechMetrics(turns: Row[]) {
   }
   return { share: sw + tw ? Math.round(sw / (sw + tw) * 100) : 0, en: sw ? Math.round(en / sw * 100) : 0, avg: ans ? Math.round(ansW / ans * 10) / 10 : 0, stops: fill + pauses, words: sw };
 }
-async function claude(prompt: string, maxTokens: number, effort: string) {
+function b64(buf: Uint8Array) {
+  let s = ""; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+async function boardImages(row: Row) {
+  const out: Row[] = [];
+  for (const p of (Array.isArray(row.photos) ? row.photos : []).slice(0, MAX_PHOTOS) as Row[]) {
+    try {
+      const r = await storage("GET", `object/${PHOTOS}/${p.path}`);
+      if (!r.ok) continue;
+      out.push({ t: p.t, data: b64(new Uint8Array(await r.arrayBuffer())) });
+    } catch (e) { console.error("photo", e); }
+  }
+  return out;
+}
+async function claude(prompt: string | Row[], maxTokens: number, effort: string) {
   const r = await fetch(`${A_API}/v1/messages`, {
     method: "POST",
     headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
@@ -326,6 +350,7 @@ function clean(A: Row, B: Row, row: Row) {
       unit: B.unit ? clip(B.unit, 30) : null, summary: uzOk(clip(B.summary, 500)) ? clip(B.summary, 500) : "",
       topics: strs(B.topics, 5, 80), words: pairs(B.words, 16), phrases: pairs(B.phrases, 6), tips: strs(B.tips, 4, 200),
       homework: B.homework && uzOk(clip(B.homework, 200)) ? clip(B.homework, 200) : null,
+      board: (Array.isArray(B.board) ? B.board : []).map((x: Row) => ({ photo: Math.max(1, Math.round(+x.photo || 1)), text: clip(x && x.text, 500), uz: clip(x && x.uz, 300) })).filter((x: Row) => x.text && uzOk(x.uz)).slice(0, 16),
       marked: (Array.isArray(B.marked) ? B.marked : []).map((x: Row) => ({ t: clip(x && x.t, 10), note: clip(x && x.note, 400) })).filter((x: Row) => x.t && uzOk(x.note)).slice(0, 50),
     },
     model: C_MODEL, at: new Date().toISOString(),
@@ -354,7 +379,8 @@ async function stageAnalyze(row: Row) {
   const effort = row.attempts > 1 ? "low" : "medium";
   const turns = row.transcript.turns as Row[];
   const dur = row.duration_s || (turns.length ? toSec(turns[turns.length - 1].t) + 30 : 0);
-  const [A, B, C] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx), 4000, effort), claude(promptCoach(row, ctx, dur), 6000, effort)]);
+  const imgs = await boardImages(row);
+  const [A, B, C] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx, imgs), 5000, effort), claude(promptCoach(row, ctx, dur), 6000, effort)]);
   const an: Row = clean(A, B, row);
   let prev = null;
   try {
@@ -441,7 +467,15 @@ Deno.serve(async (req) => {
       const ls = await storage("POST", `object/list/${BUCKET}`, JSON.stringify({ prefix: uid, search: name, limit: 2 }));
       const found = ls.ok ? (await ls.json()).some((x: Row) => x.name === name) : false;
       if (!found) return json({ error: "not_uploaded" }, 409, o);
-      await patch(id, { status: "queued", attempts: 0, error: null, locked_until: null });
+      // doska rasmlari: faqat shu darsning papkasidagi, bucket'da haqiqatan bor fayllar
+      let photos: Row[] = [];
+      if (Array.isArray(b.photos) && b.photos.length) {
+        const lp = await storage("POST", `object/list/${PHOTOS}`, JSON.stringify({ prefix: `${uid}/${id}`, limit: 50 }));
+        const have = new Set(lp.ok ? (await lp.json()).map((x: Row) => `${uid}/${id}/${x.name}`) : []);
+        photos = (b.photos as Row[]).map((x) => ({ path: String(x && x.path || ""), t: Math.round(+(x && x.t) || -1) }))
+          .filter((x) => have.has(x.path)).slice(0, MAX_PHOTOS).map((x) => ({ path: x.path, t: x.t >= 0 && x.t < 6 * 3600 ? x.t : null }));
+      }
+      await patch(id, { status: "queued", attempts: 0, error: null, locked_until: null, photos });
       bg(kick());
       return json({ ok: true, status: "queued" }, 200, o);
     }

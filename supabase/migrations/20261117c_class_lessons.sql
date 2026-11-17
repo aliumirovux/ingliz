@@ -17,6 +17,7 @@ create table if not exists public.class_lessons (
   analysis jsonb,             -- {headline, said, rules[], mistakes[], content{}, model}
   answers jsonb not null default '{}'::jsonb,   -- sayt: xatoni qayta yozish natijalari {m0: {ok, a}}
   marks jsonb not null default '[]'::jsonb,     -- saytda yozishda «Muhim» bosilgan soniyalar
+  photos jsonb not null default '[]'::jsonb,    -- doska rasmlari [{path, t}] (dars-rasm bucket), tahlildan keyin ham qoladi
   attempts int not null default 0,
   error text,
   locked_until timestamptz,
@@ -68,6 +69,18 @@ create policy "dars-audio owner insert" on storage.objects for insert to authent
 drop policy if exists "dars-audio owner select" on storage.objects;
 create policy "dars-audio owner select" on storage.objects for select to authenticated
   using (bucket_id = 'dars-audio' and (storage.foldername(name))[1] = (select auth.uid())::text);
+
+-- doska rasmlari: yopiq bucket, 6 MB gacha JPEG; faqat egasi o'z papkasiga
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('dars-rasm', 'dars-rasm', false, 6291456, array['image/jpeg'])
+on conflict (id) do update set public = false, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+drop policy if exists "dars-rasm owner insert" on storage.objects;
+create policy "dars-rasm owner insert" on storage.objects for insert to authenticated
+  with check (bucket_id = 'dars-rasm' and (storage.foldername(name))[1] = (select auth.uid())::text
+              and (select auth.uid()) = '6cc7d3c7-d237-486e-94f8-3f951a0437c2'::uuid);
+drop policy if exists "dars-rasm owner select" on storage.objects;
+create policy "dars-rasm owner select" on storage.objects for select to authenticated
+  using (bucket_id = 'dars-rasm' and (storage.foldername(name))[1] = (select auth.uid())::text);
 
 -- har daqiqa: navbatda ish bo'lsa ishlovchini uyg'otadi (ish bo'lmasa so'rov yuborilmaydi)
 select cron.unschedule('dars-ishlov') where exists (select 1 from cron.job where jobname = 'dars-ishlov');

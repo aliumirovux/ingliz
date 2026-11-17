@@ -2198,9 +2198,10 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .sp-rs{display:flex;flex-wrap:wrap;gap:6px}
 .sp-rs button{border:0;min-height:40px;padding:0 14px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 /* Bugungi sahna */
-.sh-card{border-radius:30px;padding:20px;background:radial-gradient(120% 90% at 100% 0%,var(--marker-soft) 0%,var(--card,var(--surface)) 58%);box-shadow:var(--card-shadow,var(--shadow));display:flex;flex-direction:column;gap:6px}
-:root[data-theme="dark"] .sh-card{background:radial-gradient(120% 90% at 100% 0%,#4A2A1C 0%,var(--card,var(--surface)) 58%)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sh-card{background:radial-gradient(120% 90% at 100% 0%,#4A2A1C 0%,var(--card,var(--surface)) 58%)}}
+/* --card qorong'i rejimda gradient (rang emas): u gradient rang nuqtasi bo'la olmaydi, shuning uchun alohida qatlam — aks holda fon butunlay yo'qoladi */
+.sh-card{border-radius:30px;padding:20px;background:radial-gradient(120% 90% at 100% 0%,var(--marker-soft) 0%,transparent 58%),var(--card,var(--surface));box-shadow:var(--card-shadow,var(--shadow));display:flex;flex-direction:column;gap:6px}
+:root[data-theme="dark"] .sh-card{background:radial-gradient(120% 90% at 100% 0%,rgba(74,42,28,.85) 0%,transparent 58%),var(--card,var(--surface))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sh-card{background:radial-gradient(120% 90% at 100% 0%,rgba(74,42,28,.85) 0%,transparent 58%),var(--card,var(--surface))}}
 .sh-card .rep-chip{align-self:flex-start;margin:0 0 4px}
 .sh-card h2{margin:0;font:700 26px/1.15 var(--font-display);letter-spacing:-.02em}
 .sh-sub{margin:0;color:var(--muted);font-size:14px}
@@ -2394,7 +2395,7 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
 .dt-okl svg{width:18px;height:18px;flex:none}
 /* yozuvsiz dars: faqat doska rasmlari */
-.rs-card{background:linear-gradient(160deg,var(--marker-soft),var(--card,var(--surface)) 72%);border:1px solid var(--line-strong);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.rs-card{background:linear-gradient(160deg,var(--marker-soft),transparent 72%),var(--card,var(--surface));border:1px solid var(--line-strong);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .rs-t{display:flex;gap:12px;align-items:flex-start}
 .rs-t .lic{flex:none;width:44px;height:44px;border-radius:15px;background:var(--marker);color:var(--on-marker);display:grid;place-items:center}
 .rs-t .lic svg{width:21px;height:21px}

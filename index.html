@@ -1043,6 +1043,44 @@ svg.xm-ch .hit:focus-visible{stroke:var(--marker);stroke-width:2}
 .tl .m{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tl .now .m{color:var(--accent-text);font-weight:600}
 .tl .done .m{color:var(--ok)}
+/* Repetitor (agent darsi) */
+.rep-chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--accent-text);background:var(--marker-soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+.rep-chip svg{width:14px;height:14px}
+.rep .dh .rep-why{color:var(--muted);font-size:14px;line-height:1.45;font-variant-numeric:normal}
+.rep-fbn{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:14px;font-weight:600;color:var(--accent-text)}
+.rep-fbn svg{width:16px;height:16px}
+.rep .btn{width:100%}
+.rp .q{text-wrap:pretty}
+.rp .opts{margin-top:16px}
+.rp-in{width:100%;margin:16px 0 12px}
+textarea.spell.rp-w{white-space:pre-wrap;min-height:96px;font-size:18px;line-height:1.4}
+.spell.ok{box-shadow:inset 0 0 0 2px var(--ok-strong);background:var(--ok-bg);color:var(--ok)}
+.spell.bad{box-shadow:inset 0 0 0 2px var(--bad-strong);background:var(--bad-bg);color:var(--bad)}
+.rp-fb{border-radius:16px;padding:12px 14px;margin:12px 0;font-size:15px;line-height:1.45}
+.rp-fb.ok{background:var(--ok-bg);color:var(--ok)}
+.rp-fb.bad{background:var(--bad-bg);color:var(--bad)}
+.rp-ai{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;opacity:.85;margin-bottom:4px}
+.rp-ai svg{width:13px;height:13px}
+.rp .btn{width:100%;margin-top:4px}
+.rp-story{list-style:none;margin:14px 0 16px;padding:0}
+.rp-story li{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.rp-story li:first-child{border-top:0}
+.rp-story span{flex:1;min-width:0}
+.rp-story b{display:block;font-size:17px;font-weight:600;line-height:1.35}
+.rp-story small{display:block;color:var(--muted);font-size:14px}
+.rp-note{color:var(--muted);font-size:14px;margin:0 0 12px}
+.rp-wq{font-size:22px}
+.rp-fbl{list-style:none;margin:14px 0 16px;padding:0;display:grid;gap:12px}
+.rp-fbl li{background:var(--surface-2);border-radius:16px;padding:12px 14px}
+.rp-you{margin:0;color:var(--bad);text-decoration:line-through;text-decoration-thickness:1px;font-size:15px}
+.rp-fix{display:flex;align-items:center;gap:8px;margin:4px 0;color:var(--ok);font-size:17px}
+.rp-fix b{flex:1}
+.rp-iz{margin:0;font-size:14px;color:var(--muted)}
+.rp-sum{font-size:17px;margin:4px 0 16px}
+.rp-h{font-size:15px;font-weight:600;margin:0;color:var(--muted)}
+.rp-wl{list-style:none;margin:6px 0 16px;padding:0}
+.rp-wl li{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.rp-wl li b{color:var(--ink);font-size:16px}
 .tl button:active .bx{transform:scale(.99)}
 .dars .btn svg{width:20px;height:20px}
 .dars .btn{width:100%}
@@ -2881,7 +2919,7 @@ function render() {
   const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3123,11 +3161,147 @@ function bindInstall() {
   const x = $("#inhide"); if (x) x.onclick = () => { try { localStorage.setItem("ingliz-install-hide", "1"); } catch (e) {} render(); };
 }
 
+/* ---------- REPETITOR: Claude Console agenti har kuni ertalab tayyorlaydigan shaxsiy dars (agent_lessons) ----------
+   Agent yozadi (supabase/functions/repetitor), sayt faqat o'qiydi va javoblarni saqlaydi. Jadvalda faqat egasining darsi bor (RLS),
+   shuning uchun karta boshqa foydalanuvchilarda chiqmaydi. Javoblar avval shu qurilmada saqlanadi, keyin bulutga yuboriladi. */
+const REP_KEY = "ingliz-rep";
+let REP = (() => { try { const o = JSON.parse(localStorage.getItem(REP_KEY) || "null"); return o && o.lesson ? o : null; } catch (e) { return null; } })();
+let repAt = 0, repSending = null;
+const repSave = () => { try { localStorage.setItem(REP_KEY, JSON.stringify(REP)); } catch (e) {} };
+const repToday = () => REP && REP.day === today() && REP.lesson && Array.isArray(REP.lesson.sections) ? REP : null;
+const repFocus = () => { const r = repToday(); return r && Array.isArray(r.lesson.focus) ? r.lesson.focus : null; };
+/* darsdagi barcha savollar ketma-ket: [{k: "bo'lim.savol", s, it}] */
+const repItems = r => r.lesson.sections.flatMap((s, si) => (s.items || []).map((it, ii) => ({ k: si + "." + ii, si, s, it })));
+const repGraded = r => repItems(r).filter(x => x.it.type === "choice" || x.it.type === "type");
+const repScore = r => { const g = repGraded(r); return { ok: g.filter(x => r.answers[x.k] && r.answers[x.k].ok).length, all: g.length }; };
+async function repLoad(force) {
+  if (!AUTH || cloud.kind === "claude" || navigator.onLine === false) return;
+  if (!force && Date.now() - repAt < 6e5 && (!REP || REP.day === today())) return;
+  repAt = Date.now();
+  try {
+    const rows = await sbFetch(`/rest/v1/agent_lessons?day=eq.${today()}&select=day,lesson,answers,done_at,created_at`, {}, await sbToken());
+    const row = rows && rows[0]; if (!row) return;
+    const local = REP && REP.day === row.day ? REP : null;
+    const same = local && JSON.stringify(local.lesson) === JSON.stringify(row.lesson);
+    // shu qurilmada yuborilmagan javoblar ustun turadi
+    REP = { day: row.day, lesson: row.lesson, at: row.created_at, answers: same && local.dirty ? local.answers : row.answers || {}, done_at: same && local.dirty ? local.done_at : row.done_at, dirty: same && local.dirty };
+    repSave();
+    if (REP.dirty) repPush();
+    if (!same && location.hash.replace(/^#/, "") === "") render();
+  } catch (e) { /* internet yoki sessiya — karta keshdan chiqadi */ }
+}
+function repPush() {
+  if (!REP || !AUTH) return;
+  if (repSending) { REP.dirty = true; return; }
+  const day = REP.day, body = JSON.stringify({ answers: REP.answers, done_at: REP.done_at || null });
+  repSending = sbToken().then(t => sbFetch(`/rest/v1/agent_lessons?user_id=eq.${AUTH.uid}&day=eq.${day}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body }, t))
+    .then(() => { if (REP && REP.day === day && JSON.stringify({ answers: REP.answers, done_at: REP.done_at || null }) === body) { REP.dirty = false; repSave(); } })
+    .catch(() => {})
+    .finally(() => { repSending = null; if (REP && REP.dirty && REP.day === day) setTimeout(repPush, 3000); });
+}
+function repAnswer(k, v) { REP.answers[k] = v; REP.dirty = true; repSave(); repPush(); }
+const repHHMM = iso => { const d = new Date(iso); return isNaN(d) ? "" : String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+
+function repCard() {
+  const r = repToday(); if (!r) return "";
+  const L = r.lesson, items = repItems(r), answered = items.filter(x => r.answers[x.k]).length, done = !!r.done_at, sc = repScore(r);
+  const fb = Array.isArray(L.feedback) ? L.feedback.length : 0, started = answered > 0 && !done;
+  const nextSec = done ? -1 : L.sections.findIndex((s, si) => (s.items || []).some((_, ii) => !r.answers[si + "." + ii]));
+  const li = L.sections.map((s, si) => {
+    const n = (s.items || []).length, a = (s.items || []).filter((_, ii) => r.answers[si + "." + ii]).length, d = a === n, now = si === nextSec;
+    const story = (s.items || []).every(x => x.type === "story"), write = (s.items || []).every(x => x.type === "write");
+    const m = d ? ICON.check : story ? "3 daq" : n + (write ? " gap" : " savol");
+    return `<li class="${d ? "done" : now ? "now" : ""}"><button data-rs="${si}" aria-label="${esc(s.t + (s.s ? ". " + s.s : "") + (d ? ". Bajarildi" : ""))}"><span class="dot">${d ? ICON.check : si + 1}</span><span class="bx"><span class="tx"><b>${esc(s.t)}</b>${s.s ? `<span lang="en">${esc(s.s)}</span>` : ""}</span><span class="m">${d ? "" : m}</span></span></button></li>`;
+  }).join("");
+  const at = r.at ? repHHMM(r.at) : "";
+  const sub = done ? `Dars tugadi · ${sc.all ? sc.ok + " / " + sc.all + " to'g'ri" : "bajarildi"}` : esc(L.why);
+  return `<section class="lesson dars rep" aria-labelledby="reph">
+    <span class="rep-chip">${ICON.spark}Repetitor${at ? " · " + at + " da tayyorladi" : ""}</span>
+    <div class="dh"><div><h2 id="reph">${esc(L.title)}${done ? "" : " · " + (+L.minutes || 10) + " daqiqa"}</h2><p class="rep-why">${sub}</p></div></div>
+    ${fb && !done ? `<p class="rep-fbn">${ICON.pen}Kechagi ${fb} ta gapingizga izoh bor</p>` : ""}
+    <ol class="tl">${li}</ol>
+    <button class="btn${done ? " ghost" : ""}" id="repgo">${done ? "Qayta ko'rish" : started ? "Davom etish " + ICON.arrow : "Darsni boshlash " + ICON.arrow}</button>
+  </section>`;
+}
+function bindRepCard() {
+  const g = $("#repgo"); if (g) g.onclick = () => { RP = null; go("repetitor"); };
+  app.querySelectorAll(".rep .tl button").forEach(b => b.onclick = () => { RP = { start: +b.dataset.rs }; go("repetitor"); });
+}
+
+/* dars pleyeri */
+let RP = null; // { i, start, fbSeen, review }
+const repNorm = s => String(s || "").toLowerCase().replace(/[’‘`]/g, "'").replace(/[.,!?;:"«»]/g, " ").replace(/\s+/g, " ").trim();
+route(/^repetitor$/, () => {
+  const r = repToday(); if (!r) return go("");
+  const items = repItems(r), L = r.lesson;
+  if (!RP) RP = {};
+  if (RP.i == null) {
+    if (RP.start != null) RP.i = items.findIndex(x => x.si === RP.start);
+    else { const f = items.findIndex(x => !r.answers[x.k]); RP.i = f < 0 ? 0 : f; RP.review = !!r.done_at; }
+    if (RP.i < 0) RP.i = 0;
+  }
+  // kechagi gaplarga izoh — darsdan oldin bir marta
+  if (!RP.fbSeen && Array.isArray(L.feedback) && L.feedback.length && !r.answers.fb) return repFeedback(r);
+  if (RP.i >= items.length) return repFinish(r);
+  const x = items[RP.i], it = x.it, prev = r.answers[x.k], pct = Math.round(RP.i / items.length * 100);
+  const sec = `${esc(x.s.t)} · ${RP.i + 1} / ${items.length}`;
+  let body = "";
+  if (it.type === "choice") body = `<div class="q">${esc(it.q)}</div><div class="opts" id="rpo">${it.o.map((o, k) => `<button class="opt" lang="en" data-k="${k}">${esc(o)}</button>`).join("")}</div>`;
+  else if (it.type === "type") body = `<div class="q">${esc(it.q)}</div><textarea class="spell rp-in" id="rpi" rows="1" lang="en" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Inglizcha javob"></textarea><button class="btn" id="rpc">Tekshirish</button>`;
+  else if (it.type === "story") body = `<div class="q">${esc(it.t)}</div><ol class="rp-story">${it.lines.map(l => `<li><span><b lang="en">${esc(l.en)}</b><small>${esc(l.uz)}</small></span><button class="icon" data-say="${esc(l.en)}" aria-label="Tinglash">${ICON.vol}</button></li>`).join("")}</ol><button class="btn" id="rpn">O'qidim ${ICON.arrow}</button>`;
+  else body = `<div class="q rp-wq">${esc(it.q)}</div><textarea class="spell rp-in rp-w" id="rpi" rows="3" lang="en" autocomplete="off" autocapitalize="sentences" spellcheck="false" aria-label="Gapingiz">${esc(prev && prev.a || "")}</textarea><p class="rp-note">Repetitor gapingizni ertaga ertalab o'qiydi va izoh beradi.</p><button class="btn" id="rpw">Saqlash ${ICON.arrow}</button>`;
+  app.innerHTML = `<div class="top"><button class="icon" id="rpquit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Dars"><i style="transform:translateX(${pct - 100}%)"></i></div><span class="cnt">${RP.i + 1}/${items.length}</span></div>
+  <div class="card qcard rp"><p class="label">${sec}</p>${body}<div class="rp-fb hidden" id="rpf" aria-live="polite"></div><button class="btn hidden" id="rpnext">${RP.i + 1 < items.length ? "Keyingisi " + ICON.arrow : "Darsni tugatish " + ICON.check}</button></div>`;
+  $("#rpquit").onclick = () => { RP = null; go(""); };
+  bindSay(app);
+  const next = () => { RP.i++; render(); };
+  $("#rpnext").onclick = next;
+  const show = (ok, html) => { const f = $("#rpf"); f.className = "rp-fb " + (ok ? "ok" : "bad"); f.innerHTML = html; $("#rpnext").classList.remove("hidden"); $("#rpnext").focus(); };
+  const izoh = s => `<span class="rp-ai">${ICON.spark}Repetitor</span>${s}`;
+  if (it.type === "choice") {
+    const btns = [...app.querySelectorAll("#rpo .opt")];
+    const mark = k => { btns.forEach(b => { b.disabled = true; if (+b.dataset.k === it.a) b.classList.add("ok"); }); if (k !== it.a) btns[k].classList.add("bad"); show(k === it.a, izoh(`<b>${k === it.a ? "To'g'ri!" : "To'g'risi: <span lang=\"en\">" + esc(it.o[it.a]) + "</span>"}</b> ${esc(it.izoh)}`)); };
+    btns.forEach(b => b.onclick = () => { const k = +b.dataset.k; repAnswer(x.k, { ok: k === it.a, a: it.o[k] }); mark(k); });
+    if (prev && RP.review) mark(Math.max(0, it.o.indexOf(prev.a)));
+  } else if (it.type === "type") {
+    const inp = $("#rpi"), chk = $("#rpc");
+    const grade = v => { const ok = [it.a].concat(it.acc || []).some(a => repNorm(a) === repNorm(v)); inp.disabled = true; chk.classList.add("hidden"); inp.classList.add(ok ? "ok" : "bad"); show(ok, izoh(`<b>${ok ? "To'g'ri!" : "To'g'risi: <span lang=\"en\">" + esc(it.a) + "</span>"}</b> ${esc(it.izoh)}`)); return ok; };
+    chk.onclick = () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } repAnswer(x.k, { ok: grade(v), a: v }); };
+    inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); chk.click(); } };
+    if (prev && RP.review) { inp.value = prev.a; grade(prev.a); } else setTimeout(() => inp.focus(), 50);
+  } else if (it.type === "story") {
+    $("#rpn").onclick = () => { if (!prev) repAnswer(x.k, { read: true }); next(); };
+  } else {
+    const inp = $("#rpi");
+    $("#rpw").onclick = () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } repAnswer(x.k, { a: v.slice(0, 300) }); next(); };
+  }
+});
+function repFeedback(r) {
+  const L = r.lesson;
+  app.innerHTML = `<div class="top"><button class="icon" id="rpquit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button></div>
+  <div class="card qcard rp"><span class="rep-chip">${ICON.spark}Repetitor tekshirdi</span><div class="q">Kechagi gaplaringiz</div>
+    <ul class="rp-fbl">${L.feedback.map(f => `<li><p class="rp-you" lang="en">${esc(f.you)}</p><p class="rp-fix"><b lang="en">${esc(f.fix)}</b><button class="icon" data-say="${esc(f.fix)}" aria-label="Tinglash">${ICON.vol}</button></p><p class="rp-iz">${esc(f.izoh)}</p></li>`).join("")}</ul>
+    <button class="btn" id="rpok">Tushundim ${ICON.arrow}</button></div>`;
+  $("#rpquit").onclick = () => { RP = null; go(""); };
+  bindSay(app);
+  $("#rpok").onclick = () => { RP.fbSeen = true; if (!r.answers.fb) repAnswer("fb", { seen: true }); render(); };
+}
+function repFinish(r) {
+  if (!r.done_at) { r.done_at = new Date().toISOString(); REP.done_at = r.done_at; REP.dirty = true; repSave(); repPush(); }
+  const sc = repScore(r), wrong = repGraded(r).filter(x => r.answers[x.k] && !r.answers[x.k].ok);
+  const wr = repItems(r).filter(x => x.it.type === "write" && r.answers[x.k]).length;
+  app.innerHTML = `<div class="card qcard rp rp-end"><span class="rep-chip">${ICON.spark}Repetitor</span><div class="q">Dars tugadi</div>
+    <p class="rp-sum">${sc.all ? `<b>${sc.ok} / ${sc.all}</b> to'g'ri` : ""}${wr ? ` · ${wr} ta gapingiz ertaga tekshiriladi` : ""}</p>
+    ${wrong.length ? `<h2 class="rp-h">Xatolar · ertangi darsda yana chiqadi</h2><ul class="rp-wl">${wrong.map(x => `<li><span>${esc(x.it.q)}</span><b lang="en">${esc(x.it.type === "choice" ? x.it.o[x.it.a] : x.it.a)}</b></li>`).join("")}</ul>` : `<p class="rp-note">Hammasi to'g'ri. Ertaga repetitor qiyinroq savollar beradi.</p>`}
+    <a class="btn" href="#">Bosh sahifaga</a></div>`;
+  RP = null;
+}
+
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
   if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
-  LES = false;
+  LES = false; repLoad();
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
   const plan = todayPlan(cu.n), done = dayDone(), left = plan.filter(x => !done.includes(x.tag) && !x.lock);
@@ -3142,7 +3316,7 @@ route(/^$/, () => {
   </div>${meBtn()}</div>
   <div class="stack">
     ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
-    <div class="lcol">${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
+    <div class="lcol">${lvReady && !askUnit && !lv.zero ? repCard() : ""}${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
       ${levelPicker()}
@@ -3161,7 +3335,7 @@ route(/^$/, () => {
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
-  bindLevelPicker(); bindHomeCards(); bindClass(cu);
+  bindLevelPicker(); bindHomeCards(); bindClass(cu); bindRepCard();
   app.querySelectorAll("#kursb,#unitb").forEach(b => b.onclick = () => courseSheet(b.dataset.k));
   const ib = $("#inb"); if (ib) ib.onclick = () => signSheet();
   const acb = $("#accb"); if (acb) acb.onclick = () => signSheet(); askSignIn();
@@ -3186,7 +3360,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611141100";
+const APP_V = "202611171700";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3224,7 +3398,7 @@ const arcRing = (size, sw, pct, cls, extra = "") => { const r = (size - sw) / 2,
   return `<svg class="rg ${cls}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" class="tk" stroke-width="${sw}"/><circle cx="${c}" cy="${c}" r="${r}" class="p" stroke-width="${sw}" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - Math.max(0, Math.min(100, pct))}" transform="rotate(-90 ${c} ${c})"/>${extra}</svg>`; };
 /* ---------- takrorlash tartibi va kunlik chegara: eng kechikkan va eng zaif so'z birinchi; qolgani keyingi kunlarga ---------- */
 const REV_CAP = 30;
-const revOrder = list => list.slice().sort((a, b) => { const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; });
+const revOrder = list => { const f = repFocus(), fr = id => { const i = f ? f.indexOf(id) : -1; return i < 0 ? 1e9 : i; }; return list.slice().sort((a, b) => { const fa = fr(a.id), fb = fr(b.id); if (fa !== fb) return fa - fb; const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; }); }; // repetitor tanlagan so'zlar (focus) birinchi
 /* «Mustahkamlash»: o'rganilayotgan (hali mustahkam emas) so'zlar — eng zaifi birinchi, 10 ta */
 const mastPool = () => shuffle(WORDS.filter(w => isSeen(w) && !isMastered(w))).sort((a, b) => rec(a.id).b - rec(b.id).b).slice(0, 10);
 /* «2 daqiqa»: charchagan kuni — 10 ta so'z, seriya saqlanadi */
@@ -7165,7 +7339,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|repetitor|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

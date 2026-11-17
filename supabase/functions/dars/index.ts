@@ -1,5 +1,5 @@
 // «Dars tahlili»: Inter Nation darsining yozuvi (siz + o'qituvchi, ~80 daqiqa) → xatolar va dars mazmuni.
-//   POST /dars/new    (sayt, egasi) — yozuv uchun qator ochadi, yuklash yo'lini beradi
+//   POST /dars/new    (sayt, egasi) — yozuv uchun qator ochadi, yuklash yo'lini beradi; {photo: true} — yozuvsiz dars (faqat doska rasmlari)
 //   POST /dars/start  (sayt, egasi) — fayl yuklangach navbatga qo'yadi
 //   POST /dars/retry  (sayt, egasi) — xato bilan to'xtagan ishni qayta navbatga qo'yadi
 //   POST /dars/tick   (pg_cron har daqiqa + o'zini o'zi) — navbatdan bitta bosqichni bajaradi
@@ -7,6 +7,8 @@
 //   queued → audio Gemini Files API'ga → transcribing → Gemini: matn + ikki ovoz (S = Ali, T = o'qituvchi) → audio o'chiriladi
 //   → analyzing → Claude: xatolar, mazmun va gapirish (uchta parallel so'rov) → done → Telegram xabari.
 // Gemini bepul rejimda bo'laklar bittadan (62 s oraliq) o'giriladi; billing ulansa GEMINI_PARALLEL=1 secret bilan parallel.
+// Yozuvsiz dars (kind = "photo"): faqat doska rasmlari. Gemini ishlatilmaydi — start'dan keyin darhol analyzing → Claude rasmlarni
+//   o'qiydi (konspekt, so'zlar, qoidalar) → done. So'zlarni Ali saytda tasdiqlaydi (answers.review), keyin ular «Mening so'zlarim»ga tushadi.
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
 // verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -423,12 +425,74 @@ function cleanSpeech(C: Row, m: Row, prev: Row | null, dur: number) {
   m.off_min = Math.round(off.reduce((a: number, o: Row) => a + (toSec(o.to) - toSec(o.from)), 0) / 60);
   return { metrics: m, prev, dur, off, stuck, patterns: strs(C.patterns, 3, 240), rescue: strs(C.rescue, 3, 60), plan: { class: strs(P.class, 3, 200), home: strs(P.home, 2, 200) }, good: uzOk(clip(C.good, 240)) ? clip(C.good, 240) : "" };
 }
-async function stageAnalyze(row: Row) {
-  let ctx = "";
+async function courseCtx(row: Row) {
   try {
     const p = await db(`progress?user_id=eq.${row.user_id}&select=state->course,state->level`);
-    if (p && p[0] && p[0].course) ctx = `Ali hozir kursda: Unit ${p[0].course}${p[0].level ? " (" + p[0].level + ")" : ""}.\n`;
+    if (p && p[0] && p[0].course) return `Ali hozir kursda: Unit ${p[0].course}${p[0].level ? " (" + p[0].level + ")" : ""}.\n`;
   } catch (e) { console.error("ctx", e); }
+  return "";
+}
+
+// --- yozuvsiz dars: faqat doska rasmlari ---
+function promptBoard(ctx: string, imgs: Row[]): Row[] {
+  const text = `${ctx}Yuqorida o'qituvchi darsda doskaga yozganlarining ${imgs.length} ta rasmi bor (Inter Nation, yakkama-yakka dars). Dars ovozi yozilmagan — faqat shu rasmlar bor.
+Rasmlarni o'qi va Ali uchun darsning qisqa konspektini yoz.
+
+JSON shakli:
+{
+  "headline": "darsning mavzusi, 2–5 so'z, masalan «Sanalar va was / were»",
+  "unit": "darslikdagi unit, masalan «Unit 8», aniq bo'lmasa null",
+  "summary": "1–2 gap: doskaga qarab darsda nima o'tilgan",
+  "board": [{"photo": rasm raqami, "text": "doskada yozilgani — aynan, inglizcha qismi o'zgarmasin", "uz": "bu nima: 1 gap, o'zbekcha"}],
+  "words": [{"en": "so'z yoki qisqa ibora — to'g'ri yozilishi", "uz": "tarjima", "photo": rasm raqami, "seen": "doskada boshqacha (xato) yozilgan bo'lsa — o'sha yozuv, aks holda null", "sure": true agar aniq o'qilgan bo'lsa}],
+  "phrases": [{"en": "doskadagi foydali gap", "uz": "tarjima"}],
+  "rules": [{"key": "qisqa nom", "title": "qalin qism, masalan: Sanadan oldin «on»:", "text": "1–2 gap izoh", "ex": "on the 10th of November"}],
+  "homework": "uy vazifasi (bet, mashq) yoki null",
+  "unread": [o'qib bo'lmagan rasm raqamlari]
+}
+Qoidalar:
+- Faqat rasmda bor narsani yoz. O'qib bo'lmagan joyni to'qima: so'z yarim o'qilsa — sure: false; butun rasm o'qilmasa — unread ga qo'sh.
+- words: Ali uchun yangi bo'lishi mumkin bo'lgan so'zlar, ko'pi bilan 16. Juda oddiy so'zlarni (I, is, the, and) qo'shma.
+- rules: doskadagi qoida yoki qoliplar, ko'pi bilan 4. Ertangi repetitor darsida takrorlanadi.
+- phrases: ko'pi bilan 6.`;
+  return [...imgs.flatMap((im, i) => [{ type: "text", text: `Doska rasmi ${i + 1}:` }, { type: "image", source: { type: "base64", media_type: "image/jpeg", data: im.data } }]), { type: "text", text }];
+}
+function cleanBoard(B: Row, n: number) {
+  const ph = (v: unknown) => Math.max(1, Math.min(n, Math.round(+(v as number) || 1)));
+  const pairs = (v: unknown, k: number) => (Array.isArray(v) ? v : []).map((x: Row) => ({ en: clip(x && x.en, 120), uz: clip(x && x.uz, 160) })).filter((x) => x.en && uzOk(x.uz) && !CYR.test(x.en)).slice(0, k);
+  const seenW = new Set<string>();
+  const words = (Array.isArray(B.words) ? B.words : []).map((x: Row) => ({ en: clip(x && x.en, 80), uz: clip(x && x.uz, 120), photo: ph(x && x.photo), seen: x && x.seen && clip(x.seen, 80) !== clip(x.en, 80) ? clip(x.seen, 80) : null, sure: !(x && x.sure === false) }))
+    .filter((x: Row) => x.en && uzOk(x.uz) && !CYR.test(x.en) && !seenW.has(x.en.toLowerCase()) && seenW.add(x.en.toLowerCase())).slice(0, 16);
+  const rules = (Array.isArray(B.rules) ? B.rules : []).map((r: Row) => ({ key: clip(r.key, 60), title: clip(r.title, 120), text: clip(r.text, 300), ex: clip(r.ex, 120), count: 1 }))
+    .filter((r: Row) => r.key && r.title && uzOk(r.title + r.text)).slice(0, 4);
+  const board = (Array.isArray(B.board) ? B.board : []).map((x: Row) => ({ photo: ph(x && x.photo), text: clip(x && x.text, 500), uz: clip(x && x.uz, 300) })).filter((x: Row) => x.text && uzOk(x.uz)).slice(0, 16);
+  const unread = [...new Set((Array.isArray(B.unread) ? B.unread : []).map(ph))].sort((a, b) => a - b);
+  const headline = clip(B.headline, 60);
+  return {
+    kind: "photo", headline: headline && !CYR.test(headline) ? headline : "Doskadan konspekt", total: 0, said: 0, rules, mistakes: [], unread,
+    content: {
+      unit: B.unit ? clip(B.unit, 30) : null, summary: uzOk(clip(B.summary, 400)) ? clip(B.summary, 400) : "",
+      topics: [], words, phrases: pairs(B.phrases, 6), tips: [],
+      homework: B.homework && uzOk(clip(B.homework, 200)) ? clip(B.homework, 200) : null, board, marked: [],
+    },
+    model: C_MODEL, at: new Date().toISOString(),
+  };
+}
+async function stagePhotos(row: Row) {
+  const imgs = await boardImages(row);
+  if (!imgs.length) throw Object.assign(new Error("rasmlar topilmadi"), { final: true });
+  const B = await claude(promptBoard(await courseCtx(row), imgs), 6000, row.attempts > 1 ? "low" : "medium");
+  const an = cleanBoard(B, imgs.length);
+  if (!an.content.board.length && !an.content.words.length) throw Object.assign(new Error("rasmda yozuv topilmadi"), { final: true });
+  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null });
+  const w = an.content.words.length, r = an.rules.length;
+  const line = [w ? `${w} ta so'z` : "", r ? `${r} ta qoida` : "", an.unread.length ? `${an.unread.length} ta rasm o'qilmadi` : ""].filter(Boolean).join(" · ");
+  try { await tgSend(`<b>Doskadan konspekt tayyor: ${esc(an.headline)}</b>\n${esc(line)}\nQaysi so'zlar qo'shilishini saytda tasdiqlang.`, "Tasdiqlash", `${SITE}-${row.id}`); } catch (e) { console.error("tg", e); }
+  return "done";
+}
+
+async function stageAnalyze(row: Row) {
+  const ctx = await courseCtx(row);
   // qayta urinishda tezroq (150 s chegarasi uchun)
   const effort = row.attempts > 1 ? "low" : "medium";
   const turns = row.transcript.turns as Row[];
@@ -465,7 +529,8 @@ async function fail(row: Row, e: unknown) {
   if (row.attempts >= MAX_TRIES || (e as Row)?.final) {
     await patch(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null });
     const m = String(msg);
-    const why = /bepul limiti/.test(m) ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing."
+    const why = row.kind === "photo" ? (/yozuv topilmadi|rasmlar topilmadi/.test(m) ? "Rasmlarda yozuv o'qilmadi — juda xira yoki yaltiroq. Saytda qayta suratga oling." : "Rasmlarni o'qishda xato. Saytda «Qayta urinish» bor.")
+      : /bepul limiti/.test(m) ? "Gemini'ning bugungi bepul limiti tugadi. Yozuv saqlanib turibdi — ertaga saytda «Qayta urinish»ni bosing."
       : /uzoq vaqt band/.test(m) || isTransient(e) ? "Gemini serverlari uzoq vaqt band bo'ldi (bu Google tomonida). Yozuv saqlanib turibdi — keyinroq saytda «Qayta urinish»ni bosing."
       : `${stageName(row.status)} bosqichida xato. Saytda «Qayta urinish» bor.`;
     try { await tgSend(`<b>Dars tahlili chiqmadi</b>\n${esc(why)}`, "Ochish", `${SITE}-${row.id}`); } catch { /* */ }
@@ -480,10 +545,10 @@ async function work() {
   const got = await db("rpc/dars_claim", { method: "POST", body: "{}" });
   const row = got && got[0];
   if (!row) return cleanup();
-  if (!GK() && row.status !== "analyzing") return fail({ ...row, attempts: MAX_TRIES }, new Error("GEMINI_API_KEY kiritilmagan"));
+  if (!GK() && row.status !== "analyzing" && row.kind !== "photo") return fail({ ...row, attempts: MAX_TRIES }, new Error("GEMINI_API_KEY kiritilmagan"));
   let r: string | Row = "";
   try {
-    r = row.status === "queued" ? await stageSend(row) : row.status === "transcribing" ? await stageTranscribe(row) : await stageAnalyze(row);
+    r = row.kind === "photo" ? await stagePhotos(row) : row.status === "queued" ? await stageSend(row) : row.status === "transcribing" ? await stageTranscribe(row) : await stageAnalyze(row);
   } catch (e) { return fail(row, e); }
   if (r && typeof r === "object") await patch(row.id, { attempts: Math.max(0, row.attempts - 1), locked_until: new Date(Date.now() + r.wait).toISOString() });
   if (r === "next") await kick();
@@ -508,6 +573,13 @@ Deno.serve(async (req) => {
     if (!uid) return json({ error: "auth" }, 401, o);
     if (uid !== OWNER) return json({ error: "not_allowed" }, 403, o);
     const b = await req.json().catch(() => ({}));
+    if (p === "new" && b.photo === true) {
+      // yozuvsiz dars: faqat doska rasmlari (sayt «<uid>/<id>/N.jpg» ga yuklaydi, keyin /start)
+      const today = await db(`class_lessons?user_id=eq.${uid}&day=eq.${tashkentDay()}&status=neq.uploading&select=id`);
+      if ((today || []).length >= PER_DAY) return json({ error: "limit", per_day: PER_DAY }, 429, o);
+      const ins = await db("class_lessons", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: uid, status: "uploading", kind: "photo" }) });
+      return json({ id: ins[0].id, bucket: PHOTOS, prefix: `${uid}/${ins[0].id}` }, 200, o);
+    }
     if (p === "new") {
       const bytes = Math.round(+b.bytes || 0), ext = String(b.ext || "").toLowerCase();
       if (!MIME[ext]) return json({ error: "format", detail: "m4a, mp3, wav, aac, ogg, webm yoki flac" }, 422, o);
@@ -523,10 +595,19 @@ Deno.serve(async (req) => {
     }
     const id = String(b.id || "");
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: "id" }, 400, o);
-    const rows = await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}&select=id,status,audio_path,transcript`);
+    const rows = await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}&select=id,status,kind,audio_path,transcript`);
     const row = rows && rows[0]; if (!row) return json({ error: "not_found" }, 404, o);
     if (p === "start") {
       if (row.status !== "uploading") return json({ ok: true, status: row.status }, 200, o);
+      if (row.kind === "photo") {
+        const lp = await storage("POST", `object/list/${PHOTOS}`, JSON.stringify({ prefix: `${uid}/${id}`, limit: 50 }));
+        const have = new Set(lp.ok ? (await lp.json()).map((x: Row) => `${uid}/${id}/${x.name}`) : []);
+        const photos = (Array.isArray(b.photos) ? b.photos as Row[] : []).map((x) => String(x && x.path || "")).filter((x) => have.has(x)).slice(0, MAX_PHOTOS).map((path) => ({ path, t: null }));
+        if (!photos.length) return json({ error: "not_uploaded" }, 409, o);
+        await patch(id, { status: "analyzing", attempts: 0, waits: 0, error: null, locked_until: null, photos });
+        bg(kick());
+        return json({ ok: true, status: "analyzing" }, 200, o);
+      }
       const name = String(row.audio_path).split("/").pop();
       const ls = await storage("POST", `object/list/${BUCKET}`, JSON.stringify({ prefix: uid, search: name, limit: 2 }));
       const found = ls.ok ? (await ls.json()).some((x: Row) => x.name === name) : false;
@@ -545,7 +626,7 @@ Deno.serve(async (req) => {
     }
     if (p === "retry") {
       if (row.status !== "error") return json({ ok: true, status: row.status }, 200, o);
-      const done = row.transcript && !row.transcript.pending;
+      const done = row.kind === "photo" || (row.transcript && !row.transcript.pending);
       const next = done ? "analyzing" : row.audio_path ? "queued" : "";
       if (!next) return json({ error: "no_audio", detail: "Audio o'chirilgan — yozuvni qayta yuklang." }, 409, o);
       await patch(id, { status: next, attempts: 0, waits: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null, ...(done ? {} : { transcript: null }) });

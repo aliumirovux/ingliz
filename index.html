@@ -2393,6 +2393,59 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .dt-lb .icon{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:12px}
 .dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
 .dt-okl svg{width:18px;height:18px;flex:none}
+/* yozuvsiz dars: faqat doska rasmlari */
+.rs-card{background:linear-gradient(160deg,var(--marker-soft),var(--card,var(--surface)) 72%);border:1px solid var(--line-strong);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.rs-t{display:flex;gap:12px;align-items:flex-start}
+.rs-t .lic{flex:none;width:44px;height:44px;border-radius:15px;background:var(--marker);color:var(--on-marker);display:grid;place-items:center}
+.rs-t .lic svg{width:21px;height:21px}
+.rs-t b{display:block;font-size:16px;font-weight:600;line-height:1.3}
+.rs-t span{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.rs-a{display:flex;gap:8px}
+.rs-a .btn{min-height:48px;font-size:15px}
+.rs-a .btn.ghost{flex:0 0 auto;width:auto;padding:0 18px}
+.rs-l{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:-4px}
+.rs-l a,.rs-l button{background:none;border:0;padding:0;min-height:44px;display:inline-flex;align-items:center;font:inherit;font-size:14px;color:var(--muted);text-decoration:none;cursor:pointer}
+.rs-l a{color:var(--accent-text);font-weight:600}
+.rs-cam .rs-x{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:12px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;z-index:2;cursor:pointer}
+.rs-tip{position:absolute;left:50%;bottom:calc(128px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);margin:0;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff;font-size:13px;font-weight:600;white-space:nowrap}
+.rs-tray{display:flex;gap:6px;justify-self:start;min-width:0;overflow:hidden}
+.rs-tray img{width:40px;height:54px;object-fit:cover;border-radius:8px;border:2px solid rgba(255,255,255,.85);flex:none}
+.rs-cam .yz-cam-b .btn{justify-self:end}
+.rs-cam .yz-shot:disabled{opacity:.4;cursor:default}
+.rs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
+.rs-ph{position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--surface-2)}
+.rs-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.rs-ph .rm{position:absolute;top:4px;right:4px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.62);color:#fff;display:grid;place-items:center;cursor:pointer}
+.rs-ph .n{position:absolute;left:6px;bottom:6px;font-size:11.5px;font-weight:700;background:rgba(0,0,0,.62);color:#fff;border-radius:999px;padding:1px 7px}
+.rs-add{aspect-ratio:3/4;border-radius:14px;border:1.5px dashed var(--line-strong);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer;position:relative;text-align:center;padding:6px}
+.rs-add svg{width:22px;height:22px;color:var(--accent-text)}
+.rs-add:focus-within{outline:2px solid var(--marker);outline-offset:2px}
+.rs-go{margin-top:16px;display:grid;gap:8px}
+.rs-note{display:flex;gap:10px;align-items:flex-start;margin:0;padding:10px 12px;border-radius:14px;background:var(--card,var(--surface));font-size:14px;color:var(--muted);line-height:1.45}
+.rs-note svg{width:18px;height:18px;flex:none;color:var(--pron);margin-top:1px}
+.rs-note b{color:var(--ink);font-weight:600}
+.rs-rv{padding:4px 16px}
+.rs-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0;padding:12px 0 4px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.rs-ck{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);min-height:56px;cursor:pointer}
+.rs-h + .rs-ck{border-top:0}
+/* saytdagi checkbox — almashtirgich; ro'yxatdan tanlashda oddiy belgi katakchasi */
+.rs-ck input[type=checkbox]{width:24px!important;height:24px!important;border-radius:8px;background:transparent;box-shadow:inset 0 0 0 2px var(--line-strong);margin:0;flex:none}
+.rs-ck input[type=checkbox]::after{content:none}
+.rs-ck input[type=checkbox]:checked{background:var(--marker);box-shadow:none}
+.rs-ck input[type=checkbox]:checked::after{content:"";position:absolute;left:8px;top:4px;width:6px;height:11px;border-radius:0;background:none;border:solid var(--on-marker);border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+.rs-ck input:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+.rs-ck .tx{flex:1;min-width:0}
+.rs-ck .tx > b{display:block;font-size:15.5px;font-weight:600;line-height:1.3}
+.rs-ck .tx > span{display:block;font-size:13px;color:var(--muted);line-height:1.4}
+.rs-ck i{font-style:normal}.rs-ck i.w{color:var(--pron)}
+.rs-ck.fixed{cursor:default}
+.rs-ck.fixed b{color:var(--muted)}
+.rs-dot{width:24px;height:24px;border-radius:8px;background:var(--surface-2);color:var(--muted);display:grid;place-items:center;flex:none}
+.rs-dot svg{width:15px;height:15px}
+.rs-ck .src{font-size:11.5px;font-weight:700;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:2px 8px;flex:none}
+.rs-ex{display:block;color:var(--ink);margin-top:2px}
+.rs-empty{margin:4px 0 0;padding:12px 14px;border:1.5px dashed var(--line-strong);border-radius:16px;font-size:13.5px;color:var(--muted);line-height:1.45}
+.rs-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--ok-bg);color:var(--ok);font-size:11.5px;font-weight:700;vertical-align:1px}
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
@@ -3274,10 +3327,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|lahza-|sahna)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|rasm|lahza-|sahna)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h.startsWith("lahza-") || h === "sahna" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h === "rasm" || h.startsWith("lahza-") || h === "sahna" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -3744,7 +3797,7 @@ async function darsLoad(force) {
   if (!force && Date.now() - dsAt < 6e4) return;
   dsAt = Date.now();
   try {
-    const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,status,error,duration_s,audio_bytes,audio_path,analysis,answers,photos,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
+    const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,kind,status,error,duration_s,audio_bytes,audio_path,analysis,answers,photos,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
     const before = JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis]));
     // shu qurilmada yuborilmagan javoblar saqlanib qoladi
     DS.list = (rows || []).map(r => { const o = dsRow(r.id); return o && o.dirty ? Object.assign(r, { answers: o.answers, dirty: true }) : r; });
@@ -3758,8 +3811,9 @@ async function darsLoad(force) {
 /* ishlov ketayotganda ro'yxat 8 soniyada yangilanadi (faqat shu sahifa ochiq bo'lsa) */
 function dsWatch() {
   clearTimeout(dsPoll); dsPoll = null;
-  if (!dsActive() || !/^dars/.test(location.hash.replace(/^#/, ""))) return;
-  dsPoll = setTimeout(() => darsLoad(true), 8000);
+  const a = dsActive(), h = location.hash.replace(/^#/, "");
+  if (!a || !(/^dars/.test(h) || (h === "" && rsIsPhoto(a)))) return;
+  dsPoll = setTimeout(() => darsLoad(true), rsIsPhoto(a) ? 6000 : 8000);
 }
 async function darsApi(path, body) {
   const t = await sbToken();
@@ -3881,9 +3935,11 @@ function dsUpPaint() {
   el.querySelector(".ds-bar i").style.transform = `translateX(${p - 100}%)`;
   el.querySelector(".ds-bar").setAttribute("aria-valuenow", p);
 }
+const dsStage = r => rsIsPhoto(r) ? ["Rasmlar o'qilmoqda", "Doskadagi yozuvlar konspekt qilinmoqda"] : DS_STAGE[r.status];
 const DS_STAGE = { queued: ["Navbatda", "Bir daqiqa ichida boshlanadi"], transcribing: ["Matnga o'girilmoqda", "Ikki ovoz ajratilmoqda: siz va o'qituvchi"], analyzing: ["Xatolar tahlil qilinmoqda", "Gaplaringiz birma-bir tekshirilmoqda"] };
 function dsErrText(r) {
   const e = String(r.error || "");
+  if (rsIsPhoto(r)) return /yozuv topilmadi|rasmlar topilmadi/.test(e) ? "Rasmlarda yozuv o'qilmadi — juda xira yoki yaltiroq. Qayta suratga oling." : "Rasmlarni o'qishda xato bo'ldi.";
   if (/GEMINI_API_KEY/.test(e)) return "Matnga o'girish kaliti hali ulanmagan.";
   if (/uzoq vaqt band|\b503\b|high demand/.test(e)) return "Google'ning Gemini serveri uzoq vaqt band bo'ldi. Keyinroq «Qayta urinish»ni bosing — yozuv saqlanib turibdi.";
   if (/bepul limiti tugadi/.test(e)) return "Gemini'ning bugungi bepul limiti tugadi. Ertaga «Qayta urinish»ni bosing — yozuv saqlanib turibdi.";
@@ -3895,7 +3951,8 @@ function dsUpCard() {
   const a = dsActive();
   if (DUP && DUP.phase === "up") return `<section class="card ds-up" id="dsup"><b>Yuklanmoqda · ${Math.round((DUP.pct || 0) * 100)}%</b><span>Internet uzilsa, qolgan joyidan davom etadi. Sahifadan chiqmang.</span><div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((DUP.pct || 0) * 100)}"><i style="transform:translateX(${Math.round((DUP.pct || 0) * 100) - 100}%)"></i></div></section>`;
   if (a) {
-    const [t, s] = DS_STAGE[a.status], k = DS_ACTIVE.indexOf(a.status);
+    const [t, s] = dsStage(a), k = DS_ACTIVE.indexOf(a.status);
+    if (rsIsPhoto(a)) return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 1 daqiqa — tayyor bo'lganda Bugun sahifasida va Telegram'da chiqadi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
     return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 6–10 daqiqa. Sahifani yopsangiz ham davom etadi — tayyor bo'lganda Telegram'ga xabar keladi.</span>
       <ol class="ds-steps">${["Yuklandi", "Matn", "Tahlil"].map((x, i) => `<li class="${i === 0 || i < k ? "ok" : i === k || (k === 0 && i === 1) ? "now" : ""}">${i === 0 || i < k ? ICON.check : ""}${x}</li>`).join("")}</ol>
       <div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
@@ -3915,7 +3972,12 @@ function dsUpCard() {
 function dsListRow(r) {
   const a = r.analysis, n = a ? a.mistakes.length : 0, dn = dsDone(r);
   const sub = [dsDate(r.day), a && a.content && a.content.unit, dsDur(r.duration_s)].filter(Boolean).join(" · ");
-  const title = r.status === "done" ? a.headline : r.status === "error" ? "Tahlil chiqmadi" : r.status === "uploading" ? "Yuklash tugamagan" : DS_STAGE[r.status][0];
+  const title = r.status === "done" ? a.headline : r.status === "error" ? "Tahlil chiqmadi" : r.status === "uploading" ? "Yuklash tugamagan" : dsStage(r)[0];
+  if (rsIsPhoto(r)) {
+    const ps = [dsDate(r.day), a && a.content && a.content.unit, "doska rasmlari"].filter(Boolean).join(" · ");
+    const need = r.status === "done" && !rsReviewed(r) ? `<span class="st">Tasdiqlang</span>` : "";
+    return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "error" ? ICON.info : r.status === "done" ? ICON_CAM : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(ps)}</span></span>${need}<span class="go">${ICON.chev}</span></a>`;
+  }
   const st = r.status === "done" && n ? `<span class="st${dn === n ? " full" : ""}">${dn === n ? ICON.check : ""}${dn}/${n}</span>` : "";
   return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "done" ? ICON.pen : r.status === "error" ? ICON.info : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${st}<span class="go">${ICON.chev}</span></a>`;
 }
@@ -4546,7 +4608,7 @@ function sceneHome3(n) {
   if (shAllDone(n)) {
     const nx = eslList(n).length;
     return `<section class="sh-done-card"><span class="big">${ICON.check}</span><h2>Bugungi ish tugadi</h2><p>Repetitor · sahna · so'zlar${s.scene.next ? `. Ertaga: «${esc(s.scene.next)}»` : ""}</p>
-      <div class="sh-extra">${nx ? `<button type="button" class="sh-row" data-sr="esl"><span class="tx"><b>Yana ${nx} so'z eslash</b></span><span class="m">${Math.max(2, Math.round(nx * .27))} daq</span></button>` : ""}<a class="sh-row" href="#unitlar"><span class="tx"><b>Unit ${un(n)} mashqlari</b></span><span class="m">Unitlar ${ICON.chev}</span></a></div></section>`;
+      <div class="sh-extra">${rsNewWords().length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="tx"><b>Darsdan ${rsNewWords().length} ta yangi so'z</b></span><span class="m">${Math.max(2, Math.round(rsNewWords().length * .6))} daq</span></button>` : ""}${nx ? `<button type="button" class="sh-row" data-sr="esl"><span class="tx"><b>Yana ${nx} so'z eslash</b></span><span class="m">${Math.max(2, Math.round(nx * .27))} daq</span></button>` : ""}<a class="sh-row" href="#unitlar"><span class="tx"><b>Unit ${un(n)} mashqlari</b></span><span class="m">Unitlar ${ICON.chev}</span></a></div></section>`;
   }
   const r = repToday(); let rr = "";
   if (r) {
@@ -4554,8 +4616,9 @@ function sceneHome3(n) {
     rr = dn ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Repetitor darsi</b><span>${r.lesson.sections.length}/${r.lesson.sections.length} bajarildi · ertalab yangisi</span></span></div>`
       : `<button type="button" class="sh-row" data-sr="rep"><span class="ic">${ICON.spark}</span><span class="tx"><b>Repetitor darsi</b><span>${left} bo'lim qoldi · ${esc(r.lesson.title || "bugungi dars")}</span></span><span class="m">${r.lesson.minutes || 5} daq</span></button>`;
   }
-  const L = eslList(n), ed = dayDone().includes("esl");
-  const er = !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
+  const L = eslList(n), ed = dayDone().includes("esl"), DW = rsNewWords();
+  const er = DW.length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish<span class="rs-badge">+${DW.length} darsdan</span></b><span>${DW.length} ta yangi so'z darsdan · avval tanishasiz</span></span><span class="m">${Math.max(2, Math.round(DW.length * .6))} daq</span></button>`
+    : !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
     : `<button type="button" class="sh-row" data-sr="esl"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish</b><span>${L.length} ta so'z${eslK(L) ? " · " + eslK(L) + " tasi sahnadan" : " · eng unutilayotganlari birinchi"}</span></span><span class="m">${Math.max(2, Math.round(L.length * .27))} daq</span></button>`;
   return `<div class="sh3">${rr}${sceneHome()}${er}${next}${more}</div>`;
 }
@@ -4563,6 +4626,7 @@ function bindSceneHome(n) {
   const re = $("#shre"); if (re) re.onclick = () => { shState = ""; shLoad(true); render(); };
   app.querySelectorAll(".sh-row[data-sr]").forEach(b => b.onclick = () => {
     if (b.dataset.sr === "rep") { RP = null; go("repetitor"); return; }
+    if (b.dataset.sr === "dnew") { const D = rsNewWords(); if (D.length) startLearn(D, "Darsdan so'zlar", "#", null); return; }
     const L = eslList(n); if (L.length) startQuiz(L, "auto", "Eslab qolish", "#", "esl");
   });
 }
@@ -4695,6 +4759,7 @@ route(/^dars-([0-9a-f-]{36})$/, id => {
   const r = dsRow(id);
   if (!r) { darsLoad(true); app.innerHTML = `${nav("#dars", "Dars tahlili", "")}<div class="card"><p class="muted" style="margin:0">Yuklanmoqda…</p></div>`; return; }
   if (r.status !== "done") return dsPending(r);
+  if (rsIsPhoto(r)) return rsPage(r);
   const a = r.analysis, ms = a.mistakes || [], c = a.content || {}, top = a.rules && a.rules[0];
   const ans = r.answers || (r.answers = {});
   if (DT.id !== id) DT = { id, i: Math.max(0, ms.findIndex((_, i) => !(ans["m" + i] && ans["m" + i].ok))) , all: false };
@@ -4789,10 +4854,12 @@ function dsContent(c, r) {
 }
 function dsPending(r) {
   const err = r.status === "error", up = r.status === "uploading";
-  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<h2 class="pg-h">${err ? "Tahlil chiqmadi" : up ? "Yuklash tugamagan" : DS_STAGE[r.status][0]}</h2>
+  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<h2 class="pg-h">${err ? "Tahlil chiqmadi" : up ? "Yuklash tugamagan" : dsStage(r)[0]}</h2>
   <div class="stack"><section class="card ds-up${err ? " err" : ""}">
-    ${err ? `<b>${esc(dsErrText(r))}</b><span>${r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
+    ${err ? `<b>${esc(dsErrText(r))}</b><span>${rsIsPhoto(r) ? "Rasmlar serverda saqlangan, qayta urinsa bo'ladi." : r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
+    : up && rsIsPhoto(r) ? `<b>Rasmlar oxirigacha yuklanmagan</b><span>Bugun sahifasidan doskani qayta suratga oling.</span><div class="ds-act"><a class="btn" href="#">Bugun</a></div>`
     : up ? `<b>Yozuv oxirigacha yuklanmagan</b><span>«Dars tahlili» sahifasida o'sha faylni qayta tanlang — qolgan joyidan davom etadi.</span><div class="ds-act"><a class="btn" href="#dars">Dars tahlili</a></div>`
+    : rsIsPhoto(r) ? `<b>${dsStage(r)[1]}</b><span>Odatda 1 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`
     : `<b>${DS_STAGE[r.status][1]}</b><span>${/^kutilmoqda/.test(r.error || "") ? (/limit/i.test(r.error) ? "Gemini limiti: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas." : "Google serveri hozir band: bir necha daqiqada o'zi qayta urinadi. Hech narsa bosish shart emas.") : "Odatda 6–10 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi."}</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
   </section></div>`;
   const b = $("#dsre"); if (b) b.onclick = async () => {
@@ -4802,15 +4869,249 @@ function dsPending(r) {
   };
   darsLoad(); dsWatch();
 }
+/* ---------- YOZUVSIZ DARS: faqat doska rasmlari (B varianti) ----------
+   Dars kunlari «Bugun» sahifasida karta → sahifa ichidagi kamera ketma-ket suratga oladi (yoki galereya) → «dars» funksiyasi
+   kind = "photo" qator ochadi, rasmlar «dars-rasm» bucket'ga, Claude ~1 daqiqada o'qiydi (Gemini ishlatilmaydi).
+   Tayyor bo'lgach «Nima qo'shilsin?»: Ali so'zlarni tasdiqlaydi → «Mening so'zlarim» (src: dars:<id>), tanlov answers.review ga
+   yoziladi — ertangi repetitor faqat tasdiqlangan so'z va qoidalarni oladi. Yangi so'zlar Eslab qolish qatorida «+N darsdan». */
+const RS_MAX = 8, RS_SKIP = "ingliz-rs-skip";
+let RS = null, RSV = null; // RS — olinayotgan rasmlar, RSV — tekshirish ekranidagi belgilar
+const rsSkipped = () => { try { return localStorage.getItem(RS_SKIP) === today(); } catch (e) { return false; } };
+const rsIsPhoto = r => !!r && (r.kind === "photo" || (r.analysis && r.analysis.kind === "photo"));
+const rsReviewed = r => !!(r && r.answers && r.answers.review);
+const rsWaiting = () => DS.list.find(x => x.status === "done" && rsIsPhoto(x) && x.analysis && !rsReviewed(x) && dayDiff(x.day, today()) <= 3);
+const rsNewWords = () => WORDS.filter(w => w.mine && /^dars:/.test(w.src || "") && dayDiff(w.d || today(), today()) <= 7 && !isSeen(w));
+const RS_X = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+function rsAdd(blob) {
+  if (!RS) RS = { shots: [], phase: "cam" };
+  if (RS.shots.length >= RS_MAX) return false;
+  RS.shots.push({ blob, url: URL.createObjectURL(blob) }); return true;
+}
+function rsCamStop() { if (RS && RS.cam) { try { RS.cam.getTracks().forEach(t => t.stop()); } catch (e) {} RS.cam = null; } }
+function rsDrop() { if (!RS) return; rsCamStop(); RS.shots.forEach(s => URL.revokeObjectURL(s.url)); RS = null; }
+async function rsCamOpen() {
+  if (!RS) RS = { shots: [], phase: "cam" };
+  RS.noCam = false;
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("no");
+    RS.cam = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+  } catch (e) { RS.cam = null; RS.noCam = true; }
+  if (location.hash === "#rasm") render(); else rsCamStop();
+}
+async function rsFiles(files) {
+  const fs = [...(files || [])].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
+  if (!fs.length) return;
+  if (!RS) RS = { shots: [], phase: "cam" };
+  let over = false;
+  for (const f of fs) { try { const b = await dsJpeg(f); if (b && !rsAdd(b)) { over = true; break; } } catch (e) {} }
+  if (over) toast("Ko'pi bilan 8 ta rasm", null, null, { type: "info" });
+  if (location.hash === "#rasm") render(); else go("rasm");
+}
+function rsPaint() {
+  const el = $("#rsup"); if (!el || !RS) return;
+  el.querySelector("b").textContent = `Yuklanmoqda · ${RS.done || 0} / ${RS.shots.length}`;
+  const p = Math.round((RS.done || 0) / Math.max(1, RS.shots.length) * 100), bar = el.querySelector(".ds-bar");
+  if (bar) { bar.querySelector("i").style.transform = `translateX(${p - 100}%)`; bar.setAttribute("aria-valuenow", p); }
+}
+async function rsSend() {
+  const u = RS; if (!u || !u.shots.length || u.phase === "up") return;
+  rsCamStop(); u.phase = "up"; u.done = 0; u.err = "";
+  if (location.hash === "#rasm") render(); else go("rasm");
+  try {
+    if (!u.id) { const r = await darsApi("new", { photo: true }); u.id = r.id; }
+    const photos = [];
+    for (const [i, s] of u.shots.entries()) {
+      const path = `${AUTH.uid}/${u.id}/${i + 1}.jpg`;
+      if (!s.up) {
+        const r = await fetch(SB.url + "/storage/v1/object/dars-rasm/" + path, { method: "POST", headers: { Authorization: "Bearer " + await sbToken(), apikey: SB.key, "Content-Type": "image/jpeg", "x-upsert": "false" }, body: s.blob });
+        // qayta urinishda allaqachon yuklangan rasm — xato emas
+        if (!(r.ok || r.status === 409 || r.status === 400)) throw Object.assign(new Error("HTTP " + r.status), { status: r.status });
+        s.up = true;
+      }
+      photos.push({ path }); u.done = i + 1; rsPaint();
+    }
+    await darsApi("start", { id: u.id, photos });
+    rsDrop(); await darsLoad(true);
+    if (location.hash === "#rasm") go("");
+    toast("Rasmlar yuborildi", null, null, { sub: "~1 daqiqada o'qiladi · tayyor bo'lganda Bugun sahifasida chiqadi" });
+  } catch (e) {
+    if (RS !== u) return;
+    u.phase = "err";
+    u.err = e.code === "limit" ? "Bugun 4 ta dars yuborildi — ertaga yana." : (e.status === 0 || navigator.onLine === false || e instanceof TypeError) ? "Internet yo'q. Ulangach «Qayta yuborish»ni bosing." : "Yuborib bo'lmadi: " + e.message;
+    if (location.hash === "#rasm") render();
+  }
+}
+addEventListener("hashchange", () => { if (location.hash !== "#rasm") rsCamStop(); });
+
+/* bosh sahifadagi karta (dars kuni, shu kun hali dars yuborilmagan bo'lsa) */
+function rsCard() {
+  return `<section class="rs-card" aria-labelledby="rsct"><div class="rs-t"><span class="lic">${ICON_CAM}</span><div><b id="rsct">Darsdan doska rasmi bormi?</b><span>Doskadagi so'zlar takrorlashga, qoidalar ertangi repetitor darsiga qo'shiladi.</span></div></div>
+    <div class="rs-a"><button type="button" class="btn" id="rscam1">Suratga olish</button><label class="btn ghost">Galereya<input type="file" id="rsgal1" class="sr-only" accept="image/*" multiple></label></div>
+    <div class="rs-l"><a href="#yozish">yoki darsni yozib oling</a><button type="button" id="rsskip1">Bugun dars bo'lmadi</button></div></section>`;
+}
+document.addEventListener("click", e => {
+  const t = e.target.closest("#rscam1, #rsskip1"); if (!t) return;
+  if (t.id === "rsskip1") { try { localStorage.setItem(RS_SKIP, today()); } catch (x) {} render(); return; }
+  if (!RS || RS.phase === "err") { rsDrop(); RS = { shots: [], phase: "cam" }; }
+  RS.auto = true; go("rasm");
+});
+document.addEventListener("change", e => { if (e.target && e.target.id === "rsgal1") { rsFiles(e.target.files); e.target.value = ""; } });
+
+/* #rasm: kamera, olingan rasmlar, yuborish */
+route(/^rasm$/, () => {
+  if (!darsOn()) return go("");
+  if (!RS) RS = { shots: [], phase: "cam" };
+  const n = RS.shots.length;
+  if (RS.auto) { RS.auto = false; if (n < RS_MAX) rsCamOpen(); }
+  if (RS.phase === "up" || RS.phase === "err") {
+    const err = RS.phase === "err", p = Math.round((RS.done || 0) / Math.max(1, n) * 100);
+    app.innerHTML = `${nav("#", "Bugun", "Doska rasmlari")}<h2 class="pg-h">${err ? "Yuborilmadi" : "Yuborilmoqda"}</h2>
+    <div class="stack"><section class="card ds-up${err ? " err" : ""}" id="rsup" aria-live="polite"><b>${err ? esc(RS.err) : `Yuklanmoqda · ${RS.done || 0} / ${n}`}</b>
+      <span>${err ? `${n} ta rasm shu yerda turibdi.` : "Ilovani yopmang. Keyin rasmlar ~1 daqiqada o'qiladi."}</span>
+      ${err ? `<div class="ds-act"><button class="btn" id="rsre">Qayta yuborish</button><button class="btn ghost" id="rsback">Rasmlarga qaytish</button></div>`
+        : `<div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i style="transform:translateX(${p - 100}%)"></i></div>`}</section></div>`;
+    const re = $("#rsre"); if (re) re.onclick = () => { RS.phase = "cam"; rsSend(); };
+    const bk = $("#rsback"); if (bk) bk.onclick = () => { RS.phase = "cam"; render(); };
+    return;
+  }
+  if (RS.cam) {
+    app.innerHTML = `<div class="yz-cam rs-cam"><video id="rsv" autoplay playsinline muted></video>
+      <button type="button" class="rs-x" id="rsx" aria-label="${n ? "Kamerani yopish, rasmlar saqlanadi" : "Kamerani yopish"}">${RS_X}</button>
+      <p class="yz-cam-t">Doskani suratga oling</p><p class="rs-tip">Yaltirashdan qoching · yaqinroq turing</p>
+      <div class="yz-cam-b"><div class="rs-tray" id="rstray" aria-live="polite">${RS.shots.slice(-3).map(s => `<img src="${s.url}" alt="">`).join("")}<span class="sr-only">${n} ta rasm olindi</span></div>
+        <button class="yz-shot" id="rsshot" type="button" aria-label="Suratga olish"${n >= RS_MAX ? " disabled" : ""}></button>
+        <button class="btn" id="rsok" type="button"${n ? "" : " disabled"}>Tayyor${n ? " · " + n : ""}</button></div></div>`;
+    const v = $("#rsv"); v.srcObject = RS.cam;
+    $("#rsx").onclick = () => { rsCamStop(); if (RS.shots.length) render(); else { RS = null; go(""); } };
+    $("#rsok").onclick = () => rsSend();
+    $("#rsshot").onclick = async () => {
+      if (!v.videoWidth || RS.shots.length >= RS_MAX) return;
+      const blob = await dsJpeg(v); if (!blob || !rsAdd(blob)) return;
+      const a = $(".rs-cam"); if (a) { a.classList.remove("flash"); void a.offsetWidth; a.classList.add("flash"); }
+      if (navigator.vibrate) navigator.vibrate(20);
+      const k = RS.shots.length;
+      $("#rstray").innerHTML = RS.shots.slice(-3).map(s => `<img src="${s.url}" alt="">`).join("") + `<span class="sr-only">${k} ta rasm olindi</span>`;
+      const ok = $("#rsok"); ok.disabled = false; ok.textContent = "Tayyor · " + k;
+      if (k >= RS_MAX) { $("#rsshot").disabled = true; toast("8 ta rasm — ko'pi shu", null, null, { type: "info" }); }
+    };
+    return;
+  }
+  // kamera yopiq: olingan rasmlar, qo'shish va yuborish
+  app.innerHTML = `${nav("#", "Bugun", "Doska rasmlari")}<h2 class="pg-h">Doska rasmlari</h2>
+  <p class="sub">${n ? `${n} / ${RS_MAX} · ovoz yozuvisiz dars` : "Doskani suratga oling yoki galereyadan tanlang"}</p>
+  ${RS.noCam ? `<p class="rs-note">${ICON.info}<span>Sahifa ichidagi kamera ochilmadi. Brauzerda kameraga ruxsat bering yoki telefon kamerasidan foydalaning.</span></p>` : ""}
+  <div class="rs-grid">${RS.shots.map((s, i) => `<div class="rs-ph"><img src="${s.url}" alt="${i + 1}-rasm"><button type="button" class="rm" data-rm="${i}" aria-label="${i + 1}-rasmni olib tashlash">${RS_X}</button><span class="n" aria-hidden="true">${i + 1}</span></div>`).join("")}
+    ${n < RS_MAX ? `${RS.noCam ? `<label class="rs-add">${ICON_CAM}Telefon kamerasi<input type="file" id="rscap" class="sr-only" accept="image/*" capture="environment"></label>` : `<button type="button" class="rs-add" id="rsopen">${ICON_CAM}Kamera</button>`}
+      <label class="rs-add">${ICON.plus}Galereya<input type="file" id="rsgal" class="sr-only" accept="image/*" multiple></label>` : ""}</div>
+  <div class="ds-act rs-go"><button class="btn" id="rssend"${n ? "" : " disabled"}>${n ? `Yuborish · ${n} ta rasm` : "Kamida 1 ta rasm kerak"}</button><button class="btn ghost" id="rscancel">Bekor qilish</button></div>`;
+  app.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.rm, s = RS.shots[i]; if (!s) return;
+    URL.revokeObjectURL(s.url); RS.shots.splice(i, 1); render();
+    const f = app.querySelector(`[data-rm="${Math.min(i, RS.shots.length - 1)}"]`) || $("#rsopen") || $("#rsgal"); if (f) f.focus();
+  });
+  const op = $("#rsopen"); if (op) op.onclick = () => rsCamOpen();
+  ["#rsgal", "#rscap"].forEach(s => { const f = $(s); if (f) f.onchange = () => { rsFiles(f.files); f.value = ""; }; });
+  $("#rssend").onclick = () => rsSend();
+  const cx = $("#rscancel");
+  cx.onclick = () => {
+    if (RS.shots.length && !cx.dataset.sure) { cx.dataset.sure = "1"; cx.textContent = `${RS.shots.length} ta rasm o'chsinmi?`; return; }
+    rsDrop(); go("");
+  };
+});
+
+/* tekshirish: «Nima qo'shilsin?» — kitobda yoki lug'atda bor so'z va aniq o'qilmagani belgisiz keladi */
+function rsWState(w) {
+  const s = aiWordState(w.en);
+  if (s.st === "book") return { on: false, fixed: true, note: `kitobda bor · Unit ${un(s.unit)} — o'z vaqtida chiqadi` };
+  if (s.st === "have") return { on: false, fixed: true, note: "lug'atingizda allaqachon bor" };
+  if (!w.sure) return { on: false, note: "aniq o'qilmadi — rasmga qarab tekshiring", warn: true };
+  if (w.seen) return { on: true, note: `doskada «${w.seen}» — to'g'risi ${w.en}`, warn: true };
+  return { on: true, note: "" };
+}
+function rsPhotos(r) {
+  const ph = Array.isArray(r.photos) ? r.photos : [];
+  return ph.length ? `<div class="dt-ph">${ph.map((p, i) => `<button type="button" aria-label="Doska rasmi ${i + 1}"><img alt="" data-p="${esc(p.path)}"><span>${i + 1}</span></button>`).join("")}</div>` : "";
+}
+function rsUnread(a) {
+  const u = a.unread || [];
+  return u.length ? `<p class="rs-note">${ICON.info}<span><b>${u.map(x => x + "-rasm").join(", ")} o'qilmadi.</b> Juda xira yoki yaltiroq bo'lgan. Kerak bo'lsa, keyingi safar yaqinroqdan oling.</span></p>` : "";
+}
+function rsPage(r) {
+  const a = r.analysis, c = a.content || {}, ws = c.words || [], rl = a.rules || [], rv = r.answers && r.answers.review;
+  const nPh = Array.isArray(r.photos) ? r.photos.length : 0, age = dayDiff(r.day, today());
+  const head = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<span class="rep-chip">${ICON_CAM}Doskadan${nPh ? ` · ${nPh} ta rasm` : ""}</span>`;
+  if (!rv && (ws.length || rl.length)) {
+    const wst = ws.map(rsWState), pickN = wst.filter(x => !x.fixed).length;
+    if (!RSV || RSV.id !== r.id) RSV = { id: r.id, w: wst.map(x => x.on), r: rl.map(() => true) };
+    const cnt = () => RSV.w.filter(Boolean).length;
+    const btnT = () => { const k = cnt(), q = RSV.r.filter(Boolean).length; return k ? `${k} ta so'z${q ? ` va ${q} ta qoidani` : "ni"} qo'shish` : q ? `Faqat ${q} ta qoidani qo'shish` : "Hech narsa qo'shmasdan saqlash"; };
+    app.innerHTML = `${head}<h2 class="pg-h">Nima qo'shilsin?</h2>
+    <p class="sub">${esc(a.headline)}${c.unit ? " · " + esc(c.unit) : ""}. Noto'g'ri o'qilganini belgidan chiqaring.</p>
+    <div class="stack">${rsUnread(a)}
+      ${ws.length ? `<section class="card rs-rv" aria-labelledby="rsvw"><p class="rs-h"><span id="rsvw">So'zlar → Mening so'zlarim va takrorlash</span><span id="rsvn">${cnt()} / ${pickN}</span></p>
+        ${ws.map((w, i) => i).sort((x, y) => (wst[x].fixed ? 1 : 0) - (wst[y].fixed ? 1 : 0)).map(i => { const w = ws[i], s = wst[i], tx = `<span class="tx"><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}${s.note ? ` · <i class="${s.warn ? "w" : ""}">${esc(s.note)}</i>` : ""}</span></span><span class="src">${w.photo}-rasm</span>`;
+          return s.fixed ? `<div class="rs-ck fixed"><span class="rs-dot" aria-hidden="true">${ICON.check}</span>${tx}</div>` : `<label class="rs-ck"><input type="checkbox" data-w="${i}"${RSV.w[i] ? " checked" : ""}>${tx}</label>`; }).join("")}</section>` : ""}
+      ${rl.length ? `<section class="card rs-rv" aria-labelledby="rsvr"><p class="rs-h"><span id="rsvr">Qoidalar → ertangi repetitor darsi</span><span>${rl.length}</span></p>
+        ${rl.map((x, i) => `<label class="rs-ck"><input type="checkbox" data-r="${i}"${RSV.r[i] ? " checked" : ""}><span class="tx"><b>${esc(x.title)}</b><span>${esc(x.text)}${x.ex ? ` <span lang="en" class="rs-ex">${esc(x.ex)}</span>` : ""}</span></span></label>`).join("")}</section>` : ""}
+      <button class="btn" id="rsadd">${btnT()}</button>
+      <section class="card dt-fold"><button class="dt-more" id="rsbd" aria-expanded="false" aria-controls="rsbdl">Doskada yozilganlar${ICON.down}</button><div id="rsbdl" hidden>${rsPhotos(r)}${rsBoard(c)}</div></section>
+    </div>`;
+    app.querySelectorAll("[data-w]").forEach(x => x.onchange = () => { RSV.w[+x.dataset.w] = x.checked; $("#rsvn").textContent = `${cnt()} / ${pickN}`; $("#rsadd").textContent = btnT(); });
+    app.querySelectorAll("[data-r]").forEach(x => x.onchange = () => { RSV.r[+x.dataset.r] = x.checked; $("#rsadd").textContent = btnT(); });
+    rsFold();
+    $("#rsadd").onclick = () => {
+      const keepW = RSV.w.map((on, i) => on ? i : -1).filter(i => i >= 0), keepR = RSV.r.map((on, i) => on ? i : -1).filter(i => i >= 0);
+      let added = 0;
+      keepW.forEach(i => { const w = ws[i]; if (aiWordState(w.en).st !== "new") return; const id = "my|" + norm(w.en); S.my.push({ id, w: w.en, u: w.uz, p: "", e: "", t: "", src: "dars:" + r.id, d: r.day }); untomb("my:" + id); added++; });
+      if (added) { syncMyWords(); save(); }
+      r.answers = Object.assign({}, r.answers, { review: { w: keepW, r: keepR, n: added, at: new Date().toISOString() } });
+      r.dirty = true; dsSave(); dsPush(r); RSV = null;
+      toast(added ? `${added} ta so'z qo'shildi` : "Saqlandi", null, null, { sub: keepR.length ? `${keepR.length} ta qoida ertangi repetitor darsida` : added ? "Eslab qolish qatorida «darsdan» bo'lib chiqadi" : "" });
+      go("");
+    };
+    bindSay(app); darsLoad();
+    return;
+  }
+  // tasdiqlangan (yoki tasdiqlaydigan narsa yo'q): konspekt
+  const kw = rv ? ws.filter((_, i) => rv.w.includes(i)) : ws, kr = rv ? rl.filter((_, i) => rv.r.includes(i)) : rl;
+  app.innerHTML = `${head}<h2 class="pg-h">${esc(a.headline)}</h2>
+  <p class="sub">${[dsDate(r.day), c.unit, "ovoz yozuvisiz"].filter(Boolean).map(esc).join(" · ")}</p>
+  <div class="stack">
+    ${rv && (rv.n || kr.length) ? `<p class="dt-okl">${ICON.check}${[rv.n ? `${rv.n} ta so'z qo'shildi` : "", kr.length && age <= 1 ? `${kr.length} ta qoida ${age === 0 ? "ertangi" : "bugungi"} repetitor darsida` : ""].filter(Boolean).join(" · ")}</p>` : ""}
+    ${rsUnread(a)}
+    ${c.summary ? `<section class="card"><p class="dt-sum" style="margin:0">${esc(c.summary)}</p></section>` : ""}
+    ${nPh || (c.board || []).length ? `<section class="card"><p class="dt-sec">Doskadan</p>${rsPhotos(r)}${rsBoard(c)}</section>` : ""}
+    ${kr.length ? `<section class="card"><p class="dt-sec">Qoidalar</p><ul class="dt-bd">${kr.map(x => `<li><div><b>${esc(x.title)}</b><span>${esc(x.text)}${x.ex ? ` <span lang="en" class="rs-ex">${esc(x.ex)}</span>` : ""}</span></div></li>`).join("")}</ul></section>` : ""}
+    ${kw.length ? `<section class="card"><p class="dt-sec">Yangi so'zlar · ${kw.length}</p><ul class="dt-wl">${kw.map(w => `<li><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash: ${esc(w.en)}">${ICON.vol}</button></li>`).join("")}</ul></section>` : ""}
+    ${(c.phrases || []).length ? `<section class="card"><p class="dt-sec">Foydali gaplar</p><ul class="dt-wl dt-pl">${c.phrases.map(w => `<li><span class="pp"><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span></span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash">${ICON.vol}</button></li>`).join("")}</ul></section>` : ""}
+    ${c.homework ? `<p class="dt-hw"><b>Uy vazifasi</b>${esc(c.homework)}</p>` : ""}
+    <p class="rs-empty">Gapirish tahlili yo'q — bu dars yozilmagan. Keyingi darsni yozib olsangiz, xatolaringiz va tutilgan joylaringiz ham chiqadi.</p>
+  </div>`;
+  bindSay(app); dsImgLoad(); darsLoad();
+}
+function rsBoard(c) {
+  const b = c.board || [];
+  return b.length ? `<ul class="dt-bd">${b.map(x => `<li><span class="n" aria-label="${x.photo}-rasm">${x.photo}</span><div><b lang="en">${esc(x.text)}</b><span>${esc(x.uz)}</span></div></li>`).join("")}</ul>` : "";
+}
+function rsFold() {
+  const b = $("#rsbd"); if (!b) return;
+  b.onclick = () => { const o = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", o); $("#rsbdl").hidden = !o; if (o) dsImgLoad(); };
+}
+
 /* bosh sahifa: dars kuni kechqurun — yuklash taklifi; ishlov ketayotganda yoki tayyor bo'lsa — holati */
 function darsCard() {
   if (!darsOn()) return "";
   const a = dsActive(), d = new Date(), last = DS.list.find(x => x.status === "done" && dayDiff(x.day, today()) <= 1);
   if (REC && REC.state === "rec") return `<a class="cls dsc yzc" href="#yozish"><span class="lic">${ICON.mic}</span><span class="tx"><b>Dars yozilmoqda · ${yzClock(yzElapsed())}</b><span>Yozish ekraniga qaytish</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (RS && RS.phase === "up") return `<a class="cls dsc" href="#rasm"><span class="lic">${ICON_CAM}</span><span class="tx"><b>Doska rasmlari yuborilmoqda</b><span>${RS.done || 0} / ${RS.shots.length} · ilovani yopmang</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (RS && RS.shots.length) return `<a class="cls dsc" href="#rasm"><span class="lic">${ICON_CAM}</span><span class="tx"><b>${RS.shots.length} ta rasm yuborilmagan</b><span>${RS.phase === "err" ? "Yuborilmadi · qayta urinish uchun oching" : "Yuborish uchun oching"}</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (a && rsIsPhoto(a)) return `<a class="cls dsc" href="#dars-${a.id}"><span class="lic">${ICON.clock}</span><span class="tx"><b>Doska rasmlari o'qilmoqda</b><span>~1 daqiqa · tayyor bo'lganda shu yerda chiqadi</span></span><span class="go">${ICON.chev}</span></a>`;
+  const rw = rsWaiting();
+  if (rw) { const nw = (rw.analysis.content.words || []).length, nr = (rw.analysis.rules || []).length; return `<a class="cls dsc" href="#dars-${rw.id}"><span class="lic">${ICON_CAM}</span><span class="tx"><b>Doskadan konspekt tayyor</b><span>${[nw ? nw + " ta so'z" : "", nr ? nr + " ta qoida" : ""].filter(Boolean).join(" · ") || esc(rw.analysis.headline)} · qaysilari qo'shilishini tanlang</span></span><span class="go">${ICON.chev}</span></a>`; }
   if (YZ_SAVED.length) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Saqlangan yozuv tahlilga yuborilmagan</b><span>${yzClock(YZ_SAVED[0].dur)} · yuborish uchun oching</span></span><span class="go">${ICON.chev}</span></a>`;
   if (a) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.clock}</span><span class="tx"><b>Dars tahlil qilinmoqda</b><span>${DS_STAGE[a.status][0]} · tayyor bo'lganda Telegram'ga xabar keladi</span></span><span class="go">${ICON.chev}</span></a>`;
-  if (last) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
-  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading")) return `<a class="cls dsc" href="#yozish"><span class="lic">${ICON.mic}</span><span class="tx"><b>Bugun dars kuni: darsni yozib oling</b><span>Darsdan keyin xatolaringiz va o'tilganlar chiqadi</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (last && !rsIsPhoto(last)) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
+  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading") && !rsSkipped()) return rsCard();
   return "";
 }
 
@@ -8864,7 +9165,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|lahza-|sahna|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|rasm|lahza-|sahna|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

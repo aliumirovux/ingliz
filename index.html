@@ -2197,6 +2197,91 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .sp-rl{margin:12px 0 6px;font-size:13px;font-weight:600;color:var(--muted)}
 .sp-rs{display:flex;flex-wrap:wrap;gap:6px}
 .sp-rs button{border:0;min-height:40px;padding:0 14px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+/* Bugungi sahna */
+.sh-card{border-radius:30px;padding:20px;background:radial-gradient(120% 90% at 100% 0%,var(--marker-soft) 0%,var(--card,var(--surface)) 58%);box-shadow:var(--card-shadow,var(--shadow));display:flex;flex-direction:column;gap:6px}
+:root[data-theme="dark"] .sh-card{background:radial-gradient(120% 90% at 100% 0%,#4A2A1C 0%,var(--card,var(--surface)) 58%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sh-card{background:radial-gradient(120% 90% at 100% 0%,#4A2A1C 0%,var(--card,var(--surface)) 58%)}}
+.sh-card .rep-chip{align-self:flex-start;margin:0 0 4px}
+.sh-card h2{margin:0;font:700 26px/1.15 var(--font-display);letter-spacing:-.02em}
+.sh-sub{margin:0;color:var(--muted);font-size:14px}
+.sh-bub{display:flex;flex-direction:column;gap:6px;margin:8px 0 2px}
+.sh-bub span{font-size:13.5px;background:var(--surface-2);border-radius:16px 16px 16px 4px;padding:7px 12px;align-self:flex-start;max-width:85%}
+.sh-bub span.mine{background:var(--marker-soft);color:var(--accent-text);border-radius:16px 16px 4px 16px;align-self:flex-end}
+.sh-beats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 12px}
+.sh-beats div{border-radius:16px;background:var(--surface-2);padding:9px 10px;font-size:12.5px;color:var(--muted);line-height:1.3}
+.sh-beats b{display:flex;align-items:center;gap:4px;font-size:13.5px;color:var(--ink)}
+.sh-beats b svg{width:14px;height:14px}
+.sh-beats div.on{background:var(--marker-soft);color:var(--accent-text)}.sh-beats div.on b{color:var(--accent-text)}
+.sh-beats div.done b{color:var(--ok)}
+.sh-done{display:flex;align-items:center;gap:6px;margin:0 0 8px;color:var(--ok);font-weight:600;font-size:14.5px}.sh-done svg{width:18px;height:18px}
+.sh-skel h2{color:var(--muted)}
+.sh-sk{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.sh-sk i{height:52px;border-radius:16px;background:var(--surface-2);animation:shk 1.4s ease-in-out infinite}
+@keyframes shk{50%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){.sh-sk i{animation:none}}
+.sh-err p{margin:4px 0 10px;color:var(--muted)}
+.sh-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;background:var(--card,var(--surface));border-radius:22px;padding:12px 14px;font:inherit;color:inherit;cursor:pointer;box-shadow:var(--card-sm,none);margin-top:10px}
+.sh-row:disabled{opacity:.6;cursor:default}
+.sh-row .ic{width:40px;height:40px;border-radius:13px;background:var(--surface-2);display:grid;place-items:center;flex:none;color:var(--accent-text)}.sh-row .ic svg{width:20px;height:20px}
+.sh-row .tx{flex:1;min-width:0}.sh-row b{display:block;font-size:15px;font-weight:600}.sh-row .tx span{display:block;font-size:13px;color:var(--muted)}
+.sh-row .m{font-size:13px;color:var(--muted);white-space:nowrap}
+.sh-next{margin:10px 4px 0;font-size:13px;color:var(--muted)}
+.sh-more{margin-top:12px}
+.sh-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;border-radius:22px;background:var(--card,var(--surface));font-weight:600;font-size:15px}
+.sh-more>summary::-webkit-details-marker{display:none}
+.sh-more>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-right:4px;transition:transform .2s}
+.sh-more[open]>summary::after{transform:rotate(-135deg)}
+.sh-more>summary span{font-weight:400;color:var(--muted);font-size:13.5px;margin-left:auto}
+.sh-more .lesson{margin-top:10px}
+/* sahna sahifasi */
+.sh{display:flex;flex-direction:column;gap:12px}
+.sh .rep-chip{align-self:flex-start;margin:0}
+.sh-h{margin:0;font:700 24px/1.2 var(--font-display);letter-spacing:-.02em}
+.sh-p{margin:0;color:var(--muted);font-size:14.5px}
+.sh-dlg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sh-dlg li{max-width:86%;align-self:flex-start;background:var(--surface);border-radius:18px 18px 18px 6px;padding:9px 13px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.sh-dlg li.mine{align-self:flex-end;background:var(--marker-soft);border-radius:18px 18px 6px 18px}
+.sh-dlg li small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:2px}
+.sh-dlg li span{font-size:16px;line-height:1.35}
+.sh-dlg li em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:3px}
+.sh-dlg li.say{box-shadow:0 0 0 2px var(--marker)}
+.sh-dlg.veil li span{filter:blur(6px);user-select:none}
+.sh-show{align-self:center}
+.sh-words .sh-chips{display:flex;flex-wrap:wrap;gap:6px}
+.sh-chips button{border:0;border-radius:14px;background:var(--surface-2);padding:7px 11px;font:inherit;font-size:13px;color:var(--muted);cursor:pointer;text-align:left}
+.sh-chips button b{display:block;color:var(--ink);font-size:14.5px;font-weight:600}
+.sh-pat{margin:12px 0 0;font-size:14px;color:var(--muted)}.sh-pat b{color:var(--ink)}
+.sh-foot{margin-top:4px}
+.sh-say .sh-uz{margin:0;color:var(--muted);font-size:14px}
+.sh-say .sh-en{margin:4px 0 10px;font-size:19px;font-weight:600;line-height:1.3}
+.sh-say mark{background:var(--bad-bg);color:var(--bad);border-radius:5px;padding:0 3px}
+.sh-act{display:flex;align-items:center;gap:10px}
+.sh-act .icon{width:44px;height:44px;padding:0;justify-content:center;flex:none}
+.sh-live{font-size:13.5px;color:var(--muted);min-width:0}
+.sh-live .ok{color:var(--ok)}.sh-live .bad{color:var(--bad)}
+.sh-in{flex:1;min-height:44px}
+.sh-tasks ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.sh-tasks li{display:flex;align-items:center;gap:9px;font-size:14.5px}
+.sh-tasks li i{width:22px;height:22px;border-radius:7px;border:2px solid var(--line-strong);display:grid;place-items:center;flex:none;font-style:normal;font-size:12px;font-weight:700}
+.sh-tasks li i svg{width:14px;height:14px}
+.sh-tasks li.ok{color:var(--muted);text-decoration:line-through}.sh-tasks li.ok i{background:var(--ok-strong);border-color:var(--ok-strong);color:#fff}
+.sh-tasks li.half i{border-color:var(--marker);color:var(--accent-text)}
+.sh-chat{display:flex;flex-direction:column;gap:8px}
+.sh .msg{max-width:84%;padding:10px 13px;border-radius:18px;font-size:15.5px;line-height:1.35}
+.sh .msg.t{background:var(--surface);border-bottom-left-radius:6px;align-self:flex-start;box-shadow:var(--shadow)}
+.sh .msg small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-bottom:2px}
+.sh .msg.mine{background:var(--ok-bg);color:var(--ok);border-bottom-right-radius:6px;align-self:flex-end}
+.sh .msg.mine.half{background:var(--marker-soft);color:var(--accent-text)}
+.sh .msg.mine small{margin:4px 0 0;color:inherit;font-weight:400}.msg.mine small b{font-weight:600}
+.sh .msg em{display:block;font-style:normal;font-size:13px;color:var(--muted);margin-top:3px}
+.sh-turn{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:6px}
+.sh-task{margin:0;font-size:14.5px;text-align:center}.sh-task span{color:var(--muted)}
+.sh-hints{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.sh-hints button{border:1px solid var(--line-strong);background:transparent;border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;color:var(--muted);cursor:pointer}
+.sh-two{display:grid;grid-template-columns:1fr 1.3fr;gap:8px;width:100%}
+.sh-type{display:flex;gap:8px;width:100%}.sh-type input{flex:1;min-height:48px}.sh-type .btn{width:auto;padding:0 18px}
+.sh-end .lz-mt{margin-top:4px}
+.sh-why{margin:0;font-size:13.5px;color:var(--accent-text);background:var(--marker-soft);border-radius:14px;padding:9px 12px}
+
 /* Darsdagi lahza: ovoz chiqarib mashq */
 .lz{display:flex;flex-direction:column;gap:12px}
 .lz-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
@@ -2706,7 +2791,7 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|lahza-|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-|ibmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
+const quizNow = () => /^#(quiz|lahza-|sahna|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-|ibmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
 /* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
@@ -3179,10 +3264,10 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|lahza-)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|lahza-|sahna)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
-  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h.startsWith("lahza-") || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
+  document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h.startsWith("lahza-") || h === "sahna" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
   // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
@@ -4258,6 +4343,7 @@ function srListen({ onFirst, onText, onEnd, onFail }) {
 const srStop = () => { if (SR_CUR) SR_CUR.abort(); };
 
 /* --- ekran --- */
+let SHMORE = false; // «Boshqa mashqlar» ochiqmi (shu seans)
 let DL = null; // { id, i, st: q|rec|res|end, hints, lat, said, live, res, sh, shLive, secs, out: [], typed }
 const dlItems = r => ((r.analysis && r.analysis.speech && r.analysis.speech.stuck) || []).filter(x => x.en);
 const dlRescue = r => { const x = r.analysis && r.analysis.speech && r.analysis.speech.rescue; return x && x.length ? x : ["Let me think…", "How do you say … in English?"]; };
@@ -4372,6 +4458,189 @@ function dlEnd(r, items) {
   app.querySelector(".lz-foot a").onclick = () => { DL = null; };
 }
 addEventListener("online", () => spkFlush());
+/* ---------- BUGUNGI SAHNA: har kuni bitta hayotiy vaziyat (variant A) ----------
+   1 Tinglang — dialog ovoz bilan (matn avval yashirin); 2 Ayting — 2 ta kalit gapni ovoz chiqarib; 3 O'ynang — sahnadagi odam bilan 3 navbatli suhbat.
+   Sahnani «sahna» funksiyasi kuniga bir marta Claude bilan yozadi (unit so'zlari + darsdagi xatolar); javoblarni brauzer tekshiradi.
+   Eski kunlik qadamlar «Boshqa mashqlar» ichida qoladi. */
+const SH_KEY = "ingliz-sahna";
+let SH = (() => { try { const o = JSON.parse(localStorage.getItem(SH_KEY) || "null"); return o && o.scene ? o : null; } catch (e) { return null; } })();
+let shState = "", shAt = 0, SC = null; // shState: "" | "load" | "err"
+const shSave = () => { try { localStorage.setItem(SH_KEY, JSON.stringify(SH)); } catch (e) {} };
+const shToday = () => SH && SH.day === today() && SH.scene ? SH : null;
+const shOn = () => darsOn();
+async function shLoad(force) {
+  if (!shOn() || shToday() || shState === "load" || navigator.onLine === false) return;
+  if (!force && shState === "err" && Date.now() - shAt < 6e4) return;
+  shState = "load"; shAt = Date.now();
+  const cu = curUnit(), info = UNIT_INFO[cu.n] || [];
+  // unit so'zlari: hali ko'rilmaganlari va unutilayotganlari birinchi
+  const ws = byUnit(cu.n).map(w => ({ w, k: !isSeen(w) ? 0 : (recall(w) ?? 1) < .8 ? 1 : 2 })).sort((a, b) => a.k - b.k).slice(0, 40).map(x => ({ en: x.w.w, uz: x.w.u }));
+  try {
+    const t = await sbToken();
+    const r = await fetch(SB.url + "/functions/v1/sahna/today", { method: "POST", headers: { Authorization: "Bearer " + t, apikey: SB.key, "Content-Type": "application/json" }, body: JSON.stringify({ day: today(), unit: un(cu.n), unit_title: info[0] || "", words: ws }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.scene) throw new Error(d.error || "HTTP " + r.status);
+    SH = { day: d.day, scene: d.scene, progress: d.progress || {}, done_at: d.done_at || null }; shSave(); shState = "";
+  } catch (e) { shState = "err"; }
+  if (location.hash.replace(/^#/, "") === "") render();
+}
+function shPush() {
+  if (!SH || !AUTH) return;
+  const body = JSON.stringify({ progress: SH.progress || {}, done_at: SH.done_at || null }), day = SH.day;
+  sbToken().then(t => sbFetch(`/rest/v1/scenes?user_id=eq.${AUTH.uid}&day=eq.${day}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body }, t)).catch(() => {});
+}
+const shWhy = () => !SC.typed ? "" : `<p class="sh-why">${/allowed|audio/.test(SC.why || "") ? "Mikrofonga ruxsat yo'q — manzil satridagi belgi → Mikrofon → Ruxsat. Hozircha yozib davom eting." : "Nutqni tanish ishlamadi (internet yoki brauzer). Hozircha yozib davom eting."}</p>`;
+const shStep = p => p.done ? 3 : p.play && p.play.length >= 3 ? 3 : p.said ? 2 : p.heard ? 1 : 0; // nechta qadam tugagan
+
+/* --- bosh sahifa kartasi --- */
+function sceneHome() {
+  const s = shToday();
+  if (!s) return shState === "err"
+    ? `<section class="sh-card sh-err"><span class="rep-chip">${ICON.spark}Bugungi sahna</span><p>Sahna tayyorlanmadi. Internetni tekshirib, qayta urinib ko'ring.</p><button class="btn ghost" id="shre">Qayta urinish</button></section>`
+    : `<section class="sh-card sh-skel" aria-busy="true"><span class="rep-chip">${ICON.spark}Bugungi sahna</span><h2>Sahna tayyorlanmoqda…</h2><p>Unit ${un(curUnit().n)} so'zlari va darsdagi xatolaringizdan · ~20 soniya</p><div class="sh-sk"><i></i><i></i><i></i></div></section>`;
+  const S = s.scene, p = s.progress || {}, st = shStep(p), done = !!s.done_at || p.done;
+  const T = S.play[2] || S.play[0], Tok = T.ok[0];
+  const beats = [["Tinglang", "dialog"], ["Ayting", "2 gap"], ["O'ynang", "siz bilan"]].map(([a, b], i) => `<div class="${i < st ? "done" : i === st && !done ? "on" : ""}"><b>${i < st ? ICON.check : i + 1} ${a}</b>${b}</div>`).join("");
+  return `<section class="sh-card" aria-labelledby="shh">
+    <span class="rep-chip">${ICON.spark}Bugungi sahna · Unit ${un(curUnit().n)}</span>
+    <h2 id="shh">${esc(S.title)}</h2>
+    <p class="sh-sub">${esc(S.role)} bilan ${S.dialog.length} gaplik suhbat · ${S.minutes} daq</p>
+    <div class="sh-bub" aria-hidden="true"><span lang="en">${esc(T.t)}</span><span class="mine" lang="en">${esc(Tok)}</span></div>
+    <div class="sh-beats">${beats}</div>
+    ${done ? `<p class="sh-done">${ICON.check}Sahna tugadi${p.ok != null ? ` · ${p.ok} / 3 vazifa` : ""}</p><a class="btn ghost" href="#sahna" id="shgo">Qayta o'ynash</a>`
+      : `<a class="btn" href="#sahna" id="shgo">${st ? "Davom etish" : "Sahnani boshlash"} ${ICON.arrow}</a>`}
+  </section>`;
+}
+function sceneRows(plan) {
+  const r = repToday(), rows = [];
+  if (r && !r.done_at) { const n = r.lesson.sections.filter((_, si) => !repSecDone(r, si)).length; rows.push(`<button class="sh-row" data-sr="rep"><span class="ic">${ICON.redo}</span><span class="tx"><b>${shToday() && !shToday().done_at ? "Sahnadan oldin: kechagi xatolar" : "Repetitor darsi"}</b><span>Repetitor · ${n} bo'lim</span></span><span class="m">${r.lesson.minutes || 5} daq</span></button>`); }
+  const k = plan.find(x => x.tag === "kech");
+  if (k) rows.push(`<button class="sh-row" data-sr="kech"${k.lock ? " disabled" : ""}><span class="ic">${ICON.moon}</span><span class="tx"><b>Kechki takrorlash</b><span>${esc(k.s)}</span></span><span class="m">${k.lock ? "" : "2 daq"}</span></button>`);
+  const s = shToday(); if (s && s.scene.next) rows.push(`<p class="sh-next">Ertaga: «${esc(s.scene.next)}»</p>`);
+  return rows.join("");
+}
+function bindSceneHome(plan) {
+  const re = $("#shre"); if (re) re.onclick = () => { shState = ""; shLoad(true); render(); };
+  app.querySelectorAll(".sh-row[data-sr]").forEach(b => b.onclick = () => {
+    if (b.dataset.sr === "rep") { RP = null; go("repetitor"); }
+    else { const k = plan.find(x => x.tag === "kech"); if (k && !k.lock) k.run(); }
+  });
+}
+
+/* --- sahna sahifasi --- */
+function shPlayLines(lines, onLine, done) {
+  stopVoice(); const g = VG; let i = 0;
+  const next = () => { if (g !== VG) return; if (i >= lines.length) { onLine(-1); if (done) done(); return; } onLine(i); speakOne(lines[i], () => { i++; setTimeout(next, 350); }); };
+  next();
+}
+function shTop(step) {
+  const pct = Math.round(step / 3 * 100);
+  return `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="Sahna"><i style="transform:translateX(${pct - 100}%)"></i></div><span class="cnt">${Math.min(3, step + 1)}/3</span></div>`;
+}
+function shLog(ok, secs, said, target, lat) {
+  logAns(ok, false);
+  spkLog({ src: "sahna", item: String(target).slice(0, 300), lat_ms: lat == null ? null : Math.min(120000, Math.round(lat)), hints: 0, score: spMatch(said, target).score, secs: Math.min(3600, secs || 0) });
+}
+route(/^sahna$/, () => {
+  const s = shToday(); if (!s) { shLoad(true); return go(""); }
+  const S = s.scene, p = s.progress || (s.progress = {});
+  if (!SC || SC.day !== s.day) SC = { day: s.day, step: p.done ? 0 : Math.min(2, shStep(p)), replay: !!p.done, show: false, live: "", sayRes: {}, play: p.done ? [] : (p.play || []).slice(), retry: null, typed: !SRec, spoke: -1 };
+  if (SC.step === 3) return shEnd(s);
+  const quit = () => { srStop(); stopVoice(); SC = null; go(""); };
+  if (SC.step === 0) {
+    app.innerHTML = `${shTop(0)}<div class="sh">
+      <span class="rep-chip">1 · Tinglang</span><h2 class="sh-h">${esc(S.title)}</h2>
+      <p class="sh-p">${SC.show ? "Har gapning tarjimasi ostida. So'zni bosib eshiting." : "Avval faqat quloq bilan tinglang, keyin matnni oching."}</p>
+      <button class="btn" id="shall">${ICON.vol}Dialogni tinglash</button>
+      <ol class="sh-dlg${SC.show ? "" : " veil"}" aria-label="Dialog">${S.dialog.map((d, i) => `<li class="${d.s === "S" ? "mine" : ""}" data-i="${i}"><small>${d.s === "S" ? "Siz" : esc(S.role)}</small><span lang="en">${esc(d.en)}</span>${SC.show ? `<em>${esc(d.uz)}</em>` : ""}</li>`).join("")}</ol>
+      <button class="icon sh-show" id="shshow" aria-pressed="${SC.show}">${SC.show ? "Matnni yashirish" : "Matnni ko'rsatish"}</button>
+      ${SC.show ? `<section class="card sh-words"><p class="dt-sec">Sahnaning so'zlari</p><div class="sh-chips">${S.words.map(w => `<button type="button" data-say="${esc(w.en)}"><b lang="en">${esc(w.en)}</b>${esc(w.uz)}</button>`).join("")}</div>
+        ${S.pattern.en ? `<p class="sh-pat"><b lang="en">${esc(S.pattern.en)}</b> — ${esc(S.pattern.uz)}</p>` : ""}</section>` : ""}
+      <div class="sh-foot"><button class="btn${p.heard || SC.show ? "" : " ghost"}" id="shnext">Keyingisi: Ayting ${ICON.arrow}</button></div></div>`;
+    $("#quit").onclick = quit; bindSay(app);
+    $("#shall").onclick = () => { const lis = app.querySelectorAll(".sh-dlg li"); shPlayLines(S.dialog.map(d => d.en), i => lis.forEach((l, k) => l.classList.toggle("say", k === i))); };
+    $("#shshow").onclick = () => { stopVoice(); SC.show = !SC.show; render(); };
+    $("#shnext").onclick = () => { stopVoice(); p.heard = 1; SH.progress = p; shSave(); shPush(); SC.step = 1; render(); };
+    return;
+  }
+  if (SC.step === 1) {
+    const all = S.say.every((_, i) => SC.sayRes[i] != null || (p.said && p.said[i] != null));
+    app.innerHTML = `${shTop(1)}<div class="sh">
+      <span class="rep-chip">2 · Ayting</span><h2 class="sh-h">Ikki kalit gapni ovoz chiqarib ayting</h2>
+      <p class="sh-p">Tinglang, keyin mikrofonni bosib takrorlang. Bu gaplar suhbatda kerak bo'ladi.</p>${shWhy()}
+      ${S.say.map((x, i) => { const m = SC.sayRes[i]; return `<section class="card sh-say">
+        <p class="sh-uz">${esc(x.uz)}</p>
+        <p class="sh-en" lang="en">${m ? spMarked(x.en, m.hit) : esc(x.en)}</p>
+        <div class="sh-act"><button class="icon" data-say="${esc(x.en)}" aria-label="Tinglash">${ICON.vol}</button>
+          ${SC.typed ? `<input class="spell sh-in" data-i="${i}" lang="en" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Yozib takrorlang" aria-label="${i + 1}-gapni yozing">` : `<button type="button" class="lz-mic sm${SC.rec === i ? " on" : ""}" data-m="${i}" aria-label="${i + 1}-gapni aytish">${ICON.mic}</button>`}
+          <span class="sh-live" data-l="${i}" aria-live="polite">${m ? (m.score >= 80 ? `<b class="ok">To'g'ri · ${m.n}/${m.of}</b>` : `<b class="bad">${m.n}/${m.of} so'z · yana bir bor</b>`) : SC.typed ? "" : "Bosing va ayting"}</span></div>
+      </section>`; }).join("")}
+      <div class="sh-foot"><button class="btn${all ? "" : " ghost"}" id="shnext">Keyingisi: O'ynang ${ICON.arrow}</button></div></div>`;
+    $("#quit").onclick = quit; bindSay(app);
+    const grade = (i, t, secs) => { const m = spMatch(t, S.say[i].en); SC.sayRes[i] = m; shLog(m.score >= 80, secs, t, S.say[i].en, null); p.said = Object.assign(p.said || {}, { [i]: m.score }); SH.progress = p; shSave(); render(); };
+    app.querySelectorAll(".lz-mic[data-m]").forEach(b => b.onclick = () => {
+      const i = +b.dataset.m; if (SR_CUR) { SR_CUR.stop(); return; }
+      stopVoice(); SC.rec = i; b.classList.add("on"); const l = app.querySelector(`[data-l="${i}"]`); l.textContent = "Tinglayapman…";
+      srListen({ onFirst: () => {}, onText: t => { l.textContent = t; }, onEnd: (t, secs) => { SC.rec = null; if (!t) { b.classList.remove("on"); l.textContent = "Eshitilmadi. Yana bosing."; return; } grade(i, t, secs); }, onFail: err => { SC.rec = null; SC.typed = true; SC.why = err; render(); } });
+    });
+    app.querySelectorAll(".sh-in").forEach(inp => inp.onkeydown = e => { if (e.key === "Enter" && inp.value.trim()) { e.preventDefault(); grade(+inp.dataset.i, inp.value.trim(), 0); } });
+    $("#shnext").onclick = () => { srStop(); app.querySelectorAll(".sh-in").forEach(inp => { if (inp.value.trim() && SC.sayRes[+inp.dataset.i] == null) grade(+inp.dataset.i, inp.value.trim(), 0); }); p.said = p.said || {}; SH.progress = p; shSave(); shPush(); SC.step = 2; render(); };
+    return;
+  }
+  // 3 · O'ynang
+  const k = SC.play.length, cur = S.play[k], rt = SC.retry;
+  const tasks = S.play.map((x, i) => { const r = SC.play[i]; return `<li class="${r ? (r.ok ? "ok" : "half") : ""}"><i>${r ? (r.ok ? ICON.check : "~") : ""}</i>${esc(x.task)}</li>`; }).join("");
+  const chat = S.play.slice(0, k + (cur ? 1 : 0)).map((x, i) => { const r = SC.play[i]; return `<div class="msg t"><small>${esc(S.role)}</small><span lang="en">${esc(x.t)}</span></div>${r ? `<div class="msg mine${r.ok ? "" : " half"}"><span lang="en">${esc(r.said)}</span>${r.ok ? "" : `<small>Yaxshiroq: <b lang="en">${esc(x.ok[0])}</b></small>`}</div>` : ""}`; }).join("");
+  app.innerHTML = `${shTop(2)}<div class="sh sh-play">${shWhy()}
+    <section class="card sh-tasks"><p class="dt-sec">Vazifalar · ${esc(S.role)} bilan</p><ul>${tasks}</ul></section>
+    <div class="sh-chat" id="shchat" aria-live="polite">${chat}${rt ? `<div class="msg mine half"><span lang="en">${esc(rt.said)}</span><small>${rt.said ? `Shunday aytsa bo'ladi: <b lang="en">${esc(cur.ok[0])}</b>` : "Eshitilmadi"}</small></div>` : ""}</div>
+    ${cur ? `<div class="sh-turn">
+      <p class="sh-task"><b>Navbat sizda:</b> ${esc(cur.task)}${cur.t_uz ? ` <span>· «${esc(cur.t_uz)}»</span>` : ""}</p>
+      <div class="sh-hints">${[cur.hint, S.pattern.en, "Let me think…"].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).map(h => `<button type="button" data-say="${esc(h)}" lang="en">${esc(h)}</button>`).join("")}</div>
+      ${rt ? `<div class="sh-two"><button class="btn ghost" id="shagain">Qayta aytish</button><button class="btn" id="shskip">Davom etish ${ICON.arrow}</button></div>`
+        : SC.typed ? `<div class="sh-type"><input class="spell" id="shin" lang="en" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Javobingizni yozing" aria-label="Javob"><button class="btn" id="shsend">Yuborish</button></div>`
+        : `<button type="button" class="lz-mic${SC.rec ? " on" : ""}" id="shmic" aria-label="${SC.rec ? "To'xtatish" : "Javob berish"}">${ICON.mic}</button><p class="lz-live" id="shlive">${esc(SC.live) || "Bosing va ovoz chiqarib javob bering"}</p>`}
+    </div>` : ""}</div>`;
+  $("#quit").onclick = quit; bindSay(app);
+  const ch = $("#shchat"); ch.scrollTop = ch.scrollHeight;
+  // sahnadagi odamning gapi ekranga chiqqanda bir marta o'qiladi
+  if (cur && SC.spoke !== k && !rt) { SC.spoke = k; setTimeout(() => speakOne(cur.t), 250); }
+  const finish = (said, ok, secs, lat) => {
+    SC.retry = null; SC.live = "";
+    SC.play.push({ said, ok }); p.play = SC.play; SH.progress = p; shLog(ok, secs, said, cur.ok[0], lat);
+    if (SC.play.length >= S.play.length) { p.ok = SC.play.filter(x => x.ok).length; p.done = 1; SH.done_at = new Date().toISOString(); touchStreak(); save(); SC.step = 3; shSave(); shPush(); speakOne(S.end || "Thank you!"); return render(); }
+    shSave(); shPush(); render();
+  };
+  const grade = (said, secs, lat) => {
+    const best = Math.max(...cur.ok.map(a => spMatch(said, a).score));
+    if (best >= 70) return finish(said, true, secs, lat);
+    SC.retry = { said, secs, lat }; render();
+  };
+  const mic = $("#shmic");
+  if (mic) mic.onclick = () => {
+    if (SR_CUR) { SR_CUR.stop(); return; }
+    stopVoice(); SC.rec = true; mic.classList.add("on"); const l = $("#shlive"); l.textContent = "Tinglayapman…"; let lat = null;
+    srListen({ onFirst: ms => { lat = ms; }, onText: t => { SC.live = t; l.textContent = t; },
+      onEnd: (t, secs) => { SC.rec = false; if (!t) { mic.classList.remove("on"); l.textContent = "Eshitilmadi. Yana bosing."; return; } grade(t, secs, lat); },
+      onFail: err => { SC.rec = false; SC.typed = true; SC.why = err; render(); } });
+  };
+  const send = $("#shsend"), inp = $("#shin");
+  if (send) { send.onclick = () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } grade(v, 0, null); }; inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); send.click(); } }; }
+  const ag = $("#shagain"); if (ag) ag.onclick = () => { SC.retry = null; render(); };
+  const sk = $("#shskip"); if (sk) sk.onclick = () => finish(rt.said || "—", false, rt.secs, rt.lat);
+});
+function shEnd(s) {
+  const S = s.scene, p = s.progress || {}, ok = SC.play.filter(x => x.ok).length;
+  app.innerHTML = `<div class="sh sh-end"><span class="rep-chip">${ICON.check}Sahna tugadi</span>
+    <h2 class="sh-h">${esc(S.title)}</h2>
+    <div class="msg t sh-endmsg"><small>${esc(S.role)}</small><span lang="en">${esc(S.end)}</span>${S.end_uz ? `<em>${esc(S.end_uz)}</em>` : ""}</div>
+    <div class="lz-mt"><div><b>${ok} / ${S.play.length}</b><span>vazifa bajarildi</span></div><div><b>${S.words.length}</b><span>so'z ishlatildi</span></div><div><b>${Object.keys(p.said || {}).length + SC.play.length}</b><span>marta gapirdingiz</span></div></div>
+    ${SC.play.some(x => !x.ok) ? `<section class="card"><p class="dt-sec">Yana mashq qiling</p><ul class="lz-wl">${S.play.map((x, i) => SC.play[i] && !SC.play[i].ok ? `<li><b lang="en">${esc(x.ok[0])}</b><span>${esc(x.task)}</span></li>` : "").join("")}</ul></section>` : `<p class="lz-ok">${ICON.check}Uchala vazifani ham ingliz tilida bajardingiz.</p>`}
+    ${S.next ? `<p class="sh-next">Ertaga: «${esc(S.next)}»</p>` : ""}
+    <div class="sh-foot"><a class="btn" href="#" id="shhome">Bosh sahifa</a></div></div>`;
+  $("#shhome").onclick = () => { SC = null; };
+}
+
 /* dars tahlilidagi kirish tugmasi */
 function dlEntry(r) {
   const items = dlItems(r); if (!items.length) return "";
@@ -4509,7 +4778,7 @@ function darsCard() {
 route(/^$/, () => {
   if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
-  LES = false; repLoad(); darsLoad(); if (darsOn()) { yzScan(); spkLoad(); }
+  LES = false; repLoad(); darsLoad(); if (darsOn()) { yzScan(); spkLoad(); shLoad(); }
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
   const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
@@ -4530,7 +4799,7 @@ route(/^$/, () => {
       ${levelPicker()}
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
-    </section>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    </section>` : shOn() ? `${sceneHome()}${sceneRows(plan)}<details class="sh-more"${SHMORE ? " open" : ""}><summary>Boshqa mashqlar<span>${plan.filter(x => !x.lock).length} qadam</span></summary>${lessonCard(cu, st, info, plan, done, left, mins)}</details>` : lessonCard(cu, st, info, plan, done, left, mins)}
     ${lv.zero || (lvReady && !askUnit) ? "" : felCard() + ibCard() + hikCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
@@ -4566,11 +4835,12 @@ route(/^$/, () => {
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { setLevel("beginner"); render(); };
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
+  if (shOn()) { bindSceneHome(plan); const md = app.querySelector(".sh-more"); if (md) md.ontoggle = () => { SHMORE = md.open; }; }
   if (app.classList.contains("hin")) countUp(app);
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611180200";
+const APP_V = "202611180400";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -8554,7 +8824,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|lahza-|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|lahza-|sahna|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

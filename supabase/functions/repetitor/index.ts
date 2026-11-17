@@ -54,6 +54,8 @@ async function data(owner: string) {
         // retyped: sayt sahifasida xatoni qayta to'g'ri yozdimi (null — hali urinmagan)
         mistakes: (a.mistakes || []).map((m: Record<string, unknown>, i: number) => ({ kind: m.kind, rule: m.rule, you: m.you, fix: m.fix, why: m.why, retyped: ans["m" + i] ? !!ans["m" + i].ok : null })),
         words: ct.words || [], homework: ct.homework || null,
+        // gapirish: tutilib qolgan gaplar (siz aytgan → oddiy inglizchasi), qutqaruvchi iboralar, raqamlar
+        speaking: a.speech ? { metrics: a.speech.metrics, stuck: (a.speech.stuck || []).map((x: Record<string, unknown>) => ({ kind: x.kind, you: x.you, en: x.en })), rescue: a.speech.rescue || [], patterns: a.speech.patterns || [] } : null,
       };
     });
   } catch (e) { console.error("class_lessons", e); }

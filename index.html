@@ -2156,6 +2156,51 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .dt-mk li{display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
 .dt-mk li:first-child{border-top:0}
 .dt-mk b{flex:none;font-variant-numeric:tabular-nums;color:var(--accent-text)}
+.sp-h{display:flex;align-items:baseline;justify-content:space-between;margin:14px 2px -2px}
+.sp-h h3{margin:0;font:700 21px/1.2 var(--font-display);letter-spacing:-.015em}.sp-h span{font-size:13px;color:var(--muted)}
+.sp-k{position:relative;height:14px}
+.sp-k i{position:absolute;top:3px;width:8px;height:8px;border-radius:50%;background:var(--bad-strong);transform:translateX(-50%)}
+.sp-tl{display:flex;height:34px;border-radius:10px;overflow:hidden;background:var(--surface-2);gap:2px}
+.sp-tl button{min-width:6px;border:0;padding:0;cursor:pointer;border-radius:3px}
+.sp-tl .on,.sp-lg i.on{background:#CFE3CC}
+.sp-tl .off,.sp-lg i.off{background:#F1B48F}
+.sp-tl .off.uz,.sp-lg i.off.uz{background:repeating-linear-gradient(135deg,#F1B48F 0 6px,#E0875A 6px 9px)}
+.sp-tl button[aria-pressed="true"]{box-shadow:inset 0 0 0 2.5px var(--ink)}
+:root[data-theme="dark"] .sp-tl .on,:root[data-theme="dark"] .sp-lg i.on{background:#2F4A2D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .sp-tl .on,:root:not([data-theme="light"]) .sp-lg i.on{background:#2F4A2D}}
+.sp-x{position:relative;height:16px;margin-top:4px;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.sp-x span{position:absolute;top:0;transform:translateX(-50%)}.sp-x span:first-child{transform:none}
+.sp-lg{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.sp-lg span{display:inline-flex;align-items:center;gap:5px}.sp-lg i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.sp-lg i.sp-dot{width:8px;height:8px;border-radius:50%;background:var(--bad-strong);box-shadow:none;border:0}
+.sp-d{margin-top:12px;background:var(--surface-2);border-radius:14px;padding:10px 12px;font-size:14px;line-height:1.45}
+.sp-d b{display:block;font-size:14.5px;margin-bottom:2px}
+.sp-m{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sp-m div{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:12px}
+.sp-m b{display:block;font-size:22px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.sp-m span{display:block;font-size:12.5px;color:var(--muted);line-height:1.3}
+.sp-m em{display:block;font-style:normal;font-size:12px;font-weight:600;margin-top:4px;color:var(--muted)}
+.sp-m em.up{color:var(--ok)}.sp-m em.dn{color:var(--bad)}
+.sp-good{display:flex;align-items:flex-start;gap:8px;margin:0 2px;color:var(--ok);font-size:14.5px;font-weight:600;line-height:1.4}.sp-good svg{flex:none;width:18px;height:18px;margin-top:1px}
+.sp-pat{margin:0 0 12px;padding:10px 12px 10px 28px;background:var(--marker-soft);border-radius:14px;font-size:14.5px;line-height:1.45}
+.sp-pat li+li{margin-top:4px}
+.sp-ep{border-top:1px solid var(--line);padding:12px 0}.sp-ep:first-of-type,.sp-pat + .sp-ep{border-top:0;padding-top:0}
+.sp-ep .h{display:flex;gap:8px;align-items:baseline;justify-content:space-between}
+.sp-ep .h b{font-size:15.5px}.sp-ep .h small{font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.sp-tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;margin:6px 6px 2px 0;background:var(--surface-2);color:var(--muted)}
+.sp-tag.bad{background:var(--bad-bg);color:var(--bad)}.sp-tag.ok{background:var(--ok-bg);color:var(--ok)}
+.sp-ep p{margin:6px 0 0;font-size:14px;line-height:1.45;color:var(--muted)}.sp-ep p b{color:var(--ink)}
+.sp-note{margin:4px 0 0;font-size:14px;color:var(--ok)}
+.sp-st{border-top:1px solid var(--line);padding:10px 0}.sp-st:first-of-type{border-top:0;padding-top:0}
+.sp-st .w{margin:0;font-size:12.5px;color:var(--muted)}.sp-st .u{margin:2px 0;font-size:15px}
+.sp-st .e{display:flex;align-items:center;gap:8px;margin:0;color:var(--ok);font-size:16px}.sp-st .e b{flex:1;font-weight:600}.sp-st .e .icon{flex:none}
+.sp-rl{margin:12px 0 6px;font-size:13px;font-weight:600;color:var(--muted)}
+.sp-rs{display:flex;flex-wrap:wrap;gap:6px}
+.sp-rs button{border:0;min-height:40px;padding:0 14px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.sp-plan{margin:0;padding:0;list-style:none;counter-reset:t}
+.sp-plan li{counter-increment:t;position:relative;padding:9px 0 9px 36px;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
+.sp-plan li:first-child{border-top:0;padding-top:2px}.sp-plan li:first-child::before{top:2px}
+.sp-plan li::before{content:counter(t);position:absolute;left:0;top:9px;width:26px;height:26px;border-radius:50%;background:var(--marker-soft);color:var(--accent-text);font-weight:700;font-size:13px;display:grid;place-items:center}
 .dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
 .dt-okl svg{width:18px;height:18px;flex:none}
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
@@ -3835,6 +3880,69 @@ route(/^yozish$/, () => {
   yzPaint(); yzTick = setInterval(yzPaint, 250);
 });
 
+/* --- Gapirishingiz: dars xaritasi (mavzu / chetga chiqish / o'zbekcha / tutilish), raqamlar, sabablar va reja --- */
+const spSec = t => String(t || "").split(":").map(Number).reduce((a, b) => a * 60 + (isFinite(b) ? b : 0), 0);
+const SP_KIND = { pause: "uzun pauza", uz: "o'zbekchaga o'tdingiz", drop: "gapni tashlab qo'ydingiz", filler: "ko'p «ee»" };
+const SP_LANG = { en: "inglizcha", uz: "o'zbekcha", mix: "aralash" };
+function spSegs(sp) {
+  const dur = Math.max(sp.dur || 0, ...sp.off.map(o => spSec(o.to)), ...sp.stuck.map(x => spSec(x.t) + 30), 60), out = [];
+  let at = 0;
+  sp.off.forEach((o, i) => { const a = Math.max(at, spSec(o.from)), b = Math.min(dur, spSec(o.to)); if (b <= a) return; if (a > at) out.push({ on: true, a: at, b: a }); out.push({ on: false, a, b, o, i }); at = b; });
+  if (at < dur) out.push({ on: true, a: at, b: dur });
+  return { dur, segs: out };
+}
+function spDetail(sp, s) {
+  if (!s.on) { const o = s.o; return `<b>${yzClock(s.a)}–${yzClock(s.b)} · ${esc(o.about)} · ${SP_LANG[o.lang]}</b>${o.by === "T" ? "O'qituvchi boshladi." : "Siz boshladingiz."} ${o.before ? "Oldidan: " + esc(o.before) : ""}`; }
+  const st = sp.stuck.filter(x => spSec(x.t) >= s.a && spSec(x.t) < s.b);
+  return `<b>${yzClock(s.a)}–${yzClock(s.b)} · Dars mavzusi</b>${st.length ? `Bu qismda ${st.length} marta tutilib qoldingiz: ${st.map(x => esc(x.t)).join(", ")}.` : "Bu qismda tutilib qolmadingiz."}`;
+}
+function spDelta(v, p, unit) {
+  if (p == null || !isFinite(p)) return `<em>birinchi dars</em>`;
+  const d = Math.round((v - p) * 10) / 10; if (!d) return `<em>o'tgan safardek</em>`;
+  return `<em class="${d > 0 ? "up" : "dn"}">${d > 0 ? "↑" : "↓"} ${Math.abs(d)}${unit}</em>`;
+}
+function dsSpeech(r) {
+  const sp = r.analysis && r.analysis.speech; if (!sp || !sp.metrics) return "";
+  const m = sp.metrics, p = sp.prev || {}, { dur, segs } = spSegs(sp);
+  if (DT.seg == null || DT.seg >= segs.length) DT.seg = Math.max(0, segs.findIndex(s => !s.on && !s.o.useful));
+  const offs = sp.off, bad = offs.filter(o => !o.useful);
+  const step = dur > 2400 ? 20 : 10, marks = Array.from({ length: Math.floor(dur / 60 / step) + 1 }, (_, i) => i * step).map(n => `<span style="left:${(n * 60 / dur * 100).toFixed(1)}%">${n}</span>`).join("");
+  return `<div class="sp-h"><h3>Gapirishingiz</h3><span>${sp.prev ? "o'tgan dars bilan" : "birinchi o'lchov"}</span></div>
+  <section class="card sp-map">
+    <p class="dt-sec">Dars xaritasi · ${Math.round(dur / 60)} daqiqa</p>
+    <div class="sp-k" aria-hidden="true">${sp.stuck.map(x => `<i style="left:${Math.min(99, spSec(x.t) / dur * 100).toFixed(1)}%"></i>`).join("")}</div>
+    <div class="sp-tl" role="group" aria-label="Dars xaritasi: bo'lakni tanlang">${segs.map((s, i) => `<button type="button" class="${s.on ? "on" : "off" + (s.o.lang !== "en" ? " uz" : "")}" style="flex:${(s.b - s.a).toFixed(0)} 1 0" data-sg="${i}" aria-pressed="${i === DT.seg}" aria-label="${yzClock(s.a)}–${yzClock(s.b)}, ${s.on ? "dars mavzusi" : esc(s.o.about) + ", " + SP_LANG[s.o.lang]}"></button>`).join("")}</div>
+    <div class="sp-x" aria-hidden="true">${marks}</div>
+    <div class="sp-lg"><span><i class="on"></i>dars mavzusi</span><span><i class="off"></i>chetga chiqish</span><span><i class="off uz"></i>o'zbekcha</span>${sp.stuck.length ? `<span><i class="sp-dot"></i>tutilib qoldingiz</span>` : ""}</div>
+    <div class="sp-d" id="spd" aria-live="polite">${spDetail(sp, segs[DT.seg])}</div>
+  </section>
+  <div class="sp-m">
+    <div><b>${m.share}%</b><span>siz gapirdingiz</span>${spDelta(m.share, p.share, "%")}</div>
+    <div><b>${m.en}%</b><span>gapingiz inglizcha</span>${spDelta(m.en, p.en, "%")}</div>
+    <div><b>${m.avg}</b><span>so'z, o'rtacha javob</span>${spDelta(m.avg, p.avg, "")}</div>
+  </div>
+  ${sp.good ? `<p class="sp-good">${ICON.check}${esc(sp.good)}</p>` : ""}
+  ${offs.length || sp.patterns.length ? `<section class="card">
+    <p class="dt-sec">${offs.length ? `Chetga chiqishlar · ${offs.length} marta, ${m.off_min} daqiqa` : "Kuzatuv"}</p>
+    ${sp.patterns.length ? `<ul class="sp-pat">${sp.patterns.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${offs.map(o => `<div class="sp-ep"><div class="h"><b>${esc(o.about)}</b><small>${esc(o.from)} · ${Math.max(1, Math.round((spSec(o.to) - spSec(o.from)) / 60))} daq</small></div>
+      <span class="sp-tag ${o.useful ? "ok" : "bad"}">${o.useful ? "foydali" : "chalg'itdi"}</span><span class="sp-tag">${o.by === "T" ? "o'qituvchi boshladi" : "siz boshladingiz"}</span><span class="sp-tag">${SP_LANG[o.lang]}</span>
+      ${o.before ? `<p><b>Oldidan:</b> ${esc(o.before)}</p>` : ""}${o.why ? `<p><b>Nega:</b> ${esc(o.why)}</p>` : ""}${o.tip ? `<p><b>Keyingi safar:</b> ${esc(o.tip)}</p>` : ""}</div>`).join("")}
+    ${offs.length && !bad.length ? `<p class="sp-note">Hammasi inglizcha erkin suhbat edi — bu ham gapirish mashqi.</p>` : ""}
+  </section>` : ""}
+  ${sp.stuck.length ? `<section class="card">
+    <p class="dt-sec">Tutilib qolgan joylar · ${sp.stuck.length} ta${m.stops ? ` · ${m.stops} ta «ee» va pauza` : ""}</p>
+    ${sp.stuck.map(x => `<div class="sp-st"><p class="w">${esc(x.t)} · ${SP_KIND[x.kind]}</p><p class="u">${x.kind === "uz" ? `«${esc(x.you)}»` : `<span lang="en">${esc(x.you)}</span>`}</p><p class="e"><b lang="en">${esc(x.en)}</b><button class="icon" data-say="${esc(x.en)}" aria-label="Tinglash">${ICON.vol}</button></p></div>`).join("")}
+    ${sp.rescue.length ? `<p class="sp-rl">Gap topilmaganda ayting:</p><div class="sp-rs">${sp.rescue.map(x => `<button type="button" data-say="${esc(x)}" lang="en">${esc(x)}</button>`).join("")}</div>` : ""}
+  </section>` : ""}
+  ${sp.plan.class.length || sp.plan.home.length ? `<section class="card"><p class="dt-sec">Reja</p><ol class="sp-plan">${sp.plan.class.map(x => `<li><b>Darsda:</b> ${esc(x)}</li>`).join("")}${sp.plan.home.map(x => `<li><b>Uyda:</b> ${esc(x)}</li>`).join("")}</ol></section>` : ""}`;
+}
+function bindSpeech(r) {
+  const sp = r.analysis && r.analysis.speech; if (!sp) return;
+  const { segs } = spSegs(sp), bs = app.querySelectorAll(".sp-tl button"), d = $("#spd");
+  bs.forEach(b => b.onclick = () => { DT.seg = +b.dataset.sg; bs.forEach(x => x.setAttribute("aria-pressed", x === b)); d.innerHTML = spDetail(sp, segs[DT.seg]); });
+}
+
 /* --- natija: avval xatolar (variant B) --- */
 const dsMin = t => { const p = String(t || "").split(":").map(Number); return p.length === 3 ? p[0] * 60 + p[1] + 1 : p.length === 2 ? p[0] + 1 : 0; };
 route(/^dars-([0-9a-f-]{36})$/, id => {
@@ -3870,10 +3978,11 @@ route(/^dars-([0-9a-f-]{36})$/, id => {
     ${nxi >= 0 && !allDone ? `<button class="dt-next" id="dtnext"><b>Keyingi xato</b><span lang="en">${esc(ms[nxi].you.length > 46 ? ms[nxi].you.slice(0, 44) + "…" : ms[nxi].you)}</span>${ICON.chev}</button>` : ""}
     ${ms.length > 1 ? `<section class="card dt-fold"><button class="dt-more" id="dtall" aria-expanded="${DT.all}" aria-controls="dtalll">Barcha xatolar · ${dn}/${ms.length} qayta yozildi${ICON.down}</button>
       <ol class="dt-list" id="dtalll"${DT.all ? "" : " hidden"}>${ms.map((x, i) => { const ok = ans["m" + i] && ans["m" + i].ok; return `<li><button data-mi="${i}" class="${i === DT.i ? "on" : ""}" aria-label="${i + 1}-xato${ok ? ", qayta yozilgan" : ""}"><span class="dot">${ok ? ICON.check : i + 1}</span><span class="tx">${x.kind === "uz" ? `<q>${esc(x.you)}</q>` : `<s lang="en">${esc(x.you)}</s>`}<b lang="en">${esc(x.fix)}</b></span></button></li>`; }).join("")}</ol></section>` : ""}
+    ${dsSpeech(r)}
     ${dsContent(c)}
-    ${age <= 1 && ms.length ? `<p class="dt-okl">${ICON.check}${age === 0 ? "Ertaga" : "Bugun"} 06:30 dagi repetitor darsiga shu xatolar qo'shiladi</p>` : ""}
+    ${age <= 1 && ms.length ? `<p class="dt-okl">${ICON.check}${age === 0 ? "Ertaga" : "Bugun"} 06:30 dagi repetitor darsiga shu xatolar${r.analysis.speech && r.analysis.speech.stuck && r.analysis.speech.stuck.length ? " va tutilgan gaplar" : ""} qo'shiladi</p>` : ""}
   </div>`;
-  bindSay(app);
+  bindSay(app); bindSpeech(r);
   const nxt = $("#dtnext"); if (nxt) nxt.onclick = () => { DT.i = nxi; render(); };
   const al = $("#dtall"); if (al) al.onclick = () => { DT.all = !DT.all; al.setAttribute("aria-expanded", DT.all); $("#dtalll").hidden = !DT.all; };
   app.querySelectorAll("[data-mi]").forEach(b => b.onclick = () => { DT.i = +b.dataset.mi; render(); requestAnimationFrame(() => { const e = $(".dt-m"); if (e) e.scrollIntoView({ block: "start", behavior: calm() ? "auto" : "smooth" }); }); });
@@ -4002,7 +4111,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611172330";
+const APP_V = "202611180000";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

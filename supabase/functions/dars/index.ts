@@ -117,8 +117,8 @@ const TX_SCHEMA = {
       type: "ARRAY",
       items: {
         type: "OBJECT",
-        properties: { t: { type: "STRING", description: "boshlanish vaqti MM:SS (yoki H:MM:SS)" }, s: { type: "STRING", enum: ["S", "T"] }, x: { type: "STRING" } },
-        required: ["t", "s", "x"],
+        properties: { t: { type: "STRING", description: "boshlanish vaqti MM:SS (yoki H:MM:SS)" }, s: { type: "STRING", enum: ["S", "T"] }, l: { type: "STRING", enum: ["en", "uz", "mix"], description: "gap tili" }, x: { type: "STRING" } },
+        required: ["t", "s", "l", "x"],
       },
     },
   },
@@ -135,12 +135,13 @@ function txPrompt(from: number, to: number | null) {
 
 ${range} matnga o'gir va har bir gapni kim aytganini belgila.
 Qoidalar:
-1. O'quvchining (S) gaplarini AYNAN aytilganidek yoz, xatolari bilan. Grammatikani, so'zni, so'z tartibini TUZATMA — bu yozuvdan keyin uning xatolari tahlil qilinadi. Faqat «ee», «mm» kabi to'xtalishlarni tashlab yubor.
+1. O'quvchining (S) gaplarini AYNAN aytilganidek yoz, xatolari bilan. Grammatikani, so'zni, so'z tartibini TUZATMA — bu yozuvdan keyin uning xatolari va gapirish odatlari tahlil qilinadi. O'quvchining «ee», «mm», «aa» kabi to'xtalishlarini ham, boshlab tashlab qo'ygan gaplarini ham yoz («I go… I went…»). 3 soniyadan uzun jimlikni «[pauza N s]» deb yoz. O'qituvchining to'xtalishlarini yozma.
 2. O'zbekcha aytilgan gaplarni o'zbek lotin yozuvida yoz (kirill emas). Ruscha bo'lsa — ruscha.
 3. O'qituvchining (T) uzun tushuntirishlarini qisqartirib yozsa bo'ladi, lekin inglizcha misol gaplar, yangi so'zlar, o'quvchiga aytgan tuzatishlar va uy vazifasini aynan yoz.
 4. Kitobdan yoki audiodan o'qilgan matnlar (o'quvchi yoki o'qituvchi ovoz chiqarib o'qisa) — bitta qisqa qator: «[kitobdan o'qidi: …birinchi 8 so'z…]».
 5. Eshitilmagan joyni to'qima — «[eshitilmadi]» deb yoz.
 6. t — gap boshlangan vaqt, yozuv boshidan hisoblanadi (MM:SS yoki H:MM:SS).
+7. l — gapning tili: en (inglizcha), uz (o'zbekcha yoki ruscha), mix (aralash).
 Javob faqat JSON.`;
 }
 async function transcribeWindow(row: Row, from: number, to: number | null, thinking: boolean): Promise<Row[]> {
@@ -163,7 +164,7 @@ async function transcribeWindow(row: Row, from: number, to: number | null, think
   try { o = JSON.parse(text); } catch { throw new Error(`gemini JSON buzuq (${clip(c.finishReason, 20)})`); }
   return (Array.isArray(o.turns) ? o.turns : [])
     .filter((x: Row) => x && (x.s === "S" || x.s === "T") && clip(x.x, 2000))
-    .map((x: Row) => ({ t: clip(x.t, 10), s: x.s, x: clip(x.x, 2000) }))
+    .map((x: Row) => ({ t: clip(x.t, 10), s: x.s, l: ["en", "uz", "mix"].includes(x.l) ? x.l : "en", x: clip(x.x, 2000) }))
     .filter((x: Row) => toSec(x.t) >= from - 5 && (to == null || toSec(x.t) < to + 5));
 }
 async function stageTranscribe(row: Row) {
@@ -204,7 +205,7 @@ Qoidalar:
 - Javobni FAQAT JSON obyekt qilib qaytar, boshqa matn qo'shma.`;
 
 function txText(row: Row) {
-  return (row.transcript.turns as Row[]).map((x) => `[${x.t}] ${x.s === "S" ? "Ali" : "O'qituvchi"}: ${x.x}`).join("\n").slice(0, 160000);
+  return (row.transcript.turns as Row[]).map((x) => `[${x.t}] ${x.s === "S" ? "Ali" : "O'qituvchi"}${x.l && x.l !== "en" ? " (" + x.l + ")" : ""}: ${x.x}`).join("\n").slice(0, 160000);
 }
 function promptMistakes(row: Row, ctx: string) {
   return `${ctx}Quyida darsning matni. Alining gaplaridagi xatolarni top.
@@ -249,6 +250,47 @@ JSON shakli:
 }
 Faqat darsda bor narsani yoz, to'qima.`;
 }
+function promptCoach(row: Row, ctx: string, dur: number) {
+  return `${ctx}Quyida darsning matni (dars ${mmss(dur)} davom etgan). Sen Alining gapirish murabbiyisan: grammatikaga emas, QANDAY gapirganiga qara.
+Ali o'zi aytgan muammo: dars paytida mavzudan boshqa narsalarni gapirib ketadi va gapirganda tili aylanmay qoladi. Unga hammasini tushuntirib, nima qilsa yaxshilanishini ayt.
+Belgilar: (uz) — o'zbekcha gap, (mix) — aralash; «[pauza N s]» — jimlik; «ee», «mm» — to'xtalish.
+
+<dars>
+${txText(row)}
+</dars>
+
+JSON shakli:
+{
+  "off": [{"from": "MM:SS", "to": "MM:SS", "about": "nima haqida, 2–5 so'z", "lang": "en" | "uz" | "mix", "by": "S" | "T", "before": "chetga chiqishdan oldin nima bo'ldi, 1 gap (masalan: o'qituvchi «ago» bilan gap so'radi, Ali 2 marta to'xtab qoldi)", "useful": true agar inglizcha erkin suhbat bo'lib, gapirish mashqi bo'lgan bo'lsa, "why": "ehtimoliy sabab — faqat matndagi dalil bilan, 1 gap", "tip": "keyingi safar nima qilish, 1 gap"}],
+  "stuck": [{"t": "MM:SS", "kind": "pause" | "uz" | "drop" | "filler", "you": "Ali aytgan (yoki aytmoqchi bo'lgan) gap, aynan", "en": "shuni oddiy inglizcha qanday aytsa bo'lardi"}],
+  "patterns": ["takrorlangan odat — dalil soni bilan, masalan: 3 ta chetga chiqishning 2 tasi qiyin savoldan keyin boshlandi"],
+  "rescue": ["gapni to'xtatmay davom ettirish uchun 3 ta qisqa inglizcha ibora, Alining aynan shu darsdagi holatlariga mos"],
+  "plan": {"class": ["keyingi darsda qiladigan 2–3 aniq ish"], "home": ["uyda har kuni 5–10 daqiqalik 2 ta mashq, daqiqasi bilan"]},
+  "good": "darsdagi eng yaxshi gapirish lahzasi, 1 gap, vaqti bilan"
+}
+Qoidalar:
+- off: dars mavzusidan (darslik, mashq, o'qituvchi rejasi) tashqaridagi 1 daqiqadan uzun suhbatlar. Mavzu ichidagi qisqa savollar emas. Bo'lmasa [].
+- Inglizcha erkin suhbat ham mashq: uni ayblama, useful: true.
+- why: Alining fikrini o'qima, faqat matnda ko'ringanini ayt («ehtimol …»). Dalil bo'lmasa — null.
+- stuck: eng muhim 6 tagacha joy.
+- patterns: 1–3 ta. Hech biri dangasalik yoki xarakter haqida emas — faqat holat va natija.
+- Hamma o'zbekcha matn lotin yozuvida, «siz» bilan, grammatik atamalarsiz.`;
+}
+// gapirish raqamlari: kod hisoblaydi (AI taxmini emas)
+const FILL = /\b(e+|ee+|mm+|uh+|um+|eh+|aa+|hmm+)\b/gi;
+function speechMetrics(turns: Row[]) {
+  const words = (x: string) => x.replace(/\[[^\]]*\]/g, " ").replace(FILL, " ").split(/\s+/).filter((w) => /[A-Za-z'ʻʼ]/.test(w)).length;
+  let sw = 0, tw = 0, en = 0, fill = 0, pauses = 0, ans = 0, ansW = 0;
+  for (const x of turns) {
+    const n = words(x.x);
+    if (x.s === "S") {
+      sw += n; en += x.l === "en" ? n : x.l === "mix" ? n / 2 : 0;
+      fill += (x.x.match(FILL) || []).length; pauses += (x.x.match(/\[pauza\s*\d+/gi) || []).length;
+      if (x.l !== "uz" && n > 0) { ans++; ansW += n; }
+    } else tw += n;
+  }
+  return { share: sw + tw ? Math.round(sw / (sw + tw) * 100) : 0, en: sw ? Math.round(en / sw * 100) : 0, avg: ans ? Math.round(ansW / ans * 10) / 10 : 0, stops: fill + pauses, words: sw };
+}
 async function claude(prompt: string, maxTokens: number, effort: string) {
   const r = await fetch(`${A_API}/v1/messages`, {
     method: "POST",
@@ -289,6 +331,19 @@ function clean(A: Row, B: Row, row: Row) {
     model: C_MODEL, at: new Date().toISOString(),
   };
 }
+function cleanSpeech(C: Row, m: Row, prev: Row | null, dur: number) {
+  const tm = (t: unknown) => { const v = clip(t, 10); return /^\d{1,2}(:\d{2}){1,2}$/.test(v) ? v : ""; };
+  const off = (Array.isArray(C.off) ? C.off : []).map((o: Row) => ({
+    from: tm(o.from), to: tm(o.to), about: clip(o.about, 60), lang: ["en", "uz", "mix"].includes(o.lang) ? o.lang : "uz", by: o.by === "T" ? "T" : "S",
+    before: clip(o.before, 240), useful: o.useful === true, why: o.why ? clip(o.why, 240) : "", tip: clip(o.tip, 240),
+  })).filter((o: Row) => o.from && o.to && toSec(o.to) > toSec(o.from) && o.about && uzOk(o.about + o.before + o.why + o.tip)).sort((a: Row, b: Row) => toSec(a.from) - toSec(b.from)).slice(0, 8);
+  const stuck = (Array.isArray(C.stuck) ? C.stuck : []).map((x: Row) => ({ t: tm(x.t), kind: ["pause", "uz", "drop", "filler"].includes(x.kind) ? x.kind : "pause", you: clip(x.you, 240), en: clip(x.en, 240) }))
+    .filter((x: Row) => x.t && x.you && x.en && !CYR.test(x.you + x.en)).slice(0, 6);
+  const strs = (v: unknown, n: number, len: number) => (Array.isArray(v) ? v : []).map((x) => clip(x, len)).filter((x) => x && !CYR.test(x)).slice(0, n);
+  const P = C.plan || {};
+  m.off_min = Math.round(off.reduce((a: number, o: Row) => a + (toSec(o.to) - toSec(o.from)), 0) / 60);
+  return { metrics: m, prev, dur, off, stuck, patterns: strs(C.patterns, 3, 240), rescue: strs(C.rescue, 3, 60), plan: { class: strs(P.class, 3, 200), home: strs(P.home, 2, 200) }, good: uzOk(clip(C.good, 240)) ? clip(C.good, 240) : "" };
+}
 async function stageAnalyze(row: Row) {
   let ctx = "";
   try {
@@ -297,12 +352,22 @@ async function stageAnalyze(row: Row) {
   } catch (e) { console.error("ctx", e); }
   // qayta urinishda tezroq (150 s chegarasi uchun)
   const effort = row.attempts > 1 ? "low" : "medium";
-  const [A, B] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx), 4000, effort)]);
-  const an = clean(A, B, row);
+  const turns = row.transcript.turns as Row[];
+  const dur = row.duration_s || (turns.length ? toSec(turns[turns.length - 1].t) + 30 : 0);
+  const [A, B, C] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx), 4000, effort), claude(promptCoach(row, ctx, dur), 6000, effort)]);
+  const an: Row = clean(A, B, row);
+  let prev = null;
+  try {
+    const p = await db(`class_lessons?user_id=eq.${row.user_id}&status=eq.done&id=neq.${row.id}&select=analysis->speech->metrics&order=created_at.desc&limit=1`);
+    prev = p && p[0] && p[0].metrics || null;
+  } catch (e) { console.error("prev", e); }
+  an.speech = cleanSpeech(C, speechMetrics(turns), prev, dur);
   await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, error: null, locked_until: null });
   const top = an.rules[0];
   const mins = Math.max(3, Math.round(an.mistakes.length * 0.6));
-  const line = an.mistakes.length ? (top ? `${top.title} ${top.ex}`.trim() : "") + `\nTuzatish ~${mins} daqiqa.` : an.content.summary;
+  const sm = an.speech.metrics;
+  const line = (an.mistakes.length ? (top ? `${top.title} ${top.ex}`.trim() : "") + `\nTuzatish ~${mins} daqiqa.` : an.content.summary) +
+    `\nGapirish: inglizcha ${sm.en}%${sm.off_min ? ` · ${sm.off_min} daqiqa mavzudan chetda` : ""}.`;
   try { await tgSend(`<b>Dars tahlili tayyor: ${esc(an.headline)}</b>\n${esc(line)}`, "Ochish", `${SITE}-${row.id}`); } catch (e) { console.error("tg", e); }
   return "done";
 }

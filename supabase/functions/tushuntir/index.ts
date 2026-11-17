@@ -4,7 +4,13 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const LIMIT = 120;
-const MODEL = "claude-haiku-5-5";
+// Savol-javob va xato tushuntirish (chat, xato, fix, check) — aniqroq javob uchun Opus 5.5; tez va oddiy ishlar (bolak, word, sentence) — Haiku 5.5.
+const SMART = ["chat", "xato", "fix", "check"];
+const pick = (mode: unknown) => {
+  const m = String(mode || "fix");
+  if (!SMART.includes(m)) return { model: "claude-haiku-5-5", effort: "low", max: 2000 };
+  return { model: "claude-opus-5-5", effort: m === "chat" || m === "xato" ? "medium" : "low", max: 6000 };
+};
 // «Nega xato?» va yordamchi faqat shu hisoblar uchun (Ali'ning API krediti boshqalarga sarflanmasin). Qo'shish: shu ro'yxatga email.
 const ALLOW = ["aliumirov.me@gmail.com"];
 const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
@@ -136,10 +142,11 @@ Deno.serve(async (req) => {
   const used = await t.json();
   if (typeof used !== "number" || used < 0) return json({ error: "limit", limit: LIMIT }, 429, origin);
 
+  const cfg = pick(b.mode);
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 2000, output_config: { effort: "low" }, system: SYSTEM, messages: [{ role: "user", content: prompt(b) }] }),
+    body: JSON.stringify({ model: cfg.model, max_tokens: cfg.max, output_config: { effort: cfg.effort }, system: SYSTEM, messages: [{ role: "user", content: prompt(b) }] }),
   });
   if (!r.ok) { console.error("anthropic", r.status, (await r.text()).slice(0, 300)); return json({ error: "upstream" }, 502, origin); }
   const data = await r.json();

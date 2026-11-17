@@ -3,6 +3,9 @@
 //   POST /repetitor/lesson — agent tayyorlagan darsni yozadi ({ day?, lesson }), bir kunga bitta (qayta yozilsa almashtiriladi).
 // Kirish faqat «x-agent-key» sarlavhasi bilan (Edge Function secret AGENT_KEY; agentga Console vault orqali beriladi, sandboxda ochiq turmaydi).
 // verify_jwt = false (agentda Supabase hisobi yo'q). Egasi: OWNER_ID secret yoki OWNER_DEFAULT.
+// Telegram (ixtiyoriy, secret TELEGRAM_BOT_TOKEN bo'lsa):
+//   dars yozilganda — ertalabki xabar; POST /repetitor/remind (pg_cron, 20:00) — dars bajarilmagan bo'lsa kuniga bitta eslatma;
+//   GET /repetitor/tg-setup — botga webhook o'rnatadi; POST /repetitor/tg — Telegram webhook: birinchi /start yozgan chat egasiniki deb saqlanadi.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -86,9 +89,82 @@ function check(L: Record<string, unknown>): string | null {
   return null;
 }
 
+// --- Telegram ---
+const TG = () => Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
+const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
+const SITE = "https://easywords.uz/#repetitor";
+async function tgSecret() {
+  const k = new TextEncoder().encode((Deno.env.get("AGENT_KEY") || "") + "|tg");
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", k));
+  return Array.from(h.slice(0, 16), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+async function tg(method: string, body: unknown) {
+  const r = await fetch(`${TG_API}/bot${TG()}/${method}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.ok) throw new Error(`tg ${method} ${r.status}: ${JSON.stringify(d).slice(0, 200)}`);
+  return d.result;
+}
+async function settings(owner: string) {
+  const rows = await db(`agent_settings?user_id=eq.${owner}&select=tg_chat_id,reminded_on`);
+  return (rows && rows[0]) || null;
+}
+const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
+async function send(chat: number, html: string, button: string) {
+  return tg("sendMessage", { chat_id: chat, text: html, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: button, url: SITE }]] } });
+}
+async function notifyLesson(owner: string, L: Record<string, unknown>) {
+  if (!TG()) return "no_token";
+  const st = await settings(owner); if (!st || !st.tg_chat_id) return "no_chat";
+  const secs = (L.sections as Record<string, unknown>[]).map((s) => s.t).slice(0, 4).join(", ");
+  await send(st.tg_chat_id, `<b>Bugungi dars tayyor · ${esc(L.minutes)} daqiqa</b>\n${esc(secs)}`, "Boshlash");
+  return "sent";
+}
+async function remind(owner: string) {
+  if (!TG()) return { skip: "no_token" };
+  const day = tashkentDay(), hour = new Date(Date.now() + 5 * 3600e3).getUTCHours();
+  if (hour < 19) return { skip: "early" };
+  const st = await settings(owner); if (!st || !st.tg_chat_id) return { skip: "no_chat" };
+  if (st.reminded_on === day) return { skip: "already" };
+  const rows = await db(`agent_lessons?user_id=eq.${owner}&day=eq.${day}&select=lesson,answers,done_at`);
+  const l = rows && rows[0]; if (!l) return { skip: "no_lesson" };
+  if (l.done_at) return { skip: "done" };
+  const started = Object.keys(l.answers || {}).filter((k) => k !== "fb").length > 0;
+  const text = started ? "Bugungi dars yarmida qoldi. Oxirigacha bir necha daqiqa qoldi." : "Bugun hali mashq bo'lmadi. Darsning birinchi bo'limi 2–3 daqiqa oladi.";
+  await send(st.tg_chat_id, text, started ? "Davom etish" : "Ochish");
+  await db(`agent_settings?user_id=eq.${owner}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ reminded_on: day }) });
+  return { sent: true };
+}
+
 Deno.serve(async (req) => {
   const key = Deno.env.get("AGENT_KEY") || "", owner = Deno.env.get("OWNER_ID") || OWNER_DEFAULT;
   if (!key || !owner) return json({ error: "not_configured" }, 503);
+  const p0 = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
+  try {
+    // Telegram webhook: maxfiy sarlavha bilan; birinchi /start yozgan chat saqlanadi, keyingilari e'tiborsiz
+    if (req.method === "POST" && p0 === "tg") {
+      if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== await tgSecret()) return json({ error: "auth" }, 401);
+      const u = await req.json().catch(() => ({}));
+      const m = u.message; if (!m || !m.chat || m.chat.type !== "private" || !String(m.text || "").startsWith("/start")) return json({ ok: true });
+      const st = await settings(owner);
+      if (st && st.tg_chat_id && st.tg_chat_id !== m.chat.id) return json({ ok: true });
+      await db("agent_settings?on_conflict=user_id", { method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ user_id: owner, tg_chat_id: m.chat.id }) });
+      await send(m.chat.id, "Ulandi. Har kuni ertalab dars tayyor bo'lganda shu yerga xabar keladi. Kechqurun, dars qilinmagan bo'lsa, bitta eslatma keladi.", "Saytni ochish");
+      return json({ ok: true });
+    }
+    // webhookni o'rnatish (takror chaqirilsa ham zararsiz)
+    if (req.method === "GET" && p0 === "tg-setup") {
+      if (!TG()) return json({ error: "no_token" }, 503);
+      const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/repetitor/tg`;
+      await tg("setWebhook", { url, secret_token: await tgSecret(), allowed_updates: ["message"], drop_pending_updates: true });
+      const st = await settings(owner);
+      return json({ ok: true, webhook: url, linked: !!(st && st.tg_chat_id) });
+    }
+    // kechki eslatma: kuniga bitta, 19:00 dan keyin, dars bajarilmagan bo'lsa
+    if (req.method === "POST" && p0 === "remind") return json(await remind(owner));
+  } catch (e) {
+    console.error(e);
+    return json({ error: "server", detail: String(e).slice(0, 200) }, 500);
+  }
   if (!safeEq(req.headers.get("x-agent-key") || "", key)) return json({ error: "auth" }, 401);
   const path = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
@@ -105,7 +181,9 @@ Deno.serve(async (req) => {
         method: "POST", headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
         body: JSON.stringify({ user_id: owner, day, lesson: L, answers: {}, done_at: null }),
       });
-      return json({ ok: true, day });
+      let tgr = "skip";
+      try { tgr = await notifyLesson(owner, L); } catch (e) { console.error(e); tgr = "fail"; }
+      return json({ ok: true, day, telegram: tgr });
     }
     return json({ error: "not_found", use: ["GET /repetitor/data", "POST /repetitor/lesson"] }, 404);
   } catch (e) {

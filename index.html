@@ -2725,6 +2725,9 @@ function merge(a, b) {
       out.tl[k] = Object.assign({}, x, y, { i: Math.max(x.i || 0, y.i || 0), done: !!(x.done || y.done), at: Math.max(x.at || 0, y.at || 0), w, r: nw.r, pct: nw.pct != null ? nw.pct : (x.pct != null ? x.pct : y.pct) }); }); }
   out.guide = Object.assign({}, a.guide || {}, b.guide || {});
   out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
+  // kunlik belgilar (unit so'raldi, haftalik xulosa yopildi) — eng keyingi sana; sinxronda yo'qolmasin
+  { const mx = (x, y) => ((x || "") > (y || "") ? x : y) || undefined; out.clsAsk = mx(a.clsAsk, b.clsAsk); out.wkSum = mx(a.wkSum, b.wkSum); }
+  out.lvc = Object.assign({}, b.lvc || {}, a.lvc || {});
   out.level = b.level || a.level || "";
   if (a.lost) out.lost = a.lost;
   const ag = a.gr || {}, bg = b.gr || {}; out.gr = {};
@@ -4840,7 +4843,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611180400";
+const APP_V = "202611180500";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

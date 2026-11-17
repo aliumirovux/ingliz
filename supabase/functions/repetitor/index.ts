@@ -2,10 +2,11 @@
 //   GET  /repetitor/data   — egasining (Ali) natijalari xulosasi: kurs, seriya, oxirgi 14 kun, xatolar, qiyin va kechikkan so'zlar, oxirgi darslar va javoblar.
 //   POST /repetitor/lesson — agent tayyorlagan darsni yozadi ({ day?, lesson }), bir kunga bitta (qayta yozilsa almashtiriladi).
 // Kirish faqat «x-agent-key» sarlavhasi bilan (Edge Function secret AGENT_KEY; agentga Console vault orqali beriladi, sandboxda ochiq turmaydi).
-// verify_jwt = false (agentda Supabase hisobi yo'q). Egasi: secret OWNER_ID.
+// verify_jwt = false (agentda Supabase hisobi yo'q). Egasi: OWNER_ID secret yoki OWNER_DEFAULT.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
+const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2"; // Ali (aliumirov.me@gmail.com); OWNER_ID secret bilan almashtirsa bo'ladi
 const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
 
@@ -86,7 +87,7 @@ function check(L: Record<string, unknown>): string | null {
 }
 
 Deno.serve(async (req) => {
-  const key = Deno.env.get("AGENT_KEY") || "", owner = Deno.env.get("OWNER_ID") || "";
+  const key = Deno.env.get("AGENT_KEY") || "", owner = Deno.env.get("OWNER_ID") || OWNER_DEFAULT;
   if (!key || !owner) return json({ error: "not_configured" }, 503);
   if (!safeEq(req.headers.get("x-agent-key") || "", key)) return json({ error: "auth" }, 401);
   const path = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();

@@ -25,7 +25,7 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 
 ## Sozlash tartibi (bir marta)
 
-1. **Supabase**: migratsiyani qo'llash; `repetitor` funksiyasini `verify_jwt = false` bilan deploy qilish; secretlar: `AGENT_KEY` (tasodifiy 48 belgi), `OWNER_ID` (Ali'ning user id).
+1. **Supabase**: migratsiyani qo'llash; `repetitor` funksiyasini `verify_jwt = false` bilan deploy qilish; secret: `AGENT_KEY` (tasodifiy uzun kalit; egasi kodda — OWNER_DEFAULT).
 2. **Console → Credential vaults**: «Easy English» vault, `environment_variable` turidagi kalit: `secret_name = EE_AGENT_KEY`, qiymati = `AGENT_KEY`, allowed host `rqeirdempadfwirefyit.supabase.co`, faqat header'da.
 3. **Console → Environments**: «easy-english», networking `limited`, allowed hosts: `rqeirdempadfwirefyit.supabase.co`, `easywords.uz`.
 4. **Console → Memory**: «Ali ingliz» store, `xotira/` dagi fayllar bilan.

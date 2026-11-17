@@ -51,12 +51,15 @@ async function data(owner: string) {
     try { sp = await db(`speak_log?user_id=eq.${owner}&src=eq.dars&day=gte.${tashkentDay(-10)}&select=lesson_id,item,lat_ms,hints,score,at&order=at.desc&limit=200`) || []; } catch (e) { console.error("speak_log", e); }
     cls = (c || []).map((r: Record<string, any>) => {
       const a = r.analysis || {}, ct = a.content || {}, ans = r.answers || {};
+      // yozuvsiz dars (faqat doska rasmlari): Ali saytda tasdiqlagan so'z va qoidalar (answers.review); tasdiqlanmagan bo'lsa — hammasi
+      const photo = a.kind === "photo", rv = photo && ans.review ? ans.review : null;
+      const pickI = (list: unknown[], keep: number[] | undefined) => rv && Array.isArray(keep) ? list.filter((_, i) => keep.includes(i)) : list;
       return {
-        day: r.day, unit: ct.unit || null, headline: a.headline,
-        rules: (a.rules || []).map((x: Record<string, unknown>) => ({ key: x.key, ex: x.ex, count: x.count })),
+        day: r.day, unit: ct.unit || null, headline: a.headline, source: photo ? "doska rasmlari (dars yozilmagan, xatolar yo'q)" : "dars yozuvi",
+        rules: pickI(a.rules || [], rv && rv.r).map((x: Record<string, any>) => photo ? ({ key: x.key, title: x.title, text: x.text, ex: x.ex }) : ({ key: x.key, ex: x.ex, count: x.count })),
         // retyped: sayt sahifasida xatoni qayta to'g'ri yozdimi (null — hali urinmagan)
         mistakes: (a.mistakes || []).map((m: Record<string, unknown>, i: number) => ({ kind: m.kind, rule: m.rule, you: m.you, fix: m.fix, why: m.why, retyped: ans["m" + i] ? !!ans["m" + i].ok : null })),
-        words: ct.words || [], homework: ct.homework || null,
+        words: pickI(ct.words || [], rv && rv.w).map((w: Record<string, unknown>) => ({ en: w.en, uz: w.uz })), homework: ct.homework || null,
         // gapirish: tutilib qolgan gaplar (siz aytgan → oddiy inglizchasi), qutqaruvchi iboralar, raqamlar
         speaking: a.speech ? { metrics: a.speech.metrics, stuck: (a.speech.stuck || []).map((x: Record<string, unknown>) => ({ kind: x.kind, you: x.you, en: x.en })), rescue: a.speech.rescue || [], patterns: a.speech.patterns || [],
           // practice: uyda ovoz bilan aytgani — lat_ms gapni boshlagungacha, hints 0–3, score aytilgan so'zlar %

@@ -1,0 +1,391 @@
+// «Dars tahlili»: Inter Nation darsining yozuvi (siz + o'qituvchi, ~80 daqiqa) → xatolar va dars mazmuni.
+//   POST /dars/new    (sayt, egasi) — yozuv uchun qator ochadi, yuklash yo'lini beradi
+//   POST /dars/start  (sayt, egasi) — fayl yuklangach navbatga qo'yadi
+//   POST /dars/retry  (sayt, egasi) — xato bilan to'xtagan ishni qayta navbatga qo'yadi
+//   POST /dars/tick   (pg_cron har daqiqa + o'zini o'zi) — navbatdan bitta bosqichni bajaradi
+// Bosqichlar (har biri alohida chaqiruvda, 150 s chegarasiga sig'ishi uchun):
+//   queued → audio Gemini Files API'ga → transcribing → Gemini: matn + ikki ovoz (S = Ali, T = o'qituvchi) → audio o'chiriladi
+//   → analyzing → Claude: xatolar va mazmun (ikkita parallel so'rov) → done → Telegram xabari.
+// Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
+// verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+
+const SB_URL = Deno.env.get("SUPABASE_URL")!;
+const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
+const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
+const BUCKET = "dars-audio";
+const MAX_BYTES = 50 * 1024 * 1024;
+const PER_DAY = 3;
+const MAX_TRIES = 3;
+const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
+const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
+const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
+const C_MODEL = Deno.env.get("DARS_MODEL") || "claude-opus-5-5";
+const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
+const SITE = "https://easywords.uz/#dars";
+const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
+
+const cors = (o: string | null) => ({
+  "Access-Control-Allow-Origin": o && ORIGINS.includes(o) ? o : ORIGINS[0],
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Vary": "Origin",
+});
+const json = (body: unknown, status = 200, o: string | null = null) =>
+  new Response(JSON.stringify(body), { status, headers: { ...cors(o), "Content-Type": "application/json; charset=utf-8" } });
+const clip = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// fon ishi: Supabase'da EdgeRuntime.waitUntil, lokal testda oddiy promise
+const bg = (p: Promise<unknown>) => { const E = (globalThis as Record<string, any>).EdgeRuntime; if (E && E.waitUntil) E.waitUntil(p); };
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const tashkentDay = () => new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
+
+type Row = Record<string, any>;
+
+async function db(path: string, init: RequestInit = {}) {
+  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, "Content-Type": "application/json", ...(init.headers || {}) } });
+  if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const t = await r.text(); return t ? JSON.parse(t) : null;
+}
+const patch = (id: string, v: Row) => db(`class_lessons?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ...v, updated_at: new Date().toISOString() }) });
+async function storage(method: string, path: string, body?: BodyInit) {
+  return fetch(`${SB_URL}/storage/v1/${path}`, { method, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, ...(body ? { "Content-Type": "application/json" } : {}) }, body });
+}
+async function dropAudio(row: Row) {
+  if (!row.audio_path) return;
+  const r = await storage("DELETE", `object/${BUCKET}`, JSON.stringify({ prefixes: [row.audio_path] }));
+  if (!r.ok) throw new Error(`storage delete ${r.status}`);
+  await patch(row.id, { audio_path: null, audio_deleted_at: new Date().toISOString() });
+}
+
+// --- foydalanuvchi: faqat egasi ---
+async function who(req: Request) {
+  const auth = req.headers.get("Authorization") || "";
+  if (!auth.startsWith("Bearer ")) return null;
+  const r = await fetch(`${SB_URL}/auth/v1/user`, { headers: { apikey: ANON || SRV, Authorization: auth } });
+  if (!r.ok) return null;
+  const u = await r.json().catch(() => null);
+  return u && u.id ? String(u.id) : null;
+}
+
+// --- Telegram ---
+const TG = () => Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
+const esc = (s: unknown) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
+async function tgSend(html: string, button: string, url: string) {
+  if (!TG()) return "no_token";
+  const st = await db(`agent_settings?user_id=eq.${OWNER}&select=tg_chat_id`);
+  const chat = st && st[0] && st[0].tg_chat_id; if (!chat) return "no_chat";
+  const r = await fetch(`${TG_API}/bot${TG()}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chat, text: html, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: button, url }]] } }) });
+  return r.ok ? "sent" : "fail";
+}
+
+// --- Gemini ---
+const GK = () => Deno.env.get("GEMINI_API_KEY") || "";
+const MIME: Record<string, string> = { m4a: "audio/m4a", mp4: "audio/m4a", aac: "audio/aac", mp3: "audio/mp3", wav: "audio/wav", ogg: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac" };
+const extOf = (p: string) => (p.split(".").pop() || "").toLowerCase();
+async function gem(path: string, init: RequestInit = {}) {
+  const r = await fetch(`${G_API}${path}`, { ...init, headers: { "x-goog-api-key": GK(), ...(init.headers || {}) } });
+  const t = await r.text();
+  if (!r.ok) throw Object.assign(new Error(`gemini ${r.status}: ${t.slice(0, 300)}`), { status: r.status, body: t });
+  return t ? JSON.parse(t) : null;
+}
+
+async function stageSend(row: Row) {
+  if (!row.audio_path) throw new Error("audio yo'q");
+  const a = await storage("GET", `object/${BUCKET}/${row.audio_path}`);
+  if (!a.ok) throw new Error(`storage ${a.status}`);
+  const buf = new Uint8Array(await a.arrayBuffer());
+  const mime = MIME[extOf(row.audio_path)] || "audio/m4a";
+  const st = await fetch(`${G_API}/upload/v1beta/files`, {
+    method: "POST",
+    headers: { "x-goog-api-key": GK(), "X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Command": "start", "X-Goog-Upload-Header-Content-Length": String(buf.length), "X-Goog-Upload-Header-Content-Type": mime, "Content-Type": "application/json" },
+    body: JSON.stringify({ file: { display_name: `dars-${row.id}` } }),
+  });
+  const url = st.headers.get("x-goog-upload-url");
+  if (!st.ok || !url) throw new Error(`gemini upload start ${st.status}: ${(await st.text()).slice(0, 200)}`);
+  const up = await fetch(url, { method: "POST", headers: { "X-Goog-Upload-Offset": "0", "X-Goog-Upload-Command": "upload, finalize" }, body: buf });
+  const d = await up.json().catch(() => ({}));
+  if (!up.ok || !d.file || !d.file.name) throw new Error(`gemini upload ${up.status}: ${JSON.stringify(d).slice(0, 200)}`);
+  await patch(row.id, { gemini_file: d.file.name, gemini_uri: d.file.uri, mime, status: "transcribing", attempts: 0, error: null, locked_until: null });
+  return "next";
+}
+
+const TX_SCHEMA = {
+  type: "OBJECT",
+  properties: {
+    turns: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: { t: { type: "STRING", description: "boshlanish vaqti MM:SS (yoki H:MM:SS)" }, s: { type: "STRING", enum: ["S", "T"] }, x: { type: "STRING" } },
+        required: ["t", "s", "x"],
+      },
+    },
+  },
+  required: ["turns"],
+};
+const mmss = (s: number) => { s = Math.max(0, Math.round(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ":" + String(m).padStart(2, "0") : String(m).padStart(2, "0")) + ":" + String(x).padStart(2, "0"); };
+const toSec = (t: string) => String(t || "").split(":").map(Number).reduce((a, b) => a * 60 + (isFinite(b) ? b : 0), 0);
+
+function txPrompt(from: number, to: number | null) {
+  const range = !from && to == null ? "Butun yozuvni" : `Faqat ${mmss(from)} dan ${to == null ? "yozuv oxirigacha" : mmss(to) + " gacha"} bo'lgan qismni (shu oraliqda boshlangan gaplarni)`;
+  return `Bu — ingliz tili darsining yozuvi. Xonada ikki kishi bor:
+- T — o'qituvchi: darsni olib boradi, tushuntiradi, savol beradi, xatolarni tuzatadi. Ingliz tilida yaxshi gapiradi.
+- S — o'quvchi (Ali): ingliz tilini boshlang'ich darajada (A1–A2) o'rganayotgan o'zbek. Inglizchasida xatolar bor, ba'zan o'zbekcha gapiradi.
+
+${range} matnga o'gir va har bir gapni kim aytganini belgila.
+Qoidalar:
+1. O'quvchining (S) gaplarini AYNAN aytilganidek yoz, xatolari bilan. Grammatikani, so'zni, so'z tartibini TUZATMA — bu yozuvdan keyin uning xatolari tahlil qilinadi. Faqat «ee», «mm» kabi to'xtalishlarni tashlab yubor.
+2. O'zbekcha aytilgan gaplarni o'zbek lotin yozuvida yoz (kirill emas). Ruscha bo'lsa — ruscha.
+3. O'qituvchining (T) uzun tushuntirishlarini qisqartirib yozsa bo'ladi, lekin inglizcha misol gaplar, yangi so'zlar, o'quvchiga aytgan tuzatishlar va uy vazifasini aynan yoz.
+4. Kitobdan yoki audiodan o'qilgan matnlar (o'quvchi yoki o'qituvchi ovoz chiqarib o'qisa) — bitta qisqa qator: «[kitobdan o'qidi: …birinchi 8 so'z…]».
+5. Eshitilmagan joyni to'qima — «[eshitilmadi]» deb yoz.
+6. t — gap boshlangan vaqt, yozuv boshidan hisoblanadi (MM:SS yoki H:MM:SS).
+Javob faqat JSON.`;
+}
+async function transcribeWindow(row: Row, from: number, to: number | null, thinking: boolean): Promise<Row[]> {
+  const body: Row = {
+    contents: [{ role: "user", parts: [{ file_data: { mime_type: row.mime, file_uri: row.gemini_uri } }, { text: txPrompt(from, to) }] }],
+    generationConfig: { responseMimeType: "application/json", responseSchema: TX_SCHEMA, maxOutputTokens: 32768, ...(thinking ? { thinkingConfig: { thinkingLevel: "low" } } : {}) },
+  };
+  let d: Row;
+  try {
+    d = await gem(`/v1beta/models/${G_MODEL}:generateContent`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } catch (e) {
+    // modelda «thinkingLevel» bo'lmasa — usiz qayta
+    if (thinking && (e as Row).status === 400 && /thinking/i.test(String((e as Row).body))) return transcribeWindow(row, from, to, false);
+    throw e;
+  }
+  const c = d.candidates && d.candidates[0];
+  const text = c && c.content && (c.content.parts || []).map((p: Row) => p.text || "").join("");
+  if (!text) throw new Error(`gemini bo'sh javob: ${clip(c && c.finishReason, 40)} ${clip(JSON.stringify(d.promptFeedback || ""), 120)}`);
+  let o: Row;
+  try { o = JSON.parse(text); } catch { throw new Error(`gemini JSON buzuq (${clip(c.finishReason, 20)})`); }
+  return (Array.isArray(o.turns) ? o.turns : [])
+    .filter((x: Row) => x && (x.s === "S" || x.s === "T") && clip(x.x, 2000))
+    .map((x: Row) => ({ t: clip(x.t, 10), s: x.s, x: clip(x.x, 2000) }))
+    .filter((x: Row) => toSec(x.t) >= from - 5 && (to == null || toSec(x.t) < to + 5));
+}
+async function stageTranscribe(row: Row) {
+  // fayl tayyor bo'lishini kutamiz (odatda bir necha soniya)
+  let f: Row = {};
+  for (let i = 0; i < 8; i++) {
+    f = await gem(`/v1beta/${row.gemini_file}`);
+    if (f.state === "ACTIVE") break;
+    if (f.state === "FAILED") throw new Error("gemini fayl FAILED");
+    await sleep(4000);
+  }
+  if (f.state !== "ACTIVE") return "wait";
+  // uzun yozuv bo'laklarga bo'linib parallel o'giriladi (har biri 150 s ichida tugashi uchun); qayta urinishda bo'laklar kichrayadi
+  const dur = row.duration_s || Math.round((row.audio_bytes || 0) / 8000);
+  const win = (row.attempts > 1 ? 20 : 40) * 60, n = Math.max(1, Math.ceil(dur / win));
+  const parts = Array.from({ length: n }, (_, i) => [Math.round(i * dur / n), i === n - 1 ? null : Math.round((i + 1) * dur / n)] as [number, number | null]);
+  const res = await Promise.all(parts.map(([a, b]) => transcribeWindow(row, a, b, true)));
+  const turns = res.flat();
+  // bo'laklar chegarasidagi takrorlarni olib tashlaymiz
+  const seen = new Set<string>(), out: Row[] = [];
+  for (const x of turns.sort((p, q) => toSec(p.t) - toSec(q.t))) { const k = x.s + "|" + x.x.toLowerCase().slice(0, 80); if (seen.has(k)) continue; seen.add(k); out.push(x); }
+  if (out.filter((x) => x.s === "S").length < 3) throw new Error("yozuvda o'quvchi gaplari topilmadi");
+  await patch(row.id, { transcript: { turns: out, model: G_MODEL, parts: n }, status: "analyzing", attempts: 0, error: null, locked_until: null });
+  // audio endi kerak emas: Gemini'dagi nusxa va bucket'dagi fayl o'chiriladi
+  try { await gem(`/v1beta/${row.gemini_file}`, { method: "DELETE" }); } catch (e) { console.error("gemini delete", e); }
+  await patch(row.id, { gemini_file: null, gemini_uri: null });
+  await dropAudio(row);
+  return "next";
+}
+
+// --- Claude ---
+const SYS = `Sen ingliz tilini o'rganayotgan o'zbek kattalar uchun aniq va mehribon o'qituvchisan. O'quvchi — Ali, darajasi A1–A2 (Navigate Beginner), Inter Nation o'quv markazida o'qituvchi bilan yakkama-yakka o'qiydi.
+Qoidalar:
+- Izohlar faqat o'zbek tilida, faqat lotin yozuvida. O'quvchiga «siz» deb murojaat qil.
+- Grammatik atamalardan qoch (Past Simple, auxiliary, article kabi so'zlarni ishlatma). O'rniga oddiy so'zlar: «o'tgan ish haqida», «savolda», «bitta narsa bo'lsa — a». Shakl o'zgarishini strelka bilan ko'rsat: go → went.
+- Qisqa yoz: izoh 1–2 qisqa gap.
+- Yozuv avtomatik matnga o'girilgan: unda o'girish xatolari bo'lishi mumkin. Shubhali joyni xato deb hisoblama.
+- Javobni FAQAT JSON obyekt qilib qaytar, boshqa matn qo'shma.`;
+
+function txText(row: Row) {
+  return (row.transcript.turns as Row[]).map((x) => `[${x.t}] ${x.s === "S" ? "Ali" : "O'qituvchi"}: ${x.x}`).join("\n").slice(0, 160000);
+}
+function promptMistakes(row: Row, ctx: string) {
+  return `${ctx}Quyida darsning matni. Alining gaplaridagi xatolarni top.
+
+<dars>
+${txText(row)}
+</dars>
+
+Nimani xato deb olasan:
+- Alining inglizcha gapidagi aniq xato: fe'l shakli, so'z tartibi, kerakli so'z tushib qolgani (a/the, is/are, do/does, predlog), noto'g'ri so'z.
+- Ali o'zbekcha aytgan gap, agar uni inglizcha aytishi kerak bo'lgan bo'lsa (o'qituvchiga javob, savol, fikr) — kind: "uz", you: o'zbekcha gap, fix: shu fikrning oddiy inglizchasi.
+Nimani olmaysan: «ee/mm», boshlab qo'yib tashlangan gap, o'zi darhol tuzatgan xato, o'girishdagi shubhali joy, talaffuz (faqat o'qituvchi talaffuzni aniq tuzatgan bo'lsa — kind: "say").
+
+JSON shakli:
+{
+  "rules": [{"key": "qisqa nom, masalan: O'tgan ishda fe'l", "title": "qalin qism, masalan: O'tgan ish haqida fe'l o'zgaradi:", "text": "1–2 gap izoh", "ex": "go → went, lose → lost", "count": son}],
+  "mistakes": [{"t": "MM:SS", "kind": "gram" | "word" | "uz" | "say", "rule": "rules[].key dan biri", "you": "Ali aytgani, aynan", "fix": "to'g'risi — Alining gapiga eng kam o'zgartirish bilan, tabiiy inglizcha", "why": "1–2 gap, o'zbekcha", "teacher": true agar o'qituvchi darsda tuzatgan bo'lsa}]
+}
+- rules: eng ko'p takrorlangan qoida birinchi; count — darsdagi shu xatolarning hammasi (kartaga chiqmaganlari ham).
+- mistakes: eng foydalilari, ko'pi bilan 14 ta; tartib: eng ko'p takrorlangan qoidaning xatolari birinchi, keyin vaqt bo'yicha. Bir xil xatoni ikki marta karta qilma.
+- fix faqat bitta gap; yangi ma'no qo'shma. Xato bo'lmasa: {"rules": [], "mistakes": []}.`;
+}
+function promptContent(row: Row, ctx: string) {
+  return `${ctx}Quyida darsning matni. Darsda nima o'tilganini Ali uchun qisqa yozib ber.
+
+<dars>
+${txText(row)}
+</dars>
+
+JSON shakli:
+{
+  "unit": "darslikdagi unit, masalan «Unit 9», aniq bo'lmasa null",
+  "summary": "2–3 gap: darsda nima qilindi",
+  "topics": ["mavzu", …] (ko'pi bilan 5),
+  "words": [{"en": "so'z yoki ibora", "uz": "tarjima"}] — o'qituvchi tushuntirgan yangi so'zlar, ko'pi bilan 16,
+  "phrases": [{"en": "darsdagi foydali gap", "uz": "tarjima"}] — ko'pi bilan 6,
+  "tips": ["o'qituvchining maslahati yoki eslatmasi, o'zbekcha"] — ko'pi bilan 4,
+  "homework": "uy vazifasi (bet, mashq) yoki null"
+}
+Faqat darsda bor narsani yoz, to'qima.`;
+}
+async function claude(prompt: string, maxTokens: number, effort: string) {
+  const r = await fetch(`${A_API}/v1/messages`, {
+    method: "POST",
+    headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    body: JSON.stringify({ model: C_MODEL, max_tokens: maxTokens, output_config: { effort }, system: SYS, messages: [{ role: "user", content: prompt }] }),
+  });
+  if (!r.ok) throw new Error(`anthropic ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const d = await r.json();
+  const text = (d.content || []).filter((c: Row) => c.type === "text").map((c: Row) => c.text).join("");
+  const m = text.match(/\{[\s\S]*\}/);
+  try { return JSON.parse(m ? m[0] : text); } catch { throw new Error(`claude JSON buzuq (${d.stop_reason})`); }
+}
+const CYR = /[Ѐ-ӿ]/;
+const uzOk = (s: string) => !!s && !CYR.test(s);
+function clean(A: Row, B: Row, row: Row) {
+  const rules = (Array.isArray(A.rules) ? A.rules : []).map((r: Row) => ({ key: clip(r.key, 60), title: clip(r.title, 120), text: clip(r.text, 300), ex: clip(r.ex, 120), count: Math.max(1, Math.min(99, +r.count || 1)) }))
+    .filter((r: Row) => r.key && uzOk(r.title + r.text)).slice(0, 8);
+  const keys = new Set(rules.map((r: Row) => r.key));
+  const mistakes = (Array.isArray(A.mistakes) ? A.mistakes : []).map((m: Row) => ({
+    t: clip(m.t, 10), kind: ["gram", "word", "uz", "say"].includes(m.kind) ? m.kind : "gram", rule: keys.has(clip(m.rule, 60)) ? clip(m.rule, 60) : "",
+    you: clip(m.you, 300), fix: clip(m.fix, 300), why: clip(m.why, 300), teacher: m.teacher === true,
+  })).filter((m: Row) => m.you && m.fix && m.fix !== m.you && uzOk(m.why) && !CYR.test(m.fix)).slice(0, 14);
+  rules.sort((a: Row, b: Row) => b.count - a.count);
+  const total = Math.max(mistakes.length, rules.reduce((a: number, r: Row) => a + r.count, 0));
+  const top = rules[0];
+  const headline = !mistakes.length ? "Xato topilmadi" : top && top.count >= 3 && rules.length > 1 ? `${total} ta xato, ${top.count} tasi bitta qoidada` : `${total} ta xato`;
+  const pairs = (v: unknown, n: number) => (Array.isArray(v) ? v : []).map((x: Row) => ({ en: clip(x && x.en, 120), uz: clip(x && x.uz, 160) })).filter((x) => x.en && uzOk(x.uz)).slice(0, n);
+  const strs = (v: unknown, n: number, len: number) => (Array.isArray(v) ? v : []).map((x) => clip(x, len)).filter(uzOk).slice(0, n);
+  const said = (row.transcript.turns as Row[]).filter((x) => x.s === "S" && (x.x.match(/[A-Za-z]{2,}/g) || []).length >= 3).length;
+  return {
+    headline, total, said, rules, mistakes,
+    content: {
+      unit: B.unit ? clip(B.unit, 30) : null, summary: uzOk(clip(B.summary, 500)) ? clip(B.summary, 500) : "",
+      topics: strs(B.topics, 5, 80), words: pairs(B.words, 16), phrases: pairs(B.phrases, 6), tips: strs(B.tips, 4, 200),
+      homework: B.homework && uzOk(clip(B.homework, 200)) ? clip(B.homework, 200) : null,
+    },
+    model: C_MODEL, at: new Date().toISOString(),
+  };
+}
+async function stageAnalyze(row: Row) {
+  let ctx = "";
+  try {
+    const p = await db(`progress?user_id=eq.${row.user_id}&select=state->course,state->level`);
+    if (p && p[0] && p[0].course) ctx = `Ali hozir kursda: Unit ${p[0].course}${p[0].level ? " (" + p[0].level + ")" : ""}.\n`;
+  } catch (e) { console.error("ctx", e); }
+  // qayta urinishda tezroq (150 s chegarasi uchun)
+  const effort = row.attempts > 1 ? "low" : "medium";
+  const [A, B] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx), 4000, effort)]);
+  const an = clean(A, B, row);
+  await patch(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, error: null, locked_until: null });
+  const top = an.rules[0];
+  const mins = Math.max(3, Math.round(an.mistakes.length * 0.6));
+  const line = an.mistakes.length ? (top ? `${top.title} ${top.ex}`.trim() : "") + `\nTuzatish ~${mins} daqiqa.` : an.content.summary;
+  try { await tgSend(`<b>Dars tahlili tayyor: ${esc(an.headline)}</b>\n${esc(line)}`, "Ochish", `${SITE}-${row.id}`); } catch (e) { console.error("tg", e); }
+  return "done";
+}
+
+// --- ishlovchi ---
+async function fail(row: Row, e: unknown) {
+  const msg = clip(String((e as Error)?.message || e), 300);
+  console.error("dars", row.id, row.status, msg);
+  if (row.attempts >= MAX_TRIES) {
+    await patch(row.id, { status: "error", error: `${row.status}: ${msg}`, locked_until: null });
+    try { await tgSend(`<b>Dars tahlili chiqmadi</b>\n${esc(stageName(row.status))} bosqichida xato. Saytda «Qayta urinish» bor.`, "Ochish", `${SITE}-${row.id}`); } catch { /* */ }
+  } else {
+    await patch(row.id, { error: msg, locked_until: new Date(Date.now() + 30e3 * row.attempts).toISOString() });
+  }
+}
+const stageName = (s: string) => ({ queued: "Yuborish", transcribing: "Matnga o'girish", analyzing: "Tahlil" }[s] || s);
+const kick = () => fetch(`${SB_URL}/functions/v1/dars/tick`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).then((r) => r.body?.cancel()).catch(() => {});
+
+async function work() {
+  const got = await db("rpc/dars_claim", { method: "POST", body: "{}" });
+  const row = got && got[0];
+  if (!row) return cleanup();
+  if (!GK() && row.status !== "analyzing") return fail({ ...row, attempts: MAX_TRIES }, new Error("GEMINI_API_KEY kiritilmagan"));
+  let r = "";
+  try {
+    r = row.status === "queued" ? await stageSend(row) : row.status === "transcribing" ? await stageTranscribe(row) : await stageAnalyze(row);
+  } catch (e) { return fail(row, e); }
+  if (r === "wait") await patch(row.id, { attempts: Math.max(0, row.attempts - 1), locked_until: new Date(Date.now() + 15e3).toISOString() });
+  if (r === "next") await kick();
+}
+// 3 kundan eski, ishlanmay qolgan audio (masalan, xato bilan to'xtagan) o'chiriladi
+async function cleanup() {
+  const old = await db(`class_lessons?audio_path=not.is.null&created_at=lt.${new Date(Date.now() - 3 * 864e5).toISOString()}&select=id,audio_path,status&limit=5`);
+  for (const row of old || []) { try { await dropAudio(row); if (row.status === "uploading") await patch(row.id, { status: "error", error: "yuklash tugamadi" }); } catch (e) { console.error("cleanup", e); } }
+}
+
+Deno.serve(async (req) => {
+  const o = req.headers.get("Origin");
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(o) });
+  if (req.method !== "POST") return json({ error: "method" }, 405, o);
+  const p = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
+  try {
+    if (p === "tick") {
+      bg(work().catch((e) => console.error("tick", e)));
+      return json({ ok: true }, 202, o);
+    }
+    const uid = await who(req);
+    if (!uid) return json({ error: "auth" }, 401, o);
+    if (uid !== OWNER) return json({ error: "not_allowed" }, 403, o);
+    const b = await req.json().catch(() => ({}));
+    if (p === "new") {
+      const bytes = Math.round(+b.bytes || 0), ext = String(b.ext || "").toLowerCase();
+      if (!MIME[ext]) return json({ error: "format", detail: "m4a, mp3, wav, aac, ogg, webm yoki flac" }, 422, o);
+      if (!(bytes > 0) || bytes > MAX_BYTES) return json({ error: "size", max: MAX_BYTES }, 413, o);
+      const today = await db(`class_lessons?user_id=eq.${uid}&day=eq.${tashkentDay()}&status=neq.uploading&select=id`);
+      if ((today || []).length >= PER_DAY) return json({ error: "limit", per_day: PER_DAY }, 429, o);
+      const dur = Math.round(+b.duration_s || 0);
+      const ins = await db("class_lessons", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: uid, status: "uploading", audio_bytes: bytes, duration_s: dur > 0 && dur < 6 * 3600 ? dur : null }) });
+      const id = ins[0].id, path = `${uid}/${id}.${ext}`;
+      await patch(id, { audio_path: path });
+      return json({ id, bucket: BUCKET, path }, 200, o);
+    }
+    const id = String(b.id || "");
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: "id" }, 400, o);
+    const rows = await db(`class_lessons?id=eq.${id}&user_id=eq.${uid}&select=id,status,audio_path,transcript`);
+    const row = rows && rows[0]; if (!row) return json({ error: "not_found" }, 404, o);
+    if (p === "start") {
+      if (row.status !== "uploading") return json({ ok: true, status: row.status }, 200, o);
+      const name = String(row.audio_path).split("/").pop();
+      const ls = await storage("POST", `object/list/${BUCKET}`, JSON.stringify({ prefix: uid, search: name, limit: 2 }));
+      const found = ls.ok ? (await ls.json()).some((x: Row) => x.name === name) : false;
+      if (!found) return json({ error: "not_uploaded" }, 409, o);
+      await patch(id, { status: "queued", attempts: 0, error: null, locked_until: null });
+      bg(kick());
+      return json({ ok: true, status: "queued" }, 200, o);
+    }
+    if (p === "retry") {
+      if (row.status !== "error") return json({ ok: true, status: row.status }, 200, o);
+      const next = row.transcript ? "analyzing" : row.audio_path ? "queued" : "";
+      if (!next) return json({ error: "no_audio", detail: "Audio o'chirilgan — yozuvni qayta yuklang." }, 409, o);
+      await patch(id, { status: next, attempts: 0, error: null, locked_until: null, gemini_file: null, gemini_uri: null });
+      bg(kick());
+      return json({ ok: true, status: next }, 200, o);
+    }
+    return json({ error: "not_found", use: ["POST /dars/new", "POST /dars/start", "POST /dars/retry", "POST /dars/tick"] }, 404, o);
+  } catch (e) {
+    console.error(e);
+    return json({ error: "server", detail: clip(String(e), 200) }, 500, o);
+  }
+});

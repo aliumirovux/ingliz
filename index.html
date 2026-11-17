@@ -2045,6 +2045,93 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 #app .tl-hard i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--bad-strong);transform:translateY(-1px)}
 #app .tl-fbtn{display:flex;flex-direction:column;gap:8px}
 #app .tl-fbtn .btn svg{width:18px;height:18px;vertical-align:-3px;margin-right:4px}
+/* ---- Dars tahlili (Inter Nation yozuvi) ---- */
+.ds-up{display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+.ds-up > b{font-size:17px;font-weight:600;line-height:1.3}
+.ds-up > span{color:var(--muted);font-size:14px;line-height:1.45}
+.ds-up > span b{color:var(--ink)}
+.ds-up .btn,.ds-up .ds-act{margin-top:12px}
+.ds-up.err > b{color:var(--bad)}
+.ds-act{display:flex;flex-wrap:wrap;gap:8px}
+.ds-act .btn{flex:1 1 180px;margin:0}
+.ds-bar{height:6px;border-radius:6px;background:var(--surface-2);overflow:hidden;margin-top:12px}
+.ds-bar i{display:block;height:100%;width:100%;background:var(--marker);border-radius:6px;transition:transform .3s}
+.ds-bar.ind i{width:40%;animation:dsind 1.4s ease-in-out infinite}
+@keyframes dsind{0%{transform:translateX(-100%)}100%{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){.ds-bar.ind i{animation:none;transform:translateX(75%)}}
+.ds-steps{display:flex;gap:6px;list-style:none;margin:12px 0 0;padding:0}
+.ds-steps li{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;min-height:36px;border-radius:12px;background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:500}
+.ds-steps li svg{width:15px;height:15px}
+.ds-steps li.ok{color:var(--ok);background:var(--ok-bg)}
+.ds-steps li.now{color:var(--accent-text);background:var(--marker-soft);font-weight:600}
+.dsc{color:inherit;text-decoration:none}
+.dsc .go{display:flex;color:var(--muted)}.dsc .go svg{width:18px;height:18px}
+.dt-sec{margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.dt-rule{background:var(--marker-soft)}
+.dt-rule .dt-sec{color:var(--accent-text)}
+.dt-rule p:last-child{margin:0;font-size:15px;line-height:1.5}
+.dt-ex{white-space:nowrap;font-weight:600}
+.dt-you,.dt-fix p{margin:0;font-size:17px;line-height:1.4}
+.dt-you{margin-bottom:12px}
+.dt-you span,.dt-fix > span{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:2px}
+.dt-you s{color:var(--bad);text-decoration-thickness:1px}
+.dt-you q{quotes:"«" "»";color:var(--ink)}
+.dt-fix{position:relative;margin-bottom:8px}
+.dt-fix p{display:flex;align-items:flex-start;gap:8px;color:var(--ok)}
+.dt-fix p b{flex:1;font-weight:600}
+.dt-fix .icon{flex:none;margin-top:-4px}
+.dt-show{display:none}
+.dt-fix.veil p{filter:blur(7px);user-select:none;pointer-events:none}
+.dt-fix.veil .dt-show{display:inline-flex;position:absolute;left:50%;top:calc(10px + 50%);transform:translate(-50%,-50%);box-shadow:var(--shadow);align-items:center;min-height:36px;padding:0 14px;border:0;border-radius:999px;background:var(--surface-2);color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.dt-why{margin:0 0 14px;font-size:14.5px;line-height:1.5;color:var(--muted)}
+.dt-retry label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.dt-in{display:block;width:100%;box-sizing:border-box;min-height:56px;resize:none;border-radius:16px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);padding:12px 14px;font:inherit;font-size:17px;line-height:1.4}
+.dt-in:focus{outline:none;border-color:var(--marker)}
+.dt-retry .ds-act{margin-top:10px}
+.dt-res{margin:10px 0 0;font-size:14.5px;font-weight:600;border-radius:14px}
+.dt-res:empty{display:none}
+.dt-res.ok{color:var(--ok);background:var(--ok-bg);padding:10px 12px}
+.dt-res.bad{color:var(--bad);background:var(--bad-bg);padding:10px 12px}
+.dt-next{display:flex;align-items:center;gap:10px;width:100%;min-height:56px;padding:10px 16px;border:0;border-radius:20px;background:var(--card);box-shadow:var(--shadow);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.dt-next b{flex:none;font-size:14px}
+.dt-next span{flex:1;min-width:0;color:var(--muted);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dt-next svg{flex:none;width:18px;height:18px;color:var(--muted)}
+.dt-done{display:flex;flex-direction:column;gap:2px;background:var(--ok-bg)}
+.dt-done b{display:flex;align-items:center;gap:6px;color:var(--ok);font-size:16px}.dt-done b svg{width:18px;height:18px}
+.dt-done span{color:var(--muted);font-size:14px}
+.dt-fold{padding:4px 18px}
+.dt-more{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:52px;padding:0;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer}
+.dt-more svg{width:18px;height:18px;color:var(--muted);transition:transform .2s}
+.dt-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+.dt-fold > div,.dt-list{padding-bottom:14px}
+.dt-list{list-style:none;margin:0;padding-left:0}
+.dt-list button{display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 0;border:0;border-top:1px solid var(--line);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dt-list li:first-child button{border-top:0}
+.dt-list .dot{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);font-size:12.5px;font-weight:600;color:var(--muted)}
+.dt-list .dot svg{width:14px;height:14px;color:var(--ok)}
+.dt-list button.on .dot{background:var(--marker);color:var(--on-marker)}
+.dt-list .tx{flex:1;min-width:0;font-size:14px;line-height:1.4}
+.dt-list s{display:block;color:var(--bad);text-decoration-thickness:1px}
+.dt-list b{display:block;color:var(--ok);font-weight:600}
+.dt-sum{margin:0 0 12px;font-size:15px;line-height:1.5}
+.dt-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.dt-tags span{font-size:13px;padding:5px 10px;border-radius:999px;background:var(--surface-2)}
+.dt-h{margin:14px 0 4px;font-size:13px;font-weight:600;color:var(--muted)}
+.dt-wl,.dt-tips{list-style:none;margin:0;padding:0}
+.dt-wl li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.dt-wl li:first-child{border-top:0}
+.dt-wl b{font-weight:600}
+.dt-wl span{flex:1;color:var(--muted);font-size:14px}
+.dt-wl .icon{flex:none;padding:6px 10px;min-height:36px}
+.dt-tips li{padding:6px 0 6px 16px;position:relative;font-size:14.5px;line-height:1.45}
+.dt-tips li::before{content:"";position:absolute;left:2px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--marker)}
+.dt-hw{margin:14px 0 0;padding:12px 14px;border-radius:14px;background:var(--marker-soft);font-size:15px}
+.dt-hw b{display:block;font-size:12.5px;color:var(--accent-text);margin-bottom:2px}
+.dt-list q{display:block;quotes:"«" "»";color:var(--muted)}
+.dt-pl .pp{flex:1;display:flex;flex-direction:column;gap:2px}.dt-pl .pp span{flex:none}
+.dt-okl{display:flex;align-items:center;gap:8px;margin:4px 2px;color:var(--ok);font-size:14px;font-weight:600}
+.dt-okl svg{width:18px;height:18px;flex:none}
+.xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
 <nav class="tabs" aria-label="Asosiy bo'limlar">
@@ -2922,7 +3009,7 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
+  const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^dars/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
@@ -3344,11 +3431,310 @@ function repFinish(r) {
   RP = null;
 }
 
+/* ---------- DARS TAHLILI: Inter Nation darsining yozuvi → xatolar va dars mazmuni (supabase/functions/dars) ----------
+   Faqat egasi uchun (Gemini va Claude krediti boshqalarga sarflanmasin). Yozuv «dars-audio» bucket'ga bo'laklab (TUS) yuklanadi:
+   internet uzilsa, qolgan joyidan davom etadi. Ishlov serverda: sahifa yopilsa ham davom etadi, tayyor bo'lganda Telegram xabari keladi.
+   Audio matnga o'girilgach o'chiriladi. Xatoni qayta yozish natijalari class_lessons.answers ga yoziladi; ertangi repetitor darsi ularni oladi. */
+const DARS_OWNER = "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
+const DS_KEY = "ingliz-dars", DS_UP = "ingliz-dars-up";
+const DS_ACTIVE = ["queued", "transcribing", "analyzing"];
+const darsOn = () => !!AUTH && AUTH.uid === DARS_OWNER && cloud.kind !== "claude";
+let DS = (() => { try { const o = JSON.parse(localStorage.getItem(DS_KEY) || "null"); return o && Array.isArray(o.list) ? o : { list: [] }; } catch (e) { return { list: [] }; } })();
+let dsAt = 0, dsPoll = null, DUP = null, DT = {};
+const dsSave = () => { try { localStorage.setItem(DS_KEY, JSON.stringify({ list: DS.list.slice(0, 20) })); } catch (e) {} };
+const dsRow = id => DS.list.find(x => x.id === id);
+const dsActive = () => DS.list.find(x => DS_ACTIVE.includes(x.status));
+const dsDate = d => { const p = String(d || "").split("-"); return p.length === 3 ? `${+p[2]}-${MONTHS[+p[1] - 1]}` : ""; };
+const dsDur = s => !s ? "" : s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s % 3600 / 60)).padStart(2, "0")}:${String(Math.round(s % 60)).padStart(2, "0")}` : `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+const dsMB = b => (b / 1048576).toFixed(b < 10485760 ? 1 : 0) + " MB";
+const dsDone = r => { const ms = (r.analysis && r.analysis.mistakes) || []; return ms.filter((_, i) => r.answers && r.answers["m" + i] && r.answers["m" + i].ok).length; };
+
+async function darsLoad(force) {
+  if (!darsOn() || navigator.onLine === false) return;
+  if (!force && Date.now() - dsAt < 6e4) return;
+  dsAt = Date.now();
+  try {
+    const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,status,error,duration_s,audio_bytes,audio_path,analysis,answers,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
+    const before = JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis]));
+    // shu qurilmada yuborilmagan javoblar saqlanib qoladi
+    DS.list = (rows || []).map(r => { const o = dsRow(r.id); return o && o.dirty ? Object.assign(r, { answers: o.answers, dirty: true }) : r; });
+    dsSave();
+    DS.list.filter(x => x.dirty).forEach(dsPush);
+    const h = location.hash.replace(/^#/, "");
+    if (before !== JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis])) && (h === "dars" || h === "" || (h.startsWith("dars-") && !document.activeElement.closest(".dt-m")))) render();
+  } catch (e) { /* internet yoki sessiya — keshdan ko'rsatiladi */ }
+  dsWatch();
+}
+/* ishlov ketayotganda ro'yxat 8 soniyada yangilanadi (faqat shu sahifa ochiq bo'lsa) */
+function dsWatch() {
+  clearTimeout(dsPoll); dsPoll = null;
+  if (!dsActive() || !/^dars/.test(location.hash.replace(/^#/, ""))) return;
+  dsPoll = setTimeout(() => darsLoad(true), 8000);
+}
+async function darsApi(path, body) {
+  const t = await sbToken();
+  const r = await fetch(SB.url + "/functions/v1/dars/" + path, { method: "POST", headers: { Authorization: "Bearer " + t, apikey: SB.key, "Content-Type": "application/json" }, body: JSON.stringify(body || {}) });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(d.detail || d.error || "HTTP " + r.status), { status: r.status, code: d.error });
+  return d;
+}
+function dsPush(r) {
+  if (!r || r.sending) { if (r) r.again = true; return; }
+  r.sending = true;
+  const body = JSON.stringify({ answers: r.answers });
+  sbToken().then(t => sbFetch(`/rest/v1/class_lessons?id=eq.${r.id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body }, t))
+    .then(() => { if (JSON.stringify({ answers: r.answers }) === body) { r.dirty = false; dsSave(); } })
+    .catch(() => {})
+    .finally(() => { r.sending = false; if (r.again || r.dirty) { r.again = false; if (r.dirty) setTimeout(() => dsPush(r), 3000); } });
+}
+
+/* --- yuklash: Supabase resumable (TUS), 6 MB bo'laklar --- */
+const DS_MIME = { m4a: "audio/x-m4a", mp4: "audio/mp4", aac: "audio/aac", mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac" };
+const DS_EXT = ["m4a", "mp3", "wav", "aac", "ogg", "opus", "webm", "flac", "mp4"];
+const b64 = s => btoa(unescape(encodeURIComponent(s)));
+function dsDuration(file) {
+  return new Promise(res => {
+    const a = document.createElement("audio"), u = URL.createObjectURL(file);
+    const end = v => { clearTimeout(tm); URL.revokeObjectURL(u); res(v); };
+    const tm = setTimeout(() => end(0), 5000);
+    a.preload = "metadata"; a.onloadedmetadata = () => end(isFinite(a.duration) ? Math.round(a.duration) : 0); a.onerror = () => end(0); a.src = u;
+  });
+}
+function dsXhr(method, url, headers, body, onProg) {
+  return new Promise((res, rej) => {
+    const x = new XMLHttpRequest(); x.open(method, url);
+    Object.entries(headers).forEach(([k, v]) => x.setRequestHeader(k, v));
+    if (onProg && x.upload) x.upload.onprogress = e => onProg(e.loaded);
+    x.onload = () => res(x); x.onerror = () => rej(Object.assign(new Error("net"), { status: 0 })); x.ontimeout = x.onerror;
+    x.timeout = 120000; x.send(body || null);
+  });
+}
+async function tusUpload(file, path, mime, onPct) {
+  const ep = SB.url.replace(".supabase.co", ".storage.supabase.co") + "/storage/v1/upload/resumable", CH = 6 * 1024 * 1024;
+  const hd = async () => ({ Authorization: "Bearer " + await sbToken(), "Tus-Resumable": "1.0.0" });
+  let st = null; try { st = JSON.parse(localStorage.getItem(DS_UP) || "null"); } catch (e) {}
+  let url = st && st.path === path && st.size === file.size && st.url ? st.url : null, off = 0, fails = 0;
+  while (true) {
+    try {
+      if (url) {
+        const h = await dsXhr("HEAD", url, await hd());
+        if (h.status === 200 || h.status === 204) off = +h.getResponseHeader("Upload-Offset") || 0; else url = null;
+      }
+      if (!url) {
+        const c = await dsXhr("POST", ep, Object.assign(await hd(), { "Upload-Length": String(file.size), "x-upsert": "false",
+          "Upload-Metadata": `bucketName ${b64("dars-audio")},objectName ${b64(path)},contentType ${b64(mime)},cacheControl ${b64("3600")}` }));
+        if (c.status === 409) return; // allaqachon to'liq yuklangan
+        const loc = c.getResponseHeader("Location");
+        if (c.status !== 201 || !loc) throw Object.assign(new Error("create " + c.status + " " + c.responseText.slice(0, 120)), { status: c.status });
+        url = new URL(loc, ep).href; off = 0;
+        try { localStorage.setItem(DS_UP, JSON.stringify({ id: DUP && DUP.id, path, size: file.size, url })); } catch (e) {}
+      }
+      while (off < file.size) {
+        const end = Math.min(off + CH, file.size), base = off;
+        const r = await dsXhr("PATCH", url, Object.assign(await hd(), { "Upload-Offset": String(off), "Content-Type": "application/offset+octet-stream" }), file.slice(off, end), n => onPct((base + n) / file.size));
+        if (r.status !== 204) throw Object.assign(new Error("patch " + r.status), { status: r.status });
+        off = +r.getResponseHeader("Upload-Offset") || end; fails = 0; onPct(off / file.size);
+      }
+      return;
+    } catch (e) {
+      // tarmoq uzilishi yoki server xatosi: kutib, qolgan joyidan davom etamiz
+      if (++fails > 6 || (e.status >= 400 && e.status < 500 && e.status !== 409 && e.status !== 423)) throw e;
+      if (DUP) { DUP.wait = true; dsUpPaint(); }
+      await new Promise(r => setTimeout(r, Math.min(20000, 1500 * 2 ** fails)));
+      if (navigator.onLine === false) await new Promise(r => addEventListener("online", r, { once: true }));
+      if (DUP) { DUP.wait = false; dsUpPaint(); }
+    }
+  }
+}
+async function dsPick(file) {
+  const ext = (file.name.split(".").pop() || "").toLowerCase();
+  if (!DS_EXT.includes(ext)) return toast("Bu audio fayl emas", null, null, { type: "info", sub: "m4a, mp3, wav, aac, ogg yoki webm tanlang" });
+  if (file.size > 50 * 1048576) return toast("Fayl 50 MB dan katta", null, null, { type: "info", sub: "Diktofon sozlamalarida «Siqilgan» sifatni tanlang" });
+  DUP = { phase: "pick", file, ext, size: file.size, name: file.name, dur: 0, date: file.lastModified ? new Date(file.lastModified) : new Date() };
+  render();
+  DUP.dur = await dsDuration(file); if (DUP && DUP.phase === "pick") render();
+}
+async function dsStart() {
+  const u = DUP; if (!u || u.phase === "up") return;
+  u.phase = "up"; u.pct = 0; u.err = ""; render();
+  try {
+    if (!u.id) {
+      // shu fayl oldin yuklana boshlangan bo'lsa — o'sha qatorni davom ettiramiz
+      let st = null; try { st = JSON.parse(localStorage.getItem(DS_UP) || "null"); } catch (e) {}
+      const old = st && st.size === u.size && st.id && dsRow(st.id);
+      if (old && old.status === "uploading") { u.id = st.id; u.path = st.path; }
+      else { const r = await darsApi("new", { bytes: u.size, ext: u.ext, duration_s: u.dur }); u.id = r.id; u.path = r.path; }
+    }
+    await tusUpload(u.file, u.path, u.file.type || DS_MIME[u.ext] || "audio/mp4", p => { u.pct = p; dsUpPaint(); });
+    await darsApi("start", { id: u.id });
+    try { localStorage.removeItem(DS_UP); } catch (e) {}
+    DUP = null; await darsLoad(true); render();
+  } catch (e) {
+    u.phase = "err";
+    u.err = e.code === "limit" ? "Bugun 3 ta yozuv yuklandi — ertaga yana." : e.code === "size" ? "Fayl 50 MB dan katta." : e.status === 0 ? "Internet yo'q. Ulangach, «Davom etish»ni bosing — qolgan joyidan yuklanadi." : "Yuklab bo'lmadi: " + e.message;
+    render();
+  }
+}
+/* yuklash foizini butun sahifani qayta chizmasdan yangilaymiz */
+function dsUpPaint() {
+  const el = $("#dsup"); if (!el || !DUP) return;
+  const p = Math.round((DUP.pct || 0) * 100);
+  el.querySelector("b").textContent = DUP.wait ? "Internet kutilmoqda · " + p + "%" : "Yuklanmoqda · " + p + "%";
+  el.querySelector(".ds-bar i").style.transform = `translateX(${p - 100}%)`;
+  el.querySelector(".ds-bar").setAttribute("aria-valuenow", p);
+}
+const DS_STAGE = { queued: ["Navbatda", "Bir daqiqa ichida boshlanadi"], transcribing: ["Matnga o'girilmoqda", "Ikki ovoz ajratilmoqda: siz va o'qituvchi"], analyzing: ["Xatolar tahlil qilinmoqda", "Gaplaringiz birma-bir tekshirilmoqda"] };
+function dsErrText(r) {
+  const e = String(r.error || "");
+  if (/GEMINI_API_KEY/.test(e)) return "Matnga o'girish kaliti hali ulanmagan.";
+  if (/yuklash tugamadi/.test(e)) return "Yozuv oxirigacha yuklanmagan edi.";
+  if (/o'quvchi gaplari topilmadi/.test(e)) return "Yozuvda sizning gaplaringiz topilmadi. Telefon sizga yaqinroq tursin.";
+  return /^transcribing|^queued/.test(e) ? "Matnga o'girishda xato bo'ldi." : "Tahlilda xato bo'ldi.";
+}
+function dsUpCard() {
+  const a = dsActive();
+  if (DUP && DUP.phase === "up") return `<section class="card ds-up" id="dsup"><b>Yuklanmoqda · ${Math.round((DUP.pct || 0) * 100)}%</b><span>Internet uzilsa, qolgan joyidan davom etadi. Sahifadan chiqmang.</span><div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round((DUP.pct || 0) * 100)}"><i style="transform:translateX(${Math.round((DUP.pct || 0) * 100) - 100}%)"></i></div></section>`;
+  if (a) {
+    const [t, s] = DS_STAGE[a.status], k = DS_ACTIVE.indexOf(a.status);
+    return `<section class="card ds-up" aria-live="polite"><b>${t}</b><span>${s}. Odatda 3–6 daqiqa. Sahifani yopsangiz ham davom etadi — tayyor bo'lganda Telegram'ga xabar keladi.</span>
+      <ol class="ds-steps">${["Yuklandi", "Matn", "Tahlil"].map((x, i) => `<li class="${i === 0 || i < k ? "ok" : i === k || (k === 0 && i === 1) ? "now" : ""}">${i === 0 || i < k ? ICON.check : ""}${x}</li>`).join("")}</ol>
+      <div class="ds-bar ind" aria-hidden="true"><i></i></div></section>`;
+  }
+  if (DUP && (DUP.phase === "pick" || DUP.phase === "err")) {
+    const d = DUP.date;
+    return `<section class="card ds-up${DUP.phase === "err" ? " err" : ""}"><b>${DUP.phase === "err" ? "Yuklash to'xtadi" : "Yozuv tanlandi"}</b>
+      <span>${DUP.phase === "err" ? esc(DUP.err) : `${d.getDate()}-${MONTHS[d.getMonth()]} · ${DUP.dur ? dsDur(DUP.dur) + " · " : ""}${dsMB(DUP.size)}`}</span>
+      <div class="ds-act"><button class="btn" id="dsgo">${DUP.phase === "err" ? "Davom etish" : "Yuklash va tahlil qilish"} ${ICON.arrow}</button><button class="btn ghost" id="dsx">Bekor qilish</button></div></section>`;
+  }
+  return `<section class="card ds-up idle"><b>Darsdan keyin yozuvni yuklang</b>
+    <span>iPhone: Diktofon → yozuv → <b>⋯</b> → «Fayllarga saqlash». Keyin shu yerda tanlaysiz. 50 MB gacha (80 daqiqa ≈ 40 MB).</span>
+    <label class="btn" for="dsfile">${ICON.mic}Yozuvni tanlash</label><input type="file" id="dsfile" class="sr-only" accept="audio/*,.m4a,.mp3,.wav,.aac,.ogg,.opus,.webm,.flac"></section>`;
+}
+function dsListRow(r) {
+  const a = r.analysis, n = a ? a.mistakes.length : 0, dn = dsDone(r);
+  const sub = [dsDate(r.day), a && a.content && a.content.unit, dsDur(r.duration_s)].filter(Boolean).join(" · ");
+  const title = r.status === "done" ? a.headline : r.status === "error" ? "Tahlil chiqmadi" : r.status === "uploading" ? "Yuklash tugamagan" : DS_STAGE[r.status][0];
+  const st = r.status === "done" && n ? `<span class="st${dn === n ? " full" : ""}">${dn === n ? ICON.check : ""}${dn}/${n}</span>` : "";
+  return `<a class="li" href="#dars-${r.id}"><span class="lic">${r.status === "done" ? ICON.pen : r.status === "error" ? ICON.info : ICON.clock}</span><span class="tx"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${st}<span class="go">${ICON.chev}</span></a>`;
+}
+route(/^dars$/, () => {
+  if (!darsOn()) return go("");
+  darsLoad();
+  const list = DS.list.filter(r => r.status === "done" || r.status === "error" || (r.status === "uploading" && !(DUP && DUP.id === r.id) && Date.now() - Date.parse(r.created_at) > 6 * 3600e3));
+  app.innerHTML = `${nav("#", "Bugun", "Dars tahlili")}<h2 class="pg-h">Dars tahlili</h2>
+  <p class="sub">Inter Nation darsining yozuvidan: siz aytgan gaplardagi xatolar va darsda o'tilganlar. Audio matnga o'girilgach o'chiriladi.</p>
+  <div class="stack">${dsUpCard()}
+  ${list.length ? `<section class="sec"><div class="sec-h"><h2>Oldingi darslar</h2><span class="n">${list.length} ta</span></div><div class="list">${list.map(dsListRow).join("")}</div></section>` : ""}</div>`;
+  const f = $("#dsfile"); if (f) f.onchange = () => { if (f.files && f.files[0]) dsPick(f.files[0]); };
+  const g = $("#dsgo"); if (g) g.onclick = dsStart;
+  const x = $("#dsx"); if (x) x.onclick = () => { DUP = null; render(); };
+  dsWatch();
+});
+
+/* --- natija: avval xatolar (variant B) --- */
+const dsMin = t => { const p = String(t || "").split(":").map(Number); return p.length === 3 ? p[0] * 60 + p[1] + 1 : p.length === 2 ? p[0] + 1 : 0; };
+route(/^dars-([0-9a-f-]{36})$/, id => {
+  if (!darsOn()) return go("");
+  const r = dsRow(id);
+  if (!r) { darsLoad(true); app.innerHTML = `${nav("#dars", "Dars tahlili", "")}<div class="card"><p class="muted" style="margin:0">Yuklanmoqda…</p></div>`; return; }
+  if (r.status !== "done") return dsPending(r);
+  const a = r.analysis, ms = a.mistakes || [], c = a.content || {}, top = a.rules && a.rules[0];
+  const ans = r.answers || (r.answers = {});
+  if (DT.id !== id) DT = { id, i: Math.max(0, ms.findIndex((_, i) => !(ans["m" + i] && ans["m" + i].ok))) , all: false };
+  if (DT.i >= ms.length) DT.i = 0;
+  const dn = dsDone(r), allDone = ms.length && dn === ms.length;
+  const m = ms[DT.i], prev = m && ans["m" + DT.i], uz = m && m.kind === "uz";
+  const nx = ms.findIndex((_, i) => i > DT.i && !(ans["m" + i] && ans["m" + i].ok)), nxi = nx >= 0 ? nx : ms.findIndex((_, i) => i !== DT.i && !(ans["m" + i] && ans["m" + i].ok));
+  const age = dayDiff(r.day, today());
+  const card = !m ? "" : `<section class="card dt-m" aria-labelledby="dtl">
+    <p class="dt-sec" id="dtl">${DT.i + 1} / ${ms.length}${dsMin(m.t) ? ` · darsning ${dsMin(m.t)}-daqiqasi` : ""}${m.teacher ? " · o'qituvchi tuzatgan" : ""}</p>
+    <p class="dt-you"><span>${uz ? "Siz o'zbekcha aytdingiz" : "Siz aytdingiz"}</span>${uz ? `<q>${esc(m.you)}</q>` : `<s lang="en">${esc(m.you)}</s>`}</p>
+    <div class="dt-fix${prev && prev.ok ? "" : " veil"}" id="dtfix"><span>${uz ? "Inglizchasi" : "To'g'risi"}</span><p><b lang="en">${esc(m.fix)}</b><button class="icon" data-say="${esc(m.fix)}" aria-label="Tinglash">${ICON.vol}</button></p><button class="dt-show" id="dtshow" type="button">Ko'rsatish</button></div>
+    <p class="dt-why">${esc(m.why)}</p>
+    <div class="dt-retry"><label for="dtin">${prev && prev.ok ? "Qayta yozdingiz" : "To'g'risini xotiradan yozing"}</label>
+      <textarea class="dt-in" id="dtin" rows="2" lang="en" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" enterkeyhint="done">${esc(prev ? prev.a : "")}</textarea>
+      <div class="ds-act"><button class="btn${prev && prev.ok ? " ghost" : ""}" id="dtchk">Tekshirish</button></div>
+      <p class="dt-res${prev ? (prev.ok ? " ok" : " bad") : ""}" id="dtres" aria-live="polite">${prev ? (prev.ok ? "To'g'ri yozildi." : "Yana bir urinib ko'ring.") : ""}</p></div></section>`;
+  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}
+  <span class="rep-chip">${ICON.spark}Dars tahlili · Inter Nation</span><h2 class="pg-h">${esc(a.headline)}</h2>
+  <p class="sub">${[dsDate(r.day), c.unit, a.said ? `siz ${a.said} ta gap aytdingiz` : ""].filter(Boolean).map(esc).join(" · ")}</p>
+  <div class="stack">
+    ${top && top.count >= 2 ? `<section class="card dt-rule"><p class="dt-sec">Asosiy xato · ${top.count} marta</p><p><b>${esc(top.title)}</b> ${esc(top.text)}${top.ex ? ` <span lang="en" class="dt-ex">${esc(top.ex)}</span>` : ""}</p></section>` : ""}
+    ${!ms.length ? `<section class="card"><p style="margin:0">Bu darsda aniq xato topilmadi. Pastda darsda o'tilganlar.</p></section>` : ""}
+    ${allDone ? `<section class="card dt-done"><b>${ICON.check}${ms.length} ta xatoning hammasi qayta yozildi</b><span>Ro'yxatdan istalganini ochib, yana yozishingiz mumkin.</span></section>` : ""}
+    ${card}
+    ${nxi >= 0 && !allDone ? `<button class="dt-next" id="dtnext"><b>Keyingi xato</b><span lang="en">${esc(ms[nxi].you.length > 46 ? ms[nxi].you.slice(0, 44) + "…" : ms[nxi].you)}</span>${ICON.chev}</button>` : ""}
+    ${ms.length > 1 ? `<section class="card dt-fold"><button class="dt-more" id="dtall" aria-expanded="${DT.all}" aria-controls="dtalll">Barcha xatolar · ${dn}/${ms.length} qayta yozildi${ICON.down}</button>
+      <ol class="dt-list" id="dtalll"${DT.all ? "" : " hidden"}>${ms.map((x, i) => { const ok = ans["m" + i] && ans["m" + i].ok; return `<li><button data-mi="${i}" class="${i === DT.i ? "on" : ""}" aria-label="${i + 1}-xato${ok ? ", qayta yozilgan" : ""}"><span class="dot">${ok ? ICON.check : i + 1}</span><span class="tx">${x.kind === "uz" ? `<q>${esc(x.you)}</q>` : `<s lang="en">${esc(x.you)}</s>`}<b lang="en">${esc(x.fix)}</b></span></button></li>`; }).join("")}</ol></section>` : ""}
+    ${dsContent(c)}
+    ${age <= 1 && ms.length ? `<p class="dt-okl">${ICON.check}${age === 0 ? "Ertaga" : "Bugun"} 06:30 dagi repetitor darsiga shu xatolar qo'shiladi</p>` : ""}
+  </div>`;
+  bindSay(app);
+  const nxt = $("#dtnext"); if (nxt) nxt.onclick = () => { DT.i = nxi; render(); };
+  const al = $("#dtall"); if (al) al.onclick = () => { DT.all = !DT.all; al.setAttribute("aria-expanded", DT.all); $("#dtalll").hidden = !DT.all; };
+  app.querySelectorAll("[data-mi]").forEach(b => b.onclick = () => { DT.i = +b.dataset.mi; render(); requestAnimationFrame(() => { const e = $(".dt-m"); if (e) e.scrollIntoView({ block: "start", behavior: calm() ? "auto" : "smooth" }); }); });
+  const cm = $("#dtcm"); if (cm) cm.onclick = () => { const o = cm.getAttribute("aria-expanded") !== "true"; cm.setAttribute("aria-expanded", o); $("#dtcml").hidden = !o; DT.cm = o; };
+  if (!m) return;
+  const inp = $("#dtin"), fix = $("#dtfix"), res = $("#dtres");
+  $("#dtshow").onclick = () => { fix.classList.remove("veil"); };
+  $("#dtchk").onclick = () => {
+    const v = inp.value.trim(); if (!v) { inp.focus(); return; }
+    const ok = repNorm(v) === repNorm(m.fix);
+    const was = ans["m" + DT.i];
+    ans["m" + DT.i] = { ok: ok || !!(was && was.ok), a: v.slice(0, 300) };
+    r.dirty = true; dsSave(); dsPush(r);
+    fix.classList.remove("veil");
+    if (ok) {
+      res.className = "dt-res ok"; res.textContent = "To'g'ri! Ertaga repetitor yana so'raydi.";
+      const chk = $("#dtchk"); chk.classList.add("ghost");
+      const n2 = ms.findIndex((_, i) => i !== DT.i && !(ans["m" + i] && ans["m" + i].ok));
+      if (n2 >= 0) { chk.textContent = "Keyingi xato"; chk.onclick = () => { DT.i = n2; render(); window.scrollTo(0, 0); }; chk.focus(); }
+      else { chk.textContent = "Hammasi tayyor"; chk.onclick = () => { render(); window.scrollTo(0, 0); }; }
+    } else { res.className = "dt-res bad"; res.innerHTML = `Farqi bor. To'g'risiga qarab, yana yozing.`; inp.focus(); inp.select(); }
+  };
+  inp.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("#dtchk").click(); } };
+});
+function dsContent(c) {
+  const parts = [
+    c.summary ? `<p class="dt-sum">${esc(c.summary)}</p>` : "",
+    c.topics && c.topics.length ? `<div class="dt-tags">${c.topics.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : "",
+    c.words && c.words.length ? `<h3 class="dt-h">Yangi so'zlar · ${c.words.length}</h3><ul class="dt-wl">${c.words.map(w => `<li><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash: ${esc(w.en)}">${ICON.vol}</button></li>`).join("")}</ul>` : "",
+    c.phrases && c.phrases.length ? `<h3 class="dt-h">Foydali gaplar</h3><ul class="dt-wl dt-pl">${c.phrases.map(w => `<li><span class="pp"><b lang="en">${esc(w.en)}</b><span>${esc(w.uz)}</span></span><button class="icon" data-say="${esc(w.en)}" aria-label="Tinglash">${ICON.vol}</button></li>`).join("")}</ul>` : "",
+    c.tips && c.tips.length ? `<h3 class="dt-h">O'qituvchi maslahati</h3><ul class="dt-tips">${c.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : "",
+    c.homework ? `<p class="dt-hw"><b>Uy vazifasi</b>${esc(c.homework)}</p>` : ""].join("");
+  if (!parts) return "";
+  return `<section class="card dt-fold"><button class="dt-more" id="dtcm" aria-expanded="${!!DT.cm}" aria-controls="dtcml">Darsda nima o'tildi${ICON.down}</button><div id="dtcml"${DT.cm ? "" : " hidden"}>${parts}</div></section>`;
+}
+function dsPending(r) {
+  const err = r.status === "error", up = r.status === "uploading";
+  app.innerHTML = `${nav("#dars", "Dars tahlili", dsDate(r.day))}<h2 class="pg-h">${err ? "Tahlil chiqmadi" : up ? "Yuklash tugamagan" : DS_STAGE[r.status][0]}</h2>
+  <div class="stack"><section class="card ds-up${err ? " err" : ""}">
+    ${err ? `<b>${esc(dsErrText(r))}</b><span>${r.audio_path ? "Yozuv hali serverda turibdi, qayta urinsa bo'ladi." : "Yozuv o'chirilgan: matn saqlangan bo'lsa tahlil qayta qilinadi, aks holda yozuvni qayta yuklang."}</span><div class="ds-act"><button class="btn" id="dsre">Qayta urinish</button></div>`
+    : up ? `<b>Yozuv oxirigacha yuklanmagan</b><span>«Dars tahlili» sahifasida o'sha faylni qayta tanlang — qolgan joyidan davom etadi.</span><div class="ds-act"><a class="btn" href="#dars">Dars tahlili</a></div>`
+    : `<b>${DS_STAGE[r.status][1]}</b><span>Odatda 3–6 daqiqa. Tayyor bo'lganda Telegram'ga xabar keladi.</span><div class="ds-bar ind" aria-hidden="true"><i></i></div>`}
+  </section></div>`;
+  const b = $("#dsre"); if (b) b.onclick = async () => {
+    b.disabled = true;
+    try { await darsApi("retry", { id: r.id }); await darsLoad(true); render(); }
+    catch (e) { b.disabled = false; toast(e.code === "no_audio" ? "Yozuvni qayta yuklang" : "Bo'lmadi", null, null, { type: "info", sub: e.code === "no_audio" ? "Audio o'chirilgan" : e.message }); }
+  };
+  darsLoad(); dsWatch();
+}
+/* bosh sahifa: dars kuni kechqurun — yuklash taklifi; ishlov ketayotganda yoki tayyor bo'lsa — holati */
+function darsCard() {
+  if (!darsOn()) return "";
+  const a = dsActive(), d = new Date(), last = DS.list.find(x => x.status === "done" && dayDiff(x.day, today()) <= 1);
+  if (a) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.clock}</span><span class="tx"><b>Dars tahlil qilinmoqda</b><span>${DS_STAGE[a.status][0]} · tayyor bo'lganda Telegram'ga xabar keladi</span></span><span class="go">${ICON.chev}</span></a>`;
+  if (last) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
+  if (clsDays().includes(d.getDay()) && d.getHours() >= 17 && !DS.list.some(x => x.day === today() && x.status !== "uploading")) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Bugungi darsni yuklang</b><span>Diktofon yozuvidan xatolaringiz va darsda o'tilganlar chiqadi</span></span><span class="go">${ICON.chev}</span></a>`;
+  return "";
+}
+
 /* ---------- BUGUN ---------- */
 route(/^$/, () => {
   if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
-  LES = false; repLoad();
+  LES = false; repLoad(); darsLoad();
   const d = new Date(), cu = curUnit(), st = unitStat(cu.n), info = UNIT_INFO[cu.n];
   const streak = liveStreak();
   const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
@@ -3362,7 +3748,7 @@ route(/^$/, () => {
     <button class="pill" id="kursb" data-k="lvl" aria-haspopup="dialog" aria-label="Darajani o'zgartirish: ${esc(lv.t)}"><span>${esc(lv.t)}</span><span class="dn">${ICON.down}</span></button>${lvReady ? `<button class="pill" id="unitb" data-k="unit" aria-haspopup="dialog" aria-label="Unitni o'zgartirish"><span>${S.course ? "Unit " + un(cu.n) : "Unitni tanlang"}</span><span class="dn">${ICON.down}</span></button>` : ""}
   </div>${meBtn()}</div>
   <div class="stack">
-    ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}
+    ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}${darsCard()}
     <div class="lcol">${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
@@ -3378,6 +3764,7 @@ route(/^$/, () => {
     ${seen ? `<div class="xm2">${fcTile()}${mastTile(seen, mast)}</div>` : ""}
     ${mxGrid(lv.zero)}
     ${backupCard(seen) || installCard()}
+    ${darsOn() ? `<a class="xrow ds-x" href="#dars"><span class="ic">${ICON.mic}</span><b>Dars tahlili</b><span class="go">${ICON.chev}</span></a>` : ""}
     ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
@@ -3408,7 +3795,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611171900";
+const APP_V = "202611172200";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7392,7 +7779,7 @@ const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY =
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
 const aicSave = () => { AIC.m = AIC.m.slice(-AIC_MAX); try { localStorage.setItem(AIC_KEY, JSON.stringify(AIC)); } catch (e) {} };
 const aiOn = () => !!AUTH && cloud.kind !== "claude" && AI_ALLOW.includes(String(AUTH.email || "").toLowerCase());
-const aiHideRoute = h => /^(quiz|repetitor|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
+const aiHideRoute = h => /^(quiz|repetitor|dars-|gapmashq|tuzmashq|oyinmashq|fellarmashq|fellartez|ibmashq|tinglash-\d)/.test(h);
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];

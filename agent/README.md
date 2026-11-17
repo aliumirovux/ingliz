@@ -39,3 +39,16 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 - Kalit faqat shu ikki eshikni ochadi: Ali'ning xulosasini o'qish va bitta kunlik darsni yozish. Boshqa foydalanuvchilar, `progress` ga yozish — yo'q.
 - Saytdagi foydalanuvchi darsni o'zgartira olmaydi, faqat javoblarini yozadi (ustun darajasidagi huquq).
 - Console'da to'lov kartasi yo'q: Max krediti tugasa, agent to'xtaydi, pul yechilmaydi.
+
+## Telegram
+- Bot token: Edge Function secret `TELEGRAM_BOT_TOKEN`. Webhook: `GET /functions/v1/repetitor/tg-setup` (bir marta). Botga `/start` yozgan birinchi chat egasiniki.
+- Ertalab dars yozilganda xabar; 20:00 da (pg_cron `repetitor-kechki-eslatma`) dars bajarilmagan bo'lsa bitta eslatma.
+
+## Bugungi reja
+- Agent `plan` beradi: `recommend` (10/20/30 daqiqa) va `order` (o'z bo'limlari `rep0..` + sayt qadamlari). Sayt bitta ro'yxatda tanlangan vaqtga qirqib ko'rsatadi.
+
+## Dars tahlili (Inter Nation)
+- Sayt `#dars`: iPhone Diktofon yozuvi → `dars-audio` bucket (TUS, 6 MB bo'laklar, uzilsa davom etadi).
+- `supabase/functions/dars`: Gemini (`GEMINI_API_KEY`, model `gemini-3.8-flash`) matn + ikki ovoz → audio darhol o'chiriladi → Claude (`claude-opus-5-5`) xatolar va mazmun → Telegram.
+- Har bosqich alohida chaqiruv (150 s chegarasi), pg_cron `dars-ishlov` har daqiqa navbatni suradi. 3 urinishdan keyin `error`, saytda «Qayta urinish».
+- `/repetitor/data` → `class_lessons`: agent ertangi darsning birinchi bo'limini shu xatolardan tuzadi.

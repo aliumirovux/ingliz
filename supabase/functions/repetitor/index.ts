@@ -42,6 +42,21 @@ async function data(owner: string) {
   const log = Object.fromEntries(Object.entries(S.log || {}).filter(([d]) => d >= from14).sort());
   const mis = Object.entries(S.mis || {}).filter(([, d]) => String(d) >= from21).sort((a, b) => (String(a[1]) < String(b[1]) ? 1 : -1)).map(([k, d]) => ({ k, d }));
   const lessons = await db(`agent_lessons?user_id=eq.${owner}&day=gte.${tashkentDay(-7)}&select=day,lesson,answers,done_at&order=day.desc`);
+  // Inter Nation darslari (dars funksiyasi tahlil qilgan): oxirgi 10 kun, ko'pi bilan 3 ta
+  let cls: Record<string, unknown>[] = [];
+  try {
+    const c = await db(`class_lessons?user_id=eq.${owner}&status=eq.done&day=gte.${tashkentDay(-10)}&select=day,analysis,answers&order=day.desc&limit=3`);
+    cls = (c || []).map((r: Record<string, any>) => {
+      const a = r.analysis || {}, ct = a.content || {}, ans = r.answers || {};
+      return {
+        day: r.day, unit: ct.unit || null, headline: a.headline,
+        rules: (a.rules || []).map((x: Record<string, unknown>) => ({ key: x.key, ex: x.ex, count: x.count })),
+        // retyped: sayt sahifasida xatoni qayta to'g'ri yozdimi (null — hali urinmagan)
+        mistakes: (a.mistakes || []).map((m: Record<string, unknown>, i: number) => ({ kind: m.kind, rule: m.rule, you: m.you, fix: m.fix, why: m.why, retyped: ans["m" + i] ? !!ans["m" + i].ok : null })),
+        words: ct.words || [], homework: ct.homework || null,
+      };
+    });
+  } catch (e) { console.error("class_lessons", e); }
   return {
     today: day,
     note: "id formati: «unit|so'z» (masalan «9|come»). Unit 1–10 — Beginner, 101+ — Pre-intermediate, «vb» — so'z boyligi bazasi. So'zlarning tarjimasi va misollari: https://easywords.uz/data/beginner.js (UNITS). mis kalitlari: w: — so'z, g: — grammatika qolipi, b: — gap tuzish gapi.",
@@ -51,6 +66,7 @@ async function data(owner: string) {
     mistakes_21d: mis,
     confusions: Object.values(S.conf || {}),
     grammar: { scores: S.pat || {}, review: S.gr || {} },
+    class_lessons: cls,
     lessons: (lessons || []).map((l: Record<string, unknown>) => ({ day: l.day, done_at: l.done_at, answers: l.answers, lesson: l.lesson })),
     progress_updated_at: rows && rows[0] ? rows[0].updated_at : null,
   };
@@ -160,7 +176,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && p0 === "tg-setup") {
       if (!TG()) return json({ error: "no_token" }, 503);
       const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/repetitor/tg`;
-      await tg("setWebhook", { url, secret_token: await tgSecret(), allowed_updates: ["message"], drop_pending_updates: true });
+      await tg("setWebhook", { url, secret_token: await tgSecret(), allowed_updates: ["message"], drop_pending_updates: false });
       const st = await settings(owner);
       return json({ ok: true, webhook: url, linked: !!(st && st.tg_chat_id) });
     }

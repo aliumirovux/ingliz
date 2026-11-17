@@ -2225,6 +2225,13 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .sh-row .tx{flex:1;min-width:0}.sh-row b{display:block;font-size:15px;font-weight:600}.sh-row .tx span{display:block;font-size:13px;color:var(--muted)}
 .sh-row .m{font-size:13px;color:var(--muted);white-space:nowrap}
 .sh-next{margin:10px 4px 0;font-size:13px;color:var(--muted)}
+.sh3{display:flex;flex-direction:column;gap:10px}.sh3 .sh-row{margin-top:0}.sh3 .sh-next{margin:2px 6px 0}
+.sh-row.is-done{cursor:default}.sh-row .ic.ok{background:var(--ok-strong);color:#fff}.sh-row .ic.esl{color:var(--accent-text)}
+.sh-link{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;font-size:13.5px;color:var(--muted);text-decoration:none}.sh-link svg{width:16px;height:16px}
+.sh-done-card{border-radius:30px;padding:24px 20px;background:var(--card,var(--surface));box-shadow:var(--card-shadow,var(--shadow));text-align:center}
+.sh-done-card .big{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;background:var(--ok-strong);color:#fff;display:grid;place-items:center}.sh-done-card .big svg{width:34px;height:34px}
+.sh-done-card h2{margin:0 0 4px;font:700 24px/1.2 var(--font-display);letter-spacing:-.02em}.sh-done-card p{margin:0;color:var(--muted);font-size:14px}
+.sh-extra{display:flex;flex-direction:column;gap:8px;margin-top:16px;text-align:left}.sh-extra .sh-row{margin:0;background:var(--surface-2);box-shadow:none;text-decoration:none}
 .sh-more{margin-top:12px}
 .sh-more>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;border-radius:22px;background:var(--card,var(--surface));font-weight:600;font-size:15px}
 .sh-more>summary::-webkit-details-marker{display:none}
@@ -4346,7 +4353,6 @@ function srListen({ onFirst, onText, onEnd, onFail }) {
 const srStop = () => { if (SR_CUR) SR_CUR.abort(); };
 
 /* --- ekran --- */
-let SHMORE = false; // «Boshqa mashqlar» ochiqmi (shu seans)
 let DL = null; // { id, i, st: q|rec|res|end, hints, lat, said, live, res, sh, shLive, secs, out: [], typed }
 const dlItems = r => ((r.analysis && r.analysis.speech && r.analysis.speech.stuck) || []).filter(x => x.en);
 const dlRescue = r => { const x = r.analysis && r.analysis.speech && r.analysis.speech.rescue; return x && x.length ? x : ["Let me think…", "How do you say … in English?"]; };
@@ -4514,19 +4520,50 @@ function sceneHome() {
       : `<a class="btn" href="#sahna" id="shgo">${st ? "Davom etish" : "Sahnani boshlash"} ${ICON.arrow}</a>`}
   </section>`;
 }
-function sceneRows(plan) {
-  const r = repToday(), rows = [];
-  if (r && !r.done_at) { const n = r.lesson.sections.filter((_, si) => !repSecDone(r, si)).length; rows.push(`<button class="sh-row" data-sr="rep"><span class="ic">${ICON.redo}</span><span class="tx"><b>${shToday() && !shToday().done_at ? "Sahnadan oldin: kechagi xatolar" : "Repetitor darsi"}</b><span>Repetitor · ${n} bo'lim</span></span><span class="m">${r.lesson.minutes || 5} daq</span></button>`); }
-  const k = plan.find(x => x.tag === "kech");
-  if (k) rows.push(`<button class="sh-row" data-sr="kech"${k.lock ? " disabled" : ""}><span class="ic">${ICON.moon}</span><span class="tx"><b>Kechki takrorlash</b><span>${esc(k.s)}</span></span><span class="m">${k.lock ? "" : "2 daq"}</span></button>`);
-  const s = shToday(); if (s && s.scene.next) rows.push(`<p class="sh-next">Ertaga: «${esc(s.scene.next)}»</p>`);
-  return rows.join("");
+/* «Uch narsa» (variant A): repetitor darsi · sahna · «Eslab qolish» (kuniga eng xavfli 15 so'z). Boshqa mashqlar «Unitlar»da.
+   Uchalasi bajarilgach — «Bugungi ish tugadi». */
+const ESL_N = 15;
+function eslList(n) {
+  const out = [], ids = new Set(), add = w => { if (w && !ids.has(w.id) && out.length < ESL_N) { ids.add(w.id); out.push(w); } };
+  misWords(true).filter(w => w.unit <= n).slice(0, 5).forEach(add);
+  // sahnadagi so'zlar: o'rganilgan va takrorlash vaqti kelgan yoki unutilayotganlari birinchi
+  const s = shToday(), sw = s ? new Set((s.scene.words || []).map(x => String(x.en || "").toLowerCase().trim())) : new Set();
+  const due = revOrder(dueWords()).sort((a, b) => (recall(a) ?? 1) - (recall(b) ?? 1));
+  due.filter(w => sw.has(String(w.w).toLowerCase().trim())).forEach(add);
+  learnedToday().filter(w => Date.now() - rec(w.id).lt >= KECH_H * 36e5).forEach(add);
+  due.forEach(add);
+  return out;
 }
-function bindSceneHome(plan) {
+const eslK = L => { const s = shToday(); if (!s) return 0; const sw = new Set((s.scene.words || []).map(x => String(x.en || "").toLowerCase().trim())); return L.filter(w => sw.has(String(w.w).toLowerCase().trim())).length; };
+const repIsDone = r => !!r && (!!r.done_at || r.lesson.sections.every((_, si) => repSecDone(r, si)));
+function shAllDone(n) {
+  const r = repToday(), s = shToday();
+  return !!s && !!s.done_at && (!r || repIsDone(r)) && (dayDone().includes("esl") || !eslList(n).length);
+}
+function sceneHome3(n) {
+  const s = shToday(), more = `<a class="sh-link" href="#unitlar">${ICON.read || ""}Boshqa mashqlar «Unitlar» bo'limida</a>`;
+  const next = s && s.scene.next ? `<p class="sh-next">Ertaga: «${esc(s.scene.next)}»</p>` : "";
+  if (shAllDone(n)) {
+    const nx = eslList(n).length;
+    return `<section class="sh-done-card"><span class="big">${ICON.check}</span><h2>Bugungi ish tugadi</h2><p>Repetitor · sahna · so'zlar${s.scene.next ? `. Ertaga: «${esc(s.scene.next)}»` : ""}</p>
+      <div class="sh-extra">${nx ? `<button type="button" class="sh-row" data-sr="esl"><span class="tx"><b>Yana ${nx} so'z eslash</b></span><span class="m">${Math.max(2, Math.round(nx * .27))} daq</span></button>` : ""}<a class="sh-row" href="#unitlar"><span class="tx"><b>Unit ${un(n)} mashqlari</b></span><span class="m">Unitlar ${ICON.chev}</span></a></div></section>`;
+  }
+  const r = repToday(); let rr = "";
+  if (r) {
+    const dn = repIsDone(r), left = r.lesson.sections.filter((_, si) => !repSecDone(r, si)).length;
+    rr = dn ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Repetitor darsi</b><span>${r.lesson.sections.length}/${r.lesson.sections.length} bajarildi · ertalab yangisi</span></span></div>`
+      : `<button type="button" class="sh-row" data-sr="rep"><span class="ic">${ICON.spark}</span><span class="tx"><b>Repetitor darsi</b><span>${left} bo'lim qoldi · ${esc(r.lesson.title || "bugungi dars")}</span></span><span class="m">${r.lesson.minutes || 5} daq</span></button>`;
+  }
+  const L = eslList(n), ed = dayDone().includes("esl");
+  const er = !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
+    : `<button type="button" class="sh-row" data-sr="esl"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish</b><span>${L.length} ta so'z${eslK(L) ? " · " + eslK(L) + " tasi sahnadan" : " · eng unutilayotganlari birinchi"}</span></span><span class="m">${Math.max(2, Math.round(L.length * .27))} daq</span></button>`;
+  return `<div class="sh3">${rr}${sceneHome()}${er}${next}${more}</div>`;
+}
+function bindSceneHome(n) {
   const re = $("#shre"); if (re) re.onclick = () => { shState = ""; shLoad(true); render(); };
   app.querySelectorAll(".sh-row[data-sr]").forEach(b => b.onclick = () => {
-    if (b.dataset.sr === "rep") { RP = null; go("repetitor"); }
-    else { const k = plan.find(x => x.tag === "kech"); if (k && !k.lock) k.run(); }
+    if (b.dataset.sr === "rep") { RP = null; go("repetitor"); return; }
+    const L = eslList(n); if (L.length) startQuiz(L, "auto", "Eslab qolish", "#", "esl");
   });
 }
 
@@ -4802,7 +4839,7 @@ route(/^$/, () => {
       ${levelPicker()}
       <p class="pick-l" id="ul">Unit</p>
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
-    </section>` : shOn() ? `${sceneHome()}${sceneRows(plan)}<details class="sh-more"${SHMORE ? " open" : ""}><summary>Boshqa mashqlar<span>${plan.filter(x => !x.lock).length} qadam</span></summary>${lessonCard(cu, st, info, plan, done, left, mins)}</details>` : lessonCard(cu, st, info, plan, done, left, mins)}
+    </section>` : shOn() ? sceneHome3(cu.n) : lessonCard(cu, st, info, plan, done, left, mins)}
     ${lv.zero || (lvReady && !askUnit) ? "" : felCard() + ibCard() + hikCard()}</div>
     <div class="side">${streakCard(streak)}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
@@ -4838,12 +4875,12 @@ route(/^$/, () => {
   const tb = $("#tobeg"); if (tb) tb.onclick = () => { setLevel("beginner"); render(); };
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
-  if (shOn()) { bindSceneHome(plan); const md = app.querySelector(".sh-more"); if (md) md.ontoggle = () => { SHMORE = md.open; }; }
+  if (shOn()) bindSceneHome(cu.n);
   if (app.classList.contains("hin")) countUp(app);
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611180500";
+const APP_V = "202611180600";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

@@ -810,6 +810,7 @@ body.lp-on{background:#0E0E10;padding-bottom:0}html:has(body.lp-on){background:#
 .lx-final .lx-p{background:#111;color:#fff}.lx-final .lx-s{background:rgba(26,13,6,.10);color:#1A0D06;box-shadow:inset 0 0 0 1.5px rgba(26,13,6,.35)}
 .lx-final .lx-btn:focus-visible{outline-color:#1A0D06}
 .lx-foot{display:flex;justify-content:space-between;gap:16px;padding:28px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-size:14px;color:var(--mu)}
+.lx-foot a{display:inline-flex;align-items:center;min-height:44px;margin:-12px 0}
 @media (max-width:900px){
   .lx-w{padding:0 20px}.lx-nav{display:none}.lx-top{justify-content:space-between;padding:14px 0}
   .lx-hero{grid-template-columns:1fr;gap:32px;padding:20px 0 48px}.lx-lead{font-size:18px}
@@ -1222,7 +1223,7 @@ a.nwb{text-decoration:none}
 .gbar{position:relative;display:block;height:14px;border-radius:99px;background:linear-gradient(90deg,#EBD3C6,#F2A47C 45%,#D2552B 75%,#3F8A3B);box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}}
 :root[data-theme="dark"] .gbar{background:linear-gradient(90deg,#3A2A24,#8E4A2E 45%,#E27A4E 75%,#5FA85A)}
-.gbar .goal{position:absolute;top:-7px;bottom:-7px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink);opacity:.55}
+.gbar .goal{position:absolute;top:-7px;bottom:-7px;width:2px;margin-left:-1px;border-radius:2px;background:var(--ink);background:color-mix(in srgb,var(--ink) 55%,transparent)}
 .gbar .goal em{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);font:600 11px var(--font-body);font-style:normal;color:var(--ok);white-space:nowrap}
 .gbar .h{position:absolute;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 0 0 5px #fff,inset 0 0 0 8px #D2552B}
 .gsl{display:flex;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -1475,7 +1476,7 @@ img,svg{-webkit-user-drag:none}
 .vb-seg button{flex:1;min-height:44px;border:0;border-radius:999px;background:none;color:var(--muted);font:600 15px var(--font-body);cursor:pointer;transition:background-color .2s,color .2s}
 .vb-seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 .vb-desc{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 10px;margin:10px 0 22px;padding:12px 14px;border-radius:18px;background:var(--card);box-shadow:var(--card-sm);font-size:14px;color:var(--muted)}
-.vb-desc a{color:var(--accent-text);font-weight:600;text-decoration:none}
+.vb-desc a{color:var(--accent-text);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;margin:-12px 0;padding:0 2px}
 .vb-chips{display:flex;gap:8px;flex-wrap:wrap}
 .vb-chips button{min-width:60px;min-height:52px;padding:0 14px;border:0;border-radius:18px;background:var(--card);box-shadow:var(--card-sm);color:var(--ink);font:700 19px var(--font-display);cursor:pointer;font-variant-numeric:tabular-nums;transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
 .vb-chips button:active{transform:scale(.95)}
@@ -1811,7 +1812,7 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .oy-lv{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:14px 16px;border:0;border-radius:20px;background:var(--card);box-shadow:var(--card-sm),inset 0 0 0 2px transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:box-shadow .15s,transform .15s}
 .oy-lv:active{transform:scale(.99)}
 .oy-lv.on{box-shadow:var(--card-sm),inset 0 0 0 2px var(--marker)}
-.oy-lv[aria-disabled]{opacity:.5;cursor:default}
+.oy-lv[aria-disabled]{cursor:default;box-shadow:none;background:transparent;outline:1px dashed var(--line-strong);outline-offset:-1px}.oy-lv[aria-disabled] .rd,.oy-lv[aria-disabled] .tx b{opacity:.5}
 .oy-lv .rd{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--line-strong);display:grid;place-items:center}
 .oy-lv.on .rd{box-shadow:inset 0 0 0 2px var(--marker)}.oy-lv.on .rd::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--marker)}
 .oy-lv .tx{flex:1;min-width:0}.oy-lv .tx b{display:block;font-size:16px;font-weight:600}.oy-lv .tx span{font-size:13px;color:var(--muted)}
@@ -3837,6 +3838,9 @@ function dsPush(r) {
 
 /* --- yuklash: Supabase resumable (TUS), 6 MB bo'laklar --- */
 const DS_MIME = { m4a: "audio/x-m4a", mp4: "audio/mp4", aac: "audio/aac", mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac" };
+// bucket qabul qiladigan turlar; brauzer bo'sh, «application/octet-stream», «video/mp4» yoki boshqa nom bersa — kengaytmadan olinadi
+const DS_OK_MIME = ["audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/opus", "audio/webm", "audio/flac"];
+const dsMimeOf = (f, ext) => { const t = String(f.type || "").split(";")[0].toLowerCase(); return DS_OK_MIME.includes(t) ? t : DS_MIME[ext] || "audio/mp4"; };
 const DS_EXT = ["m4a", "mp3", "wav", "aac", "ogg", "opus", "webm", "flac", "mp4"];
 const b64 = s => btoa(unescape(encodeURIComponent(s)));
 function dsDuration(file) {
@@ -3912,7 +3916,7 @@ async function dsStart() {
       if (old && old.status === "uploading") { u.id = st.id; u.path = st.path; }
       else { const r = await darsApi("new", { bytes: u.size, ext: u.ext, duration_s: u.dur, marks: u.marks || [] }); u.id = r.id; u.path = r.path; }
     }
-    await tusUpload(u.file, u.path, (u.file.type || DS_MIME[u.ext] || "audio/mp4").split(";")[0], p => { u.pct = p; dsUpPaint(); });
+    await tusUpload(u.file, u.path, dsMimeOf(u.file, u.ext), p => { u.pct = p; dsUpPaint(); });
     const photos = [];
     for (const [i, ph] of (u.photos || []).slice(0, 8).entries()) {
       const path = `${AUTH.uid}/${u.id}/${i + 1}.jpg`;
@@ -4881,24 +4885,31 @@ function dsPending(r) {
 }
 /* ishlovni to'xtatish: ikki bosishda (birinchisi tasdiq so'raydi, 5 soniyadan keyin o'z holiga qaytadi).
    Yozuv serverda 3 kun turadi — «Bekor qilingan» sahifasidan qayta boshlasa bo'ladi */
+// tasdiq holati sahifadan tashqarida saqlanadi: holat o'zgarib karta qayta chizilsa ham (navbatda → matnga o'girilmoqda)
+// ikkinchi bosish yo'qolmasin
+let DS_CX = null; // { id, until, busy }
+const dsCxArmed = id => DS_CX && DS_CX.id === id && (DS_CX.busy || Date.now() < DS_CX.until);
 function dsCancelBtn(r) {
-  return `<div class="ds-cx"><button class="btn ghost" type="button" data-dscx="${r.id}">Bekor qilish</button><p class="ds-cxh" hidden>${rsIsPhoto(r) ? "Rasmlar saqlanadi" : "Yozuv 3 kun saqlanadi"} — keyin qayta boshlasa bo'ladi.</p></div>`;
+  const on = dsCxArmed(r.id), busy = on && DS_CX.busy;
+  return `<div class="ds-cx"><button class="btn ghost" type="button" data-dscx="${r.id}"${busy ? " disabled" : ""}>${busy ? "To'xtatilmoqda…" : on ? "Ha, to'xtatish" : "Bekor qilish"}</button><p class="ds-cxh"${on ? "" : " hidden"}>${rsIsPhoto(r) ? "Rasmlar saqlanadi" : "Yozuv 3 kun saqlanadi"} — keyin qayta boshlasa bo'ladi.</p></div>`;
 }
 function bindDsCancel() {
   app.querySelectorAll("[data-dscx]").forEach(b => b.onclick = async () => {
-    const h = b.parentElement.querySelector(".ds-cxh");
-    if (!b.dataset.sure) {
-      b.dataset.sure = "1"; b.textContent = "Ha, to'xtatish"; h.hidden = false;
-      setTimeout(() => { if (b.isConnected && !b.disabled) { delete b.dataset.sure; b.textContent = "Bekor qilish"; h.hidden = true; } }, 5000);
+    const id = b.dataset.dscx, paint = () => app.querySelectorAll(`[data-dscx="${id}"]`).forEach(x => { const on = dsCxArmed(id), busy = on && DS_CX.busy; x.disabled = !!busy; x.textContent = busy ? "To'xtatilmoqda…" : on ? "Ha, to'xtatish" : "Bekor qilish"; x.parentElement.querySelector(".ds-cxh").hidden = !on; });
+    if (!dsCxArmed(id)) {
+      DS_CX = { id, until: Date.now() + 5000 }; paint();
+      setTimeout(() => { if (DS_CX && DS_CX.id === id && !DS_CX.busy) { DS_CX = null; paint(); } }, 5000);
       return;
     }
-    b.disabled = true;
+    if (DS_CX.busy) return;
+    DS_CX.busy = true; paint();
     try {
-      await darsApi("cancel", { id: b.dataset.dscx });
-      const r = dsRow(b.dataset.dscx); if (r) { r.status = "cancelled"; r.error = "bekor qilindi"; dsSave(); }
+      await darsApi("cancel", { id });
+      DS_CX = null;
+      const r = dsRow(id); if (r) { r.status = "cancelled"; r.error = "bekor qilindi"; dsSave(); }
       toast("Tahlil to'xtatildi", null, null, { sub: "«Oldingi darslar»da turibdi — qayta boshlasa bo'ladi" });
       render(); darsLoad(true);
-    } catch (e) { b.disabled = false; toast("To'xtatib bo'lmadi", null, null, { type: "info", sub: e.status === 0 ? "Internet yo'q" : e.message }); }
+    } catch (e) { DS_CX = null; paint(); toast("To'xtatib bo'lmadi", null, null, { type: "info", sub: e.status === 0 ? "Internet yo'q" : e.message }); }
   });
 }
 /* ---------- YOZUVSIZ DARS: faqat doska rasmlari (B varianti) ----------
@@ -6732,6 +6743,8 @@ function oySheet(g, m, done) {
   wrap.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
   requestAnimationFrame(() => { wrap.classList.add("on"); $("#oynx").focus({ preventScroll: true }); });
 }
+// sahifa almashsa (orqaga tugmasi, havola) — ochiq qolgan varaq yangi sahifa ustida qolmasin
+addEventListener("hashchange", () => ["oysheet", "qsheet"].forEach(id => { const w = document.getElementById(id); if (!w) return; const x = w.querySelector("[data-x]"); if (x) x.click(); else w.remove(); }));
 function oyFinish() {
   const N = OY.q.length, ok = OY.res.filter(Boolean).length, C = 2 * Math.PI * 52, pool = OY.pool;
   app.innerHTML = `<div class="oy-res"><div class="oy-ring" role="img" aria-label="${N} tadan ${ok} ta to'g'ri"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface-2)" stroke-width="10"/><circle cx="60" cy="60" r="52" fill="none" stroke="var(--ok-strong)" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C * ok / N} ${C}"/></svg><b>${ok}/${N}</b></div>
@@ -7600,7 +7613,7 @@ const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot">
 function wordLi(w) {
   const r = rec(w.id);
   const m = isMastered(w), badge = (r ? `<span class="box ${m ? "m" : ""}">${m ? "mustahkam" : r.b === 0 ? "xato" : Math.min(r.b, 4) + "/5"}</span>` : "") + (isHard(w) ? `<span class="box hard">qiyin</span>` : "");
-  return `<li><div class="h"><span class="w">${esc(w.w)}</span>${w.p ? `<span class="p">[${esc(w.p)}]</span>` : ""}${badge}<button class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
+  return `<li><div class="h"><span class="w">${esc(w.w)}</span>${w.p ? `<span class="p">[${esc(w.p)}]</span>` : ""}${badge}<button aria-label="Tinglash" class="icon say" data-say="${esc(spoken(w))}">${ICON.vol}</button></div>
     <div class="u">${w.star && w.unit < 200 ? "★ " : ""}${esc(w.u)}${w.star && w.book_u ? ` <span class="bk">(kitobda: ${esc(w.book_u)})</span>` : ""}</div>
     ${w.pe ? `<div class="e pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : ""}${w.e ? `<div class="e">${esc(w.e)}<small>${esc(w.t)}</small></div>` : ""}
     ${w.bs ? `<div class="bk" style="margin-top:4px">Kitobdan: ${esc(w.bs)}</div>` : ""}${S.hook[w.id] || isHard(w) ? hookBox(w) : ""}</li>`;
@@ -8347,7 +8360,7 @@ route(/^qolip-([\w-]+)$/, id => {
   const p = PATTERNS.find(x => x.id === id); if (!p) return go("qolip");
   app.innerHTML = `${nav(`#unit-${p.unit}`, `Unit ${un(p.unit)}`, `Grammatika`)}<h2 class="pg-h">${esc(p.title)}</h2><p class="sub">${esc(p.lead)}</p>
   <div class="stack"><div class="card"><p class="label">Qoida</p>${p.rules.map(r => `<div class="rule"><b>${esc(r[0])}</b><span>${esc(r[1])}</span></div>`).join("")}</div>
-  <div class="card"><p class="label">Misollar</p>${p.examples.map(e => `<blockquote>${esc(e[0])} <button class="icon" data-say="${esc(e[0])}" style="padding:4px 8px">${ICON.vol}</button><small>${esc(e[1])}</small></blockquote>`).join("")}</div>
+  <div class="card"><p class="label">Misollar</p>${p.examples.map(e => `<blockquote>${esc(e[0])} <button aria-label="Tinglash" class="icon" data-say="${esc(e[0])}" style="padding:4px 8px">${ICON.vol}</button><small>${esc(e[1])}</small></blockquote>`).join("")}</div>
   <div class="card" id="drill"></div></div>`;
   bindSay(app);
   const own = () => shuffle(p.drill.map((_, i) => drillItem(p, i))), extra = GX || []; GX = null;
@@ -8475,8 +8488,8 @@ route(/^gapir(?:-(\d+))?$/, n => {
   app.innerHTML = `${nav(n ? "#unit-" + n : "#unitlar", n ? "Unit " + un(n) : "Unitlar", "Gapirish")}<p class="sub">Ilovadagi speaking topshiriqlari · [sariq] joylarni o'zingizga moslang</p>
   <div class="card" style="margin-bottom:12px"><label class="muted" style="display:flex;gap:10px;align-items:center"><input type="checkbox" id="hide"> Mashq rejimi: javoblarni yashirish (avval o'zingiz ayting, keyin oching)</label></div>
   <div class="stack">${list.map(t => `<p class="label" style="margin-top:8px">${esc(t.task)} · Unit ${un(t.unit)} · ${esc(t.title)}</p>` + t.items.map(it => `<div class="card sp">
-    <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:17px">${esc(it.q)}</b><button class="icon" data-say="${esc(it.q)}">${ICON.vol}</button></div>
-    <div class="ans">${it.a.map(l => `<p>${esc(l).replace(/\[(.+?)\]/g, '<span class="slot">$1</span>')}</p>`).join("")}<div class="row" style="margin-top:8px"><button class="icon" data-say="${esc(it.a.join(" "))}">Javobni eshitish</button></div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ""}</div>
+    <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:17px">${esc(it.q)}</b><button aria-label="Tinglash" class="icon" data-say="${esc(it.q)}">${ICON.vol}</button></div>
+    <div class="ans">${it.a.map(l => `<p>${esc(l).replace(/\[(.+?)\]/g, '<span class="slot">$1</span>')}</p>`).join("")}<div class="row" style="margin-top:8px"><button aria-label="Tinglash" class="icon" data-say="${esc(it.a.join(" "))}">Javobni eshitish</button></div>${it.tip ? `<div class="tip">${esc(it.tip)}</div>` : ""}</div>
     <button class="btn ghost hidden show" style="margin-top:10px">Javobni ko'rsatish</button></div>`).join("")).join("")}</div>`;
   bindSay(app);
   const apply = () => { const h = $("#hide").checked; document.querySelectorAll(".sp").forEach(c => { c.querySelector(".ans").classList.toggle("hidden", h); c.querySelector(".show").classList.toggle("hidden", !h); }); };
@@ -8536,7 +8549,7 @@ route(/^gap-(\w+)$/, id => {
   ${ps.map(p => { const r = rec(p.id); return `<div class="card" data-micbox>
     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between"><b style="font-size:18px">${esc(p.w)}</b>${r ? `<span class="box ${r.b >= 3 ? "m" : ""}">${r.b >= 3 ? "mustahkam" : r.b === 0 ? "xato" : r.b + "/5"}</span>` : ""}</div>
     <div class="pron">[${esc(p.p)}]</div><div style="margin-top:4px">${esc(p.u)}</div>
-    <div class="tools"><button class="icon" data-say="${esc(p.w)}">Eshitish</button>${micBtn(p.w)}</div><div class="micout hidden"></div></div>`; }).join("")}</div>`;
+    <div class="tools"><button aria-label="Tinglash" class="icon" data-say="${esc(p.w)}">Eshitish</button>${micBtn(p.w)}</div><div class="micout hidden"></div></div>`; }).join("")}</div>`;
   bindSay(app); bindMic(app);
   $("#go").onclick = () => startPh(ps, c.title);
 });
@@ -8553,7 +8566,7 @@ route(/^gapmashq$/, () => {
   <div class="card qcard" data-micbox><p class="label">${esc(G.title)} · inglizchasini ayting</p><div class="q qsmall">${esc(p.u)}</div>
     <div class="tools">${micBtn(p.w)}</div><div class="micout hidden"></div>
     <div id="ans" class="hidden" style="margin-top:14px"><div class="q qsmall" style="margin:0">${esc(p.w)}</div><div class="pron">[${esc(p.p)}]</div>
-      <div class="tools"><button class="icon" data-say="${esc(p.w)}">Eshitish</button></div></div>
+      <div class="tools"><button aria-label="Tinglash" class="icon" data-say="${esc(p.w)}">Eshitish</button></div></div>
     <div class="row" style="margin-top:14px" id="r1"><button class="btn" id="show">Javobni ko'rish</button></div>
     <div class="row hidden" style="margin-top:14px" id="r2"><button class="btn ghost" id="no">Bilmadim</button><button class="btn" id="yes">Bildim</button></div>
   </div>`;
@@ -8569,7 +8582,7 @@ function phFinish() {
   if (G.tag) markDone(G.tag); const wrong = G.wrong.slice(), title = G.title, back = G.back, right = G.right, total = G.q.length, tag = G.tag; G = null;
   app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
     <p class="muted rh-m">${wrong.length ? "Bilmagan gaplaringiz ertaga yana chiqadi." : "Hammasini bildingiz."}</p></div>
-    ${wrong.length ? `<div class="card"><p class="label">Bilmagan gaplar</p><ul class="wl">${wrong.map(p => `<li><div class="h"><span class="w">${esc(p.w)}</span><button class="icon say" data-say="${esc(p.w)}">${ICON.vol}</button></div><div class="p">[${esc(p.p)}]</div><div class="u">${esc(p.u)}</div></li>`).join("")}</ul></div>` : ""}
+    ${wrong.length ? `<div class="card"><p class="label">Bilmagan gaplar</p><ul class="wl">${wrong.map(p => `<li><div class="h"><span class="w">${esc(p.w)}</span><button aria-label="Tinglash" class="icon say" data-say="${esc(p.w)}">${ICON.vol}</button></div><div class="p">[${esc(p.p)}]</div><div class="u">${esc(p.u)}</div></li>`).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Bilmaganlarni qayta ishlash</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   const a = $("#again"); if (a) a.onclick = () => { startPh(wrong, title); G.back = back; };
@@ -9066,7 +9079,7 @@ route(/^tuzmashq$/, () => {
   let done = false;
   const show = (cls, html) => {
     $("#tf").className = "fb tz " + cls; buzz(cls === "ok");
-    $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : ICON.x + "Xato"}</div>` + html + ` <button class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
+    $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : ICON.x + "Xato"}</div>` + html + ` <button aria-label="Tinglash" class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
     bindSay($("#tf")); say(it.e);
     $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
     if (cls !== "ok" && !$("#tzre")) { const b = document.createElement("button"); b.className = "btn ghost"; b.id = "tzre"; b.type = "button"; b.innerHTML = ICON_RETRY + "Qayta yozish"; b.onclick = tuzRetry; $("#chk").before(b); }
@@ -9163,7 +9176,7 @@ function tuzFinish() {
   if (key) { S.pat[key] = Math.max(S.pat[key] || 0, right); save(); }
   app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
     <p class="muted rh-m">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Hamma gap birinchi urinishda to'g'ri."}</p></div>
-    ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl">${wrong.map(it => `<li><div class="h"><span class="w">${esc(it.e)}</span><button class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div><div class="e"><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div>` : ""}
+    ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl">${wrong.map(it => `<li><div class="h"><span class="w">${esc(it.e)}</span><button aria-label="Tinglash" class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div><div class="e"><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta tuzish</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   const a = $("#again"); if (a) a.onclick = () => { startTuz(wrong, title, null); T.back = back; };
@@ -9178,16 +9191,17 @@ async function aiAsk(body) {
   if (!AUTH) throw Object.assign(new Error("auth"), { code: "auth" });
   if (navigator.onLine === false) throw Object.assign(new Error("offline"), { code: "offline" });
   let tok; try { tok = await sbToken(); } catch (e) { throw Object.assign(new Error("auth"), { code: e.status === 0 ? "offline" : "auth" }); }
-  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 20000);
+  // chat / xato / fix / check — Opus (javob 15–40 s), qolganlari — tez model
+  const slow = ["chat", "xato", "fix", "check"].includes(body && body.mode), ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), slow ? 75000 : 25000);
   try {
     const r = await fetch(SB.url + "/functions/v1/tushuntir", { method: "POST", signal: ctl.signal, headers: { apikey: SB.key, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw Object.assign(new Error(d.error || "http"), { code: r.status === 429 ? "limit" : r.status === 401 ? "auth" : r.status === 403 ? "not_allowed" : d.error === "no_key" ? "no_key" : "fail" });
     return d;
-  } catch (e) { if (!e.code) e.code = "offline"; throw e; }
+  } catch (e) { if (!e.code) e.code = e.name === "AbortError" && navigator.onLine !== false ? "slow" : "offline"; throw e; }
   finally { clearTimeout(tm); }
 }
-const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 120 ta so'rov ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : "Tushuntirib bo'lmadi.";
+const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 120 ta so'rov ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : c === "slow" ? "Javob kechikdi. Qayta urinib ko'ring." : "Tushuntirib bo'lmadi.";
 const aiExample = m => m && m.en ? `<div class="ai-ex" ><b>${esc(m.en)}</b><button class="icon" data-say="${esc(m.en)}" aria-label="Tinglash">${ICON.vol}</button>${m.uz ? `<small>${esc(m.uz)}</small>` : ""}</div>` : "";
 /* ---------- YORDAMCHI: har sahifada suzuvchi tugma — tarjima, gapni tekshirish, so'z ma'nosi, savollar ----------
    Faqat AI_ALLOW hisoblarida ko'rinadi. Mashq, test, o'yin va tinglash darsida yashirin (javob xotiradan topilsin).
@@ -9320,7 +9334,7 @@ function aiDraw() {
   aiW.querySelector(".ai-send").disabled = aiBusy;
   requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
 }
-const aiChatErr = c => c === "limit" ? `Bugungi ${AI_LIMIT} ta so'rov tugadi. Ertaga yana — mashqlar ishlayveradi.` : c === "offline" ? "Internet yo'q. Lug'at va mashqlar oflayn ishlaydi, yordamchi esa internet qaytganda." : c === "auth" ? "Hisobga qayta kirish kerak (Sozlamalar)." : c === "not_allowed" ? "Yordamchi bu hisob uchun yoqilmagan." : "Javob olinmadi. Qayta urinib ko'ring.";
+const aiChatErr = c => c === "limit" ? `Bugungi ${AI_LIMIT} ta so'rov tugadi. Ertaga yana — mashqlar ishlayveradi.` : c === "offline" ? "Internet yo'q. Lug'at va mashqlar oflayn ishlaydi, yordamchi esa internet qaytganda." : c === "auth" ? "Hisobga qayta kirish kerak (Sozlamalar)." : c === "not_allowed" ? "Yordamchi bu hisob uchun yoqilmagan." : c === "slow" ? "Javob kechikdi — server band. Qayta urinib ko'ring." : "Javob olinmadi. Qayta urinib ko'ring.";
 async function aiSend(text, retry) {
   if (aiBusy) return;
   const prev = AIC.m.slice();
@@ -9362,7 +9376,7 @@ function whyButton(host, ctx) {
       box.querySelector(".ai-own").onclick = e => { e.currentTarget.remove(); ownTry(box.querySelector(".ai-try"), ctx); };
     } catch (e) {
       box.innerHTML = `<p class="ai-k">${ICON_WHY}Nega xato</p><p class="ai-err" role="alert">${aiErr(e.code)}</p>`;
-      if (e.code === "fail" || e.code === "offline") { btn.disabled = false; btn.querySelector("span").textContent = "Qayta urinish"; } else slot.remove();
+      if (e.code === "fail" || e.code === "offline" || e.code === "slow") { btn.disabled = false; btn.querySelector("span").textContent = "Qayta urinish"; } else slot.remove();
     }
   };
 }

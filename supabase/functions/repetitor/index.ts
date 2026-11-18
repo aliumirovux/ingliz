@@ -77,6 +77,11 @@ async function data(owner: string) {
     confusions: Object.values(S.conf || {}),
     grammar: { scores: S.pat || {}, review: S.gr || {} },
     class_lessons: cls,
+    // haftalik maqsad (saytdagi «Bu haftaning maqsadi»): Ali shu hafta bitta mavzu ustida ishlaydi
+    weekly_goal: S.goal && S.goal.st === "on" ? {
+      topic: S.goal.id, title: GOAL_TITLES[S.goal.id] || S.goal.id, since: S.goal.at, practice_days: (S.goal.days || []).length, base: S.goal.base, hard: S.goal.hard || [],
+      instruction: "Make one section of today's lesson (3–4 items) about this topic, in new everyday sentences. Put sentences from `hard` first. Mention the weekly goal in `why`.",
+    } : null,
     lessons: (lessons || []).map((l: Record<string, unknown>) => ({ day: l.day, done_at: l.done_at, answers: l.answers, lesson: l.lesson })),
     progress_updated_at: rows && rows[0] ? rows[0].updated_at : null,
   };
@@ -165,6 +170,9 @@ async function remind(owner: string) {
   await db(`agent_settings?user_id=eq.${owner}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ reminded_on: day }) });
   return { sent: true };
 }
+
+// saytdagi GOAL_T bilan bir xil nomlar
+const GOAL_TITLES: Record<string, string> = { uz: "Darsni inglizcha gapirish", "be-ing": "am / is / are + -ing", "wh-q": "Savolni so'roq so'zi bilan boshlash", past: "O'tgan ish haqida fe'lni o'zgartirish", art: "Bitta narsa oldidan a / an", prep: "in / on / at", be: "am / is / are", do: "do / does bilan savol va inkor", s3: "he / she dan keyin -s", plural: "Ko'plik", pron: "he / she", order: "So'z tartibi", flow: "Gapni to'xtamay davom ettirish" };
 
 Deno.serve(async (req) => {
   const key = Deno.env.get("AGENT_KEY") || "", owner = Deno.env.get("OWNER_ID") || OWNER_DEFAULT;

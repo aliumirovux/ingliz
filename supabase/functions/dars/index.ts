@@ -281,9 +281,10 @@ Nimani olmaysan: «ee/mm», boshlab qo'yib tashlangan gap, o'zi darhol tuzatgan 
 
 JSON shakli:
 {
-  "rules": [{"key": "qisqa nom, masalan: O'tgan ishda fe'l", "title": "qalin qism, masalan: O'tgan ish haqida fe'l o'zgaradi:", "text": "1–2 gap izoh", "ex": "go → went, lose → lost", "count": son}],
+  "rules": [{"key": "qisqa nom, masalan: O'tgan ishda fe'l", "title": "qalin qism, masalan: O'tgan ish haqida fe'l o'zgaradi:", "text": "1–2 gap izoh", "ex": "go → went, lose → lost", "count": son, "topic": "${TOPICS.join(" | ")}"}],
   "mistakes": [{"t": "MM:SS", "kind": "gram" | "word" | "uz" | "say", "rule": "rules[].key dan biri", "you": "Ali aytgani, aynan", "fix": "to'g'risi — Alining gapiga eng kam o'zgartirish bilan, tabiiy inglizcha", "why": "1–2 gap, o'zbekcha", "teacher": true agar o'qituvchi darsda tuzatgan bo'lsa}]
 }
+- topic: qoidaning turi — uz (inglizcha aytishi kerak bo'lgan gapni o'zbekcha aytdi), be-ing (am/is/are + -ing), wh-q (so'roq so'zli savol), past (o'tgan zamon fe'li), art (a/an/the), prep (in/on/at va boshqa predloglar), be (am/is/are tushib qolishi), do (do/does savol va inkor), s3 (he/she dan keyin -s), plural (ko'plik), pron (he/she/it), order (so'z tartibi), word (noto'g'ri so'z), say (talaffuz), other (boshqasi).
 - rules: eng ko'p takrorlangan qoida birinchi; count — darsdagi shu xatolarning hammasi (kartaga chiqmaganlari ham).
 - mistakes: eng foydalilari, ko'pi bilan 14 ta; tartib: eng ko'p takrorlangan qoidaning xatolari birinchi, keyin vaqt bo'yicha. Bir xil xatoni ikki marta karta qilma.
 - fix faqat bitta gap; yangi ma'no qo'shma. Xato bo'lmasa: {"rules": [], "mistakes": []}.`;
@@ -388,10 +389,11 @@ async function claude(prompt: string | Row[], maxTokens: number, effort: string)
   const m = text.match(/\{[\s\S]*\}/);
   try { return JSON.parse(m ? m[0] : text); } catch { throw new Error(`claude JSON buzuq (${d.stop_reason})`); }
 }
+const TOPICS = ["uz", "be-ing", "wh-q", "past", "art", "prep", "be", "do", "s3", "plural", "pron", "order", "word", "say", "other"];
 const CYR = /[Ѐ-ӿ]/;
 const uzOk = (s: string) => !!s && !CYR.test(s);
 function clean(A: Row, B: Row, row: Row) {
-  const rules = (Array.isArray(A.rules) ? A.rules : []).map((r: Row) => ({ key: clip(r.key, 60), title: clip(r.title, 120), text: clip(r.text, 300), ex: clip(r.ex, 120), count: Math.max(1, Math.min(99, +r.count || 1)) }))
+  const rules = (Array.isArray(A.rules) ? A.rules : []).map((r: Row) => ({ key: clip(r.key, 60), title: clip(r.title, 120), text: clip(r.text, 300), ex: clip(r.ex, 120), count: Math.max(1, Math.min(99, +r.count || 1)), topic: TOPICS.includes(r.topic) ? r.topic : "other" }))
     .filter((r: Row) => r.key && uzOk(r.title + r.text)).slice(0, 8);
   const keys = new Set(rules.map((r: Row) => r.key));
   const mistakes = (Array.isArray(A.mistakes) ? A.mistakes : []).map((m: Row) => ({

@@ -59,3 +59,11 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 - Tekshiruv — brauzerning nutqni tanishi (Chrome Android, iPhone Safari), kredit sarflanmaydi; ishlamasa yozib javob beriladi.
 - Natijalar `speak_log` jadvaliga (src `dars` | `rep`): bosh sahifadagi «Bu hafta gapirdingiz» (darsdagi `metrics.talk_s` + saytdagi `secs`) va repetitorning `speaking.practice` shundan.
 - Repetitor «Gapirish» bo'limidagi `type` savollarga ham ovoz bilan javob berish mumkin (so'zlarning 85% i to'g'ri bo'lsa qabul).
+
+## Repetitorga qo'ng'iroq (ovozli suhbat)
+- Sahifa: `#suhbat` — «Bugun»dagi «Repetitorga qo'ng'iroq» qatori. 5 daqiqa (+2 daqiqa bir marta), kuniga 3 ta qo'ng'iroq, har birida 24 tagacha gap.
+- Har gap alohida yozib olinadi (1,5 soniya jimlikdan keyin to'xtaydi) → `supabase/functions/suhbat`: Gemini so'zma-so'z matn (xatoni tuzatmaydi, noaniq so'zlarni belgilaydi) → Claude (`claude-opus-5-5`) javob va tuzatish → telefon ovozi o'qiydi. Ovoz saqlanmaydi.
+- Noaniq eshitilgan so'z ustiga tuzatish kelsa, sayt avval «To'g'ri eshitdimmi?» deb so'raydi; «Yo'q» — tuzatish yozilmaydi.
+- Mikrofon yo'q bo'lsa — «Yozib gaplashish» (Gemini chaqirilmaydi).
+- Natija `calls` jadvalida (matn va tuzatishlar); tuzatishlar «Xatolarim» → «Gapirishda» bo'limida, «Bu xato emas» `calls.off` ga yoziladi. Gapirish soniyalari `speak_log` (src `call`).
+- Deploy: `suhbat` funksiyasi `verify_jwt = false` bilan; kalitlar bor (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`). Migratsiya: `20261118c_calls.sql`.

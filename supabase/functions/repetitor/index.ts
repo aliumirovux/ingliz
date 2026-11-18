@@ -67,6 +67,15 @@ async function data(owner: string) {
       };
     });
   } catch (e) { console.error("class_lessons", e); }
+  // Repetitorga qo'ng'iroqlar (saytdagi ovozli suhbat): oxirgi 7 kun, ko'pi bilan 5 ta; «bu xato emas» deb belgilangan tuzatishlar chiqarilgan
+  let calls: Record<string, unknown>[] = [];
+  try {
+    const c = await db(`calls?user_id=eq.${owner}&done_at=not.is.null&day=gte.${tashkentDay(-7)}&select=day,topic,secs,fixes,off&order=created_at.desc&limit=5`);
+    calls = (c || []).map((r: Record<string, any>) => ({
+      day: r.day, topic: r.topic, spoke_seconds: r.secs,
+      mistakes: (r.fixes || []).filter((_: unknown, i: number) => !(r.off || []).includes(i)).map((f: Record<string, unknown>) => ({ topic: f.topic, you: f.you, fix: f.fix, why: f.why })),
+    }));
+  } catch (e) { console.error("calls", e); }
   return {
     today: day,
     note: "id formati: «unit|so'z» (masalan «9|come»). Unit 1–10 — Beginner, 101+ — Pre-intermediate, «vb» — so'z boyligi bazasi. So'zlarning tarjimasi va misollari: https://easywords.uz/data/beginner.js (UNITS). mis kalitlari: w: — so'z, g: — grammatika qolipi, b: — gap tuzish gapi.",
@@ -77,6 +86,11 @@ async function data(owner: string) {
     confusions: Object.values(S.conf || {}),
     grammar: { scores: S.pat || {}, review: S.gr || {} },
     class_lessons: cls,
+    // ovozli qo'ng'iroqlardagi tuzatishlar: Ali gapirganda qilgan xatolari (ovoz Gemini orqali matnga aylangan — bir-ikki so'z noto'g'ri eshitilgan bo'lishi mumkin)
+    voice_calls: calls.length ? {
+      calls,
+      instruction: "These are mistakes Ali made while SPEAKING on a voice call with the site's tutor. If a call from yesterday or today has mistakes that no earlier lesson of yours has used, add 2–3 items about them to today's lesson, in new everyday sentences (do not copy his sentence as the question). The same mistake in two calls or in a class and a call comes first.",
+    } : null,
     // haftalik maqsad (saytdagi «Bu haftaning maqsadi»): Ali shu hafta bitta mavzu ustida ishlaydi
     weekly_goal: S.goal && S.goal.st === "on" ? {
       topic: S.goal.id, title: GOAL_TITLES[S.goal.id] || S.goal.id, since: S.goal.at, practice_days: (S.goal.days || []).length, base: S.goal.base, hard: S.goal.hard || [],

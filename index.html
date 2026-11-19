@@ -3327,7 +3327,13 @@ const PIC = {
   "island": { f: "island", alt: ["beach"] },
   "burger": { f: "burger", alt: ["hamburger", "cheeseburger"] },
   "hot dog": { f: "hot-dog", alt: ["hotdog"] },
-  "croissant": { f: "croissant", alt: [] }
+  "croissant": { f: "croissant", alt: [] },
+  // joy so'zlari (1–2-unit, 19-noyabr): har rasmda o'sha to'p va o'sha quti, faqat joylashuvi o'zgaradi.
+  // Rasmlar shu loyiha uchun Gemini'da yaratilgan (Fluent Emoji emas). cap — rasm ostidagi savol.
+  // x: 1 — «Rasmli so'zlar tajribasi» hisobiga kirmaydi (nazorat guruhi yo'q, ot emas — natijani buzmasin).
+  "in": { f: "prep-in", alt: ["inside", "into", "in the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 },
+  "on": { f: "prep-on", alt: ["on top of", "on top", "above", "over", "on the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 },
+  "next to": { f: "prep-next-to", alt: ["near", "beside", "by", "next", "next to the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 }
 };
 const PIC_C = new Set([
   /* 3 (dastlabki) */ "car", "dog", "tv", "painting", "shop", "hot", "artist",
@@ -3345,7 +3351,7 @@ const PIC_C = new Set([
 const picKey = w => w && w.unit >= 1 && w.unit <= 10 ? norm(spoken(w)) : "";
 const picOf = w => PIC[picKey(w)] || null;
 function pilotLog(w, ok) {
-  const k = picKey(w), g = PIC[k] ? "ip" : PIC_C.has(k) ? "ic" : "";
+  const k = picKey(w), g = PIC[k] ? (PIC[k].x ? "" : "ip") : PIC_C.has(k) ? "ic" : "";
   if (!g || (Z && Z.qmode === "pic")) return; // rasmli savolning o'zi hisobga kirmaydi — faqat odatdagi savollardagi xotira solishtiriladi
   const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 });
   L[g + "v"] = (L[g + "v"] || 0) + 1; if (ok) L[g + "k"] = (L[g + "k"] || 0) + 1;
@@ -5805,7 +5811,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191545";
+const APP_V = "202611191734";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -8560,7 +8566,7 @@ const EYE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColo
    Rasm yuklanmasa (oflayn, birinchi marta) — savol odatdagi yozish savoliga o'tadi */
 function picAsk(w, pq) {
   $("#qword").className = "q qpicw"; $("#qpron").textContent = "";
-  $("#qword").innerHTML = `<div class="qpic"><img src="img/soz/${pq.f}.png" alt="Rasm — inglizcha nomini yozing" width="128" height="128" decoding="async"></div><p class="qpic-cap">Bu nima? Inglizcha yozing</p><button class="icon qpeek" id="qpeek" type="button">${EYE}Tarjimani ko'rish</button>`;
+  $("#qword").innerHTML = `<div class="qpic"><img src="img/soz/${pq.f}.png" alt="${pq.cap ? "Rasm — to'p qayerda ekanini inglizcha yozing" : "Rasm — inglizcha nomini yozing"}" width="128" height="128" decoding="async"></div><p class="qpic-cap">${esc(pq.cap || "Bu nima? Inglizcha yozing")}</p><button class="icon qpeek" id="qpeek" type="button">${EYE}Tarjimani ko'rish</button>`;
   $("#qpeek").onclick = () => { picReveal(); const sp = $("#spell"); if (sp && !useLetters()) sp.focus(); };
   app.querySelector(".qpic img").onerror = () => {
     if (!Z || Z.cur !== w || Z.qmode !== "pic") return;
@@ -8622,7 +8628,7 @@ function ask() {
   }
   if (typedQ()) {
     const cz = Z.qmode === "cloze" ? clozeOf(w) : null, ls = Z.qmode === "listen", pq = Z.qmode === "pic" ? picOf(w) : null; Z.cz = cz && cz.word;
-    setLabel(Z.title + (cz ? " · gapni to'ldiring" : ls ? " · eshitib yozing" : pq ? " · rasmdagi narsani inglizcha yozing" : " · inglizcha yozing"));
+    setLabel(Z.title + (cz ? " · gapni to'ldiring" : ls ? " · eshitib yozing" : pq ? (pq.cap ? " · rasmga qarab inglizcha yozing" : " · rasmdagi narsani inglizcha yozing") : " · inglizcha yozing"));
     if (pq) picAsk(w, pq);
     else if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
     else if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }

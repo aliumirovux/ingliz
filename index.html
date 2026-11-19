@@ -1866,6 +1866,14 @@ body.has-aifab{padding-bottom:calc(var(--nav-h) + 96px + env(safe-area-inset-bot
 .fl-gap{display:inline-block;min-width:72px;border-bottom:2px solid var(--marker);margin:0 3px;vertical-align:baseline}
 .fl-step{margin:18px 0 0;text-align:center;font-size:14px;color:var(--muted)}
 .fl-field{position:relative}
+/* uch shakl maydonlari */
+.fl3{display:grid;gap:10px;margin-top:18px}
+.fl3-r{display:grid;grid-template-columns:84px minmax(0,1fr);align-items:center;column-gap:10px;row-gap:4px}
+.fl3-l{font-size:13px;line-height:1.25;font-weight:600;color:var(--muted)}.fl3-l b{display:block;color:var(--ink);font-size:15px}
+.qcard .fl3 .spell{margin-top:0;min-width:0;font-size:20px;padding-top:12px;padding-bottom:12px}
+.fl3-a{grid-column:2;margin:0;font-size:14px;color:var(--bad)}.fl3-a b{font-weight:700}.fl3-a[hidden]{display:none}
+.fl3-no{min-height:50px;display:flex;align-items:center;padding:0 14px;border-radius:16px;border:2px dashed var(--line-strong);color:var(--muted);font-size:14px}
+.fl3-same{display:inline-block;margin-left:6px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--marker-soft);color:var(--accent-text)}
 .fl-ghost{position:absolute;left:16px;top:14px;font-size:22px;line-height:33px;color:var(--line-strong);pointer-events:none;white-space:pre} /* yozilgan matn bilan aynan ustma-ust: textarea padding 14/16, line-height 33 */
 .fl-ghost[hidden]{display:none}.fl-ghost .gh-t{visibility:hidden}
 .qcard textarea.spell.fl-tr{background:transparent}
@@ -5851,7 +5859,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611192012";
+const APP_V = "202611192023";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7460,6 +7468,13 @@ const FEL = [
   ["can", "could", "kud", "qila olmoq", "qila oldim", "yol", "I could swim when I was six.", "Olti yoshimda suza olardim.", "", ""],
   ["fall", "fell", "fel", "yiqilmoq", "yiqildim", "yol", "I fell in the park.", "Parkda yiqildim.", "Did you ___ in the park?", "Parkda yiqildingizmi?"]
 ].map((r, i) => ({ v1: r[0], v2: r[1], pr: r[2], u: r[3], up: r[4], fam: r[5], e: r[6], t: r[7], dq: r[8], dt: r[9], wave: Math.floor(i / 20) + 1, id: "irr|" + r[0] }));
+/* uchinchi shakl (V3, past participle). can — V3 yo'q (null). Bir nechta to'g'ri shakl «/» bilan */
+const FEL_V3 = { be: "been", have: "had", do: "done", say: "said", go: "gone", get: "got / gotten", make: "made", know: "known", think: "thought", take: "taken", see: "seen", come: "come", give: "given", find: "found", tell: "told", feel: "felt", leave: "left", put: "put", bring: "brought", send: "sent", buy: "bought", pay: "paid", spend: "spent", meet: "met", keep: "kept", sleep: "slept", sit: "sat", stand: "stood", understand: "understood", read: "read", write: "written", speak: "spoken", drive: "driven", eat: "eaten", drink: "drunk", begin: "begun", run: "run", sell: "sold", lose: "lost", forget: "forgotten", break: "broken", choose: "chosen", wake: "woken", teach: "taught", catch: "caught", fight: "fought", build: "built", lend: "lent", cut: "cut", hit: "hit", hear: "heard", hold: "held", win: "won", wear: "worn", swim: "swum", sing: "sung", fly: "flown", grow: "grown", throw: "thrown", draw: "drawn", can: null, fall: "fallen" };
+FEL.forEach(v => { v.v3 = FEL_V3[v.v1] === undefined ? null : FEL_V3[v.v1]; });
+const felAlts = f => f ? f.split("/").map(x => norm(x)).concat([norm(f)]) : [];
+const felFirst = f => String(f || "").split("/")[0].trim();
+const felSame = v => !!v.v3 && norm(felFirst(v.v3)) === norm(felFirst(v.v2));
+const felForms = v => `${esc(v.v1)} → ${felMark(v)}${v.v3 ? " → " + esc(v.v3) : ""}`;
 /* ---------- Fe'llar: yozish zinapoyasi ----------
    Har bir fe'l S.srs["irr|..."] da: b — pog'ona (0–5), due — keyingi kun. Har qadam — klaviaturada yozish, tanlash yo'q.
    1: ko'chirib yozish (2 marta) → 2: birinchi harf bilan → 3: xotiradan + teskari → 4: eshitib + gap ichida → 5: Did-tuzog'i / o'z gapingiz.
@@ -7522,6 +7537,7 @@ route(/^fellarmashq$/, () => {
   if (!FL) { go(""); return; }
   if (FL.i >= FL.q.length) return felFinish();
   const x = FL.q[FL.i], v = x.v, N = FL.q.length, hasDid = x.k === "did", trapW = norm(v.v2.split("/")[0]);
+  if (FEL3.includes(x.k)) return felMulti(x, N);
   const fam = FEL_FAM[v.fam];
   const head = {
     copy: [`Yangi fe'l · ${fam[0]}`, `<span lang="en">${esc(v.v1)}</span><span class="fl-arr">${ICON.arrow}</span><span lang="en">${felMark(v)}</span>`, `${esc(v.pr)}`, `${esc(v.u)} → ${esc(v.up)}`],
@@ -7638,13 +7654,93 @@ function felApply() {
   touchStreak(); save(); markDone("fel");
   return { up, down };
 }
+/* ---------- uch shakl: V1 · V2 · V3 alohida maydonlarda (A variant) ----------
+   copy — shakllar ko'rinib turadi, bir marta ko'chiriladi; first — birinchi harf bilan; recall — o'zbekchadan xotiradan;
+   rev — V2 berilgan, V1 va V3 yoziladi. Bo'sh joy keyingi maydonga o'tkazadi, Enter — tekshirish.
+   Xato bo'lsa faqat xato maydon qizil, tagida to'g'risi; o'sha maydon qayta yoziladi (FL.miss — qadam xato hisoblanadi). */
+const FEL3 = ["copy", "first", "recall", "rev"];
+function felMulti(x, N) {
+  const v = x.v, fam = FEL_FAM[v.fam], k = x.k;
+  const F = [["V1", "Asosiy", v.v1], ["V2", "O'tgan", v.v2], ["V3", "Sifatdosh", v.v3]];
+  const given = k === "rev" ? 1 : -1, mask = w => { const f = felFirst(w); return f[0] + "_".repeat(Math.max(1, f.length - 1)); };
+  const head = {
+    copy: [`Yangi fe'l · ${fam[0]}`, `<span lang="en">${felForms(v)}</span>`, `${esc(v.u)} → ${esc(v.up)} · ko'chirib yozing`],
+    first: ["Xotiradan · yordam bilan", esc(v.u), `${esc(v.up)} · birinchi harflar berilgan`],
+    recall: ["Xotiradan", esc(v.u), `${esc(v.up)} · uchala shaklini yozing`],
+    rev: ["Teskari", `<span lang="en">${esc(v.v2)}</span>`, `${esc(v.up)} → ${esc(v.u)} · asosiy shakli va V3`]
+  }[k];
+  const row = (f, i) => f[2] === null
+    ? `<div class="fl3-r"><span class="fl3-l"><b>${f[0]}</b>${f[1]}</span><div class="fl3-no">${esc(v.v1)} — V3 shakli yo'q</div></div>`
+    : i === given
+      ? `<div class="fl3-r"><span class="fl3-l"><b>${f[0]}</b>${f[1]}</span><input class="spell fl3-i ok" value="${esc(f[2])}" readonly tabindex="-1" aria-label="${f[0]} — berilgan" lang="en"></div>`
+      : `<div class="fl3-r"><label class="fl3-l" for="fl3-${i}"><b>${f[0]}</b>${f[1]}</label><input class="spell fl3-i" id="fl3-${i}" data-i="${i}" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" placeholder="${k === "copy" ? esc(felFirst(f[2])) : k === "first" ? esc(mask(f[2])) : ""}"><p class="fl3-a" id="fl3-a${i}" hidden></p></div>`;
+  app.innerHTML = `<div class="top"><button class="icon" id="flx" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar" id="flbar"><i></i></div><span class="cnt">${FL.i + 1}/${N}</span></div>
+  <div class="card qcard fl"><p class="label">Fe'llar · ${esc(head[0])}</p><span class="fl-tag">${esc(head[0])}</span>
+    <div class="q fl-q${k === "copy" ? " qsmall" : ""}">${head[1]}</div>${k === "copy" && v.pr ? `<div class="pron">${esc(v.pr)}</div>` : ""}<p class="fl-sub">${head[2]}</p>
+    <div class="fl3" role="group" aria-label="Fe'lning uch shakli">${F.map(row).join("")}</div>
+    <div class="fb hidden" id="flfb" role="status" aria-live="polite"></div>
+    <div class="row" style="margin-top:14px">${k === "copy" ? "" : `<button class="btn ghost" id="flidk">Bilmayman</button>`}<button class="btn" id="flgo">Tekshirish</button></div></div>`;
+  segBar($("#flbar"), N, FL.q.map((y, j) => j < FL.i ? !FL.miss.has(y.v.id + y.k) : null), FL.i);
+  $("#flx").onclick = () => confirmQuit(FL.i, N, () => { FL = null; LES = false; go(""); });
+  const ins = [...app.querySelectorAll(".fl3-i[data-i]")], fb = $("#flfb"), btn = $("#flgo"), idk = $("#flidk");
+  const want = el => F[+el.dataset.i][2], okOf = el => felAlts(want(el)).includes(norm(el.value));
+  const show = (cls, h) => { fb.className = "fb " + cls; fb.innerHTML = h; };
+  const all = [v.v1, felFirst(v.v2), v.v3 && felFirst(v.v3)].filter(Boolean).join(", ");
+  let fix = false, done = false;
+  const miss = () => { if (!FL.miss.has(v.id + k)) { FL.miss.add(v.id + k); FL.miss.add(v.id); } };
+  const finish = msg => {
+    done = true; ins.forEach(el => { el.readOnly = true; el.classList.remove("bad"); el.classList.add("ok"); });
+    app.querySelectorAll(".fl3-a").forEach(a => a.hidden = true);
+    show("ok", msg + (felSame(v) ? ` <span class="fl3-same">V3 = V2</span>` : "")); btn.textContent = "Keyingi"; if (idk) idk.classList.add("hidden"); say(all);
+    setTimeout(() => btn.focus({ preventScroll: true }), 0);
+  };
+  const mark = (reveal) => {
+    let bad = 0;
+    ins.forEach(el => { const ok = okOf(el), a = $("#fl3-a" + el.dataset.i); el.classList.toggle("ok", ok); el.classList.toggle("bad", !ok);
+      if (!ok) { bad++; a.hidden = false; a.innerHTML = `${reveal && el.value.trim() ? `<s>${esc(el.value.trim())}</s> → ` : "To'g'risi: "}<b lang="en">${esc(want(el))}</b>`; } else a.hidden = true; });
+    return bad;
+  };
+  const check = () => {
+    if (done) return nextQ();
+    const empty = ins.find(el => !el.value.trim()); if (empty) return empty.focus();
+    FL.typed += ins.length; const bad = mark(true);
+    if (!bad) {
+      logAns(!fix, true); buzz(true);
+      if (fix) { FL.fixed++; return finish("<b>Endi to'g'ri.</b> Bu fe'l ertaga yana yoziladi."); }
+      FL.first++; return finish(k === "copy" ? `<b>Ko'chirib yozdingiz.</b> Darsning oxirida xotiradan so'raladi. <span class="fl-ex" lang="en">${esc(v.e)}<small>${esc(v.t)}</small></span>` : "<b>To'g'ri!</b> Birinchi urinishda.");
+    }
+    buzz(false);
+    if (k === "copy") { show("bad", "Harflarni tekshiring va qizil maydonni qayta yozing."); }
+    else { if (!fix) { logAns(false, true); miss(); } fix = true;
+      const v2bad = ins.some(el => el.dataset.i === "1" && el.classList.contains("bad")), ed = ins.some(el => el.classList.contains("bad") && /ed$/.test(norm(el.value)));
+      show("bad", `${ed ? "<b>-ed qo'shilmaydi</b> — bu noto'g'ri fe'l. " : ""}${v2bad && fam[2] ? `Oila «${esc(fam[0])}» — ${esc(fam[1])}. ` : ""}<b>Qizil maydonga to'g'risini yozing.</b>`); }
+    const b = ins.find(el => el.classList.contains("bad")); ins.forEach(el => { if (el.classList.contains("bad")) el.value = ""; }); b.focus();
+  };
+  const nextQ = () => { FL.i++; render(); };
+  ins.forEach((el, j) => {
+    el.addEventListener("input", () => {
+      if (done) return; el.classList.remove("bad", "ok");
+      const m = /^(\S+)\s+(.*)$/.exec(el.value), nx = ins[j + 1];
+      if (m && nx && !/\s/.test(felFirst(want(el)))) { el.value = m[1]; if (m[2].trim()) { nx.value = m[2].trim(); nx.dispatchEvent(new Event("input")); } else nx.focus(); }
+    });
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); e.stopPropagation(); if (!done) { const em = ins.find(z => !z.value.trim()); if (em && ins.indexOf(em) > j) return em.focus(); } check(); }
+      else if (e.key === "Backspace" && !el.value && ins[j - 1] && !done) { e.preventDefault(); ins[j - 1].focus(); }
+    });
+  });
+  btn.onclick = check;
+  if (idk) idk.onclick = () => { if (done) return; if (!fix) { FL.typed++; logAns(false, true); miss(); fix = true; }
+    ins.forEach(el => { const a = $("#fl3-a" + el.dataset.i); a.hidden = false; a.innerHTML = `To'g'risi: <b lang="en">${esc(want(el))}</b>`; el.value = ""; el.classList.remove("ok", "bad"); });
+    show("bad", "<b>Endi o'zingiz yozing.</b>"); ins[0].focus(); };
+  setTimeout(() => ins[0] && ins[0].focus({ preventScroll: true }), 50);
+}
 function felFinish() {
   const { up, down } = felApply(), sp = felSpeedOffer();
   const fm = FL.mode, ex = felExtraOk();
   app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">${fm === "free" ? "Takrorlab yozish tugadi" : fm === "extra" ? "Qo'shimcha 5 ta fe'l" : /^u\d+$/.test(fm) ? `Unit ${un(+fm.slice(1))} fe'llari` : "Fe'llar qadami tugadi"}</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
     <div class="fl-stats"><div><b>${FL.first}</b><span>birinchi urinishda</span></div><div><b>${FL.fixed}</b><span>qayta yozildi</span></div><div><b>${felSeen().length}</b><span>/ ${FEL.length} fe'l</span></div></div></div>
-    ${down.length ? `<div class="card"><p class="label">Ertaga qayta yoziladi</p><ul class="fl-list">${down.map(v => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${esc(v.u)}</span></li>`).join("")}</ul></div>` : ""}
-    ${up.length ? `<div class="card"><p class="label">Pog'onaga ko'tarildi</p><ul class="fl-list">${up.map(([v, a, b]) => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${b === 5 ? "mustahkam ✓" : (FL.newIds.has(v.id) ? "yangi" : a) + " → " + b + "-pog'ona"}</span></li>`).join("")}</ul></div>` : ""}
+    ${down.length ? `<div class="card"><p class="label">Ertaga qayta yoziladi</p><ul class="fl-list">${down.map(v => `<li><b lang="en">${felForms(v)}</b><span>${esc(v.u)}</span></li>`).join("")}</ul></div>` : ""}
+    ${up.length ? `<div class="card"><p class="label">Pog'onaga ko'tarildi</p><ul class="fl-list">${up.map(([v, a, b]) => `<li><b lang="en">${felForms(v)}</b><span>${b === 5 ? "mustahkam ✓" : (FL.newIds.has(v.id) ? "yangi" : a) + " → " + b + "-pog'ona"}</span></li>`).join("")}</ul></div>` : ""}
     <div class="card">${sp ? `<button class="btn${LES ? " ghost" : ""}" id="flsp">Tez yozish · 60 soniya</button><p class="gohint">Haftasiga 2 marta · rekord: ${S.irr && S.irr.best || 0}</p><div style="height:10px"></div>` : ""}${lessonBtn("fel")}${LES ? "" : `${ex ? `<button class="btn${sp ? " ghost" : ""}" id="flex">Yana 5 ta yangi fe'l</button><div style="height:10px"></div>` : ""}${felSeen().length >= 3 ? `<button class="btn ghost" id="flfree">Takrorlab yozish · ${Math.min(10, felSeen().length)} ta</button><p class="gohint">Pog'onalar o'zgarmaydi · xato fe'l ertaga qaytadi</p><div style="height:10px"></div>` : ""}`}<button class="btn ghost" id="flback">${backLabel("fel")}</button></div></div>`;
   FL = null;
   const s = $("#flsp"); if (s) s.onclick = () => go("fellartez");

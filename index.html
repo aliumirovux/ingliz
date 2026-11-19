@@ -5807,7 +5807,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191756";
+const APP_V = "202611191759";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7175,7 +7175,6 @@ route(/^yakun$/, () => {
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}
-  ${curLvId() === "beginner" ? `<a class="nwb" href="#asos" style="margin-bottom:12px"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Alifbo, tovushlar, sonlar</span></span>${nwRing(GUIDES.length - guidesLeft(), GUIDES.length)}<span class="go">${ICON.chev}</span></a>` : ""}
   <div class="qa q4" aria-label="Hamma unitlar bo'yicha">
     <a href="#qolip"><span class="ic">${ICON.bulb}</span><b>Grammatika</b><span>${PATTERNS.filter(p => lvOf(p.unit) === curLvId()).length} ta qolip</span></a>
     <a href="#tuz"><span class="ic">${ICON.tiles}</span><b>Gap tuzish</b><span>${BLD.filter(x => lvOf(x.unit) === curLvId()).length} ta gap</span></a>

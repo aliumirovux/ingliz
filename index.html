@@ -635,7 +635,7 @@ nav.tabs .lens.still{transition:none}
 
 nav.tabs a .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 /* «Gap tuzish» bo'limi faqat kompyuterda (klaviatura bilan uzun gap yozish qulay); telefonda Unitlar ichida */
-nav.tabs a.dsk{display:none}
+nav.tabs a.dsk{display:none}nav.tabs a[hidden]{display:none}
 @media (min-width:980px){nav.tabs{max-width:540px}nav.tabs a.dsk{display:flex}}
 /* sahifa qisqa/uzun bo'lganda aylantirish chizig'i paydo bo'lib-yo'qolib, markazdagi menyu sakramasin */
 html{scrollbar-gutter:stable}
@@ -996,7 +996,7 @@ em.irr{font-style:normal;color:var(--accent-text);font-weight:600}
 
 /* Mashqlar to'ri */
 .mxw{display:block}.mx-l{margin:4px 4px 8px;font-size:13px;font-weight:600;color:var(--muted)}
-.mx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mx{display:flex;gap:10px}.mx>.mxt{flex:1 1 0;min-width:0}
 .mxt{display:flex;flex-direction:column;align-items:flex-start;min-height:104px;padding:12px;border:0;border-radius:22px;background:var(--card);box-shadow:var(--card-shadow);color:var(--ink);text-decoration:none;text-align:left;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
 .mxt:active{transform:scale(.97)}.mxt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 .mxi{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--marker-soft);color:var(--accent-text);margin-bottom:auto}.mxi svg{width:18px;height:18px}
@@ -2546,12 +2546,14 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
 </style>
 <div class="aura" aria-hidden="true"></div><div class="stage"><main class="wrap" id="app"></main></div>
+<!-- 19-noyabr: «Gaplar» (Tayyor gaplar) tabi olib tashlandi (Ali). Sahifa kodi va natijalar o'chmagan: #gap manzili ishlaydi.
+     «Qo'ng'iroq» (#suhbat) tabi «Bugun» sahifasidagi qator o'rniga qo'yildi; faqat clOn() bo'lganda ko'rinadi (render ichida) -->
 <nav class="tabs" aria-label="Asosiy bo'limlar">
   <span class="lens" aria-hidden="true"></span>
   <a href="#" data-tab="home"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span class="lb">Bugun</span></a>
   <a href="#unitlar" data-tab="unitlar"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2Z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20"/><path d="M9 7h7"/></svg></span><span class="lb">Unitlar</span></a>
   <a href="#tuz" data-tab="tuz" class="dsk"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="9" width="7" height="6" rx="1.8"/><rect x="11.5" y="9" width="10" height="6" rx="1.8"/><path d="M5 5h14M5 19h9"/></svg></span><span class="lb">Gap tuzish</span></a>
-  <a href="#gap" data-tab="gap"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg></span><span class="lb">Gaplar</span></a>
+  <a href="#suhbat" data-tab="suhbat" hidden><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg></span><span class="lb">Qo'ng'iroq</span></a>
   <a href="#lugat" data-tab="lugat"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span><span class="lb">Lug'at</span></a>
 </nav>
 <script src="data/beginner.js?v=c87b630c"></script>
@@ -3435,6 +3437,8 @@ function render() {
   prevH = curH; curH = h;
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
+  // «Qo'ng'iroq» tabi: faqat qo'ng'iroq ochiq foydalanuvchida; ko'rinishi o'zgarsa, linza o'lchami qayta olinadi
+  { const ct = document.querySelector('nav.tabs a[data-tab="suhbat"]'), con = clOn(); if (ct && ct.hidden === con) { ct.hidden = !con; TABGEO = null; } }
   const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|rasm|lahza-|sahna|suhbat)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
   // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
@@ -4731,7 +4735,7 @@ function sceneHome3(n) {
   const er = DW.length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish<span class="rs-badge">+${DW.length} darsdan</span></b><span>${DW.length} ta yangi so'z darsdan · avval tanishasiz</span></span><span class="m">${Math.max(2, Math.round(DW.length * .6))} daq</span></button>`
     : !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
     : `<button type="button" class="sh-row" data-sr="esl"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish</b><span>${L.length} ta so'z${eslK(L) ? " · " + eslK(L) + " tasi sahnadan" : " · eng unutilayotganlari birinchi"}</span></span><span class="m">${Math.max(2, Math.round(L.length * .27))} daq</span></button>`;
-  return `<div class="sh3">${rr}${sceneHome()}${clRow()}${er}${next}${more}</div>`;
+  return `<div class="sh3">${rr}${sceneHome()}${er}${next}${more}</div>`;
 }
 function bindSceneHome(n) {
   const re = $("#shre"); if (re) re.onclick = () => { shState = ""; shLoad(true); render(); };
@@ -4774,13 +4778,7 @@ async function clLoadList(force) {
     if (before !== JSON.stringify(CLS) && /^#?(xato)?$/.test(location.hash)) render();
   } catch (e) {}
 }
-const clToday = () => CLS.filter(c => c.day === today());
-function clRow() {
-  if (!clOn()) return "";
-  clLoadList();
-  const m = Math.round(clToday().reduce((a, c) => a + (c.secs || 0), 0) / 60), n = clToday().length;
-  return `<a class="sh-row" href="#suhbat"><span class="ic">${ICON.mic}</span><span class="tx"><b>Repetitorga qo'ng'iroq</b><span>${n ? `Bugun ${n} marta gaplashdingiz${m ? " · " + m + " daq gapirdingiz" : ""}` : "Erkin suhbat · xatoni o'sha zahoti tuzatadi"}</span></span><span class="m">5 daq</span></a>`;
-}
+// «Bugun» sahifasidagi qo'ng'iroq qatori (clRow) 19-noyabrda olindi: kirish endi pastki menyudagi «Qo'ng'iroq» tabi
 const clEl = () => !CL || !CL.t0 ? 0 : (Date.now() - CL.t0 - CL.pz - (CL.pzAt ? Date.now() - CL.pzAt : 0)) / 1000;
 const clLim = () => CL_MAX_S + (CL && CL.extra ? CL_EXTRA_S : 0);
 const clLeft = () => { const r = clLim() - clEl(); return r <= 0 ? 0 : Math.max(1, Math.ceil(r / 25)); };
@@ -5753,7 +5751,7 @@ route(/^$/, () => {
   const streak = liveStreak();
   const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
   const mins = left.reduce((a, x) => a + x.min, 0);
-  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length, nm = Object.keys(S.mis).length;
+  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length; // 19-noyabr: «N ta xato — qayta mashq» qatori bu sahifadan olindi (Ali); #xato sahifasi o'chmagan
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
   /* kirish animatsiyasi faqat boshqa sahifadan kelganda (joyida qayta chizilganda emas) */
   app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `
@@ -5779,7 +5777,7 @@ route(/^$/, () => {
     ${mxGrid(lv.zero)}
     ${backupCard(seen) || installCard()}
     ${darsOn() ? `<a class="xrow ds-x" href="#dars"><span class="ic">${ICON.mic}</span><b>Dars tahlili</b><span class="go">${ICON.chev}</span></a>` : ""}
-    ${nm ? `<a class="xrow" href="#xato"><span class="ic">${ICON.info}</span><b>${nm} ta xato — qayta mashq</b><span class="go">${ICON.chev}</span></a>` : ""}</div>
+    </div>
   </div>`;
   const lb = $("#les"); if (lb) lb.onclick = () => { const nx = left[0]; if (!nx) return; LES = true; nx.run(); };
   app.querySelectorAll(".ugrid button").forEach(b => b.onclick = () => { S.course = +b.dataset.u; save(); render(); });
@@ -5794,8 +5792,6 @@ route(/^$/, () => {
   const fg = $("#felgo"); if (fg) fg.onclick = () => { LES = false; startFel(); };
   const fs = $("#felsp"); if (fs) fs.onclick = () => go("fellartez");
   const fe = $("#felex"); if (fe) fe.onclick = () => { LES = false; startFel("extra"); };
-  const mxs = $("#mxsp"); if (mxs) mxs.onclick = () => felSeen().length >= 4 ? go("fellartez") : (LES = false, startFel());
-  const mxm = $("#mxmini"); if (mxm) mxm.onclick = () => { const pool = miniPool(); if (pool.length >= 5) startQuiz(pool, "auto", "2 daqiqa", "#", "mini"); else toast("Hali so'z yo'q", null, null, { type: "info", sub: "Avval «Yangi so'zlar»ni o'rganing" }); };
   const ig = $("#ibgo2"); if (ig) ig.onclick = () => startIb(ibDue().length ? "due" : "new");
   const im = $("#ibmore2"); if (im) im.onclick = () => startIb("new");
   const hb = nextBook(), hg = $("#hkgo"), hl = $("#hkls"); if (hg && hb) hg.onclick = () => go("oqish-" + hb.id); if (hl && hb) hl.onclick = () => { BK_PLAY = true; go("oqish-" + hb.id); };
@@ -5811,7 +5807,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191743";
+const APP_V = "202611191756";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7056,16 +7052,13 @@ function mastTile(seen, mast) {
 }
 /* «Mashqlar» to'ri: kutubxona bo'limlari bitta joyda (oldin So'z boyligi va Tinglash alohida qatorlar edi) */
 function mxGrid(zero) {
-  const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
-  const bRead = (lvBooks().length ? lvBooks() : BOOKS).filter(b => bookRec(b) && bookRec(b).done).length, ibSeen = IBS.filter(ibRec).length, fs = felSeen().length, mp = !zero && miniPool().length >= 5;
+  // 19-noyabr: Tinglash, Hikoyalar, Tez yozish va «2 daqiqa» kartalari bu to'rdan olindi (Ali: «bu yerda kerak emas»).
+  // Sahifalarning o'zi o'chmagan: Hikoyalar — «Bugungi hikoya → Barchasi», Tez yozish — fe'llar kartasi, 2 daqiqa — «Takrorlash» kartasi, Tinglash — #tinglash
+  const ibSeen = IBS.filter(ibRec).length;
   const t = (tag, attr, ic, name, sub, off) => `<${tag} class="mxt${off ? " off" : ""}" ${attr}><span class="mxi">${ic}</span><b>${name}</b><span>${sub}</span></${tag}>`;
   const tiles = [
     zero ? "" : t("a", 'href="#boylik"', ICON.spark, "So'z boyligi", S.vb.lvl ? Object.keys(S.vb.known).length + " ta bilgan" : "5–25 ta yangi"),
-    t("a", `href="${cur ? "#tinglash-" + cur[0] : "#tinglash"}"`, ICON_TL, "Tinglash", cur ? "davom etish" : "VOA videolar"),
-    t("a", 'href="#hikoyalar"', ICON.read, "Hikoyalar", bRead ? `${bRead} / ${lvBooks().length || BOOKS.length} o'qildi` : `${lvBooks().length || BOOKS.length} ta`),
-    t("a", 'href="#iboralar"', ICON.ibc, "Iboralar", ibSeen ? `${ibSeen} / ${IBS.length}` : `${IBS.length} ta · ${IB_T.length} mavzu`),
-    zero ? "" : t("button", 'type="button" id="mxsp"', ICON.verb, "Tez yozish", fs >= 4 ? "fe'llar · 60 s" : "4 ta fe'ldan keyin", fs < 4),
-    zero ? "" : t("button", 'type="button" id="mxmini"', ICON.redo, "2 daqiqa", mp ? "tezkor takror" : "so'z o'rgangach", !mp)].join("");
+    t("a", 'href="#iboralar"', ICON.ibc, "Iboralar", ibSeen ? `${ibSeen} / ${IBS.length}` : `${IBS.length} ta · ${IB_T.length} mavzu`)].join("");
   return `<div class="mxw"><p class="mx-l">Mashqlar</p><div class="mx">${tiles}</div></div>`;
 }
 /* Fe'llar kartasi: bugungi dars ochilmasa ham fe'llar ko'rinib tursin. Lesson qadami bilan bir xil holat (felPlanInfo) */
@@ -7765,7 +7758,7 @@ route(/^asos$/, () => {
   <p class="sub">Harflar, tovushlar, sonlar va darsdagi gaplar · har biri 2–5 daqiqa</p>
   <div class="uprog" style="margin-top:4px"><div class="r"><b>${done} / ${GUIDES.length} o'rganildi</b><span>tavsiya etilgan tartibda</span></div><div class="pbar"><i class="m" style="width:${done / GUIDES.length * 100}%"></i></div></div>
   <ol class="list gl-list">${GUIDES.map((g, i) => { const d = guideDone(g); return `<li><a class="li" href="#asos-${g.id}"><span class="gn${d ? " d" : ""}" aria-hidden="true">${d ? ICON.check : i + 1}</span><span class="tx"><b>${esc(g.t)}</b><span>${esc(g.s)} · ${g.min} daq</span></span>${d ? `<span class="st full">o'rganildi</span>` : ""}<span class="go">${ICON.chev}</span></a></li>`; }).join("")}</ol>
-  <p class="foot">Keyin: <a href="#unit-1">Unit 1</a> · <a href="#qolip">Grammatika qoliplari</a> · <a href="#gap">Tayyor gaplar</a></p>`;
+  <p class="foot">Keyin: <a href="#unit-1">Unit 1</a> · <a href="#qolip">Grammatika qoliplari</a></p>`;
 });
 route(/^asos-(\w+)$/, id => {
   const g = guideById(id); if (!g) return go("asos");

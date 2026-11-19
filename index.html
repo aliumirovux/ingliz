@@ -1053,7 +1053,7 @@ em.irr{font-style:normal;color:var(--accent-text);font-weight:600}
 .ib-se{display:block;margin-top:6px;font-style:italic;opacity:.85}.ib-su{display:block;font-size:13px;opacity:.8}
 .ib-big{font:700 30px/1.15 var(--font-display);letter-spacing:-.02em;margin:6px 0 10px}
 .ib-forms{text-align:left}
-/* Fe'llar kartasi (bosh sahifa): 60 fe'l = 3 qator × 20, rang — pog'ona */
+/* Fe'llar kartasi (bosh sahifa): fe'llar 3 qatorda (ustunlar soni felCard da), rang — pog'ona */
 .flc .xm-h b{display:inline-flex;align-items:center;gap:6px}.flc .xm-h b svg{width:18px;height:18px;color:var(--marker)}
 .flc .xm-hero{align-items:baseline;gap:8px}
 .flg{display:grid;gap:4px;margin:4px 0 8px}.flg span{display:grid;grid-template-columns:repeat(20,1fr);gap:3px}
@@ -5847,7 +5847,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191848";
+const APP_V = "202611192001";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7108,7 +7108,7 @@ function felCard() {
   const { d, n } = felPlanInfo(), work = d.length + n.length, tm = addDays(1);
   const tom = FEL.filter(v => { const r = felRec(v); return r && r.due === tm; }).length;
   const did = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length, sp = felSpeedOffer();
-  const rows = [0, 1, 2].map(w => `<span>${FEL.slice(w * 20, w * 20 + 20).map(v => `<i class="s${lv(felRec(v))}"></i>`).join("")}</span>`).join("");
+  const per = Math.ceil(FEL.length / 3), rows = [0, 1, 2].map(w => `<span style="grid-template-columns:repeat(${per},1fr)">${FEL.slice(w * per, w * per + per).map(v => `<i class="s${lv(felRec(v))}"></i>`).join("")}</span>`).join("");
   const mins = Math.max(2, Math.round(felQueue().length * .35));
   const note = work ? `Bugun: ${[n.length ? n.length + " ta yangi" : "", d.length ? d.length + " ta takror" : ""].filter(Boolean).join(" · ")}. Har birini yozib o'rganasiz.`
     : did ? `Bugungisi yozildi. ${tom ? "Ertaga " + tom + " ta takror." : "Ertaga takror yo'q."}` : seen ? `Bugun fe'l yo'q. ${tom ? "Ertaga " + tom + " ta takror." : ""}` : "";
@@ -7451,7 +7451,10 @@ const FEL = [
   ["fly", "flew", "fluu", "uchmoq (samolyotda)", "uchdim", "ew", "We flew to Istanbul.", "Istanbulga samolyotda uchdik.", "Did you ___ to Dubai?", "Dubayga samolyotda uchdingizmi?"],
   ["grow", "grew", "gruu", "o'smoq", "o'sdi", "ew", "The company grew fast.", "Kompaniya tez o'sdi.", "Did your son ___ a lot?", "O'g'lingiz ancha o'sdimi?"],
   ["throw", "threw", "thruu", "otmoq, tashlamoq", "tashladim", "ew", "He threw the ball.", "U to'pni otdi.", "Did you ___ it away?", "Uni tashlab yubordingizmi?"],
-  ["draw", "drew", "druu", "chizmoq", "chizdim", "ew", "I drew a quick sketch.", "Tezda eskiz chizdim.", "Did you ___ this picture?", "Bu rasmni chizdingizmi?"]
+  ["draw", "drew", "druu", "chizmoq", "chizdim", "ew", "I drew a quick sketch.", "Tezda eskiz chizdim.", "Did you ___ this picture?", "Bu rasmni chizdingizmi?"],
+  // Unit 9 (9.1 doskasi) dan qo'shilgan
+  ["can", "could", "kud", "qila olmoq", "qila oldim", "yol", "I could swim when I was six.", "Olti yoshimda suza olardim.", "", ""],
+  ["fall", "fell", "fel", "yiqilmoq", "yiqildim", "yol", "I fell in the park.", "Parkda yiqildim.", "Did you ___ in the park?", "Parkda yiqildingizmi?"]
 ].map((r, i) => ({ v1: r[0], v2: r[1], pr: r[2], u: r[3], up: r[4], fam: r[5], e: r[6], t: r[7], dq: r[8], dt: r[9], wave: Math.floor(i / 20) + 1, id: "irr|" + r[0] }));
 /* ---------- Fe'llar: yozish zinapoyasi ----------
    Har bir fe'l S.srs["irr|..."] da: b — pog'ona (0–5), due — keyingi kun. Har qadam — klaviaturada yozish, tanlash yo'q.
@@ -7491,9 +7494,21 @@ function felQueue() {
 const felExtraOk = () => { const started = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length; return felNew(1).length > 0 && started < 15 && felDue().length <= 10; };
 const felExtraQueue = () => { const n = felNew(FEL_NEW); return n.map(v => ({ v, k: "copy" })).concat(n.map(v => ({ v, k: "first" }))); };
 const felFreeQueue = () => shuffle(felSeen()).slice(0, 10).map((v, i) => ({ v, k: i % 2 ? "rev" : felGap(v) && i % 4 === 2 ? "gap" : "recall" }));
+/* Unit fe'llari: kitob unitidagi ro'yxat (masalan 9.1 doskasi) — kunlik 5 ta chegarasisiz, hammasi bir mashqda.
+   Yangilari: ko'chirish → oxirida birinchi harf bilan; boshlanganlari: pog'onasiga qarab xotiradan / teskari / gap ichida. */
+const FEL_UNIT = { 9: ["be", "can", "come", "fall", "get", "go", "have", "know", "leave", "lose", "meet", "say", "see", "sell", "write", "buy", "think", "eat", "feel", "forget", "sleep"] };
+const felUnitList = n => FEL.filter(v => (FEL_UNIT[n] || []).includes(v.v1));
+function felUnitQueue(n) {
+  const vs = felUnitList(n), nw = vs.filter(v => !felRec(v)), sn = vs.filter(v => felRec(v)), q = [];
+  nw.forEach(v => q.push({ v, k: "copy" }));
+  sn.forEach(v => { const b = felRec(v).b || 0; q.push({ v, k: b <= 1 ? "first" : b === 2 ? "recall" : b === 3 ? (felGap(v) ? "gap" : "rev") : "rev" }); });
+  nw.forEach(v => q.push({ v, k: "first" }));
+  return q;
+}
 let FL = null;
 function startFel(mode) {
-  const q = mode === "extra" ? felExtraQueue() : mode === "free" ? felFreeQueue() : felQueue(); if (!q.length) { toast("Bugun fe'l yo'q", null, null, { type: "info", sub: "Takrorlar ertaga keladi" }); return; }
+  const um = /^u(\d+)$/.exec(mode || "");
+  const q = um ? felUnitQueue(+um[1]) : mode === "extra" ? felExtraQueue() : mode === "free" ? felFreeQueue() : felQueue(); if (!q.length) { toast("Bugun fe'l yo'q", null, null, { type: "info", sub: "Takrorlar ertaga keladi" }); return; }
   FL = { q, i: 0, mode: mode || "", miss: new Set(), from: {}, typed: 0, first: 0, fixed: 0, newIds: new Set(q.filter(x => x.k === "copy").map(x => x.v.id)) };
   q.forEach(x => { if (!(x.v.id in FL.from)) FL.from[x.v.id] = felRec(x.v) ? felRec(x.v).b || 0 : -1; });
   go("fellarmashq");
@@ -7622,7 +7637,7 @@ function felApply() {
 function felFinish() {
   const { up, down } = felApply(), sp = felSpeedOffer();
   const fm = FL.mode, ex = felExtraOk();
-  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">${fm === "free" ? "Takrorlab yozish tugadi" : fm === "extra" ? "Qo'shimcha 5 ta fe'l" : "Fe'llar qadami tugadi"}</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
+  app.innerHTML = `<div class="stack"><div class="card fl-res"><p class="label">${fm === "free" ? "Takrorlab yozish tugadi" : fm === "extra" ? "Qo'shimcha 5 ta fe'l" : /^u\d+$/.test(fm) ? `Unit ${un(+fm.slice(1))} fe'llari` : "Fe'llar qadami tugadi"}</p><p class="fl-big" data-c="${FL.typed}">${FL.typed}</p><p class="muted">marta yozdingiz</p>
     <div class="fl-stats"><div><b>${FL.first}</b><span>birinchi urinishda</span></div><div><b>${FL.fixed}</b><span>qayta yozildi</span></div><div><b>${felSeen().length}</b><span>/ ${FEL.length} fe'l</span></div></div></div>
     ${down.length ? `<div class="card"><p class="label">Ertaga qayta yoziladi</p><ul class="fl-list">${down.map(v => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${esc(v.u)}</span></li>`).join("")}</ul></div>` : ""}
     ${up.length ? `<div class="card"><p class="label">Pog'onaga ko'tarildi</p><ul class="fl-list">${up.map(([v, a, b]) => `<li><b lang="en">${esc(v.v1)} → ${felMark(v)}</b><span>${b === 5 ? "mustahkam ✓" : (FL.newIds.has(v.id) ? "yangi" : a) + " → " + b + "-pog'ona"}</span></li>`).join("")}</ul></div>` : ""}
@@ -7877,6 +7892,9 @@ route(/^unit-(\d+)$/, n => {
       <ul class="split-l"><li><i class="m"></i><b>${st.mast}</b> mustahkam</li><li><i class="s"></i><b>${st.seen - st.mast}</b> o'rganilmoqda</li><li><i></i><b>${st.words - st.seen}</b> yangi</li></ul>${udue ? `<p class="due">${ICON.redo}<span>Bugun <b>${udue}</b> ta so'z takrorlanadi</span></p>` : ""}` : `<p class="muted" style="margin:0 0 14px">${n > 100 ? "Unit darslaridagi so'zlar" : "Kitob oxiridagi lug'at"}: ${st.words} ta so'z, o'qilishi va misol gaplari bilan.</p>`}
       <button class="btn" id="sozgo">${udue ? "Takrorlash va mashq" : "So'zlarni mashq qilish"}</button></div>
   </section>
+  ${FEL_UNIT[n] ? (() => { const vs = felUnitList(n), sn = vs.filter(v => felRec(v)).length, mst = vs.filter(v => (felRec(v) || {}).b >= 4).length;
+    return `<section class="sec"><div class="sec-h"><h2>Fe'llar</h2><span class="n">${vs.length} ta fe'l</span></div>
+    <div class="list"><button class="li" id="ufel"><span class="lic">${ICON.verb}</span><span class="tx"><b>Unit ${un(n)} fe'llarini yozib yodlash</b><span>${sn ? `${sn} / ${vs.length} boshlangan · ${mst} mustahkam` : "Hammasi bir mashqda: ko'chirib yozish → xotiradan"}</span></span><span class="go">${ICON.chev}</span></button></div></section>`; })() : ""}
 
   ${pats.length ? `<section class="sec">
     <div class="sec-h"><h2>Grammatika</h2><span class="n">${pats.filter(p => patFrac(p) === 1).length} / ${pats.length} to'liq</span></div>
@@ -7898,6 +7916,7 @@ route(/^unit-(\d+)$/, n => {
     <div class="list">${sp.map(t => `<a class="li" href="#gapir-${n}"><span class="lic">${ICON.mic}</span><span class="tx"><b>${esc(t.task)} · ${esc(t.title)}</b><span>${t.items.length} ta savol va tayyor javoblar</span></span><span class="go">${ICON.chev}</span></a>`).join("")}</div>
   </section>` : ""}`;
   $("#sozgo").onclick = () => go("soz-" + n);
+  const uf = $("#ufel"); if (uf) uf.onclick = () => startFel("u" + n);
   app.querySelectorAll("[data-tz]").forEach(b => b.onclick = () => { tuzMode = b.dataset.tz; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} startTuz(bl, "Unit " + un(n), (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n); });
 });
 

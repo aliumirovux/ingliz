@@ -2020,6 +2020,10 @@ body:has(.bank.dock:not(.hidden):not(.done)) #app{padding-bottom:calc(180px + en
 .kbt:focus-visible{outline:2px solid var(--marker);outline-offset:2px}
 .spell.ltm{caret-color:transparent;cursor:default;letter-spacing:.06em}
 .spell.ltm:focus{box-shadow:none}
+/* juft javob (fall → fell): ikki maydon orasida strelka */
+.sp2{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;margin-top:24px}
+.qcard .sp2 .spell{margin-top:0;min-width:0;padding-left:14px;padding-right:14px}
+.sp2-arr{display:grid;place-items:center;color:var(--muted)}.sp2-arr svg{width:20px;height:20px}
 @media (prefers-reduced-motion:reduce){.bank .lt{transition:none}.bank.nudge{animation:none}}
 
 /* tinglash */
@@ -5847,7 +5851,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611192001";
+const APP_V = "202611192012";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -8479,6 +8483,7 @@ route(/^quiz$/, () => {
     <div class="tools" id="tools"><button class="icon" id="say">Eshitish</button><button class="icon" id="h1">O'qilishi</button><button class="icon" id="h2">Harf ochish</button></div>
     <div class="rl hidden" id="rl" aria-live="polite"></div><div class="intro hidden" id="intro"></div><div class="hintline" id="hint"></div><div class="cv hidden" id="cv" aria-live="polite"></div><div class="opts" id="opts"></div>
     <textarea class="spell hidden" id="spell" rows="1" wrap="off" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+    <div class="sp2 hidden" id="sp2" role="group" aria-label="Ikki shaklini alohida yozing"><input class="spell sp2-i" id="spA" type="text" enterkeyhint="next" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en"><span class="sp2-arr" aria-hidden="true">${ICON.arrow}</span><input class="spell sp2-i" id="spB" type="text" enterkeyhint="go" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en"></div>
     <div class="lans hidden" id="lans" role="group" aria-label="Javobingiz — harfni bossangiz, joyiga qaytadi"></div>
     <div class="bank dock hidden" id="bank" role="group" aria-label="Harflar"></div>
     <button class="kbt hidden" id="kbt"></button>
@@ -8490,12 +8495,13 @@ route(/^quiz$/, () => {
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
   /* eslay olmasa: har bosishda yana bitta harf ochiladi; «Bilmayman» — javob ko'rsatiladi va bir marta yozdiriladi (xato hisoblanadi) */
   const tgt = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
-  $("#h2").onclick = () => { if (!Z || Z.state === "next" || Z.ph === "show" || Z.ph === "cover") return; const n = tgt().replace(/[ -]/g, "").length; Z.hintN = Math.min((Z.hintN || 0) + 1, Math.max(1, n - 1)); drawMask(); };
+  $("#h2").onclick = () => { if (!Z || Z.state === "next" || Z.ph === "show" || Z.ph === "cover") return; const n = tgt().replace(/[ \-→]/g, "").length; Z.hintN = Math.min((Z.hintN || 0) + 1, Math.max(1, n - 1)); drawMask(); };
   $("#h3").onclick = () => giveUp();
   $("#next").onclick = () => { if (typedQ() && Z.state !== "next") check(); else next(); };
   $("#skip").onclick = () => { if (Z && Z.ph === "cover") coverShow(); else next(); };
   $("#spell").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); check(); } });
   new MutationObserver(ltDraw).observe($("#spell"), { attributes: true, attributeFilter: ["class", "data-lt"] });
+  pairBind();
   $("#kbt").onclick = () => { try { localStorage.setItem("ingliz-kbd", useLetters() ? "1" : "0"); } catch (er) {} setInputMode(Z.ltTarget); };
   ask();
 });
@@ -8691,7 +8697,7 @@ function ask() {
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
     $("#next").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
-    setInputMode(cz ? cz.word : w.a[0]); rlDraw();
+    setInputMode(cz ? cz.word : w.a[0]); rlDraw(); pairSync();
   } else {
     if (document.activeElement === sp) sp.blur(); // tanlov savolida klaviatura yopilsin
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
@@ -8844,9 +8850,50 @@ function diffHTML(typed, target) {
    3) xato so'z 3 savoldan keyin qaytadi va bugun 2 marta yordamsiz yozilguncha qaytib turadi (Rawson & Dunlosky, successive relearning). */
 const SCAF_MAX = 3, CV_MS = 3000; // SCAF_MAX — nechanchi xatoda so'z ko'rsatiladi
 const spTarget = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
+/* ---------- juft javob: «fall → fell» ----------
+   Javob ikki shakldan iborat bo'lsa (darsdan qo'shilgan fe'l juftlari), klaviatura rejimida ikkita alohida maydon chiqadi — strelkani yozish shart emas.
+   #spell qiymati ikki maydondan yig'iladi («a → b»), shuning uchun tekshiruv, ko'r → yop → yoz va xato ko'rsatish o'zgarmaydi.
+   Bitta maydonga «fall fell» deb yozilsa ham to'g'ri hisoblanadi (pairKey). */
+const pairOf = t => { const m = /^(.+?)\s*(?:→|->)\s*(.+)$/.exec(String(t || "")); return m ? [m[1].trim(), m[2].trim()] : null; };
+const pairKey = s => norm(s).replace(/\s*(?:→|->|=>|[,;])\s*/g, " ").replace(/\s+/g, " ").trim();
+const TA_V = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value");
+function pairBind() {
+  const sp = $("#spell"), A = $("#spA"), B = $("#spB"); if (!sp || !A) return;
+  const join = () => { const a = A.value.trim(), b = B.value.trim(); return a || b ? a + " → " + b : ""; };
+  Object.defineProperty(sp, "value", { configurable: true, get() { return sp._p2 ? join() : TA_V.get.call(sp); }, set(v) { TA_V.set.call(sp, v); if (sp._p2) { const p = pairOf(v); A.value = p ? p[0] : v; B.value = p ? p[1] : ""; } } });
+  const end = el => { el.focus({ preventScroll: true }); const n = el.value.length; try { el.setSelectionRange(n, n); } catch (e) {} };
+  sp.focus = o => sp._p2 ? end(A.value.trim() && !B.value.trim() ? B : A) : HTMLElement.prototype.focus.call(sp, o);
+  sp.blur = () => sp._p2 ? [A, B].forEach(x => x.blur()) : HTMLElement.prototype.blur.call(sp);
+  const go2 = () => { if (Z && Z.state === "next") return check(); if (!A.value.trim()) return end(A); if (!B.value.trim()) return end(B); check(); };
+  // birinchi maydonda bo'sh joy yoki strelka yozilsa — ikkinchisiga o'tadi («fall fell» deb yozish odati)
+  A.addEventListener("input", () => {
+    const t = sp._p2; if (!t) return; const m = /^(.*?)(?:\s*(?:→|->|>)\s*|\s+)(.*)$/.exec(A.value);
+    if (m && m[1].trim() && (/→|>/.test(A.value) || !/\s/.test(t[0]))) { A.value = m[1].trim(); if (m[2].trim()) B.value = m[2].trim(); end(B); }
+  });
+  // ikkinchi maydonga ikkala shakl yozilsa («fall fell») — birinchisi tashlanadi
+  B.addEventListener("input", () => { const t = sp._p2; if (!t || /\s/.test(t[1])) return; const m = /^(\S+)(?:\s*(?:→|->|>)\s*|\s+)(\S+)\s*$/.exec(B.value); if (m && (!A.value.trim() || norm(m[1]) === norm(A.value))) { A.value = m[1]; B.value = m[2]; } });
+  A.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); go2(); } });
+  B.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); go2(); }
+    else if (e.key === "Backspace" && !B.value && !B.readOnly) { e.preventDefault(); end(A); }
+  });
+  new MutationObserver(pairSync).observe(sp, { attributes: true, attributeFilter: ["class", "data-lt", "data-lock"] });
+}
+/* juft javobda xato: to'g'ri yozilgan shakl qoladi, faqat xato maydon tozalanadi */
+function pairKeep(sp) { [$("#spA"), $("#spB")].forEach((x, i) => { if (norm(x.value) !== norm(sp._p2[i])) x.value = ""; }); }
+function pairSync() {
+  const sp = $("#spell"), box = $("#sp2"), A = $("#spA"), B = $("#spB"); if (!sp || !box) return;
+  const p = Z && Z.cur && typedQ() ? pairOf(spTarget()) : null, on = !!p && sp.dataset.lt !== "1" && !sp.classList.contains("hidden");
+  if (on && !sp._p2) { const v = TA_V.get.call(sp), had = document.activeElement === sp; sp._p2 = p; sp.value = v; if (had) sp.focus(); }
+  else if (!on && sp._p2) { const v = sp.value; sp._p2 = null; TA_V.set.call(sp, v); }
+  else if (on) sp._p2 = p;
+  sp.style.display = on ? "none" : ""; box.classList.toggle("hidden", !on); if (!on) return;
+  const u = pairOf(Z.cur.u), lk = sp.dataset.lock != null;
+  [A, B].forEach((x, i) => { x.classList.toggle("ok", sp.classList.contains("ok")); x.classList.toggle("bad", sp.classList.contains("bad") && norm(x.value) !== norm(p[i])); x.readOnly = lk; x.placeholder = u ? u[i] : i ? "o'tgan shakli" : "oddiy shakli"; x.setAttribute("aria-label", (i ? "Ikkinchi shakl" : "Birinchi shakl") + (u ? " — " + u[i] : "")); });
+}
 function drawMask() {
-  const t = spTarget(), n = t.replace(/[ -]/g, "").length; let k = 0;
-  const mask = [...t].map(ch => /[ -]/.test(ch) ? (ch === " " ? "   " : "-") : (k++ < Z.hintN ? ch : "_")).join(" ");
+  const t = spTarget(), n = t.replace(/[ \-→]/g, "").length; let k = 0;
+  const mask = [...t].map(ch => /[ \-→]/.test(ch) ? (ch === " " ? "   " : ch) : (k++ < Z.hintN ? ch : "_")).join(" ");
   $("#hint").innerHTML = `<span class="hmask">${esc(mask)}</span> <span class="hn">· ${n} ta harf</span>`;
   $("#h2").textContent = Z.hintN >= n - 1 ? "Harf ochish" : "Yana harf"; $("#h2").disabled = Z.hintN >= n - 1;
 }
@@ -8861,7 +8908,7 @@ function rlDraw() {
 function spRetry(t) {
   const q = Z.cur;
   if (useLetters()) return ltFail(() => setInputMode(t));
-  setTimeout(() => { const sp = $("#spell"); if (!Z || Z.cur !== q || !sp) return; sp.value = ""; sp.className = "spell"; sp.focus(); }, 650);
+  setTimeout(() => { const sp = $("#spell"); if (!Z || Z.cur !== q || !sp) return; if (sp._p2) pairKeep(sp); else sp.value = ""; sp.className = "spell"; sp.focus(); }, 650);
 }
 function scafFb(typed, again) {
   const t = spTarget(), near = lev(norm(typed), norm(t)) === 1 && norm(t).length > 3;
@@ -8919,7 +8966,7 @@ function check() {
   if (Z.ph === "show") return coverWrite();
   if (!val) return useLetters() ? bankNudge() : sp.focus();
   const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
-  const ok = cands.some(x => norm(x) === val), t = spTarget(), n = t.replace(/[ -]/g, "").length;
+  const ok = cands.some(x => norm(x) === val || (pairOf(x) && pairKey(x) === pairKey(val))), t = spTarget(), n = t.replace(/[ \-→]/g, "").length;
   // rasmga mos, lekin darslikdagi so'z emas (bike ↔ bicycle) — xato hisoblanmaydi, kerakli so'z so'raladi
   if (!ok && Z.qmode === "pic" && Z.ph !== "cover") {
     const pq = picOf(w), typed = sp.value.trim();

@@ -5811,7 +5811,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191734";
+const APP_V = "202611191743";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -8582,7 +8582,9 @@ function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
   const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; zSave(); Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); const fq = Z.force; Z.qmode = fq || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
   // rasmli so'z: yozish savollarining yarmi rasm bilan (o'zbekcha so'z o'rniga rasm); qolgani odatdagidek
-  if (!fq && Z.qmode === "spell" && (Z.learn || Z.mode === "auto") && picOf(w) && Math.random() < .5) Z.qmode = "pic";
+  // joy so'zlari (x: in, on, next to): tarjimasi noaniq («(ichi) -da»), shuning uchun tanishtiruvdan boshqa har qanday savol o'rniga rasm chiqadi
+  const pq0 = !fq && (Z.learn || Z.mode === "auto") ? picOf(w) : null;
+  if (pq0 && (pq0.x ? Z.qmode !== "intro" : Z.qmode === "spell" && Math.random() < .5)) Z.qmode = "pic";
   if (t) {
     // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";

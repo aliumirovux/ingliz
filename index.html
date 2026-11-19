@@ -4,12 +4,52 @@
 .mq-t{margin:0 0 4px;font-size:13px;font-weight:600;color:var(--accent-text)}
 .mq h2{font-size:20px;margin:0 0 6px}
 .mq-why{margin:0;font-size:14px;color:var(--muted);line-height:1.4}
-.mq-loop{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 0}
-.mq-loop div{padding:10px 8px;border-radius:14px;background:var(--surface-2);font-size:12px;line-height:1.3;color:var(--muted)}
-.mq-loop b{display:flex;align-items:center;gap:3px;color:var(--ink);font-size:13px;font-weight:600;margin-bottom:2px}
-.mq-loop b svg{width:13px;height:13px;flex:none}
-.mq-loop .done{color:var(--ok)}.mq-loop .done b svg{color:var(--ok)}
-.mq-loop .now{box-shadow:inset 0 0 0 1.5px var(--marker);color:var(--accent-text)}
+/* bosqichlar: telefonda 3 ta katakcha, kompyuterda chiziq bilan bog'langan nuqtalar (19-noyabr, «A · Ixcham lenta») */
+.mqa-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 0;padding:0}
+.mqa-steps li{display:flex;flex-direction:column;gap:6px;align-items:flex-start;padding:10px;border-radius:14px;background:var(--surface-2);min-width:0}
+.mqa-steps .dot{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--card,var(--surface));box-shadow:inset 0 0 0 2px var(--line-strong);position:relative;z-index:1}
+.mqa-steps .dot svg{width:11px;height:11px}
+.mqa-steps .done .dot{background:var(--ok);box-shadow:none;color:var(--bg)}
+.mqa-steps .now .dot{box-shadow:inset 0 0 0 2px var(--marker),0 0 0 4px color-mix(in srgb,var(--marker) 22%,transparent)}
+.mqa-steps .now .dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--marker)}
+.mqa-steps .tx{min-width:0}
+.mqa-steps .tx b{display:block;font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+.mqa-steps .tx>span{display:block;font-size:12px;color:var(--muted);line-height:1.3}
+.mqa-steps .done .tx>span{color:var(--ok)}.mqa-steps .now .tx>span{color:var(--accent-text)}
+.mqa-steps .tx>.pips{display:flex;gap:3px;margin-top:7px}.mqa-steps .pips i{width:10px;height:4px;border-radius:2px;background:var(--line-strong)}.mqa-steps .pips i.on{background:var(--marker)}
+.mqa-top{display:flex;align-items:center;gap:8px;margin:0 0 4px}.mqa-top .mq-t{margin:0}
+.mqa-top .sep{color:var(--muted);font-size:13px}
+.mqa-top .mq-ch{margin:-8px 0;min-height:44px;padding:0 4px;font-size:13px}
+.mqa-act{display:flex;flex-direction:column;align-items:stretch}
+.mq-says{display:block}
+@media (min-width:980px){
+  .wrap.home .mq.mqa{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) auto;column-gap:36px;align-items:center;padding:22px 26px}
+  .wrap.home .mqa h2{font-size:22px;letter-spacing:-.01em;margin:0 0 6px}
+  .wrap.home .mqa-top .mq-ch{min-height:32px;margin:-4px 0}
+  .wrap.home .mqa-steps{display:flex;margin:0;gap:0}
+  .wrap.home .mqa-steps li{flex:1;gap:10px;padding:0 12px 0 0;background:none;border-radius:0;position:relative}
+  .wrap.home .mqa-steps .dot{width:22px;height:22px}.wrap.home .mqa-steps .dot svg{width:13px;height:13px}.wrap.home .mqa-steps .now .dot::after{width:8px;height:8px}
+  .wrap.home .mqa-steps .tx b{font-size:14px}.wrap.home .mqa-steps .tx>span{font-size:13px}
+  .wrap.home .mqa-steps li:not(:last-child)::before{content:"";position:absolute;left:26px;right:4px;top:10px;height:2px;border-radius:1px;background:var(--line-strong)}
+  .wrap.home .mqa-steps li.done:not(:last-child)::before{background:var(--ok)}
+  .wrap.home .mqa-steps .pips i{width:14px}
+  .wrap.home .mqa-act{align-items:center;gap:6px;min-width:236px}
+  .wrap.home .mqa .btn.mq-go{width:auto;padding:0 26px;white-space:nowrap}
+  .wrap.home .mqa .mq-hint{margin:0;font-size:12px}
+  .wrap.home .mqa .mq-ok{justify-content:center}.wrap.home .mqa .mq-more{min-height:32px}
+  .wrap.home .mqa>.mq-prep,.wrap.home .mqa>.mq-note{grid-column:1/-1}
+  .wrap.home .mqa>.mq-prep{margin-top:18px;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);column-gap:24px;align-items:end}
+  .wrap.home .mqa>.mq-prep>.mq-sm{grid-column:1/-1;margin-bottom:6px}
+  .wrap.home .mqa .mq-says{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .wrap.home .mqa .mq-teach{margin:0}
+  .wrap.home .mqa .mq-pick:not([hidden]){grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:8px;margin-top:16px;align-items:stretch}
+  .wrap.home .mqa .mq-pick .mq-opt{margin-top:0}.wrap.home .mqa .mq-pick .btn{width:auto;margin-top:0;align-self:center;padding:0 18px}
+  /* haftalik natija: chapda natija, o'ngda keyingi maqsad */
+  .wrap.home .mq.mqr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:36px;align-items:start;padding:22px 26px}
+  .wrap.home .mqr>.mq-t,.wrap.home .mqr>h2,.wrap.home .mqr>.mq-res{grid-column:1}
+  .wrap.home .mqr>.mq-res{margin-bottom:0}
+  .wrap.home .mqr>.mq-next{grid-column:2;grid-row:1 / span 3;align-self:center}
+}
 .mq .btn.mq-go{width:100%;text-decoration:none}
 .mq-hint{margin:8px 0 0;font-size:13px;color:var(--muted);text-align:center}
 .mq-ok{display:flex;align-items:center;gap:6px;margin:0;font-weight:600;color:var(--ok);font-size:15px}.mq-ok svg{width:18px;height:18px}
@@ -5659,12 +5699,10 @@ function goalItems(g, n) {
   return all.filter(x => hard.has(x.a)).concat(all.filter(x => !hard.has(x.a))).slice(0, n);
 }
 function goalLoop(g) {
-  const k = (g.days || []).length, cls = goalIsClassDay(), res = g.st === "res";
-  return `<div class="mq-loop" role="list" aria-label="Maqsad bosqichlari">
-    <div class="done" role="listitem"><b>${ICON.check}Dars</b>aniqladi</div>
-    <div class="${res || k >= GOAL_DAYS ? "done" : cls ? "" : "now"}" role="listitem"><b>${res || k >= GOAL_DAYS ? ICON.check : ""}Mashq</b>${Math.min(k, GOAL_DAYS)} / ${GOAL_DAYS} kun</div>
-    <div class="${res ? "done" : cls ? "now" : ""}" role="listitem"><b>${res ? ICON.check : ""}Tekshirish</b>${res ? "bajarildi" : cls ? "bugungi darsda" : "keyingi darsda"}</div>
-  </div>`;
+  const k = Math.min((g.days || []).length, GOAL_DAYS), cls = goalIsClassDay(), res = g.st === "res", mDone = res || k >= GOAL_DAYS;
+  const st = (c, b, sub, x) => `<li class="${c}"><span class="dot" aria-hidden="true">${c === "done" ? ICON.check : ""}</span><span class="tx"><b>${b}</b><span>${sub}</span>${x || ""}</span></li>`;
+  const pips = `<span class="pips" aria-hidden="true">${Array.from({ length: GOAL_DAYS }, (_, i) => `<i${i < k ? ' class="on"' : ""}></i>`).join("")}</span>`;
+  return `<ol class="mqa-steps" aria-label="Maqsad bosqichlari">${st("done", "Dars", "aniqladi")}${st(mDone ? "done" : cls ? "" : "now", "Mashq", `${k} / ${GOAL_DAYS} kun`, pips)}${st(res ? "done" : cls ? "now" : "", "Tekshirish", res ? "bajarildi" : cls ? "bugungi darsda" : "keyingi darsda")}</ol>`;
 }
 function goalSay(list) { return list.map(x => `<div class="mq-say"><button aria-label="Tinglash: ${esc(x)}" class="mq-sp" type="button" data-say="${esc(x)}">${ICON.vol}</button><span>${esc(x)}</span></div>`).join(""); }
 function goalPick(cur, label) {
@@ -5680,7 +5718,7 @@ function goalCard() {
     const uzm = g.id === "uz" && r.en != null && g.base.en != null, f = v => String(v).replace(".", ",");
     const big = uzm ? `${g.base.en} → ${r.en}%` : `${f(g.base.n)} → ${r.n}`;
     const txt = r.ok ? `${dsDate(r.day)} darsida natija yaxshilandi. Maqsad bajarildi.` : r.part ? `${dsDate(r.day)} darsida biroz yaxshilandi. Yana bir hafta mustahkamlash mumkin.` : `${dsDate(r.day)} darsida hali o'zgarmadi. Yana bir hafta shu mavzu ustida ishlash mumkin.`;
-    return `<section class="mq" aria-labelledby="mqh"><p class="mq-t">Haftalik maqsad · natija</p><h2 id="mqh">${esc(T.t)}</h2>
+    return `<section class="mq mqr" aria-labelledby="mqh"><p class="mq-t">Haftalik maqsad · natija</p><h2 id="mqh">${esc(T.t)}</h2>
       <div class="mq-res ${r.ok ? "ok" : r.part ? "part" : "no"}"><span class="n">${big}</span><span class="tx">${uzm ? "inglizcha gapirish · " : "xato bir darsda · "}${txt}</span></div>
       <div class="mq-next"><p class="mq-sm">Keyingi maqsad — taklif</p>
       ${r.ok && nT ? `<p class="mq-nt">${esc(nT.t)}</p><p class="mq-sm">${nx.l} ta yozuvda · ${nx.n} marta</p>` : `<p class="mq-nt">${esc(T.t)}</p><p class="mq-sm">yana bir hafta</p>`}
@@ -5689,19 +5727,21 @@ function goalCard() {
   }
   const cls = goalIsClassDay(), short = goalShort(g);
   const prep = cls ? goalItems(g, 3).map(x => x.a) : [];
-  return `<section class="mq" aria-labelledby="mqh"><p class="mq-t">Bu haftaning maqsadi</p><h2 id="mqh">${esc(T.t)}</h2>
-    <p class="mq-why">Sabab: ${esc(goalWhy(g))}.</p>
+  return `<section class="mq mqa" aria-labelledby="mqh">
+    <div class="mqa-head"><div class="mqa-top"><p class="mq-t">Bu haftaning maqsadi</p><span class="sep" aria-hidden="true">·</span><button class="mq-ch" type="button" id="mqoth" aria-expanded="false" aria-controls="mqpick" aria-label="Maqsadni almashtirish">Almashtirish</button></div><h2 id="mqh">${esc(T.t)}</h2>
+    <p class="mq-why">Sabab: ${esc(goalWhy(g))}.</p></div>
     ${goalLoop(g)}
-    ${done ? `<p class="mq-ok">${ICON.check}Bugungi mashq bajarildi</p><a class="mq-more" href="#maqsad">Yana bir marta</a>` : `<a class="btn mq-go" href="#maqsad">Bugungi mashq · 4 daqiqa</a><p class="mq-hint">6 ta gapni ovoz chiqarib ayting</p>`}
-    ${cls ? `<div class="mq-prep"><p class="mq-sm">Bugun darsda · darsni shu gaplardan biri bilan boshlang</p>${goalSay(prep)}<p class="mq-teach">O'qituvchiga ayting: <b>«${esc(T.teach)}»</b></p></div>` : ""}
+    <div class="mqa-act">${done ? `<p class="mq-ok">${ICON.check}Bugungi mashq bajarildi</p><a class="mq-more" href="#maqsad">Yana bir marta</a>` : `<a class="btn mq-go" href="#maqsad">Bugungi mashq · 4 daqiqa</a><p class="mq-hint">6 ta gapni ovoz chiqarib ayting</p>`}</div>
+    ${cls ? `<div class="mq-prep"><p class="mq-sm">Bugun darsda · darsni shu gaplardan biri bilan boshlang</p><div class="mq-says">${goalSay(prep)}</div><p class="mq-teach">O'qituvchiga ayting: <b>«${esc(T.teach)}»</b></p></div>` : ""}
     ${short ? `<p class="mq-sm mq-note">${ICON.info}Qisqa yozuv natijani o'lchamaydi — to'liq darsni yozib oling.</p>` : ""}
-    <button class="mq-ch" type="button" id="mqoth" aria-expanded="false" aria-controls="mqpick">Maqsadni almashtirish</button>${goalPick(g.id, "Boshqa maqsad")}</section>`;
+    ${goalPick(g.id, "Boshqa maqsad")}</section>`;
 }
 function bindGoal() {
   const card = app.querySelector(".mq"); if (!card) return;
   card.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
   const oth = $("#mqoth"), pick = $("#mqpick");
   if (oth && pick) oth.onclick = () => { const o = pick.hidden; pick.hidden = !o; oth.setAttribute("aria-expanded", String(o)); if (o) { const f = pick.querySelector(".mq-opt"); if (f) f.focus(); } };
+  if (oth && pick) card.addEventListener("keydown", e => { if (e.key === "Escape" && !pick.hidden) { pick.hidden = true; oth.setAttribute("aria-expanded", "false"); oth.focus(); } });
   if (pick) pick.querySelectorAll(".mq-opt").forEach(o => o.onclick = () => pick.querySelectorAll(".mq-opt").forEach(x => x.setAttribute("aria-checked", String(x === o))));
   const set = $("#mqset"); if (set) set.onclick = () => { const o = pick.querySelector('.mq-opt[aria-checked="true"]'); if (!o) return; const c = goalCands().find(x => x.id === o.dataset.g); if (c) { goalStart(c); toast("Yangi maqsad", null, null, { sub: GOAL_T[c.id].t }); render(); } };
   const acc = $("#mqacc"); if (acc) acc.onclick = () => {
@@ -5807,7 +5847,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191759";
+const APP_V = "202611191848";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

@@ -2497,6 +2497,23 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .rs-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .rs-ph .rm{position:absolute;top:4px;right:4px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.62);color:#fff;display:grid;place-items:center;cursor:pointer}
 .rs-ph .n{position:absolute;left:6px;bottom:6px;font-size:11.5px;font-weight:700;background:rgba(0,0,0,.62);color:#fff;border-radius:999px;padding:1px 7px}
+/* rasm tayyorlanayotgan / ochilmagan / yuklanayotgan katak */
+.rs-ph.wait,.rs-ph.bad{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;text-align:center}
+.rs-ph.wait{background-color:var(--surface-2);background-image:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);background-size:200% 100%;box-shadow:inset 0 0 0 1px var(--line);animation:aisk 1.6s linear infinite}
+.rs-ph.wait b,.rs-ph.bad b{font-size:13px;font-weight:600;color:var(--ink);line-height:1.25}
+.rs-ph.wait small,.rs-ph.bad small{font-size:11.5px;color:var(--muted);line-height:1.3}
+.rs-ph.bad{background:var(--bad-bg);box-shadow:inset 0 0 0 1.5px var(--bad)}
+.rs-ph.bad b{color:var(--bad)}.rs-ph.bad > svg{width:22px;height:22px;color:var(--bad)}
+.rs-sp{width:26px;height:26px;border-radius:50%;border:3px solid var(--line-strong);border-top-color:var(--marker);animation:wspin .8s linear infinite;flex:none}
+.rs-ph .rsu-ov{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.45);color:#fff;transition:opacity .2s}
+.rs-ph .rsu-ov svg{width:26px;height:26px}
+.rs-ph .rsu-ov .rs-sp{border-color:rgba(255,255,255,.35);border-top-color:#fff}
+.rs-ph.rsu-done .rsu-ov{background:rgba(0,0,0,.25)}
+.rs-ph.rsu-done .rsu-ok{width:30px;height:30px;border-radius:50%;background:var(--ok-strong,#3F8A3B);display:grid;place-items:center}
+.rs-ph.rsu-done .rsu-ok svg{width:18px;height:18px}
+.rs-ph.rsu-q img{opacity:.55}
+.rs-up-g{margin-top:14px}
+@media (prefers-reduced-motion:reduce){.rs-ph.wait{animation:none}.rs-sp{animation-duration:2.4s}}
 .rs-add{aspect-ratio:3/4;border-radius:14px;border:1.5px dashed var(--line-strong);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer;position:relative;text-align:center;padding:6px}
 .rs-add svg{width:22px;height:22px;color:var(--accent-text)}
 .rs-add:focus-within{outline:2px solid var(--marker);outline-offset:2px}
@@ -5256,7 +5273,7 @@ async function rsCamOpen() {
 }
 /* iPhone rasmlari HEIC formatida: Chrome va Firefox uni o'zi o'qiy olmaydi (Safari o'qiydi).
    Brauzer ocholmasa, kutubxona (vendor/heic2any.min.js, MIT) faqat shu paytda yuklanadi va rasmni JPEG ga aylantiradi. */
-let heicLib = null;
+let heicLib = null, rsSeq = 0;
 const heicLoad = () => heicLib || (heicLib = new Promise((ok, no) => {
   const sc = document.createElement("script"); sc.src = "vendor/heic2any.min.js";
   sc.onload = () => window.heic2any ? ok(window.heic2any) : no(new Error("heic2any"));
@@ -5266,33 +5283,43 @@ const heicLoad = () => heicLib || (heicLib = new Promise((ok, no) => {
 async function rsDecode(f) {
   try { const b = await dsJpeg(f); if (b) return b; } catch (e) {}
   if (!/hei[cf]/i.test(f.type || "") && !/\.hei[cf]$/i.test(f.name || "")) return null;
-  toast("Rasm tayyorlanmoqda…", null, null, { type: "info", sub: "iPhone rasmi JPG ga aylantirilyapti · bir necha soniya" });
   const conv = await heicLoad(), out = await conv({ blob: f, toType: "image/jpeg", quality: .9 });
   return dsJpeg(Array.isArray(out) ? out[0] : out);
 }
 async function rsFiles(files) {
-  const fs = [...(files || [])].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
-  if (!fs.length) { if (files && files.length) toast("Bu fayl rasm emas", null, null, { type: "info", sub: "JPG, PNG yoki HEIC rasm tanlang" }); return; }
+  const all = [...(files || [])];
   if (!RS) RS = { shots: [], phase: "cam" };
-  let over = false, bad = 0;
-  for (const f of fs) {
-    let b = null;
-    try { b = await rsDecode(f); } catch (e) {}
-    if (!b) { bad++; continue; } // ochilmagan rasm jim o'tib ketmaydi
-    if (!rsAdd(b)) { over = true; break; }
-  }
-  if (bad) toast(bad === 1 ? "1 ta rasm ochilmadi" : bad + " ta rasm ochilmadi", null, null, { type: "info", sub: "Bu rasm formatini o'qib bo'lmadi. JPG yoki PNG qilib qayta urinib ko'ring." });
-  if (over) toast("Ko'pi bilan 8 ta rasm", null, null, { type: "info" });
+  const u = RS;
+  const fs = all.filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
+  u.pend = (u.pend || []).filter(x => x.st === "work"); // oldingi «ochilmadi» kataklari yangi tanlovda tozalanadi
+  u.msg = all.length && !fs.length ? "Tanlangan fayl rasm emas. JPG, PNG yoki HEIC rasm tanlang." : "";
+  const room = Math.max(0, RS_MAX - u.shots.length - u.pend.length), take = fs.slice(0, room);
+  if (fs.length > take.length) u.msg = `Ko'pi bilan ${RS_MAX} ta rasm: ${fs.length - take.length} tasi qo'shilmadi.`;
+  const jobs = take.map(f => ({ id: ++rsSeq, st: "work", heic: /hei[cf]/i.test(f.type || "") || /\.hei[cf]$/i.test(f.name || ""), f }));
+  u.pend.push(...jobs);
   if (location.hash === "#rasm") render(); else go("rasm");
+  for (const j of jobs) {
+    let b = null;
+    try { b = await rsDecode(j.f); } catch (e) {}
+    if (RS !== u) return; // bekor qilindi
+    j.f = null;
+    if (b && rsAdd(b)) u.pend = u.pend.filter(x => x !== j); else j.st = "bad";
+    if (location.hash === "#rasm") rsGridPaint();
+  }
 }
+const RS_OK = '<span class="rsu-ok">' + sv('<path d="M5 12.5 10 17 19 7"/>') + '</span>';
+const rsUpTiles = u => u.shots.map((s, i) => { const d = i < (u.done || 0), now = i === (u.done || 0) && u.phase === "up";
+  return `<div class="rs-ph${d ? " rsu-done" : now ? "" : " rsu-q"}"><img src="${s.url}" alt=""><span class="rsu-ov" aria-hidden="true">${d ? RS_OK : now ? '<span class="rs-sp"></span>' : ""}</span><span class="n" aria-hidden="true">${i + 1}</span></div>`; }).join("");
 function rsPaint() {
   const el = $("#rsup"); if (!el || !RS) return;
+  const g = $("#rsupg"); if (g) g.innerHTML = rsUpTiles(RS);
   el.querySelector("b").textContent = `Yuklanmoqda · ${RS.done || 0} / ${RS.shots.length}`;
   const p = Math.round((RS.done || 0) / Math.max(1, RS.shots.length) * 100), bar = el.querySelector(".ds-bar");
   if (bar) { bar.querySelector("i").style.transform = `translateX(${p - 100}%)`; bar.setAttribute("aria-valuenow", p); }
 }
 async function rsSend() {
-  const u = RS; if (!u || !u.shots.length || u.phase === "up") return;
+  const u = RS; if (!u || !u.shots.length || u.phase === "up" || (u.pend || []).some(x => x.st === "work")) return;
+  u.pend = []; u.msg = "";
   rsCamStop(); u.phase = "up"; u.done = 0; u.err = "";
   if (location.hash === "#rasm") render(); else go("rasm");
   try {
@@ -5335,6 +5362,32 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => { if (e.target && e.target.id === "rsgal1") { rsFiles(e.target.files); e.target.value = ""; } });
 
+/* #rasm grid: olingan rasmlar + tayyorlanayotgan / ochilmagan kataklar + qo'shish tugmalari.
+   Alohida chiziladi: rasm tayyor bo'lganda butun sahifa emas, faqat shu qism yangilanadi (fokus joyida qoladi). */
+function rsGridPaint() {
+  const g = $("#rsgrid"); if (!g || !RS) return;
+  const n = RS.shots.length, pend = RS.pend || [], work = pend.filter(x => x.st === "work").length, bad = pend.length - work;
+  const had = document.activeElement && g.contains(document.activeElement) ? document.activeElement.id || document.activeElement.dataset.rm || document.activeElement.dataset.pdrop : null;
+  g.innerHTML = RS.shots.map((s, i) => `<div class="rs-ph"><img src="${s.url}" alt="${i + 1}-rasm"><button type="button" class="rm" data-rm="${i}" aria-label="${i + 1}-rasmni olib tashlash">${RS_X}</button><span class="n" aria-hidden="true">${i + 1}</span></div>`).join("")
+    + pend.map(x => x.st === "work"
+      ? `<div class="rs-ph wait"><span class="rs-sp" aria-hidden="true"></span><b>Tayyorlanmoqda</b>${x.heic ? "<small>iPhone rasmi · JPG ga</small>" : ""}</div>`
+      : `<div class="rs-ph bad">${ICON.info}<b>Ochilmadi</b><small>JPG qilib qayta tanlang</small><button type="button" class="rm" data-pdrop="${x.id}" aria-label="Ochilmagan rasmni olib tashlash">${RS_X}</button></div>`).join("")
+    + (n + work < RS_MAX ? `${RS.noCam ? `<label class="rs-add">${ICON_CAM}Telefon kamerasi<input type="file" id="rscap" class="sr-only" accept="image/*" capture="environment"></label>` : `<button type="button" class="rs-add" id="rsopen">${ICON_CAM}Kamera</button>`}
+      <label class="rs-add">${ICON.plus}Galereya<input type="file" id="rsgal" class="sr-only" accept="image/*" multiple></label>` : "");
+  const sub = $("#rssub"); if (sub) sub.textContent = n || work ? `${n} / ${RS_MAX} · ovoz yozuvisiz dars` : "Doskani suratga oling yoki galereyadan tanlang";
+  const msg = $("#rsmsg"); if (msg) { const t = RS.msg || (bad ? `${bad} ta rasm ochilmadi. Bu formatni o'qib bo'lmadi — rasmni JPG yoki PNG qilib qayta tanlang.` : ""); msg.hidden = !t; msg.innerHTML = t ? `${ICON.info}<span>${esc(t)}</span>` : ""; }
+  const live = $("#rslive"); if (live) live.textContent = work ? `${work} ta rasm tayyorlanmoqda` : bad ? `${bad} ta rasm ochilmadi` : n ? `${n} ta rasm tayyor` : "";
+  const sb = $("#rssend"); if (sb) { sb.disabled = !n || !!work; sb.textContent = work ? `Rasmlar tayyorlanmoqda · ${work} ta qoldi` : n ? `Yuborish · ${n} ta rasm` : "Kamida 1 ta rasm kerak"; }
+  g.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => {
+    const i = +b.dataset.rm, s = RS.shots[i]; if (!s) return;
+    URL.revokeObjectURL(s.url); RS.shots.splice(i, 1); rsGridPaint();
+    const f = g.querySelector(`[data-rm="${Math.min(i, RS.shots.length - 1)}"]`) || $("#rsopen") || $("#rsgal"); if (f) f.focus();
+  });
+  g.querySelectorAll("[data-pdrop]").forEach(b => b.onclick = () => { RS.pend = RS.pend.filter(x => String(x.id) !== b.dataset.pdrop); RS.msg = ""; rsGridPaint(); const f = $("#rsgal"); if (f) f.focus(); });
+  const op = $("#rsopen"); if (op) op.onclick = () => rsCamOpen();
+  ["#rsgal", "#rscap"].forEach(s => { const f = $(s); if (f) f.onchange = () => { rsFiles(f.files); f.value = ""; }; });
+  if (had) { const f = document.getElementById(had) || g.querySelector(`[data-rm="${had}"],[data-pdrop="${had}"]`); if (f) f.focus(); }
+}
 /* #rasm: kamera, olingan rasmlar, yuborish */
 route(/^rasm$/, () => {
   if (!darsOn()) return go("");
@@ -5347,7 +5400,8 @@ route(/^rasm$/, () => {
     <div class="stack"><section class="card ds-up${err ? " err" : ""}" id="rsup" aria-live="polite"><b>${err ? esc(RS.err) : `Yuklanmoqda · ${RS.done || 0} / ${n}`}</b>
       <span>${err ? `${n} ta rasm shu yerda turibdi.` : "Ilovani yopmang. Keyin rasmlar ~1 daqiqada o'qiladi."}</span>
       ${err ? `<div class="ds-act"><button class="btn" id="rsre">Qayta yuborish</button><button class="btn ghost" id="rsback">Rasmlarga qaytish</button></div>`
-        : `<div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i style="transform:translateX(${p - 100}%)"></i></div>`}</section></div>`;
+        : `<div class="ds-bar" role="progressbar" aria-label="Yuklash" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i style="transform:translateX(${p - 100}%)"></i></div>`}</section>
+      <div class="rs-grid rs-up-g" id="rsupg" aria-hidden="true">${rsUpTiles(RS)}</div></div>`;
     const re = $("#rsre"); if (re) re.onclick = () => { RS.phase = "cam"; rsSend(); };
     const bk = $("#rsback"); if (bk) bk.onclick = () => { RS.phase = "cam"; render(); };
     return;
@@ -5376,23 +5430,18 @@ route(/^rasm$/, () => {
   }
   // kamera yopiq: olingan rasmlar, qo'shish va yuborish
   app.innerHTML = `${nav("#", "Bugun", "Doska rasmlari")}<h2 class="pg-h">Doska rasmlari</h2>
-  <p class="sub">${n ? `${n} / ${RS_MAX} · ovoz yozuvisiz dars` : "Doskani suratga oling yoki galereyadan tanlang"}</p>
+  <p class="sub" id="rssub"></p>
   ${RS.noCam ? `<p class="rs-note">${ICON.info}<span>Sahifa ichidagi kamera ochilmadi. Brauzerda kameraga ruxsat bering yoki telefon kamerasidan foydalaning.</span></p>` : ""}
-  <div class="rs-grid">${RS.shots.map((s, i) => `<div class="rs-ph"><img src="${s.url}" alt="${i + 1}-rasm"><button type="button" class="rm" data-rm="${i}" aria-label="${i + 1}-rasmni olib tashlash">${RS_X}</button><span class="n" aria-hidden="true">${i + 1}</span></div>`).join("")}
-    ${n < RS_MAX ? `${RS.noCam ? `<label class="rs-add">${ICON_CAM}Telefon kamerasi<input type="file" id="rscap" class="sr-only" accept="image/*" capture="environment"></label>` : `<button type="button" class="rs-add" id="rsopen">${ICON_CAM}Kamera</button>`}
-      <label class="rs-add">${ICON.plus}Galereya<input type="file" id="rsgal" class="sr-only" accept="image/*" multiple></label>` : ""}</div>
-  <div class="ds-act rs-go"><button class="btn" id="rssend"${n ? "" : " disabled"}>${n ? `Yuborish · ${n} ta rasm` : "Kamida 1 ta rasm kerak"}</button><button class="btn ghost" id="rscancel">Bekor qilish</button></div>`;
-  app.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => {
-    const i = +b.dataset.rm, s = RS.shots[i]; if (!s) return;
-    URL.revokeObjectURL(s.url); RS.shots.splice(i, 1); render();
-    const f = app.querySelector(`[data-rm="${Math.min(i, RS.shots.length - 1)}"]`) || $("#rsopen") || $("#rsgal"); if (f) f.focus();
-  });
-  const op = $("#rsopen"); if (op) op.onclick = () => rsCamOpen();
-  ["#rsgal", "#rscap"].forEach(s => { const f = $(s); if (f) f.onchange = () => { rsFiles(f.files); f.value = ""; }; });
-  $("#rssend").onclick = () => rsSend();
+  <p class="rs-note" id="rsmsg" role="status" hidden></p>
+  <div class="rs-grid" id="rsgrid"></div>
+  <p class="sr-only" id="rslive" role="status" aria-live="polite"></p>
+  <div class="ds-act rs-go"><button class="btn" id="rssend"></button><button class="btn ghost" id="rscancel">Bekor qilish</button></div>`;
+  rsGridPaint();
+  $("#rssend").onclick = () => { if (!(RS.pend || []).some(x => x.st === "work")) rsSend(); };
   const cx = $("#rscancel");
   cx.onclick = () => {
-    if (RS.shots.length && !cx.dataset.sure) { cx.dataset.sure = "1"; cx.textContent = `${RS.shots.length} ta rasm o'chsinmi?`; return; }
+    const k = RS.shots.length + (RS.pend || []).filter(x => x.st === "work").length; // tayyorlanayotganlar ham hisobda
+    if (k && !cx.dataset.sure) { cx.dataset.sure = "1"; cx.textContent = `${k} ta rasm o'chsinmi?`; return; }
     rsDrop(); go("");
   };
 });
@@ -5756,7 +5805,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611191530";
+const APP_V = "202611191545";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

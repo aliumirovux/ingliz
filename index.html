@@ -5254,12 +5254,34 @@ async function rsCamOpen() {
   } catch (e) { RS.cam = null; RS.noCam = true; }
   if (location.hash === "#rasm") render(); else rsCamStop();
 }
+/* iPhone rasmlari HEIC formatida: Chrome va Firefox uni o'zi o'qiy olmaydi (Safari o'qiydi).
+   Brauzer ocholmasa, kutubxona (vendor/heic2any.min.js, MIT) faqat shu paytda yuklanadi va rasmni JPEG ga aylantiradi. */
+let heicLib = null;
+const heicLoad = () => heicLib || (heicLib = new Promise((ok, no) => {
+  const sc = document.createElement("script"); sc.src = "vendor/heic2any.min.js";
+  sc.onload = () => window.heic2any ? ok(window.heic2any) : no(new Error("heic2any"));
+  sc.onerror = () => { heicLib = null; no(new Error("heic2any yuklanmadi")); };
+  document.head.appendChild(sc);
+}));
+async function rsDecode(f) {
+  try { const b = await dsJpeg(f); if (b) return b; } catch (e) {}
+  if (!/hei[cf]/i.test(f.type || "") && !/\.hei[cf]$/i.test(f.name || "")) return null;
+  toast("Rasm tayyorlanmoqda…", null, null, { type: "info", sub: "iPhone rasmi JPG ga aylantirilyapti · bir necha soniya" });
+  const conv = await heicLoad(), out = await conv({ blob: f, toType: "image/jpeg", quality: .9 });
+  return dsJpeg(Array.isArray(out) ? out[0] : out);
+}
 async function rsFiles(files) {
   const fs = [...(files || [])].filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
-  if (!fs.length) return;
+  if (!fs.length) { if (files && files.length) toast("Bu fayl rasm emas", null, null, { type: "info", sub: "JPG, PNG yoki HEIC rasm tanlang" }); return; }
   if (!RS) RS = { shots: [], phase: "cam" };
-  let over = false;
-  for (const f of fs) { try { const b = await dsJpeg(f); if (b && !rsAdd(b)) { over = true; break; } } catch (e) {} }
+  let over = false, bad = 0;
+  for (const f of fs) {
+    let b = null;
+    try { b = await rsDecode(f); } catch (e) {}
+    if (!b) { bad++; continue; } // ochilmagan rasm jim o'tib ketmaydi
+    if (!rsAdd(b)) { over = true; break; }
+  }
+  if (bad) toast(bad === 1 ? "1 ta rasm ochilmadi" : bad + " ta rasm ochilmadi", null, null, { type: "info", sub: "Bu rasm formatini o'qib bo'lmadi. JPG yoki PNG qilib qayta urinib ko'ring." });
   if (over) toast("Ko'pi bilan 8 ta rasm", null, null, { type: "info" });
   if (location.hash === "#rasm") render(); else go("rasm");
 }
@@ -5734,7 +5756,7 @@ route(/^$/, () => {
 });
 /* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
    saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611181140";
+const APP_V = "202611191530";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

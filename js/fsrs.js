@@ -1,6 +1,6 @@
-/* FSRS-4.5 (Free Spaced Repetition Scheduler) — easywords.uz uchun yengil, kutubxonasiz modul.
-   Har bir so'z uchun stability (fs, kunlarda) va difficulty (fd, 1..10) saqlanadi;
-   eski Leitner (b: 0..5) yozuvlari bilan to'liq mos (widget, repetitor va UI uchun b avtomatik yangilanadi). */
+/* FSRS-4.5 (Free Spaced Repetition Scheduler) — lightweight, zero-dependency module.
+   Tracks per-word stability (fs, in days) and difficulty (fd, 1..10) while maintaining
+   backward-compatible Leitner box values (b: 0..5) for widgets, tutor agent, and UI. */
 (function (root) {
   "use strict";
 
@@ -39,10 +39,10 @@
   }
 
   /**
-   * Keyingi FSRS holatini hisoblaydi.
-   * @param {object|null} prev - oldingi SRS yozuvi ({ b, ok, bad, fs, fd })
-   * @param {1|2|3|4} rating - 1: Again (xato), 2: Hard (yordam bilan), 3: Good, 4: Easy
-   * @param {number} elapsedDays - oxirgi takrorlashdan beri o'tgan kunlar (>=0)
+   * Compute the next FSRS state and review interval.
+   * @param {object|null} prev - previous SRS record ({ b, ok, bad, fs, fd })
+   * @param {1|2|3|4} rating - 1: Again, 2: Hard, 3: Good, 4: Easy
+   * @param {number} elapsedDays - days since last review (>= 0)
    * @param {object} [opts] - { capUnspelled?: boolean, hinted?: boolean }
    */
   function schedule(prev, rating, elapsedDays, opts) {
@@ -60,19 +60,18 @@
         ? { fs: +prev.fs, fd: +prev.fd }
         : initFromLegacy(prev);
       const R = retrievability(t, base.fs);
-      // Difficulty: mean reversion toward 5.0
+      // Mean reversion toward baseline difficulty 5.0
       const dRaw = clamp(base.fd - 0.6 * (r - 3), 1, 10);
       fd = clamp(0.05 * 5.0 + 0.95 * dRaw, 1, 10);
 
       if (r === 1) {
-        // Lapse (xato): barqarorlik pasayadi, lekin nolga tushib ketmaydi
+        // Lapse: reduce stability without resetting completely to zero
         const lapseS = 2.0 * Math.pow(fd, -0.35) * Math.pow(base.fs + 1, 0.2) * Math.exp(0.5 * (1 - R));
         fs = clamp(Math.min(base.fs * 0.35, lapseS), 0.4, Math.max(0.4, base.fs * 0.5));
       } else {
         const hardPen = r === 2 ? 0.65 : 1;
         const easyBon = r === 4 ? 1.3 : 1;
         const inc = Math.exp(1.8) * (11 - fd) * Math.pow(base.fs, -0.18) * (Math.exp(0.9 * (1 - R)) - 1) * hardPen * easyBon;
-        // Bir kunda takrorlansa (t=0) ham ozgina o'sish, keyingi kunlarda esa to'liq FSRS o'sishi
         const minStep = t >= 1 ? (r === 2 ? 0.3 : 0.6) : 0.15;
         fs = clamp(base.fs * (1 + Math.max(inc, minStep / Math.max(base.fs, 0.5))), 0.4, MAX_IV);
       }

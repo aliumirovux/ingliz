@@ -1,4 +1,4 @@
-// Supabase Edge Functions uchun umumiy yordamchilar (CORS, auth, DB, matn tozalash, sana).
+// Shared helpers for Supabase Edge Functions (CORS, auth, DB, text sanitization, date).
 export type Row = Record<string, any>;
 
 export const ORIGINS = [

@@ -1,8 +1,9 @@
-/* «Xato yopildi» (Mistake Mastery): ovozli qo'ng'iroqlarda qilingan xato mavzulari
-   keyingi 2+ qo'ng'iroqda takrorlanmasa, avtomatik «O'zlashtirildi» deb belgilanadi. */
+/* Mistake Mastery tracker: marks speaking mistake topics as mastered
+   once they do not recur across 2+ consecutive voice calls. */
 (function (root) {
   "use strict";
 
+  // UI labels shown to learners in Uzbek
   const TOPIC_LABELS = {
     uz: "O'zbekcha aralashtirmasdan gapirish",
     "be-ing": "am / is / are + -ing",
@@ -21,8 +22,9 @@
   };
 
   /**
-   * @param {Array} calls - CLS ro'yxati [{ id, day, fixes: [{topic}], off: [idx] }]
-   * @param {number} [cleanTarget=2] - nechta toza qo'ng'iroqdan keyin mavzu o'zlashtirilgan hisoblanadi
+   * Compute mastered and active mistake topics from voice call history.
+   * @param {Array} calls - call records [{ id, day, fixes: [{topic}], off: [idx] }]
+   * @param {number} [cleanTarget=2] - clean calls required to mark a topic mastered
    */
   function computeMastery(calls, cleanTarget) {
     const target = Math.max(1, Math.round(cleanTarget || 2));
@@ -32,7 +34,7 @@
         const da = String(a.c && a.c.day || "");
         const db = String(b.c && b.c.day || "");
         if (da !== db) return da < db ? -1 : 1;
-        return b.idx - a.idx; // CLS odatda eng yangisi boshida keladi
+        return b.idx - a.idx; // calls are typically ordered newest-first
       })
       .map((x) => x.c);
 
@@ -40,7 +42,6 @@
     list.forEach((call, callIdx) => {
       const off = new Set(Array.isArray(call && call.off) ? call.off : []);
       const fixes = Array.isArray(call && call.fixes) ? call.fixes : [];
-      const seenInCall = new Set();
       fixes.forEach((f, i) => {
         if (!f || off.has(i)) return;
         const topic = typeof f.topic === "string" && f.topic ? f.topic : "other";
@@ -56,7 +57,6 @@
         byTopic[topic].count++;
         byTopic[topic].lastIdx = callIdx;
         byTopic[topic].lastDay = String(call.day || "");
-        seenInCall.add(topic);
       });
     });
 

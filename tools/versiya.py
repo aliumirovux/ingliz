@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""data/*.js, styles/*.css yoki js/*.js fayllaridan birini o'zgartirgandan keyin ishga tushiring:
-    python3 tools/versiya.py
-index.html va js/app.js dagi ?v=HASH versiyalarini fayl mazmuniga qarab yangilaydi
-(brauzer va service worker yangi faylni yuklab olishi uchun) va o'zgargan bo'lsa APP_V ni oshiradi."""
+"""Update content-based ?v=HASH query params for data/*.js, styles/*.css, and js/*.js
+in index.html and js/app.js, and bump APP_V when any asset changes.
+Usage: python3 tools/versiya.py"""
 import hashlib, os, re, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,9 +31,8 @@ def update_file(rel_path):
         open(full, "w", encoding="utf-8", newline="").write(out)
     return local_changed
 
-# Avval js/app.js ichidagi LAZY_DATA hash'larini yangilaymiz (bu js/app.js hash'iga ta'sir qiladi)
+# Update lazy asset hashes inside js/app.js first, then update index.html
 update_file("js/app.js")
-# Keyin index.html dagi barcha (data/*, styles/*, js/*) hash'larni yangilaymiz
 update_file("index.html")
 
 if changed:
@@ -46,8 +44,8 @@ if changed:
         out = re.sub(r'<meta name="app-v" content="\d+">', f'<meta name="app-v" content="{ver}">', out, count=1)
         if out != src:
             open(full, "w", encoding="utf-8", newline="").write(out)
-    # APP_V o'zgargani uchun index.html dagi js/app.js hash'ini qayta moslaymiz
+    # Re-sync js/app.js hash in index.html after APP_V update
     update_file("index.html")
-    print("Yangilandi:", ", ".join(changed))
+    print("Updated:", ", ".join(changed))
 else:
-    print("O'zgarish yo'q")
+    print("No changes")

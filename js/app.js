@@ -1,6 +1,4 @@
-/* Ingliz tili — Navigate Beginner mashq sayti.
-   Ma'lumotlar: data/*.js (window.UNITS, PATTERNS, SPEAKING, PHRASES, BUILD, STORIES_*, VOCAB) — tahrirdan keyin: python3 tools/versiya.py
-   Natijalar shu brauzerda (localStorage) va kirilgan bo'lsa — Supabase'da ham saqlanadi (Sozlamalar → Sinxronlash). */
+/* Easy English (easywords.uz) — main client application */
 (function(){
 "use strict";
 const UNITS = window.UNITS || [], PATTERNS = window.PATTERNS || [], SPEAKING = window.SPEAKING || [], PHRASES = window.PHRASES || [], BUILD = window.BUILD || [];
@@ -15,7 +13,6 @@ ICON.verb = sv('<path d="M4 7h10"/><path d="m11 4 3 3-3 3"/><path d="M20 17H10"/
 ICON.twin = sv('<rect x="3" y="6" width="11" height="12" rx="2.5"/><path d="M10 6V5.5A2.5 2.5 0 0 1 12.5 3h6A2.5 2.5 0 0 1 21 5.5v7a2.5 2.5 0 0 1-2.5 2.5H14"/><path d="M6.5 13.5 8.5 9l2 4.5M7.2 12h2.6"/>');
 const norm = s => String(s).toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
-/* ---------- words ---------- */
 const WORDS = [];
 UNITS.forEach(u => u.groups.forEach((g, gi) => g.words.forEach(w => {
   WORDS.push(Object.assign({}, w, { unit: u.unit, g: gi, id: u.unit + "|" + w.w }));
@@ -23,10 +20,9 @@ UNITS.forEach(u => u.groups.forEach((g, gi) => g.words.forEach(w => {
 const byUnit = n => WORDS.filter(w => w.unit === n);
 const unitOf = n => UNITS.find(u => u.unit === n);
 
-/* ---------- storage (per browser) ---------- */
 const KEY = "ingliz-v1";
 let S = { srs: {}, pat: {}, streak: { last: "", n: 0 }, gr: {}, mis: {}, log: {} };
-/* saqlangan ma'lumotni tozalash: eski versiya, qo'lda tahrir yoki buzilgan zaxira ilovani to'xtatib qo'ymasin */
+
 function fixState(o) {
   const obj = v => v && typeof v === "object" && !Array.isArray(v) ? v : {}, arr = v => Array.isArray(v) ? v : [];
   const num = v => Number.isFinite(+v) && +v >= 0 ? +v : 0, day = v => typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v);
@@ -65,15 +61,15 @@ function fixState(o) {
 }
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
 S = fixState(S);
-S.hook = S.hook || {}; // eslatgichlar: so'z → o'zi yozgan bog'lanish
-S.my = S.my || []; // o'zi qo'shgan so'zlar (darsdan, ishdan): { id, w, u, p, e, t }
-/* o'z so'zlari umumiy WORDS ro'yxatiga «unit 0» bo'lib qo'shiladi — takrorlash, qidiruv va reja ularni ham ko'radi */
+S.hook = S.hook || {};
+S.my = S.my || [];
+
 function syncMyWords() {
   for (let i = WORDS.length - 1; i >= 0; i--) if (WORDS[i].mine) WORDS.splice(i, 1);
   (S.my || []).forEach(m => WORDS.push(Object.assign({ p: "", e: "", t: "", star: 0 }, m, { unit: 0, g: 0, a: [m.w], mine: true })));
 }
 syncMyWords();
-/* ---------- SO'Z BOYLIGI: qo'shimcha lug'at bazasi (kitobdagi so'zlar chiqarib tashlanadi) ---------- */
+
 const LAZY_DATA = {
   pre: "data/pre-intermediate.js?v=63c7b71c",
   ei: "data/elementary-intermediate.js?v=34835594",
@@ -84,7 +80,7 @@ const VB_BOOK = new Set(WORDS.filter(w => !w.mine).map(w => norm(w.w)));
 const VBANK = { easy: [], mid: [], hard: [] };
 const VB_ALL = new Map();
 if (!S.vb) S.vb = fixState({ vb: {} }).vb;
-/* o'rganilayotgan so'zlar umumiy WORDS'ga qo'shiladi — o'rganish, takrorlash va reja ularni ham ko'radi */
+
 function syncVbWords() {
   for (let i = WORDS.length - 1; i >= 0; i--) if (WORDS[i].vb) WORDS.splice(i, 1);
   S.vb.learn.forEach(k => { const x = VB_ALL.get(k); if (x) WORDS.push({ id: "vb|" + x.w, w: x.w, a: [x.w], p: x.p, u: x.u, e: x.e, t: x.t, unit: 0, g: 0, star: 0, vb: true, lvl: x.lvl }); });
@@ -140,172 +136,27 @@ function warmUserPacks() {
   if ((S.vb && (S.vb.learn.length || Object.keys(S.vb.known).length)) || keys.some(k => k.startsWith("vb|"))) loadPack("vocab");
 }
 setTimeout(warmUserPacks, 0);
-/* ---------- unit hikoyalari: o'sha unit so'zlari bilan 6 gap (o'qib tushunish) ---------- */
-const STORIES = {
-  1: { t: "Hello, I'm Aziz", u: "Salom, men Azizman", s: [
-    ["Hello! My name is Aziz.", "Salom! Mening ismim Aziz."],
-    ["I'm from Uzbekistan.", "Men O'zbekistondanman."],
-    ["My city is Tashkent.", "Mening shahrim — Toshkent."],
-    ["I'm in London on business.", "Men Londonda ish bilan yuribman."],
-    ["This is my hotel. It's great!", "Bu mening mehmonxonam. U ajoyib!"],
-    ["Good bye! See you at the meeting.", "Xayr! Uchrashuvda ko'rishamiz."]] },
-  2: { t: "Malika's class", u: "Malikaning darsi", s: [
-    ["This is Malika. She's a teacher.", "Bu Malika. U o'qituvchi."],
-    ["Her school is next to the river.", "Uning maktabi daryo yonida."],
-    ["Her students are from Japan, Italy and Mexico.", "O'quvchilari Yaponiya, Italiya va Meksikadan."],
-    ["Her bag is big. Her laptop, pen and notepad are in her bag.", "Sumkasi katta. Kompyuteri, ruchkasi va bloknoti sumkasida."],
-    ["The class is at nine o'clock.", "Dars soat to'qqizda."],
-    ["Where's her phone? It's on the bus!", "Telefoni qayerda? U avtobusda!"]] },
-  3: { t: "Aziz's family", u: "Azizning oilasi", s: [
-    ["Aziz has got a big family.", "Azizning katta oilasi bor."],
-    ["His wife, Nilufar, is an artist.", "Rafiqasi Nilufar — rassom."],
-    ["They've got two children, a son and a daughter.", "Ularning ikki farzandi bor: o'g'il va qiz."],
-    ["Their flat is small, but it's lovely.", "Xonadoni kichkina, lekin ajoyib."],
-    ["They've got a cat called Mosh.", "Ularning Mosh ismli mushugi bor."],
-    ["Aziz's car is old, but it's very good.", "Azizning mashinasi eski, lekin juda yaxshi."]] },
-  4: { t: "Aziz's day", u: "Azizning kuni", s: [
-    ["Aziz gets up at seven o'clock.", "Aziz soat yettida turadi."],
-    ["He has a shower and has breakfast.", "Dush qabul qiladi va nonushta qiladi."],
-    ["He goes to work by bus.", "Ishga avtobusda boradi."],
-    ["He starts work at nine and checks emails.", "Ishni soat to'qqizda boshlaydi va xatlarni tekshiradi."],
-    ["He finishes work at six and gets home at seven.", "Soat oltida ishni tugatadi va yettida uyga yetib keladi."],
-    ["In his free time, he plays tennis.", "Bo'sh vaqtida tennis o'ynaydi."]] },
-  5: { t: "A shopping day", u: "Xarid kuni", s: [
-    ["Malika usually wears casual clothes.", "Malika odatda erkin kiyim kiyadi."],
-    ["Today she's at a big shop in the city.", "Bugun u shahardagi katta do'konda."],
-    ["She likes a long blue dress and a white jacket.", "Unga uzun ko'k ko'ylak va oq kurtka yoqadi."],
-    ["The dress is good quality, but it's expensive.", "Ko'ylak sifatli, lekin qimmat."],
-    ["\"I think the jacket is really smart,\" says her friend.", "«Menimcha, kurtka juda rasmiy», — deydi dugonasi."],
-    ["She buys the jacket and goes for lunch.", "U kurtkani sotib oladi va tushlikka boradi."]] },
-  6: { t: "At the hotel", u: "Mehmonxonada", s: [
-    ["Aziz arrives at the hotel at eight p.m.", "Aziz mehmonxonaga kechki soat sakkizda yetib keladi."],
-    ["The receptionist is very friendly.", "Qabulxona xodimi juda do'stona."],
-    ["\"Is there wi-fi in the room?\" Aziz asks.", "«Xonada vay-fay bormi?» — so'raydi Aziz."],
-    ["\"Yes, there is. The password is on the card.\"", "«Ha, bor. Parol kartada yozilgan.»"],
-    ["The room is clean and quiet, but there isn't a fridge.", "Xona toza va tinch, lekin sovutgich yo'q."],
-    ["There's a café and a gym near the hotel.", "Mehmonxona yaqinida kafe va sport zali bor."]] },
-  7: { t: "Nilufar's skills", u: "Nilufarning ko'nikmalari", s: [
-    ["Nilufar can paint very well.", "Nilufar juda yaxshi rasm chiza oladi."],
-    ["She can't sing, but she can dance.", "U kuylay olmaydi, lekin raqsga tusha oladi."],
-    ["She's interested in photos and social media.", "U surat va ijtimoiy tarmoqlarga qiziqadi."],
-    ["She takes photos of her paintings and posts them online.", "Rasmlarini suratga olib, internetga joylaydi."],
-    ["She can speak a foreign language — Spanish.", "U xorijiy tilda — ispanchada gapira oladi."],
-    ["She is never bored.", "U hech qachon zerikmaydi."]] },
-  8: { t: "Grandfather's stories", u: "Bobomning hikoyalari", s: [
-    ["Aziz's grandfather was born in a small village.", "Azizning bobosi kichik qishloqda tug'ilgan."],
-    ["He grew up near the mountains.", "U tog'lar yaqinida ulg'aygan."],
-    ["He was a carpenter and a great storyteller.", "U duradgor va ajoyib hikoyachi edi."],
-    ["Last year, Aziz collected his old stories.", "O'tgan yili Aziz uning eski hikoyalarini to'pladi."],
-    ["Yesterday was his grandfather's birthday.", "Kecha bobosining tug'ilgan kuni edi."],
-    ["The family had a big party.", "Oila katta bazm qildi."]] },
-  9: { t: "A bad day", u: "Omadsiz kun", s: [
-    ["Last winter, it was cold and snowy.", "O'tgan qish sovuq va qorli edi."],
-    ["One morning, Malika missed the train.", "Bir kuni ertalab Malika poyezdni o'tkazib yubordi."],
-    ["She got to work late and had a headache.", "Ishga kech keldi va boshi og'ridi."],
-    ["Then she lost her phone!", "Keyin telefonini yo'qotdi!"],
-    ["In the evening, a waiter called her: \"Your phone is here.\"", "Kechqurun ofitsiant qo'ng'iroq qildi: «Telefoningiz shu yerda.»"],
-    ["In fact, it was a good day in the end.", "Aslida, oxiri yaxshi kun bo'ldi."]] },
-  10: { t: "Weekend plans", u: "Dam olish rejalari", s: [
-    ["Tomorrow is Saturday.", "Ertaga shanba."],
-    ["Aziz and Nilufar are going to have lunch at a new café.", "Aziz va Nilufar yangi kafeda tushlik qilmoqchi."],
-    ["Aziz would like a burger and an orange juice.", "Aziz gamburger va apelsin sharbatini xohlaydi."],
-    ["Next month, they're going to travel to an island.", "Keyingi oy ular orolga sayohat qilmoqchi."],
-    ["Aziz is also going to learn a new language.", "Aziz yangi til ham o'rganmoqchi."],
-    ["\"It's a great chance,\" he says.", "«Bu ajoyib imkoniyat», — deydi u."]] }
-};
-Object.assign(STORIES, window.STORIES_PRE || {}, window.STORIES_EI || {});
-/* ---------- o'zingiz haqingizdagi misollar: so'z o'z hayotingizga bog'lansa, yaxshiroq eslab qolinadi ---------- */
-const MYEX = {
-  "1|hello": ["Hello! I'm Ali. I'm from Tashkent.", "Salom! Men Aliman. Men Toshkentdanman."],
-  "1|city": ["My city is Tashkent.", "Mening shahrim — Toshkent."],
-  "1|country": ["I'm from Uzbekistan. It's a great country.", "Men O'zbekistondanman. Bu ajoyib mamlakat."],
-  "1|study": ["I study English three days a week.", "Men haftada uch kun ingliz tili o'qiyman."],
-  "1|meeting": ["I'm at a meeting. Call me later, please.", "Men uchrashuvdaman. Keyinroq qo'ng'iroq qiling, iltimos."],
-  "1|introduce": ["Can I introduce my team?", "Jamoamni tanishtirsam maylimi?"],
-  "1|day": ["Have a good day!", "Kuningiz yaxshi o'tsin!"],
-  "2|office": ["Our office is in Tashkent.", "Ofisimiz Toshkentda."],
-  "2|company": ["My uncle's company makes furniture for schools.", "Amakimning kompaniyasi maktablar uchun mebel ishlab chiqaradi."],
-  "2|laptop": ["My laptop is on my desk.", "Kompyuterim stolimda."],
-  "2|phone": ["My phone is in my bag.", "Telefonim sumkamda."],
-  "2|teacher": ["My English teacher is very nice.", "Ingliz tili o'qituvchim juda yaxshi."],
-  "2|language school": ["My language school is Inter Nation.", "Mening til maktabim — Inter Nation."],
-  "2|email": ["This email is from my manager.", "Bu xat menejerimdan."],
-  "2|time": ["It's nine o'clock. Time for work!", "Soat to'qqiz. Ish vaqti!"],
-  "2|job": ["My brother's job is in a hospital.", "Akamning ishi kasalxonada."],
-  "3|project": ["This is my new project.", "Bu mening yangi loyiham."],
-  "3|car": ["My car is a Chevrolet Nexia.", "Mening mashinam — Chevrolet Nexia."],
-  "3|coffee": ["My coffee is hot.", "Qahvam issiq."],
-  "3|interesting": ["My job is really interesting.", "Ishim juda qiziqarli."],
-  "3|message": ["I message my team every morning.", "Har kuni ertalab jamoamga xabar yozaman."],
-  "4|get up": ["I get up at seven o'clock.", "Men soat yettida turaman."],
-  "4|have breakfast": ["I have breakfast at home.", "Uyda nonushta qilaman."],
-  "4|go to work": ["I go to work by car.", "Ishga mashinada boraman."],
-  "4|check emails": ["I check emails at nine.", "Soat to'qqizda xatlarni tekshiraman."],
-  "4|start work": ["I start work at nine o'clock.", "Ishni soat to'qqizda boshlayman."],
-  "4|finish work": ["I finish work at six.", "Ishni soat oltida tugataman."],
-  "4|in my free time": ["In my free time, I learn English.", "Bo'sh vaqtimda ingliz tili o'rganaman."],
-  "4|help": ["Can you help me with these bags?", "Bu sumkalarni ko'tarishga yordam bera olasizmi?"],
-  "4|like": ["I like my job.", "Menga ishim yoqadi."],
-  "4|need": ["I need more English words for work.", "Ish uchun menga ko'proq inglizcha so'z kerak."],
-  "5|designer": ["My cousin is a fashion designer.", "Amakivachcham — moda dizayneri."],
-  "5|busy": ["I'm very busy on Mondays.", "Dushanbada juda band bo'laman."],
-  "5|usually": ["I usually wear casual clothes to work.", "Ishga odatda erkin kiyimda boraman."],
-  "5|team": ["My team is small but strong.", "Jamoam kichik, lekin kuchli."],
-  "5|important": ["This meeting is really important.", "Bu uchrashuv juda muhim."],
-  "5|useful": ["This app is really useful for me.", "Bu ilova men uchun juda foydali."],
-  "5|lunch": ["I have lunch at one o'clock.", "Soat birda tushlik qilaman."],
-  "5|always": ["I always drink coffee in the morning.", "Ertalab doim qahva ichaman."],
-  "5|think": ["I think this restaurant is good.", "Menimcha, bu restoran yaxshi."],
-  "5|style": ["I like a simple style.", "Menga oddiy uslub yoqadi."],
-  "6|password": ["What's the wi-fi password?", "Vay-fay paroli qanday?"],
-  "6|website": ["I often order food on this website.", "Men ko'pincha shu veb-saytdan ovqat buyurtma qilaman."],
-  "6|link": ["Can you send me the link?", "Havolani menga yubora olasizmi?"],
-  "6|send": ["I send photos to my family.", "Suratlarni oilamga yuboraman."],
-  "6|problem": ["No problem, I can do it.", "Muammo yo'q, qila olaman."],
-  "6|minute": ["Give me five minutes, please.", "Besh daqiqa bering, iltimos."],
-  "6|quiet": ["The office is quiet in the morning.", "Ertalab ofis tinch bo'ladi."],
-  "7|computer skills": ["Accountants need good computer skills.", "Buxgalterlarga yaxshi kompyuter ko'nikmalari kerak."],
-  "7|remember": ["I can remember new words now.", "Endi yangi so'zlarni eslab qola olaman."],
-  "7|know": ["I know a lot of English words now.", "Endi ko'p inglizcha so'z bilaman."],
-  "7|skill": ["Cooking is my main skill.", "Ovqat pishirish — mening asosiy ko'nikmam."],
-  "7|foreign language": ["I'm learning a foreign language — English.", "Men xorijiy til — ingliz tilini o'rganyapman."],
-  "8|yesterday": ["Yesterday I was at the office all day.", "Kecha kun bo'yi ofisda edim."],
-  "8|document": ["I read the project document yesterday.", "Kecha loyiha hujjatini o'qidim."],
-  "9|a day off": ["Sunday is my day off.", "Yakshanba — dam olish kunim."],
-  "9|mistake": ["I make mistakes, but I learn.", "Xato qilaman, lekin o'rganaman."],
-  "9|forget": ["I don't forget new words now.", "Endi yangi so'zlarni unutmayman."],
-  "9|memory": ["Practice is good for my memory.", "Mashq xotiram uchun foydali."],
-  "9|summer": ["Tashkent is very hot in summer.", "Yozda Toshkent juda issiq."],
-  "9|winter": ["Tashkent is cold in winter.", "Qishda Toshkent sovuq."],
-  "10|tomorrow": ["Tomorrow I have an English class.", "Ertaga ingliz tili darsim bor."],
-  "10|order (v)": ["I'd like to order a coffee, please.", "Bitta qahva buyurtma qilmoqchiman, iltimos."],
-  "10|probably": ["I'll probably work late tomorrow.", "Ertaga ehtimol kech ishlayman."],
-  "10|international": ["I work for an international company.", "Men xalqaro kompaniyada ishlayman."],
-  "10|learn a new language": ["Learning a new language is hard but fun.", "Yangi til o'rganish qiyin, lekin qiziq."]
-};
+
+const STORIES = Object.assign({}, window.STORIES_BASE || {}, window.STORIES_PRE || {}, window.STORIES_EI || {});
+const MYEX = window.MYEX || {};
 WORDS.forEach(w => { const m = MYEX[w.id]; if (m) { w.pe = m[0]; w.pt = m[1]; } });
-/* ---------- cloud sync ----------
-   Ikki yo'l: (1) claude.ai sahifasi bo'lib ochilsa — window.claude db (eski yo'l, o'zgarmagan);
-   (2) GitHub Pages'da — Supabase: email + kod bilan kirish, progress public.progress jadvalida (RLS: faqat egasi o'qiydi/yozadi).
-   Ikki qurilma bir-birini o'chirmaydi: har sinxronda avval serverdagi nusxa olinib merge() qilinadi, keyin yoziladi.
-   Yozish shartli (updated_at mos kelsa) — oraliqda boshqa qurilma yozgan bo'lsa, qayta olib birlashtiriladi. */
+
 const SB = { url: "https://rqeirdempadfwirefyit.supabase.co", key: "sb_publishable_DoI9Fdst0Ld_Wj04Q1w-zA_aPdnnoD1" };
 const AUTHKEY = "ingliz-auth", SYNCKEY = "ingliz-sync";
 const cloud = { ref: null, kind: "", status: "local", timer: null, busy: false, dirty: false, again: false, at: 0, retry: 0, rt: null };
 let AUTH = null; try { AUTH = JSON.parse(localStorage.getItem(AUTHKEY) || "null"); } catch (e) {}
 if (AUTH && (!AUTH.rt || !AUTH.uid)) AUTH = null;
 const authSave = a => { AUTH = a; try { a ? localStorage.setItem(AUTHKEY, JSON.stringify(a)) : localStorage.removeItem(AUTHKEY); if (a) localStorage.setItem("ingliz-welcome", "in"); } catch (e) {} };
-/* JWT ichidagi user_metadata: Google'da surat (avatar_url/picture) va ism bor, email bilan kirganda odatda bo'sh */
+
 const jwtPl = t => { try { return JSON.parse(decodeURIComponent(escape(atob(t.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))))) || {}; } catch (e) { return {}; } };
 const jwtMeta = t => { const m = jwtPl(t || "").user_metadata || {}, p = m.avatar_url || m.picture || ""; return { pic: /^https:\/\//.test(p) ? p : "", name: String(m.full_name || m.name || "").trim() }; };
-// eski sessiyalarda surat/ism saqlanmagan — tokendan bir marta olamiz
+
 if (AUTH && AUTH.pic === undefined) authSave(Object.assign(AUTH, jwtMeta(AUTH.at)));
-/* sinxron yozuvi: qaysi server versiyasini ko'rganmiz (at), yuborilmagan o'zgarish bormi (dirty) — ilova yopilsa ham saqlanadi */
+
 const syGet = () => { try { const o = JSON.parse(localStorage.getItem(SYNCKEY) || "{}"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } };
 const sySet = p => { try { localStorage.setItem(SYNCKEY, JSON.stringify(Object.assign(syGet(), p))); } catch (e) {} };
 if (syGet().ok) cloud.at = syGet().ok;
-/* Google bilan kirish: Supabase Google'dan keyin saytga #access_token=…&refresh_token=… bilan qaytaradi (yoki #error=…).
-   Bu qatorlar router'dan oldin o'qiladi va manzildan o'chiriladi — tarixda ham, ulashilgan havolada ham token qolmaydi. */
+
 let OAUTH = null;
 (function () {
   const hs = location.hash || "";
@@ -335,7 +186,6 @@ function googleLogin() {
   location.href = SB.url + "/auth/v1/authorize?provider=google&redirect_to=" + encodeURIComponent(location.origin + location.pathname);
 }
 
-/* o'chirishlar ham sinxron bo'lsin: «tomb» — o'chirilgan vaqt (+ms), qayta qo'shilsa — (−ms). Kim keyin harakat qilgan bo'lsa, o'sha yutadi */
 const tomb = k => { (S.del || (S.del = {}))[k] = Date.now(); };
 const untomb = k => { if (S.del && S.del[k] > 0) S.del[k] = -Date.now(); };
 
@@ -362,7 +212,7 @@ function merge(a, b) {
   const as = a.srs || {}, bs = b.srs || {}, nx = r => (r.ok || 0) + (r.bad || 0);
   new Set(Object.keys(as).concat(Object.keys(bs))).forEach(id => {
     const x = as[id], y = bs[id];
-    // ko'proq ishlangani; teng bo'lsa — oxirgi mashq qilingani
+
     out.srs[id] = !x ? y : !y ? x : nx(y) !== nx(x) ? (nx(y) > nx(x) ? y : x) : ((y.ls || "") > (x.ls || "") ? y : x);
   });
   const ap = a.pat || {}, bp = b.pat || {};
@@ -381,7 +231,7 @@ function merge(a, b) {
       out.tl[k] = Object.assign({}, x, y, { i: Math.max(x.i || 0, y.i || 0), done: !!(x.done || y.done), at: Math.max(x.at || 0, y.at || 0), w, r: nw.r, pct: nw.pct != null ? nw.pct : (x.pct != null ? x.pct : y.pct) }); }); }
   out.guide = Object.assign({}, a.guide || {}, b.guide || {});
   out.cls = b.cls || a.cls; out.ms = Math.max(a.ms || 0, b.ms || 0);
-  // kunlik belgilar (unit so'raldi, haftalik xulosa yopildi) — eng keyingi sana; sinxronda yo'qolmasin
+
   { const mx = (x, y) => ((x || "") > (y || "") ? x : y) || undefined; out.clsAsk = mx(a.clsAsk, b.clsAsk); out.wkSum = mx(a.wkSum, b.wkSum); }
   out.lvc = Object.assign({}, b.lvc || {}, a.lvc || {});
   out.level = b.level || a.level || "";
@@ -390,7 +240,7 @@ function merge(a, b) {
   new Set(Object.keys(ag).concat(Object.keys(bg))).forEach(k => { const x = ag[k], y = bg[k]; out.gr[k] = !x ? y : !y ? x : (y.due > x.due ? y : x); });
   out.mis = Object.assign({}, a.mis || {}, b.mis || {});
   out.hook = Object.assign({}, a.hook || {}, b.hook || {});
-  // haftalik maqsad: keyin o'zgargani; bir xil maqsad bo'lsa mashq kunlari qo'shiladi
+
   { const ga = a.goal, gb = b.goal; let g = !ga ? gb : !gb ? ga : (gb.up || 0) >= (ga.up || 0) ? gb : ga;
     if (ga && gb && ga.id === gb.id && ga.at === gb.at) g = Object.assign({}, g, { days: [...new Set((ga.days || []).concat(gb.days || []))].sort().slice(-14) });
     if (g) out.goal = g;
@@ -402,7 +252,7 @@ function merge(a, b) {
     out.vb = { lvl: vb.lvl || va.lvl || "", goal: vb.goal || va.goal || 10, known: kn, learn: [...new Set((va.learn || []).concat(vb.learn || []))], day: (vb.day && va.day && (vb.day.d || "") >= (va.day.d || "")) ? vb.day : va.day || vb.day }; }
   const al = a.log || {}, bl = b.log || {}; out.log = {};
   new Set(Object.keys(al).concat(Object.keys(bl))).forEach(k => { const x = al[k], y = bl[k]; out.log[k] = !x ? y : !y ? x : (y.a > x.a ? y : x); });
-  // o'chirishlar: ikkala tomondagi eng keyingi harakat
+
   const ad = a.del || {}, bd = b.del || {}; out.del = {};
   new Set(Object.keys(ad).concat(Object.keys(bd))).forEach(k => { const x = ad[k] || 0, y = bd[k] || 0; out.del[k] = Math.abs(y) > Math.abs(x) ? y : x; });
   Object.entries(out.del).forEach(([k, v]) => {
@@ -417,7 +267,7 @@ function merge(a, b) {
   out.vb.learn = out.vb.learn.filter(x => !out.vb.known[x]);
   return out;
 }
-/* ---------- Supabase (REST, kutubxonasiz: oflayn ham ochiladi) ---------- */
+
 async function sbFetch(path, opt = {}, tok) {
   const h = Object.assign({ apikey: SB.key, "Content-Type": "application/json" }, opt.headers || {});
   if (tok) h.Authorization = "Bearer " + tok;
@@ -444,7 +294,7 @@ async function sbToken() {
 const sbRef = {
   async stamp() { const r = await sbFetch("/rest/v1/progress?select=updated_at", {}, await sbToken()); return r && r[0] ? r[0].updated_at : ""; },
   async get() { const r = await sbFetch("/rest/v1/progress?select=state,updated_at", {}, await sbToken()); return r && r[0] || null; },
-  /* prev bo'lsa — faqat server hali o'sha versiyada bo'lsa yozadi (aks holda "" qaytadi → qayta birlashtiramiz) */
+
   async put(state, prev) {
     const t = await sbToken(), sel = "&select=updated_at", hd = { Prefer: "return=representation" };
     if (prev) {
@@ -455,8 +305,8 @@ const sbRef = {
     catch (e) { if (e.status === 409) return ""; throw e; }
   }
 };
-const quizNow = () => /^#(quiz|lahza-|sahna|suhbat|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-|ibmashq)/.test(location.hash); // ochiq mashq yoki tinglash darsi fon sinxronida qayta chizilmaydi
-/* serverdagi nusxani shu qurilmaga qo'shish; qaytaradi: nechta yangi so'z natijasi keldi */
+const quizNow = () => /^#(quiz|lahza-|sahna|suhbat|gapmashq|tuzmashq|tinglash-|oyinmashq|fellarmashq|fellartez|oqish-|ibmashq)/.test(location.hash);
+
 function absorb(remote) {
   const before = Object.keys(S.srs).length;
   S = fixState(merge(S, fixState(remote))); fixCourse(); syncMyWords(); syncVbWords();
@@ -478,7 +328,7 @@ async function sbSync() {
       cloud.dirty = false;
       const at = await sbRef.put(S, st || null);
       if (at) { sySet({ at, dirty: 0 }); break; }
-      cloud.dirty = true; // oraliqda boshqa qurilma yozdi — qaytadan olib birlashtiramiz
+      cloud.dirty = true;
     }
     cloud.at = Date.now(); cloud.retry = 0; sySet({ ok: cloud.at }); setStatus("cloud");
     if (changed && !quizNow() && location.hash !== "#sozlama") render();
@@ -499,11 +349,11 @@ let lastWake = 0;
 function wake() { if (cloud.kind !== "sb" || !AUTH || Date.now() - lastWake < 8000) return; lastWake = Date.now(); if (cloud.status === "relogin") return; cloud.ref = sbRef; sbSync(); }
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") wake();
-  else if (cloud.kind === "sb" && cloud.dirty && cloud.ref) sbSync(); // ilova yopilayotganda — kutmasdan yuboramiz
+  else if (cloud.kind === "sb" && cloud.dirty && cloud.ref) sbSync();
 });
 window.addEventListener("online", () => { lastWake = 0; wake(); });
 window.addEventListener("storage", e => { if (e.key === AUTHKEY) { try { AUTH = JSON.parse(e.newValue || "null"); } catch (er) {} if (!AUTH && e.oldValue) { try { localStorage.setItem(WKEY, "out"); } catch (er) {} location.hash = ""; render(); } } });
-/* kirish */
+
 const sbSend = email => sbFetch("/auth/v1/otp", { method: "POST", body: JSON.stringify({ email, create_user: true }) });
 async function sbVerify(email, code) {
   const b = await sbFetch("/auth/v1/verify", { method: "POST", body: JSON.stringify({ type: "email", email, token: code }) });
@@ -516,7 +366,7 @@ async function sbLogout() {
   const t = AUTH && AUTH.at; authSave(null); cloud.ref = null; cloud.kind = ""; clearTimeout(cloud.timer); clearTimeout(cloud.rt);
   try { localStorage.removeItem(SYNCKEY); } catch (e) {}
   setStatus("local");
-  /* sekin internetda landingga qaytish kutib qolmasin: so'rov ko'pi bilan 1,5 s kutiladi */
+
   try { if (t) await Promise.race([sbFetch("/auth/v1/logout", { method: "POST" }, t), new Promise(r => setTimeout(r, 1500))]); } catch (e) {}
 }
 const agoText = t => { const s = Math.round((Date.now() - t) / 1000); return s < 60 ? "hozirgina" : s < 3600 ? Math.floor(s / 60) + " daq oldin" : s < 86400 ? Math.floor(s / 3600) + " soat oldin" : Math.floor(s / 86400) + " kun oldin"; };
@@ -553,15 +403,14 @@ async function initCloud() {
 }
 const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-// Leitner qutilari: 0 → yangi/xato, 5 → mustahkam. Intervallar (kun):
+
 const INT = [1, 1, 3, 7, 14, 30];
 const rec = id => S.srs[id];
-// FSRS-4.5 (js/fsrs.js): har so'z uchun stability (fs) va difficulty (fd) hisoblanadi; b (0–5) moslik uchun saqlanadi.
-// So'z kamida bir marta xotiradan to'g'ri yozilmaguncha 2-qutidan yuqoriga chiqmaydi (r.sp — to'g'ri yozilganlar soni).
+
 function grade(w, ok, spelled, hinted) {
   const prev = S.srs[w.id];
   const t = today();
-  // eslab qolish: oldingi kunlarda ko'rilgan so'zning shu kundagi birinchi javobi
+
   if (prev && (prev.ls ? prev.ls < t : !isToday(prev.lt))) { logRet(ok); pilotLog(w, ok); }
   const r = prev ? Object.assign({}, prev) : { b: 0, due: t, ok: 0, bad: 0 };
   if (!prev) untomb("srs:" + w.id);
@@ -584,8 +433,7 @@ function grade(w, ok, spelled, hinted) {
   touchStreak();
   save();
 }
-/* seriya: haftasiga 2 tagacha mashqsiz kun «dam olish kuni» bo'lib, seriyani uzmaydi (Duolingo: 2 ta muzlatish 1 tadan yaxshi ishlagan).
-   uzilsa — keyingi 3 kun ichida 2 kun darsni oxirigacha qilib, seriyani qaytarish mumkin */
+
 const REST_N = 2;
 const dOf = k => new Date(k + "T12:00:00");
 const kOf = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -605,13 +453,13 @@ function touchStreak() {
     else { if (n >= 3) S.lost = { n, d: t, k: 0 }; n = 1; } }
   S.streak = { last: t, n };
 }
-/* ko'rsatiladigan seriya: bugun yoki kecha mashq qilingan bo'lsa yoki o'tkazilgan kunlar dam olish kuniga sig'sa */
+
 function liveStreak() {
   const last = S.streak.last, t = today(); if (!last) return 0;
   if (last === t || last === addDays(-1)) return S.streak.n;
   return canRest(missedDays(last, t)) ? S.streak.n : 0;
 }
-/* kunlik dars oxirigacha bajarilganda: uzilgan seriyani qaytarish hisoblanadi */
+
 function earnBack() {
   const L = S.lost; if (!L) return null;
   if (dayDiff(L.d, today()) > 2) { delete S.lost; save(); return null; }
@@ -619,24 +467,23 @@ function earnBack() {
   if (L.k >= 2) { S.streak.n += L.n; delete S.lost; save(); return "back"; }
   save(); return "step";
 }
-/* ---------- kechki takrorlash: bugun o'rganilgan so'zlar 3 soatdan keyin, uxlashdan oldin bir marta xotiradan yoziladi ---------- */
+
 const KECH_H = 3;
 const isToday = ts => ts && new Date(ts).toDateString() === new Date().toDateString();
 const learnedToday = () => WORDS.filter(w => { const r = rec(w.id); return r && isToday(r.lt) && r.ev !== today(); });
 const hhmm = ts => { const d = new Date(ts); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
-/* qiyin so'z: 3 va undan ko'p marta xato qilingan va hali mustahkam emas */
+
 const isHard = w => { const r = rec(w.id); return r && r.bad >= 3 && !isMastered(w); };
-/* ---------- kunlik jurnal: javoblar, xotiradan yozilgan so'zlar va faol vaqt (soniya) ---------- */
-// a — javoblar, ok — to'g'ri, sw — yozib javob berilgan so'zlar, sp — shundan to'g'ri, t — faol vaqt
+
 let lastAns = 0;
 function logAns(ok, spelled) {
   const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 }), now = Date.now(), gap = (now - lastAns) / 1000;
   L.a++; if (ok) L.ok++; if (spelled) { L.sw++; if (ok) L.sp++; }
-  // javoblar orasi 90 soniyadan uzun bo'lsa, tanaffus deb hisoblanadi
+
   L.t += lastAns && gap < 90 ? Math.round(gap) : 10; lastAns = now;
 }
 function logRet(ok) { const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 }); L.rv = (L.rv || 0) + 1; if (ok) L.rk = (L.rk || 0) + 1; }
-// off: 0 — shu hafta (Dushanbadan), 1 — o'tgan hafta
+
 function weekStat(off) {
   const dow = (new Date().getDay() + 6) % 7, r = { a: 0, ok: 0, sw: 0, sp: 0, t: 0, rv: 0, rk: 0, days: 0 };
   for (let i = 0; i < 7; i++) { const L = S.log[addDays(i - dow - 7 * off)]; if (!L || !L.a) continue; r.days++; ["a", "ok", "sw", "sp", "t", "rv", "rk"].forEach(k => r[k] += L[k] || 0); }
@@ -649,10 +496,7 @@ const isDue = w => { const r = rec(w.id); return r && r.due <= today(); };
 const isMastered = w => { const r = rec(w.id); return r && r.b >= 3 && (!w.a || r.sp > 0); };
 const isSeen = w => !!rec(w.id);
 const dueWords = () => WORDS.filter(isDue);
-/* ---------- XOTIRA: so'zning hozir esda qolish ehtimoli (FSRS egri chizig'i) ----------
-   R(t) = (1 + 19/81 · t / S)^-0.5 — S: rejalashtirilgan oraliq (oxirgi takrorlash → due; shu kuni R ≈ 90%), t: oxirgi takrorlashdan beri kunlar.
-   Holat: esda R ≥ 90% (va quti ≥ 2), zaif 80–90%, unutilmoqda < 80%. Yaqinda xato qilingan (quti 0–1) so'z «esda» hisoblanmaydi.
-   «Mustahkam» (isMastered) — boshqa narsa: uzoq muddatli xotiraga o'tgan so'z (yutuq). Ekranda bu ikki so'z aralashmaydi. */
+
 const dnum = d => Math.round(Date.parse(d + "T00:00:00") / 864e5);
 function recall(w) {
   const r = rec(w.id); if (!r || !r.due) return null;
@@ -671,26 +515,23 @@ function memStats() {
   const weak = by.bd.concat(by.wk).sort((a, b) => a.R - b.R);
   return { all: ws.length, ok: by.ok.length, wk: by.wk.length, bd: by.bd.length, weak };
 }
-/* yuk nazorati: takrorlash ko'paysa, kunlik yangi so'zlar kamayadi (40+ — yangi so'z yo'q) */
+
 const newCap = due => due <= 20 ? LEARN_N : due <= 30 ? 3 : due <= 40 ? 2 : 0;
 const weakWords = () => WORDS.filter(w => { const r = rec(w.id); return r && r.b === 0; });
 
-/* ---------- XATOLARIM: har bir xato shu yerga tushadi, keyingi safar to'g'ri javob berilsa o'chadi ---------- */
-// kalitlar: "w:" so'z, "g:" qolip mashqi (qolip#raqam), "b:" gap tuzish
 const misAdd = k => { S.mis[k] = today(); untomb("mis:" + k); };
 const misDel = k => { if (k in S.mis) { delete S.mis[k]; tomb("mis:" + k); } };
-// old: faqat oldingi kunlardagi xatolar (bugungisi darhol qayta so'ralmaydi), eskisi birinchi
+
 const misKeys = (pre, old) => Object.keys(S.mis).filter(k => k.startsWith(pre) && (!old || S.mis[k] < today())).sort((a, b) => S.mis[a] < S.mis[b] ? -1 : 1);
 const misWords = old => misKeys("w:", old).map(k => WORDS.find(w => w.id === k.slice(2))).filter(Boolean);
 const misGram = old => misKeys("g:", old).map(k => { const [id, i] = k.slice(2).split("#"), p = PATTERNS.find(x => x.id === id); return p && p.drill[+i] ? drillItem(p, +i) : null; }).filter(Boolean);
 const misBuild = old => misKeys("b:", old).map(k => BLD.find(x => x.e === k.slice(2))).filter(Boolean);
 
-/* ---------- grammatika ham oraliq bilan qaytadi: 80%+ to'g'ri bo'lsa keyingi quti, aks holda ertaga ---------- */
 function gradePat(p, ok) { const r = S.gr[p.id] || { b: 0, due: today() }; r.b = ok ? Math.min(r.b + 1, 5) : 0; r.due = addDays(INT[r.b]); S.gr[p.id] = r; }
-// jadvalga hali tushmagan, lekin oldin ishlangan qolip ham takrorlashga chiqadi
+
 const patDue = p => { const r = S.gr[p.id]; return r ? r.due <= today() : S.pat[p.id] != null; };
 const drillItem = (p, i) => Object.assign({}, p.drill[i], { pid: p.id, k: i, unit: p.unit, title: p.title });
-// takrorlash savollari: avval eski xatolar, keyin muddati kelgan qoliplardan bittadan
+
 function gramReview(n, skip, max) {
   const out = misGram(true).filter(x => x.unit <= n), has = new Set(out.map(x => x.pid));
   PATTERNS.filter(p => p.unit <= n && p.id !== skip && !has.has(p.id) && patDue(p))
@@ -699,20 +540,18 @@ function gramReview(n, skip, max) {
   return out.slice(0, max);
 }
 
-/* ---------- speech ---------- */
 let voice = null;
 function pickVoice() { try { const v = speechSynthesis.getVoices(); voice = v.find(x => /en-GB/i.test(x.lang)) || v.find(x => /^en/i.test(x.lang)) || null; } catch (e) {} }
 try { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {}
-/* javobda qisqa titrash (Android; iPhone Safari qo'llamaydi). Sozlamada o'chirib qo'yish mumkin */
+
 const canBuzz = () => typeof navigator.vibrate === "function" && matchMedia("(pointer:coarse)").matches;
 const buzzOn = () => { try { return localStorage.getItem("ingliz-vib") !== "0"; } catch (e) { return true; } };
 function buzz(ok) { if (!canBuzz() || !buzzOn()) return; try { navigator.vibrate(ok ? 15 : [35, 70, 35]); } catch (e) {} }
-/* ---------- OVOZ: so'z va gaplar Apollo (Deepgram Aura 2) ovozida oldindan yozilgan (Cloudflare Worker «ingliz-ovoz»).
-   Har kuni bepul limit ichida yangilari qo'shiladi; hali yozilmagan yoki internet yo'q bo'lsa — telefonning o'z ovozi. */
+
 const OVOZ = "https://ingliz-ovoz.aliumirov-me.workers.dev";
 const h53 = (s, seed = 0) => { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, c; i < s.length; i++) { c = s.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507); h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507); h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); };
 const voiceId = t => h53(String(t).replace(/[\[\]]/g, "").toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim()).toString(36);
-let OVM = null; // { set: tayyor ovoz id lari, at: qachon olingan }
+let OVM = null;
 try { const c = JSON.parse(localStorage.getItem("ingliz-ovoz") || "null"); if (c && typeof c.ids === "string") OVM = { set: new Set(c.ids.split(",")), at: +c.at || 0 }; } catch (e) {}
 function ovozSync() {
   if (OVM && Date.now() - OVM.at < 3 * 3600e3) return;
@@ -722,11 +561,11 @@ function ovozSync() {
     try { localStorage.setItem("ingliz-ovoz", JSON.stringify({ ids: d.ids, at: OVM.at })); } catch (e) {}
   }).catch(() => {});
 }
-const VRATE = .85; // Apollo tezligi (1 = oddiy)
-let VG = 0, VBUSY = false; // VG: har to'xtatishda oshadi — eski zanjir (sayAll) davom etmasin
+const VRATE = .85;
+let VG = 0, VBUSY = false;
 const ACACHE = "ingliz-ovoz-a1", BLOBS = new Map();
 const SILENT = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjYwLjE2LjEwMAAAAAAAAAAAAAAA//OEwAAAAAAAAAAAAEluZm8AAAAPAAAABQAAAqAAbW1tbW1tbW1tbW1tbW1tbW1tbZKSkpKSkpKSkpKSkpKSkpKSkpKStra2tra2tra2tra2tra2tra2trbb29vb29vb29vb29vb29vb29vb2///////////////////////////AAAAAExhdmM2MC4zMQAAAAAAAAAAAAAAACQEUAAAAAAAAAKgvT9A1gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//NExAAAAANIAAAAAExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExFMAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVTEFNRTMu//NExKYAAANIAAAAADEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//NExKwAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
-/* bitta doimiy audio element: iPhone birinchi bosishda uni «ochadi», keyin ovoz kechikib (internetdan) kelsa ham chala oladi */
+
 const AEL = typeof Audio === "function" ? new Audio() : null; let AEL_OK = false;
 if (AEL) { AEL.preservesPitch = true; AEL.webkitPreservesPitch = true; }
 if (AEL) document.addEventListener("pointerdown", () => {
@@ -752,124 +591,29 @@ function speakOne(text, done) {
   const id = AEL && OVM && OVM.set.has(voiceId(text)) ? voiceId(text) : null;
   if (!id) return synth(text, done);
   const g = VG; let fell = false; VBUSY = true;
-  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; synth(text, done); }; // fayl ochilmasa — telefon ovozi
+  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; synth(text, done); };
   audioUrl(id).then(u => {
     if (g !== VG) return;
     AEL.onended = () => { if (g !== VG) return; VBUSY = false; if (done) done(); };
-    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE; // telefon ovozidek sekinroq, ohang o'zgarmaydi
+    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE;
     const p = AEL.play(); if (p && p.catch) p.catch(back);
   }).catch(back);
 }
 function say(text) { stopVoice(); speakOne(text); }
 const spoken = w => w.w.replace(/\s*\(.*?\)/g, "").replace(/\s*\/.*$/, "").trim();
 const pr = w => w.p ? "[" + w.p + "]" : "";
-/* ---------- rasmli savol (pilot, Beginner 1–10-unit): rasm ko'rsatiladi → inglizcha nomi yoziladi ----------
-   Rasmlar: Microsoft Fluent Emoji 3D (MIT, img/soz/LICENSE-fluent-emoji.txt).
-   Pilot: PIC so'zlari rasm oladi (yozish savollarining yarmi rasmli), PIC_C so'zlari rasmsiz qoladi (nazorat guruhi).
-   Har unitda rasm qo'yish mumkin bo'lgan so'zlar tasodifiy teng ikkiga bo'lingan (3-unitdagi dastlabki 7+7 o'zgarmagan).
-   Ikkala guruhning odatdagi (rasmsiz) savollardagi eslab qolishi kunlik log'da alohida sanaladi: ipv/ipk — rasmli, icv/ick — rasmsiz;
-   natija: Statistika → «Rasmli so'zlar tajribasi».
-   alt — rasmga mos, lekin darslikdagi so'z emas: xato hisoblanmaydi, kerakli so'z so'raladi. */
-const PIC = {
-  // 3-unit (dastlabki pilot, 12-noyabr)
-  "bicycle": { f: "bicycle", alt: ["bike"] },
-  "cat": { f: "cat", alt: ["kitten", "kitty"] },
-  "coffee": { f: "coffee", alt: ["tea", "cup", "mug", "drink"] },
-  "house": { f: "house", alt: ["home", "building", "hut"] },
-  "mobile phone": { f: "mobile-phone", alt: ["phone", "mobile", "smartphone", "telephone", "cell phone", "tablet"] },
-  "cold": { f: "cold", alt: ["freezing", "frozen", "cool"] },
-  "seat": { f: "seat", alt: ["chair", "armchair"] },
-  // 1-unit
-  "hotel": { f: "hotel", alt: ["building", "hospital", "motel"] },
-  // 2-unit
-  "book": { f: "book", alt: ["notebook", "notepad", "textbook"] },
-  "bag": { f: "bag", alt: ["handbag", "purse", "wallet"] },
-  "key": { f: "key", alt: ["keys"] },
-  "email": { f: "email", alt: ["e-mail", "mail", "letter", "envelope", "message"] },
-  "apple": { f: "apple", alt: ["fruit"] },
-  "train": { f: "train", alt: ["locomotive", "railway", "steam train"] },
-  "road": { f: "road", alt: ["street", "highway", "motorway", "way"] },
-  "station": { f: "station", alt: ["train", "train station", "railway", "metro"] },
-  // 3-unit
-  "toilet": { f: "toilet", alt: ["wc", "bathroom"] },
-  "boy": { f: "boy", alt: ["child", "kid", "man", "son"] },
-  "man": { f: "man", alt: ["person", "guy", "boy", "men"] },
-  // 4-unit
-  "basketball": { f: "basketball", alt: ["ball"] },
-  "newspaper": { f: "newspaper", alt: ["paper", "news", "magazine"] },
-  "factory": { f: "factory", alt: ["plant", "building"] },
-  "baseball": { f: "baseball", alt: ["ball"] },
-  "ticket": { f: "ticket", alt: ["tickets"] },
-  "dollar": { f: "dollar", alt: ["dollars", "money", "cash"] },
-  "ferry": { f: "ferry", alt: ["ship", "boat"] },
-  // 5-unit
-  "jeans": { f: "jeans", alt: ["trousers", "pants"] },
-  "hand": { f: "hand", alt: ["hands", "palm", "arm"] },
-  "wind": { f: "wind", alt: ["windy", "air"] },
-  "jacket": { f: "jacket", alt: ["coat"] },
-  "leg": { f: "leg", alt: ["legs", "foot"] },
-  "stadium": { f: "stadium", alt: [] },
-  "sun": { f: "sun", alt: ["sunny"] },
-  "bank": { f: "bank", alt: ["building"] },
-  "cinema": { f: "cinema", alt: ["film", "movie", "camera"] },
-  // 6-unit
-  "bath": { f: "bath", alt: ["bathtub", "bathroom", "shower"] },
-  "lift": { f: "lift", alt: ["elevator"] },
-  "sofa": { f: "sofa", alt: ["couch", "lamp", "armchair"] },
-  "bed": { f: "bed", alt: ["bedroom"] },
-  "tea": { f: "tea", alt: ["cup", "coffee", "drink"] },
-  // 7-unit
-  "parrot": { f: "parrot", alt: ["bird"] },
-  "paintbrush": { f: "paintbrush", alt: ["brush"] },
-  "box": { f: "box", alt: ["package", "parcel"] },
-  "bird": { f: "bird", alt: ["parrot"] },
-  "run": { f: "run", alt: ["running", "runner"] },
-  // 8-unit
-  "horse": { f: "horse", alt: [] },
-  "birthday": { f: "birthday", alt: ["cake", "party"] },
-  // 9-unit
-  "rainy": { f: "rainy", alt: ["rain", "raining"] },
-  "knife": { f: "knife", alt: [] },
-  "temperature": { f: "temperature", alt: ["thermometer", "hot", "cold", "fever"] },
-  "stormy": { f: "stormy", alt: ["storm", "rain", "rainy", "thunder", "lightning"] },
-  // 10-unit
-  "doughnut": { f: "doughnut", alt: ["donut"] },
-  "milk": { f: "milk", alt: ["glass"] },
-  "cupcake": { f: "cupcake", alt: ["cake", "muffin"] },
-  "island": { f: "island", alt: ["beach"] },
-  "burger": { f: "burger", alt: ["hamburger", "cheeseburger"] },
-  "hot dog": { f: "hot-dog", alt: ["hotdog"] },
-  "croissant": { f: "croissant", alt: [] },
-  // joy so'zlari (1–2-unit, 19-noyabr): har rasmda o'sha to'p va o'sha quti, faqat joylashuvi o'zgaradi.
-  // Rasmlar shu loyiha uchun Gemini'da yaratilgan (Fluent Emoji emas). cap — rasm ostidagi savol.
-  // x: 1 — «Rasmli so'zlar tajribasi» hisobiga kirmaydi (nazorat guruhi yo'q, ot emas — natijani buzmasin).
-  "in": { f: "prep-in", alt: ["inside", "into", "in the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 },
-  "on": { f: "prep-on", alt: ["on top of", "on top", "above", "over", "on the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 },
-  "next to": { f: "prep-next-to", alt: ["near", "beside", "by", "next", "next to the box"], cap: "To'p qayerda? Inglizcha yozing", x: 1 }
-};
-const PIC_C = new Set([
-  /* 3 (dastlabki) */ "car", "dog", "tv", "painting", "shop", "hot", "artist",
-  /* 1 */ "map",
-  /* 2 */ "laptop", "school", "bus", "notepad", "hospital", "pen", "umbrella",
-  /* 3 */ "woman", "child", "world", "girl",
-  /* 4 */ "beach", "tennis", "pound", "department store", "euro", "motorbike", "guitar",
-  /* 5 */ "dress", "flower", "wood", "trainers", "shoes", "t-shirt", "music", "shawl",
-  /* 6 */ "mountains", "shower", "theatre", "fishing", "chair", "pizza",
-  /* 7 */ "gorilla", "dolphin", "swim", "electric piano",
-  /* 8 */ "party", "scientist", "astronaut",
-  /* 9 */ "cloudy", "meat", "receipt", "snowy",
-  /* 10 */ "rice", "sandwich", "cake", "chips", "salad", "flight", "biscuit"
-]);
+
+const PIC = window.PIC || {};
+const PIC_C = new Set(window.PIC_CONTROL || []);
 const picKey = w => w && w.unit >= 1 && w.unit <= 10 ? norm(spoken(w)) : "";
 const picOf = w => PIC[picKey(w)] || null;
 function pilotLog(w, ok) {
   const k = picKey(w), g = PIC[k] ? (PIC[k].x ? "" : "ip") : PIC_C.has(k) ? "ic" : "";
-  if (!g || (Z && Z.qmode === "pic")) return; // rasmli savolning o'zi hisobga kirmaydi — faqat odatdagi savollardagi xotira solishtiriladi
+  if (!g || (Z && Z.qmode === "pic")) return;
   const d = today(), L = S.log[d] || (S.log[d] = { a: 0, ok: 0, sw: 0, sp: 0, t: 0 });
   L[g + "v"] = (L[g + "v"] || 0) + 1; if (ok) L[g + "k"] = (L[g + "k"] || 0) + 1;
 }
 
-/* ---------- sahifa sarlavhasi: chapda «‹ orqaga», markazda sarlavha; tepada yopishib turadi ---------- */
 function nav(back, label, title, act) {
   return `<header class="nb">${back != null ? `<a class="nb-back" href="${back}" aria-label="Orqaga: ${esc(label)}" title="${esc(label)}">${ICON.back}</a>` : "<span></span>"}<h1 class="nb-t">${title}</h1>${act ? `<a class="nb-act" href="${act.href}" aria-label="${esc(act.label)}">${act.icon}</a>` : "<span></span>"}</header>`;
 }
@@ -880,11 +624,10 @@ const navScroll = () => {
   const h = n.classList.contains("big") && document.querySelector(".pg-h");
   if (h) n.classList.toggle("tt", h.getBoundingClientRect().bottom < n.getBoundingClientRect().bottom);
 };
-// katta sarlavha bor sahifada nav markazida o'sha sarlavha (aylantirilganda chiqadi)
+
 const navBig = () => { const n = document.querySelector(".nb"), h = document.querySelector(".nb ~ .pg-h, .nb ~ .eyb + .pg-h"); if (n && h && n.querySelector(".nb-back")) { n.classList.add("big"); n.querySelector(".nb-t").textContent = h.textContent; } };
 let navRaf = 0; addEventListener("scroll", () => { if (!navRaf) navRaf = requestAnimationFrame(() => { navRaf = 0; navScroll(); }); }, { passive: true });
 
-/* mashq o'rtasida chiqishda tasdiqlash: pastdan chiquvchi oyna. Javoblar har savolda saqlanadi — hech narsa yo'qolmaydi, buni ochiq aytamiz */
 function confirmQuit(done, total, exit) {
   if (!done || done >= total) return exit();
   const old = document.getElementById("qsheet"); if (old) old.remove();
@@ -903,9 +646,7 @@ function confirmQuit(done, total, exit) {
   $("#qsout").onclick = () => { wrap.remove(); document.removeEventListener("keydown", key, true); exit(); };
   $("#qsgo").focus();
 }
-/* qisqa xabar (pastki menyu ustida), ixtiyoriy amal tugmasi bilan; 6 soniyada yo'qoladi */
-/* ogohlantirish (alert): turi bo'yicha belgi, sarlavha, izoh, yopish ✕; ixtiyoriy amal tugmasi. Tepada chiqadi, 5 s da yoki tepaga surilsa yopiladi.
-   toast(sarlavha, amal?, fn?, { type: "ok" | "warn" | "info" | "err", sub: "izoh" }) */
+
 const ALERT_IC = {
   ok: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="var(--ok-strong)"/><path d="m7.5 12.5 3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   warn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.6a2 2 0 0 1 3.4 0l8.4 14.6A2 2 0 0 1 20.4 21H3.6a2 2 0 0 1-1.7-2.8z" fill="#E9A23B"/><path d="M12 9v4.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.4" fill="#fff"/></svg>',
@@ -922,7 +663,7 @@ function toast(msg, act, fn, o = {}) {
   const close = () => { clearTimeout(tm); t.classList.remove("on"); setTimeout(() => t.remove(), 300); };
   if (act) t.querySelector(".ta").onclick = () => { close(); fn(); };
   t.querySelector(".tx").onclick = close;
-  // tepaga surib yopish
+
   let y0 = null;
   t.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; y0 = e.clientY; t.style.transition = "none"; t.setPointerCapture(e.pointerId); });
   t.addEventListener("pointermove", e => { if (y0 === null) return; const d = Math.min(0, e.clientY - y0); t.style.transform = `translate(-50%, ${d}px)`; });
@@ -931,11 +672,10 @@ function toast(msg, act, fn, o = {}) {
   tm = setTimeout(close, o.ms || (act ? 6000 : 4500));
 }
 
-/* ---------- router ---------- */
 const routes = [];
 const route = (re, fn) => routes.push([re, fn]);
 function go(h) { if (location.hash.slice(1) === String(h).replace(/^#/, "")) render(); else location.hash = h; }
-/* real ilovalardagidek: orqaga qaytilganda ro'yxat avvalgi joyida ochiladi; shu sahifaning o'zi yangilansa tepaga sakramaydi */
+
 const SCROLLS = {}, HIST = []; let curH = null, prevH = null;
 function render() {
   stopVoice(); ovozSync();
@@ -945,7 +685,7 @@ function render() {
   let back = false;
   if (!same) { if (HIST.length > 1 && HIST[HIST.length - 2] === h) { HIST.pop(); back = true; } else HIST.push(h); if (HIST.length > 40) HIST.shift(); }
   prevH = curH; curH = h;
-  // Og'ir data/*.js to'plamlarini faqat kerakli sahifa yoki darajada yuklash (lazy-load)
+
   { const need = [];
     if (S.level === "pre" || /^(unit|soz-|oqish-)1\d\d/.test(h)) need.push("pre");
     if (S.level === "elementary" || S.level === "inter" || /^(unit|soz-|oqish-)[23]\d\d/.test(h)) need.push("ei");
@@ -956,30 +696,30 @@ function render() {
   }
   for (const [re, fn] of routes) { const m = h.match(re); if (m) { fn(...m.slice(1)); break; } }
   navBig(); aiFabSync(); document.title = "Ingliz tili · " + curLevel().t;
-  // «Qo'ng'iroq» tabi: faqat qo'ng'iroq ochiq foydalanuvchida; ko'rinishi o'zgarsa, linza o'lchami qayta olinadi
+
   { const ct = document.querySelector('nav.tabs a[data-tab="suhbat"]'), con = clOn(); if (ct && ct.hidden === con) { ct.hidden = !con; TABGEO = null; } }
   const tab = /^(tuz|ksmashq)/.test(h) && wideNav() ? "tuz" : h === "ksmashq" ? "unitlar" : /^(|kurs|natija|xato|sozlama|yakun|gtakror|fellar|fellarmashq|fellartez|hikoyalar|iboralar|ibmashq)$/.test(h) || h.startsWith("oqish-") || h.startsWith("ibora-") || /^(dars|yozish|rasm|lahza-|sahna|suhbat)/.test(h) ? "home" : /^(unit|soz-|qolip|tuz|gapir|asos|oyin)/.test(h) ? "unitlar" : h.startsWith("gap") ? "gap" : h.startsWith("lugat") || h === "mening" || h.startsWith("boylik") || h === "xotira" ? "lugat" : "";
   document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === tab); a.toggleAttribute("aria-current", a.dataset.tab === tab); });
-  // menyu avval ko'rinadigan bo'lsin, aks holda linza yashirin menyudan 0 o'lcham oladi
+
   document.body.classList.toggle("quizmode", h.startsWith("quiz") || h === "repetitor" || h === "yozish" || h === "rasm" || h.startsWith("lahza-") || h === "sahna" || h === "suhbat" || h === "gapmashq" || h === "tuzmashq" || h === "oyinmashq" || h === "fellarmashq" || h === "fellartez" || h === "ibmashq");
   moveLens(tab, lastTab === null); if (!same || quizy) pageIn(tab); lastTab = tab;
-  // gap mashqida klaviatura ochiq bo'lsa keyingi gapga o'tishda tepaga sakramaymiz — karta joyida yangilanadi, keyin silliq suriladi
+
   if (h === "tuzmashq" && document.documentElement.classList.contains("typing")) return;
   const keep = !quizy && (same || back) && SCROLLS[h] != null ? SCROLLS[h] : 0;
   window.scrollTo(0, keep); if (keep) requestAnimationFrame(() => window.scrollTo(0, keep));
   navScroll();
 }
 window.addEventListener("hashchange", render);
-/* ochiq bo'limning tugmasi yana bosilsa — sahifa tepasiga (real ilovalardagidek) */
+
 document.addEventListener("click", e => {
   const a = e.target.closest && e.target.closest("nav.tabs a"); if (!a) return;
   if ((a.getAttribute("href") || "#") === (location.hash || "#") && scrollY > 0) { e.preventDefault(); scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); }
 });
-/* tab bar linzasi va sahifa animatsiyasi */
+
 const TABS = ["home", "unitlar", "tuz", "gap", "lugat"];
 const wideNav = () => matchMedia("(min-width:980px)").matches;
 let lastTab = null;
-/* menyu tugmalarining o'lchami bir marta o'lchanadi (o'lcham o'zgarganda qayta) — har sahifada sahifani majburan qayta hisoblamaslik uchun */
+
 let TABGEO = null;
 const tabGeo = a => { if (!TABGEO) { const g = {}; document.querySelectorAll("nav.tabs a[data-tab]").forEach(x => { if (x.offsetWidth) g[x.dataset.tab] = [x.offsetLeft, x.offsetWidth]; }); if (Object.keys(g).length) TABGEO = g; } return TABGEO && TABGEO[a.dataset.tab]; };
 const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -998,15 +738,13 @@ function pageIn(tab) {
   if (calm() || !app.animate) return;
   const i = TABS.indexOf(tab), j = TABS.indexOf(lastTab), side = i >= 0 && j >= 0 && i !== j;
   if (pageAnim) pageAnim.cancel();
-  pageAnim = app.animate([{ opacity: .92, transform: side ? `translateX(${i > j ? 12 : -12}px)` : "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" }); // butun ekran xiralashib-yorishmasin (qorong'i temada «yonib-o'chish» bo'lib ko'rinardi)
+  pageAnim = app.animate([{ opacity: .92, transform: side ? `translateX(${i > j ? 12 : -12}px)` : "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 260, easing: "cubic-bezier(.2,.8,.2,1)" });
 }
 window.addEventListener("resize", () => { TABGEO = null;
-  /* telefon ↔ kompyuter chegarasidan o'tganda «Gap tuzish» bo'limi Unitlar bilan almashadi */
+
   const h = location.hash.replace(/^#/, ""); if (/^tuz/.test(h)) { const t = wideNav() ? "tuz" : "unitlar"; if (t !== lastTab) { document.querySelectorAll("nav.tabs a").forEach(a => { a.classList.toggle("on", a.dataset.tab === t); a.toggleAttribute("aria-current", a.dataset.tab === t); }); lastTab = t; } }
   moveLens(lastTab, true); });
 
-/* ---------- UNITLAR: kitobdagi nomlar va progress ---------- */
-/* Navigate (Oxford) darajalari. Beginner (1–10) va Pre-intermediate (101–112) — kitob ro'yxatlari; Elementary (201–212) va Intermediate (301–312) — ilova to'plami (own) */
 const LEVELS = [
   { id: "zero", t: "Noldan boshlash", cefr: "Pre-A1 · alifbo, tovushlar, sonlar, birinchi gaplar", zero: true },
   { id: "beginner", t: "Beginner", cefr: "A1", ready: true },
@@ -1021,11 +759,11 @@ const UNIT_INFO = [null,
   ["My life", "Mening hayotim"], ["Style and design", "Uslub va dizayn"], ["Places and facilities", "Joylar va qulayliklar"],
   ["Skills and interests", "Ko'nikma va qiziqishlar"], ["Our past", "O'tmishimiz"], ["Unusual stories", "G'aroyib voqealar"],
   ["New places, new projects", "Yangi joylar, yangi rejalar"]];
-/* Pre-intermediate: ichki unit raqami 101–112 (so'z va natija kalitlari Beginner bilan to'qnashmaydi), ekranda «Unit 1–12» */
+
 [["Time", "Vaqt"], ["Inside outside", "Ichkarida va tashqarida"], ["Going up, going down", "Yuqoriga va pastga"], ["Changes and challenges", "O'zgarishlar va sinovlar"],
   ["Stuff and things", "Narsalar"], ["People", "Odamlar"], ["Travel", "Sayohat"], ["Language and learning", "Til va o'rganish"],
   ["Body and mind", "Tana va ong"], ["Food", "Ovqat"], ["World", "Dunyo"], ["Work", "Ish"]].forEach((x, i) => { UNIT_INFO[101 + i] = x; });
-/* Elementary (201–212) va Intermediate (301–312) — ilova uchun yozilgan to'plam (kitob so'zlar ro'yxati emas), CEFR A2 / B1+ */
+
 [["Hello again", "Yana salom"], ["Daily routine", "Kun tartibi"], ["Food and shopping", "Ovqat va xarid"], ["Home and city", "Uy va shahar"],
   ["Looking back", "O'tmishga nazar"], ["Travel", "Sayohat"], ["Health", "Sog'liq"], ["Bigger and better", "Kattaroq va yaxshiroq"],
   ["Plans", "Rejalar"], ["Experiences", "Tajribalar"], ["Technology", "Texnologiya"], ["The future", "Kelajak"]].forEach((x, i) => { UNIT_INFO[201 + i] = x; });
@@ -1033,13 +771,13 @@ const UNIT_INFO = [null,
   ["Cities", "Shaharlar"], ["Relationships", "Munosabatlar"], ["Science", "Fan"], ["Lifestyle", "Turmush tarzi"],
   ["Journeys", "Sayohatlar"], ["Culture", "Madaniyat"], ["Media", "Media"], ["Decisions", "Qarorlar"]].forEach((x, i) => { UNIT_INFO[301 + i] = x; });
 const LV_BASE = { beginner: 0, pre: 100, elementary: 200, inter: 300 };
-const un = n => +n > 100 ? +n % 100 : +n; // ekranda ko'rsatiladigan unit raqami
+const un = n => +n > 100 ? +n % 100 : +n;
 const lvOf = n => +n > 300 ? "inter" : +n > 200 ? "elementary" : +n > 100 ? "pre" : "beginner";
 const lvUnits = id => { const b = LV_BASE[id || curLvId()]; if (b == null) return []; const o = []; for (let k = b + 1; UNIT_INFO[k]; k++) o.push(k); return o; };
 const readyUnits = id => lvUnits(id).filter(n => byUnit(n).length);
 const curLvId = () => LV_BASE[curLevel().id] != null ? curLevel().id : "beginner";
 const soonUnits = () => { const r = readyUnits(), all = lvUnits(); if (r.length >= all.length || !r.length) return ""; const a = un(r[r.length - 1]) + 1, b = un(all[all.length - 1]); return `<span class="usoon">Unit ${a}–${b} · tez orada</span>`; };
-/* daraja almashganda har darajaning o'z tanlangan uniti eslab qolinadi */
+
 function setLevel(id) {
   S.lvc = S.lvc && typeof S.lvc === "object" ? S.lvc : {};
   if (S.course) S.lvc[lvOf(S.course)] = S.course;
@@ -1049,11 +787,11 @@ function setLevel(id) {
   const r = readyUnits(id), c = S.lvc[id];
   S.course = r.includes(c) ? c : 0; save();
 }
-// kurs raqami mavjud unitga to'g'ri kelmasa (eski zaxira) — tanlov qaytadan so'raladi
+
 const fixCourse = () => { if (S.level && !LEVELS.some(l => l.id === S.level)) S.level = ""; if (S.course && (!UNIT_INFO[S.course] || (LV_BASE[curLevel().id] != null && lvOf(S.course) !== curLevel().id))) S.course = 0; };
 fixCourse();
 const bookPages = n => (6 + (un(n) - 1) * 10) + "–" + (15 + (un(n) - 1) * 10);
-/* kitob betlari faqat Beginner va Pre-intermediate da bor (Elementary/Intermediate — ilova to'plami) */
+
 const unitSub = n => { const lv = lvOf(n); return lv === "pre" ? bookPages(n) + "-betlar" : lv === "beginner" ? bookPages(n) + "-betlar" : "CEFR " + (lv === "inter" ? "B1+" : "A2"); };
 const unitPats = n => PATTERNS.filter(p => p.unit === n);
 const unitBuild = n => (BUILD.find(b => b.unit === n) || { items: [] }).items;
@@ -1072,14 +810,13 @@ function curUnit() {
   const us = readyUnits(); let n = 0;
   if (!us.length) return { n: 1, fresh: true };
   for (const k of us) if (unitStat(k).started) n = k;
-  // siz tanlagan unit (Kurs va daraja) har doim ustun: oldinroq unitlarni mashq qilgan bo'lsangiz ham reja va yozuv shu unitni ko'rsatadi
+
   if (S.course && us.includes(S.course)) return { n: S.course, fresh: false };
   if (!n) return { n: us[0], fresh: true };
   const i = us.indexOf(n); if (unitStat(n).pct >= 85 && i < us.length - 1) n = us[i + 1];
   return { n, fresh: false };
 }
 
-/* ---------- bugungi reja: bajarilganlar shu qurilmada belgilanadi ---------- */
 const DAYKEY = "ingliz-day";
 function dayDone() { try { const d = JSON.parse(localStorage.getItem(DAYKEY) || "{}"); return d.d === today() ? d.done || [] : []; } catch (e) { return []; } }
 function markDone(tag) { const done = dayDone(); if (done.includes(tag)) return; done.push(tag); try { localStorage.setItem(DAYKEY, JSON.stringify({ d: today(), done })); } catch (e) {} }
@@ -1092,7 +829,7 @@ function todayPlan(n) {
   const dueAll = revOrder(dueWords().filter(w => !ids.has(w.id))), due = dueAll.slice(0, REV_CAP), myNew = WORDS.filter(w => w.mine && !isSeen(w)), unseen = myNew.concat(byUnit(n).filter(w => !isSeen(w)));
   const atRisk = due.filter(w => (recall(w) ?? 1) < .8).length;
   if (due.length) plan.push({ tag: "rev", t: atRisk ? "Xotirani qutqarish" : "So'zlarni takrorlash", s: (atRisk ? atRisk + " ta so'z unutilmoqda · " : "") + due.length + " ta so'z" + (dueAll.length > due.length ? " · yana " + (dueAll.length - due.length) + " tasi keyingi kunlarga" : atRisk ? "" : " bugun qaytariladi"), run: () => startQuiz(due.slice().sort((a, b) => (recall(a) ?? 1) - (recall(b) ?? 1)), "auto", atRisk ? "Xotirani qutqarish" : "Takrorlash", "#", "rev") });
-  // yangi so'zlar: kuniga 5 ta, tanishuv + 3 bosqich. Takrorlash juda ko'paysa (40+), yangisi to'xtaydi
+
   const cap = Math.min(newCap(dueAll.length), unseen.length);
   if (cap) plan.push({ tag: "new", t: "Yangi so'zlar", s: (myNew.length ? "Mening so'zlarim" + (myNew.length < LEARN_N ? " va Unit " + un(n) : "") : "Unit " + un(n)) + " · " + cap + " ta so'z" + (cap < LEARN_N && unseen.length > cap ? " (takrorlash ko'p)" : ""), d: cap + " ta yangi so'z: avval tanishasiz, keyin 3 xil mashqda eslab topasiz", run: () => startLearn(unseen.slice(0, cap), myNew.length ? "Yangi so'zlar" : "Unit " + un(n), "#", "new") });
   if (!dueAll.length && !unseen.length) plan.push({ tag: "rev", t: "So'zlarni mustahkamlash", s: "Unit " + un(n) + " · 10 ta so'z", run: () => startQuiz(shuffle(byUnit(n)).slice(0, 10), "auto", "Unit " + un(n), "#", "rev") });
@@ -1119,14 +856,10 @@ function todayPlan(n) {
   return plan;
 }
 const STEP_MIN = { fel: 5, esla: 2, rev: 4, new: 5, gram: 3, tuz: 3, gap: 2, kech: 2, story: 3, tl: 5 }, STEP_IC = { fel: "verb", esla: "redo", rev: "book", new: "plus", gram: "bulb", tuz: "tiles", gap: "chat", kech: "moon", story: "read", tl: "vol" }, STEP_NAME = { fel: "Fe'llar", tl: "Tinglash", story: "Hikoya", esla: "Esla", rev: "So'zlar", new: "Yangi so'zlar", gram: "Qoida", tuz: "Gap tuzish", gap: "Tayyor gaplar", kech: "Kechki takrorlash" };
-let GX = null; // rejadan kelgan grammatika takrorlash savollari
+let GX = null;
 
-/* «Darsni boshlash»: bugungi reja qadamlari bitta seansda ketma-ket o'tadi.
-   Har bir mashq natijasida keyingi qadam tugmasi chiqadi; bosh sahifaga qaytilsa seans tugaydi. */
 let LES = false;
-/* ---------- BUGUNGI REJA: repetitor bo'limlari + sayt qadamlari bitta ro'yxatda ----------
-   Tartibni repetitor agenti beradi (lesson.plan.order), bo'lmasa — repetitor bo'limlari birinchi. Kun uchun vaqt chegarasi 10/20/30 daqiqa:
-   sig'magan qadamlar xira ko'rinadi va «Boshlash» ketma-ketligiga kirmaydi. Tanlov shu kunga eslab qolinadi. */
+
 const BUDGETS = [10, 20, 30], BKEY = "ingliz-budget";
 const repSecMin = s => s.m > 0 ? Math.round(s.m) : Math.max(2, Math.round((s.items || []).reduce((a, it) => a + (it.type === "story" ? 2 : it.type === "write" ? 1 : .6), 0)));
 const repSecDone = (r, si) => !!r && (r.lesson.sections[si].items || []).every((_, ii) => r.answers[si + "." + ii]);
@@ -1166,7 +899,6 @@ function bindLesson() {
 }
 const backLabel = tag => LES && tag ? "Bosh sahifaga" : "Orqaga";
 
-/* ---------- ILOVANI O'RNATISH (faqat GitHub'dagi saytda) ---------- */
 let installEvt = null;
 const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const isIOS = () => !/android/i.test(navigator.userAgent) && (/iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
@@ -1176,7 +908,7 @@ const installRoute = () => !location.hash || location.hash === "#" || location.h
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEvt = e; if (installRoute()) render(); });
 window.addEventListener("appinstalled", () => { installEvt = null; if (installRoute()) render(); });
 const canOfferInstall = () => window.INGLIZ_PWA && !isStandalone();
-/* force: Sozlama sahifasida yopilgan bo'lsa ham ko'rsatiladi */
+
 function installCard(force) {
   if (!canOfferInstall() || (!force && installHidden())) return "";
   const head = `<img src="icons/icon-192.png" alt="">`, close = force ? "" : `<button class="x" id="inhide" aria-label="Yopish">×</button>`;
@@ -1186,11 +918,11 @@ function installCard(force) {
   if (isIOS()) return card("Bosh ekranga qo'shing", "«Ulashish» tugmasi → «Ekranga qo'shish» (Add to Home Screen)");
   return card("Bosh ekranga qo'shing", "Brauzer menyusi (⋮) → «Ilovani o'rnatish» yoki «Bosh ekranga qo'shish»");
 }
-/* zaxira eslatmasi: natijalar faqat shu brauzerda bo'lsa, 8 ta so'z ko'rilgach va keyin haftada bir eslatamiz («×» ham bir haftaga kechiktiradi) */
+
 const BAK_DAYS = 7;
 const bakStale = seen => !cloud.ref && !AUTH && seen >= 8 && Date.now() - bakAt() >= BAK_DAYS * 864e5;
 const bakWhen = () => { const t = bakAt(); if (!t) return "hali olinmagan"; const d = Math.floor((Date.now() - t) / 864e5); return d < 1 ? "bugun" : d === 1 ? "kecha" : d + " kun oldin"; };
-/* zaxira fayli: telefonda «Ulashish» oynasi ochiladi (Telegram «Saqlangan xabarlar»ga yuborish qulay), bo'lmasa fayl yuklab olinadi */
+
 async function saveBackup() {
   persist();
   const name = "ingliz-zaxira-" + today() + ".json";
@@ -1201,7 +933,7 @@ async function saveBackup() {
   } catch (e) { if (e && e.name === "AbortError") return "cancel"; }
   try { const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); bakMark(); return "saved"; } catch (e) { return "fail"; }
 }
-/* tiklash: fayl yoki eski kod. Ustiga yozmaydi — har so'z bo'yicha ko'proq ishlangan natija qoladi */
+
 function readBackup(text) {
   text = String(text || "").trim(); let d;
   try { d = JSON.parse(text); } catch (e) { d = JSON.parse(decodeURIComponent(escape(atob(text)))); }
@@ -1216,10 +948,10 @@ function restoreBackup(d) {
 }
 const bakAt = () => { try { return +localStorage.getItem("ingliz-bak") || 0; } catch (e) { return 0; } };
 const bakMark = () => { try { localStorage.setItem("ingliz-bak", String(Date.now())); } catch (e) {} };
-// brauzer joy tanqisligida bu sayt ma'lumotini o'zi o'chirib yubormasin (Chrome so'ramasdan qaror qiladi, Firefox oyna chiqaradi — shuning uchun faqat o'rnatilgan ilovada yoki «Nusxalash» bosilganda)
+
 function persist() { try { const st = navigator.storage; if (st && st.persist) st.persisted().then(p => p || st.persist()).catch(() => {}); } catch (e) {} }
 const SHIELD = sv('<path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>');
-/* sinxron to'xtagan bo'lsa (kirish muddati tugagan) — bosh sahifada bitta karta */
+
 const CLOUD_OFF = sv('<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.7 8.1 4.5 4.5 0 0 1 18 17"/><path d="m3 3 18 18"/>');
 function syncWarnCard() {
   if (cloud.status !== "relogin") return "";
@@ -1236,16 +968,13 @@ function bindInstall() {
   const x = $("#inhide"); if (x) x.onclick = () => { try { localStorage.setItem("ingliz-install-hide", "1"); } catch (e) {} render(); };
 }
 
-/* ---------- REPETITOR: Claude Console agenti har kuni ertalab tayyorlaydigan shaxsiy dars (agent_lessons) ----------
-   Agent yozadi (supabase/functions/repetitor), sayt faqat o'qiydi va javoblarni saqlaydi. Jadvalda faqat egasining darsi bor (RLS),
-   shuning uchun karta boshqa foydalanuvchilarda chiqmaydi. Javoblar avval shu qurilmada saqlanadi, keyin bulutga yuboriladi. */
 const REP_KEY = "ingliz-rep";
 let REP = (() => { try { const o = JSON.parse(localStorage.getItem(REP_KEY) || "null"); return o && o.lesson ? o : null; } catch (e) { return null; } })();
 let repAt = 0, repSending = null;
 const repSave = () => { try { localStorage.setItem(REP_KEY, JSON.stringify(REP)); } catch (e) {} };
 const repToday = () => REP && REP.day === today() && REP.lesson && Array.isArray(REP.lesson.sections) ? REP : null;
 const repFocus = () => { const r = repToday(); return r && Array.isArray(r.lesson.focus) ? r.lesson.focus : null; };
-/* darsdagi barcha savollar ketma-ket: [{k: "bo'lim.savol", s, it}] */
+
 const repItems = r => r.lesson.sections.flatMap((s, si) => (s.items || []).map((it, ii) => ({ k: si + "." + ii, si, s, it })));
 const repGraded = r => repItems(r).filter(x => x.it.type === "choice" || x.it.type === "type");
 const repScore = r => { const g = repGraded(r); return { ok: g.filter(x => r.answers[x.k] && r.answers[x.k].ok).length, all: g.length }; };
@@ -1258,12 +987,12 @@ async function repLoad(force) {
     const row = rows && rows[0]; if (!row) return;
     const local = REP && REP.day === row.day ? REP : null;
     const same = local && JSON.stringify(local.lesson) === JSON.stringify(row.lesson);
-    // shu qurilmada yuborilmagan javoblar ustun turadi
+
     REP = { day: row.day, lesson: row.lesson, at: row.created_at, answers: same && local.dirty ? local.answers : row.answers || {}, done_at: same && local.dirty ? local.done_at : row.done_at, dirty: same && local.dirty };
     repSave();
     if (REP.dirty) repPush();
     if (!same && location.hash.replace(/^#/, "") === "") render();
-  } catch (e) { /* internet yoki sessiya — karta keshdan chiqadi */ }
+  } catch (e) {  }
 }
 function repPush() {
   if (!REP || !AUTH) return;
@@ -1303,8 +1032,7 @@ function bindRepCard() {
   app.querySelectorAll(".rep .tl button").forEach(b => b.onclick = () => { RP = { start: +b.dataset.rs }; go("repetitor"); });
 }
 
-/* dars pleyeri */
-let RP = null; // { i, start, fbSeen, review }
+let RP = null;
 const repNorm = s => String(s || "").toLowerCase().replace(/[’‘`]/g, "'").replace(/[.,!?;:"«»]/g, " ").replace(/\s+/g, " ").trim();
 route(/^repetitor$/, () => {
   const r = repToday(); if (!r) return go("");
@@ -1315,7 +1043,7 @@ route(/^repetitor$/, () => {
     else { const f = items.findIndex(x => !r.answers[x.k]); RP.i = f < 0 ? 0 : f; RP.review = !!r.done_at; }
     if (RP.i < 0) RP.i = 0;
   }
-  // kechagi gaplarga izoh — darsdan oldin bir marta
+
   if (!RP.fbSeen && Array.isArray(L.feedback) && L.feedback.length && !r.answers.fb) return repFeedback(r);
   if (RP.only != null && (RP.i >= items.length || items[RP.i].si !== RP.only)) return repSectionEnd(r);
   if (RP.i >= items.length) return repFinish(r);
@@ -1345,7 +1073,7 @@ route(/^repetitor$/, () => {
     const grade = v => { const ok = [it.a].concat(it.acc || []).some(a => repNorm(a) === repNorm(v)); inp.disabled = true; chk.classList.add("hidden"); inp.classList.add(ok ? "ok" : "bad"); show(ok, izoh(`<b>${ok ? "To'g'ri!" : "To'g'risi: <span lang=\"en\">" + esc(it.a) + "</span>"}</b> ${esc(it.izoh)}`)); return ok; };
     chk.onclick = () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } repAnswer(x.k, { ok: grade(v), a: v }); };
     inp.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); chk.click(); } };
-    // «Gapirish» bo'limi: ovoz bilan javob — aytilgani maydonga tushadi, so'zlarning 85% i to'g'ri bo'lsa qabul
+
     const mic = $("#rpmic"), ml = $("#rpml");
     if (mic) mic.onclick = () => {
       if (SR_CUR) { SR_CUR.stop(); return; }
@@ -1408,10 +1136,6 @@ function repFinish(r) {
   RP = null;
 }
 
-/* ---------- DARS TAHLILI: Inter Nation darsining yozuvi → xatolar va dars mazmuni (supabase/functions/dars) ----------
-   Faqat egasi uchun (Gemini va Claude krediti boshqalarga sarflanmasin). Yozuv «dars-audio» bucket'ga bo'laklab (TUS) yuklanadi:
-   internet uzilsa, qolgan joyidan davom etadi. Ishlov serverda: sahifa yopilsa ham davom etadi, tayyor bo'lganda Telegram xabari keladi.
-   Audio matnga o'girilgach o'chiriladi. Xatoni qayta yozish natijalari class_lessons.answers ga yoziladi; ertangi repetitor darsi ularni oladi. */
 const DARS_OWNER = "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const DS_KEY = "ingliz-dars", DS_UP = "ingliz-dars-up";
 const DS_ACTIVE = ["queued", "transcribing", "analyzing"];
@@ -1433,16 +1157,16 @@ async function darsLoad(force) {
   try {
     const rows = await sbFetch("/rest/v1/class_lessons?select=id,day,kind,status,error,duration_s,audio_bytes,audio_path,analysis,answers,photos,created_at,done_at&order=created_at.desc&limit=20", {}, await sbToken());
     const before = JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis]));
-    // shu qurilmada yuborilmagan javoblar saqlanib qoladi
+
     DS.list = (rows || []).map(r => { const o = dsRow(r.id); return o && o.dirty ? Object.assign(r, { answers: o.answers, dirty: true }) : r; });
     dsSave();
     DS.list.filter(x => x.dirty).forEach(dsPush);
     const h = location.hash.replace(/^#/, "");
     if (before !== JSON.stringify(DS.list.map(x => [x.id, x.status, !!x.analysis])) && (h === "dars" || h === "" || (h.startsWith("dars-") && !document.activeElement.closest(".dt-m")))) render();
-  } catch (e) { /* internet yoki sessiya — keshdan ko'rsatiladi */ }
+  } catch (e) {  }
   dsWatch();
 }
-/* ishlov ketayotganda ro'yxat 8 soniyada yangilanadi (faqat shu sahifa ochiq bo'lsa) */
+
 function dsWatch() {
   clearTimeout(dsPoll); dsPoll = null;
   const a = dsActive(), h = location.hash.replace(/^#/, "");
@@ -1466,9 +1190,8 @@ function dsPush(r) {
     .finally(() => { r.sending = false; if (r.again || r.dirty) { r.again = false; if (r.dirty) setTimeout(() => dsPush(r), 3000); } });
 }
 
-/* --- yuklash: Supabase resumable (TUS), 6 MB bo'laklar --- */
 const DS_MIME = { m4a: "audio/x-m4a", mp4: "audio/mp4", aac: "audio/aac", mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg", opus: "audio/ogg", webm: "audio/webm", flac: "audio/flac" };
-// bucket qabul qiladigan turlar; brauzer bo'sh, «application/octet-stream», «video/mp4» yoki boshqa nom bersa — kengaytmadan olinadi
+
 const DS_OK_MIME = ["audio/mp4", "audio/x-m4a", "audio/m4a", "audio/aac", "audio/mpeg", "audio/mp3", "audio/wav", "audio/x-wav", "audio/ogg", "audio/opus", "audio/webm", "audio/flac"];
 const dsMimeOf = (f, ext) => { const t = String(f.type || "").split(";")[0].toLowerCase(); return DS_OK_MIME.includes(t) ? t : DS_MIME[ext] || "audio/mp4"; };
 const DS_EXT = ["m4a", "mp3", "wav", "aac", "ogg", "opus", "webm", "flac", "mp4"];
@@ -1504,7 +1227,7 @@ async function tusUpload(file, path, mime, onPct) {
       if (!url) {
         const c = await dsXhr("POST", ep, Object.assign(await hd(), { "Upload-Length": String(file.size), "x-upsert": "false",
           "Upload-Metadata": `bucketName ${b64("dars-audio")},objectName ${b64(path)},contentType ${b64(mime)},cacheControl ${b64("3600")}` }));
-        if (c.status === 409) return; // allaqachon to'liq yuklangan
+        if (c.status === 409) return;
         const loc = c.getResponseHeader("Location");
         if (c.status !== 201 || !loc) throw Object.assign(new Error("create " + c.status + " " + c.responseText.slice(0, 120)), { status: c.status });
         url = new URL(loc, ep).href; off = 0;
@@ -1518,7 +1241,7 @@ async function tusUpload(file, path, mime, onPct) {
       }
       return;
     } catch (e) {
-      // tarmoq uzilishi yoki server xatosi: kutib, qolgan joyidan davom etamiz
+
       if (++fails > 6 || (e.status >= 400 && e.status < 500 && e.status !== 409 && e.status !== 423)) throw e;
       if (DUP) { DUP.wait = true; dsUpPaint(); }
       await new Promise(r => setTimeout(r, Math.min(20000, 1500 * 2 ** fails)));
@@ -1540,7 +1263,7 @@ async function dsStart() {
   u.phase = "up"; u.pct = 0; u.err = ""; render();
   try {
     if (!u.id) {
-      // shu fayl oldin yuklana boshlangan bo'lsa — o'sha qatorni davom ettiramiz
+
       let st = null; try { st = JSON.parse(localStorage.getItem(DS_UP) || "null"); } catch (e) {}
       const old = st && st.size === u.size && st.id && dsRow(st.id);
       if (old && old.status === "uploading") { u.id = st.id; u.path = st.path; }
@@ -1551,7 +1274,7 @@ async function dsStart() {
     for (const [i, ph] of (u.photos || []).slice(0, 8).entries()) {
       const path = `${AUTH.uid}/${u.id}/${i + 1}.jpg`;
       const r = await fetch(SB.url + "/storage/v1/object/dars-rasm/" + path, { method: "POST", headers: { Authorization: "Bearer " + await sbToken(), apikey: SB.key, "Content-Type": "image/jpeg", "x-upsert": "false" }, body: ph.blob });
-      // qayta urinishda allaqachon yuklangan rasm — xato emas
+
       if (r.ok || r.status === 409 || r.status === 400) photos.push({ path, t: ph.t });
     }
     await darsApi("start", { id: u.id, photos });
@@ -1564,7 +1287,7 @@ async function dsStart() {
     render();
   }
 }
-/* yuklash foizini butun sahifani qayta chizmasdan yangilaymiz */
+
 function dsUpPaint() {
   const el = $("#dsup"); if (!el || !DUP) return;
   const p = Math.round((DUP.pct || 0) * 100);
@@ -1648,8 +1371,6 @@ route(/^dars$/, () => {
   bindDsCancel(); dsWatch();
 });
 
-/* --- saytda yozib olish: MediaRecorder (32 kbps mono → 80 daqiqa ≈ 20 MB), ekran yoniq turadi (Wake Lock),
-   yozuv har 10 soniyada IndexedDB'ga saqlanadi: sahifa yopilsa ham shu joygacha bo'lgan qism qoladi. «Muhim» — dars paytidagi belgilar. --- */
 const YZ_DB = "ingliz-yozuv";
 let REC = null, yzTick = null, YZ_SAVED = [];
 const yzIdb = () => new Promise((res, rej) => {
@@ -1678,7 +1399,7 @@ async function yzDel(id) {
   for (const st of ["chunks", "photos"]) { const keys = await yzReq(t.objectStore(st).index("rec").getAllKeys(id)); keys.forEach(k => t.objectStore(st).delete(k)); }
   await new Promise((res, rej) => { t.oncomplete = res; t.onerror = () => rej(t.error); });
 }
-/* sahifa ochilganda: tugallanmagan (yuklanmagan) yozuvlar */
+
 async function yzScan() {
   const list = (await yzRecs()).filter(r => !(REC && REC.id === r.id) && r.dur > 0).sort((a, b) => b.t0 - a.t0);
   const was = YZ_SAVED.map(r => r.id + r.dur).join();
@@ -1695,7 +1416,7 @@ async function dsJpeg(src) {
   return new Promise(res => c.toBlob(res, "image/jpeg", .82));
 }
 const ICON_CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6H7l1.6-2h6.8L17 6h1.5A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.5" r="3.6"/></svg>';
-/* sahifa ichidagi kamera: alohida ilova ochilmaydi, shuning uchun ovoz yozish uzilmaydi */
+
 async function yzCamOpen() {
   if (!REC || REC.state !== "rec") return;
   try { REC.cam = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
@@ -1729,7 +1450,7 @@ async function yzStart() {
   mr.onerror = () => yzBroke();
   stream.getAudioTracks().forEach(t => t.onended = () => yzBroke());
   mr.start(10000);
-  // ovoz darajasi: mikrofon haqiqatan eshityaptimi
+
   try {
     const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC(), an = ctx.createAnalyser();
     an.fftSize = 1024; ctx.createMediaStreamSource(stream).connect(an); REC.ctx = ctx; REC.an = an; REC.buf = new Uint8Array(an.fftSize);
@@ -1761,7 +1482,7 @@ async function yzFinish() {
   yzRelease(); REC = null;
   await yzUpload({ id: r.id, t0: r.t0, mime: r.mime, dur: Math.round(r.acc), marks: r.marks });
 }
-/* saqlangan yozuvni yuklash oqimiga beramiz (fayl yuklash bilan bir xil yo'l) */
+
 async function yzUpload(rec) {
   let blob; try { blob = await yzBlob(rec); } catch (e) { blob = null; }
   if (!blob || !blob.size) { toast("Yozuv topilmadi", null, null, { type: "info", sub: "Telefon xotirasida saqlanmagan" }); return go("dars"); }
@@ -1775,7 +1496,7 @@ document.addEventListener("visibilitychange", () => {
   if (!REC || REC.state !== "rec") return;
   if (document.visibilityState === "visible") {
     yzLock();
-    // iPhone'da sahifa fonga o'tsa mikrofon to'xtaydi
+
     const tr = REC.stream && REC.stream.getAudioTracks()[0];
     if (!REC.mr || REC.mr.state === "inactive" || (tr && tr.readyState === "ended")) yzBroke();
   }
@@ -1792,7 +1513,7 @@ function yzPaint() {
     const rms = Math.sqrt(s / REC.buf.length), lv = Math.min(1, rms * 6);
     const bar = $("#yzlv"); if (bar) bar.style.transform = `scaleX(${Math.max(.02, lv)})`;
     REC.quiet = rms < .004 ? REC.quiet + 1 : 0;
-    const q = $("#yzq"); if (q) q.hidden = REC.quiet < 60; // ~15 soniya jimlik
+    const q = $("#yzq"); if (q) q.hidden = REC.quiet < 60;
   }
   const n = $("#yzsv"); if (n) n.textContent = REC.saveErr ? "Telefon xotirasiga saqlab bo'lmayapti — yozish davom etmoqda" : REC.n ? `Saqlandi: ${yzClock(REC.n * 10)} gacha` : "Birinchi 10 soniya saqlanmoqda…";
 }
@@ -1856,12 +1577,11 @@ route(/^yozish$/, () => {
     const b = $("#yzm"); b.innerHTML = `${ICON.plus}Muhim<span>${REC.marks.length}</span>`; b.classList.remove("hit"); void b.offsetWidth; b.classList.add("hit");
     if (navigator.vibrate) navigator.vibrate(30);
   };
-  // tasodifan bosilmasin: ikkinchi bosishda tugaydi
+
   $("#yzend").onclick = () => { const b = $("#yzend"); if (!b.dataset.sure) { b.dataset.sure = "1"; b.textContent = "Tugatish uchun yana bosing"; setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = "Darsni tugatish"; } }, 4000); return; } yzFinish(); };
   yzPaint(); yzTick = setInterval(yzPaint, 250);
 });
 
-/* --- Gapirishingiz: dars xaritasi (mavzu / chetga chiqish / o'zbekcha / tutilish), raqamlar, sabablar va reja --- */
 const spSec = t => String(t || "").split(":").map(Number).reduce((a, b) => a * 60 + (isFinite(b) ? b : 0), 0);
 const SP_KIND = { pause: "uzun pauza", uz: "o'zbekchaga o'tdingiz", drop: "gapni tashlab qo'ydingiz", filler: "ko'p «ee»" };
 const SP_LANG = { en: "inglizcha", uz: "o'zbekcha", mix: "aralash" };
@@ -1925,18 +1645,13 @@ function bindSpeech(r) {
   bs.forEach(b => b.onclick = () => { DT.seg = +b.dataset.sg; bs.forEach(x => x.setAttribute("aria-pressed", x === b)); d.innerHTML = spDetail(sp, segs[DT.seg]); });
 }
 
-/* ---------- DARSDAGI LAHZA: darsda tutilib qolgan joyni uyda ovoz chiqarib qayta o'ynash ----------
-   O'qituvchining savoli eshitiladi, javob yashirin. Mikrofon yoqilgandan birinchi so'zgacha vaqt o'lchanadi va darsdagi jimlik bilan solishtiriladi.
-   Yordam 3 bosqich: qutqaruvchi gap → gap boshi → to'liq javob. Natijadan keyin namunani 2 marta takrorlash.
-   Tekshiruvni brauzerning nutqni tanishi qiladi (kredit sarflanmaydi); ishlamasa — yozib javob berish.
-   Natijalar speak_log ga yoziladi: haftalik «gapirish daqiqalari» va ertangi repetitor shu yerdan oladi. */
 const SRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 const SPK_KEY = "ingliz-spk";
 let SPK = (() => { try { const o = JSON.parse(localStorage.getItem(SPK_KEY) || "null"); return o && Array.isArray(o.q) ? o : { q: [], res: {}, wk: null }; } catch (e) { return { q: [], res: {}, wk: null }; } })();
 if (!SPK.res) SPK.res = {};
 const spkSave = () => { try { localStorage.setItem(SPK_KEY, JSON.stringify(SPK)); } catch (e) {} };
 let spkSending = false, spkAt = 0;
-/* natijani navbatga qo'yib, bulutga yuboramiz (internet bo'lmasa keyin) */
+
 function spkLog(row) {
   SPK.q.push(Object.assign({ day: today() }, row)); spkSave(); spkFlush();
 }
@@ -1949,7 +1664,7 @@ function spkFlush() {
     .catch(e => { if (e.status >= 400 && e.status < 500 && e.status !== 401) { SPK.q.splice(0, batch.length); spkSave(); } })
     .finally(() => { spkSending = false; if (SPK.q.length) setTimeout(spkFlush, 5000); });
 }
-/* so'nggi 14 kunlik sayt mashqi soniyalari (haftalik karta uchun) */
+
 async function spkLoad() {
   if (!darsOn() || navigator.onLine === false || Date.now() - spkAt < 6e5) return;
   spkAt = Date.now();
@@ -1961,7 +1676,7 @@ async function spkLoad() {
   } catch (e) {}
   spkFlush();
 }
-/* hafta (Dushanbadan): darsdagi gapirish (tahlildan) + saytdagi mashq */
+
 function spkWeek(off) {
   const dow = (new Date().getDay() + 6) % 7, from = addDays(-dow - 7 * off), to = addDays(-dow - 7 * off + 6);
   const inW = d => d >= from && d <= to;
@@ -1982,7 +1697,6 @@ function spkCard() {
     <div class="spk-lg"><span><i class="a"></i>Darsda ${m(w.cls)}</span><span><i class="b"></i>Saytda ${m(w.site)}</span>${ptot ? `<span>O'tgan hafta ${m(ptot)}</span>` : ""}</div></div>`;
 }
 
-/* --- solishtirish: gapni so'zlarga ajratib, namunadagi qaysi so'zlar aytilganini topamiz --- */
 const SP_CONTR = { "i'm": "i am", "it's": "it is", "don't": "do not", "doesn't": "does not", "didn't": "did not", "can't": "can not", "cannot": "can not", "i've": "i have", "i'll": "i will", "won't": "will not", "isn't": "is not", "wasn't": "was not", "aren't": "are not", "weren't": "were not", "that's": "that is", "what's": "what is", "let's": "let us", "he's": "he is", "she's": "she is", "you're": "you are", "we're": "we are", "they're": "they are", "i'd": "i would", "there's": "there is", "haven't": "have not", "couldn't": "could not" };
 const SP_NUM = { zero: "0", one: "1", two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9", ten: "10", eleven: "11", twelve: "12", thirteen: "13", fourteen: "14", fifteen: "15", sixteen: "16", seventeen: "17", eighteen: "18", nineteen: "19", twenty: "20", thirty: "30", forty: "40", fifty: "50", hundred: "100" };
 function spWords(s) {
@@ -1997,7 +1711,7 @@ function spLev(a, b) {
   return d[a.length][b.length];
 }
 const spSame = (a, b) => a === b || (a.length >= 5 && b.length >= 5 && spLev(a, b) <= 1);
-/* namuna so'zlari bo'yicha eng uzun umumiy ketma-ketlik: hit[i] — i-so'z aytildimi */
+
 function spMatch(said, target) {
   const t = spWords(target), s = spWords(said);
   const L = Array.from({ length: t.length + 1 }, () => new Array(s.length + 1).fill(0));
@@ -2007,7 +1721,7 @@ function spMatch(said, target) {
   const n = hit.filter(Boolean).length;
   return { hit, n, of: t.length, score: t.length ? Math.round(n / t.length * 100) : 0 };
 }
-/* namunani so'zma-so'z chizish: aytilmagan so'z belgilanadi (tinish belgilari saqlanadi) */
+
 function spMarked(target, hit) {
   let k = 0;
   return String(target).split(/(\s+)/).map(tok => {
@@ -2018,7 +1732,6 @@ function spMarked(target, hit) {
   }).join("");
 }
 
-/* --- mikrofon: brauzerning nutqni tanishi. Jim tursangiz ham 30 soniyagacha kutadi (brauzer o'zi uzsa — qayta ulaydi) --- */
 let SR_CUR = null;
 function srListen({ onFirst, onText, onEnd, onFail }) {
   let stopped = false, first = false, finals = "", t0 = 0, began = 0, live = 0, segStart = 0, rec = null;
@@ -2039,7 +1752,7 @@ function srListen({ onFirst, onText, onEnd, onFail }) {
       if (segStart) live += performance.now() - segStart; segStart = 0;
       const err = rec.err;
       if (err === "not-allowed" || err === "service-not-allowed" || err === "audio-capture" || (err === "network" && !out())) { SR_CUR = null; return onFail(err); }
-      // hali hech narsa aytilmagan va 30 soniya o'tmagan — tinglashni davom ettiramiz
+
       if (!stopped && !out() && (!t0 || Date.now() - began < 30000)) { try { run(); return; } catch (er) {} }
       SR_CUR = null; onEnd(out(), Math.round(live / 1000));
     };
@@ -2051,8 +1764,7 @@ function srListen({ onFirst, onText, onEnd, onFail }) {
 }
 const srStop = () => { if (SR_CUR) SR_CUR.abort(); };
 
-/* --- ekran --- */
-let DL = null; // { id, i, st: q|rec|res|end, hints, lat, said, live, res, sh, shLive, secs, out: [], typed }
+let DL = null;
 const dlItems = r => ((r.analysis && r.analysis.speech && r.analysis.speech.stuck) || []).filter(x => x.en);
 const dlRescue = r => { const x = r.analysis && r.analysis.speech && r.analysis.speech.rescue; return x && x.length ? x : ["Let me think…", "How do you say … in English?"]; };
 function dlSaveItem() {
@@ -2166,13 +1878,10 @@ function dlEnd(r, items) {
   app.querySelector(".lz-foot a").onclick = () => { DL = null; };
 }
 addEventListener("online", () => spkFlush());
-/* ---------- BUGUNGI SAHNA: har kuni bitta hayotiy vaziyat (variant A) ----------
-   1 Tinglang — dialog ovoz bilan (matn avval yashirin); 2 Ayting — 2 ta kalit gapni ovoz chiqarib; 3 O'ynang — sahnadagi odam bilan 3 navbatli suhbat.
-   Sahnani «sahna» funksiyasi kuniga bir marta Claude bilan yozadi (unit so'zlari + darsdagi xatolar); javoblarni brauzer tekshiradi.
-   Eski kunlik qadamlar «Boshqa mashqlar» ichida qoladi. */
+
 const SH_KEY = "ingliz-sahna";
 let SH = (() => { try { const o = JSON.parse(localStorage.getItem(SH_KEY) || "null"); return o && o.scene ? o : null; } catch (e) { return null; } })();
-let shState = "", shAt = 0, SC = null; // shState: "" | "load" | "err"
+let shState = "", shAt = 0, SC = null;
 const shSave = () => { try { localStorage.setItem(SH_KEY, JSON.stringify(SH)); } catch (e) {} };
 const shToday = () => SH && SH.day === today() && SH.scene ? SH : null;
 const shOn = () => darsOn();
@@ -2181,7 +1890,7 @@ async function shLoad(force) {
   if (!force && shState === "err" && Date.now() - shAt < 6e4) return;
   shState = "load"; shAt = Date.now();
   const cu = curUnit(), info = UNIT_INFO[cu.n] || [];
-  // unit so'zlari: hali ko'rilmaganlari va unutilayotganlari birinchi
+
   const ws = byUnit(cu.n).map(w => ({ w, k: !isSeen(w) ? 0 : (recall(w) ?? 1) < .8 ? 1 : 2 })).sort((a, b) => a.k - b.k).slice(0, 40).map(x => ({ en: x.w.w, uz: x.w.u }));
   try {
     const t = await sbToken();
@@ -2198,9 +1907,8 @@ function shPush() {
   sbToken().then(t => sbFetch(`/rest/v1/scenes?user_id=eq.${AUTH.uid}&day=eq.${day}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body }, t)).catch(() => {});
 }
 const shWhy = () => !SC.typed ? "" : `<p class="sh-why">${/allowed|audio/.test(SC.why || "") ? "Mikrofonga ruxsat yo'q — manzil satridagi belgi → Mikrofon → Ruxsat. Hozircha yozib davom eting." : "Nutqni tanish ishlamadi (internet yoki brauzer). Hozircha yozib davom eting."}</p>`;
-const shStep = p => p.done ? 3 : p.play && p.play.length >= 3 ? 3 : p.said ? 2 : p.heard ? 1 : 0; // nechta qadam tugagan
+const shStep = p => p.done ? 3 : p.play && p.play.length >= 3 ? 3 : p.said ? 2 : p.heard ? 1 : 0;
 
-/* --- bosh sahifa kartasi --- */
 function sceneHome() {
   const s = shToday();
   if (!s) return shState === "err"
@@ -2219,13 +1927,12 @@ function sceneHome() {
       : `<a class="btn" href="#sahna" id="shgo">${st ? "Davom etish" : "Sahnani boshlash"} ${ICON.arrow}</a>`}
   </section>`;
 }
-/* «Uch narsa» (variant A): repetitor darsi · sahna · «Eslab qolish» (kuniga eng xavfli 15 so'z). Boshqa mashqlar «Unitlar»da.
-   Uchalasi bajarilgach — «Bugungi ish tugadi». */
+
 const ESL_N = 15;
 function eslList(n) {
   const out = [], ids = new Set(), add = w => { if (w && !ids.has(w.id) && out.length < ESL_N) { ids.add(w.id); out.push(w); } };
   misWords(true).filter(w => w.unit <= n).slice(0, 5).forEach(add);
-  // sahnadagi so'zlar: o'rganilgan va takrorlash vaqti kelgan yoki unutilayotganlari birinchi
+
   const s = shToday(), sw = s ? new Set((s.scene.words || []).map(x => String(x.en || "").toLowerCase().trim())) : new Set();
   const due = revOrder(dueWords()).sort((a, b) => (recall(a) ?? 1) - (recall(b) ?? 1));
   due.filter(w => sw.has(String(w.w).toLowerCase().trim())).forEach(add);
@@ -2268,11 +1975,6 @@ function bindSceneHome(n) {
   });
 }
 
-/* ---------- REPETITORGA QO'NG'IROQ (#suhbat): 5 daqiqalik ovozli suhbat ----------
-   Har gap alohida yozib olinadi (MediaRecorder; 1,5 soniya jimlikdan keyin to'xtaydi) → «suhbat» funksiyasi:
-   Gemini so'zma-so'z matn (xatoni tuzatmasdan, noaniq so'zlarni belgilab) → Claude javob va tuzatish → telefon ovozi o'qiydi.
-   Noaniq eshitilgan so'z ustiga tuzatish kelsa — avval «to'g'ri eshitdimmi?» so'raladi. Ovoz saqlanmaydi.
-   Tuzatishlar «Xatolarim»dagi «Gapirishda» bo'limiga tushadi (calls jadvali), gapirish soniyalari speak_log ga (src: call). */
 const CLKEY = "ingliz-calls", CL_MAX_S = 300, CL_WARN_S = 270, CL_EXTRA_S = 120;
 let CLS = []; try { CLS = JSON.parse(localStorage.getItem(CLKEY) || "[]") || []; } catch (e) {}
 const clSave = () => { try { localStorage.setItem(CLKEY, JSON.stringify(CLS.slice(0, 12))); } catch (e) {} };
@@ -2287,7 +1989,7 @@ async function clApi(path, body, ms) {
     return d;
   } finally { clearTimeout(tm); }
 }
-/* oxirgi qo'ng'iroqlar (boshqa qurilmadagilari ham): «Xatolarim» va bosh sahifadagi qator uchun */
+
 async function clLoadList(force) {
   if (!clOn() || navigator.onLine === false || (!force && Date.now() - clListAt < 6e4)) return;
   clListAt = Date.now();
@@ -2296,11 +1998,11 @@ async function clLoadList(force) {
     const rows = await sbFetch("/rest/v1/calls?select=id,day,topic,fixes,off,secs&done_at=not.is.null&order=created_at.desc&limit=12", {}, t);
     if (!Array.isArray(rows)) return;
     const before = JSON.stringify(CLS), ids = new Set(rows.map(r => r.id));
-    CLS = CLS.filter(c => !ids.has(c.id) && c.day === today()).concat(rows); clSave(); // bugungi, hali serverga yetmagan qo'ng'iroq yo'qolmasin
+    CLS = CLS.filter(c => !ids.has(c.id) && c.day === today()).concat(rows); clSave();
     if (before !== JSON.stringify(CLS) && /^#?(xato)?$/.test(location.hash)) render();
   } catch (e) {}
 }
-// «Bugun» sahifasidagi qo'ng'iroq qatori (clRow) 19-noyabrda olindi: kirish endi pastki menyudagi «Qo'ng'iroq» tabi
+
 const clEl = () => !CL || !CL.t0 ? 0 : (Date.now() - CL.t0 - CL.pz - (CL.pzAt ? Date.now() - CL.pzAt : 0)) / 1000;
 const clLim = () => CL_MAX_S + (CL && CL.extra ? CL_EXTRA_S : 0);
 const clLeft = () => { const r = clLim() - clEl(); return r <= 0 ? 0 : Math.max(1, Math.ceil(r / 25)); };
@@ -2369,7 +2071,7 @@ function clSpeak(slow) {
   } else {
     fallback();
   }
-  setTimeout(done, (slow ? 5000 : 3000) + text.length * (slow ? 170 : 110)); // ovoz «tugadi» demasa ham davom etamiz
+  setTimeout(done, (slow ? 5000 : 3000) + text.length * (slow ? 170 : 110));
 }
 function clListen() {
   if (!CL) return; clStopRec();
@@ -2497,12 +2199,12 @@ function clDraw() {
 route(/^suhbat$/, () => {
   if (!clOn()) return go("");
   if (!CL) CL = { st: "pre", turns: [], fixes: [], secs: 0, said: 0, gen: 0, pz: 0, pzAt: 0, lastFix: -1 };
-  if (CL.drawn === CL.st && app.querySelector(".cl")) return; // boshqa joydan qayta chizish so'ralsa — yozilayotgan javob va to'lqin joyida qoladi
+  if (CL.drawn === CL.st && app.querySelector(".cl")) return;
   clDraw();
 });
-/* sahifadan chiqilsa: mikrofon o'chadi; gap aytilgan bo'lsa qo'ng'iroq saqlanadi */
+
 addEventListener("hashchange", () => { if (location.hash === "#suhbat" || !CL) return; if (CL.st !== "end" && CL.id && CL.said > 0) clEnd(); else clClose(); CL = null; });
-/* «Xatolarim»dagi «Gapirishda» bo'limi: oxirgi qo'ng'iroqlardagi tuzatishlar */
+
 function clXato() {
   const rows = []; CLS.forEach(c => (c.fixes || []).forEach((f, i) => rows.push({ c, f, i, off: (c.off || []).includes(i) })));
   if (!clOn() || !rows.length) return "";
@@ -2512,7 +2214,6 @@ function clXato() {
     <ul class="wl" style="margin-top:10px">${rows.slice(0, 20).map(r => `<li class="${r.off ? "is-off" : ""}"><div class="u"><s lang="en">${esc(r.f.you)}</s></div><div class="e"><b lang="en">${esc(r.f.fix)}</b><small>${esc(r.f.why || "")}</small></div><button class="cl-off" type="button" data-cloff="${r.c.id}:${r.i}">${r.off ? "Qaytarish" : "Bu xato emas"}</button></li>`).join("")}</ul></div></section>`;
 }
 
-/* --- sahna sahifasi --- */
 function shPlayLines(lines, onLine, done) {
   stopVoice(); const g = VG; let i = 0;
   const next = () => { if (g !== VG) return; if (i >= lines.length) { onLine(-1); if (done) done(); return; } onLine(i); speakOne(lines[i], () => { i++; setTimeout(next, 350); }); };
@@ -2572,7 +2273,7 @@ route(/^sahna$/, () => {
     $("#shnext").onclick = () => { srStop(); app.querySelectorAll(".sh-in").forEach(inp => { if (inp.value.trim() && SC.sayRes[+inp.dataset.i] == null) grade(+inp.dataset.i, inp.value.trim(), 0); }); p.said = p.said || {}; SH.progress = p; shSave(); shPush(); SC.step = 2; render(); };
     return;
   }
-  // 3 · O'ynang
+
   const k = SC.play.length, cur = S.play[k], rt = SC.retry;
   const tasks = S.play.map((x, i) => { const r = SC.play[i]; return `<li class="${r ? (r.ok ? "ok" : "half") : ""}"><i>${r ? (r.ok ? ICON.check : "~") : ""}</i>${esc(x.task)}</li>`; }).join("");
   const chat = S.play.slice(0, k + (cur ? 1 : 0)).map((x, i) => { const r = SC.play[i]; return `<div class="msg t"><small>${esc(S.role)}</small><span lang="en">${esc(x.t)}</span></div>${r ? `<div class="msg mine${r.ok ? "" : " half"}"><span lang="en">${esc(r.said)}</span>${r.ok ? "" : `<small>Yaxshiroq: <b lang="en">${esc(x.ok[0])}</b></small>`}</div>` : ""}`; }).join("");
@@ -2588,7 +2289,7 @@ route(/^sahna$/, () => {
     </div>` : ""}</div>`;
   $("#quit").onclick = quit; bindSay(app);
   const ch = $("#shchat"); ch.scrollTop = ch.scrollHeight;
-  // sahnadagi odamning gapi ekranga chiqqanda bir marta o'qiladi
+
   if (cur && SC.spoke !== k && !rt) { SC.spoke = k; setTimeout(() => speakOne(cur.t), 250); }
   const finish = (said, ok, secs, lat) => {
     SC.retry = null; SC.live = "";
@@ -2626,14 +2327,12 @@ function shEnd(s) {
   $("#shhome").onclick = () => { SC = null; };
 }
 
-/* dars tahlilidagi kirish tugmasi */
 function dlEntry(r) {
   const items = dlItems(r); if (!items.length) return "";
   const done = SPK.res[r.id] ? items.filter(x => SPK.res[r.id][x.en]).length : 0;
   return `<a class="btn lz-go" href="#lahza-${r.id}">${ICON.mic}${done ? `Ovoz chiqarib mashq · ${done} / ${items.length} qilindi` : `Ovoz chiqarib mashq · ${items.length} gap`}</a>`;
 }
 
-/* --- natija: avval xatolar (variant B) --- */
 const dsMin = t => { const p = String(t || "").split(":").map(Number); return p.length === 3 ? p[0] * 60 + p[1] + 1 : p.length === 2 ? p[0] + 1 : 0; };
 route(/^dars-([0-9a-f-]{36})$/, id => {
   if (!darsOn()) return go("");
@@ -2757,11 +2456,8 @@ function dsPending(r) {
   };
   bindDsCancel(); darsLoad(); dsWatch();
 }
-/* ishlovni to'xtatish: ikki bosishda (birinchisi tasdiq so'raydi, 5 soniyadan keyin o'z holiga qaytadi).
-   Yozuv serverda 3 kun turadi — «Bekor qilingan» sahifasidan qayta boshlasa bo'ladi */
-// tasdiq holati sahifadan tashqarida saqlanadi: holat o'zgarib karta qayta chizilsa ham (navbatda → matnga o'girilmoqda)
-// ikkinchi bosish yo'qolmasin
-let DS_CX = null; // { id, until, busy }
+
+let DS_CX = null;
 const dsCxArmed = id => DS_CX && DS_CX.id === id && (DS_CX.busy || Date.now() < DS_CX.until);
 function dsCancelBtn(r) {
   const on = dsCxArmed(r.id), busy = on && DS_CX.busy;
@@ -2786,13 +2482,9 @@ function bindDsCancel() {
     } catch (e) { DS_CX = null; paint(); toast("To'xtatib bo'lmadi", null, null, { type: "info", sub: e.status === 0 ? "Internet yo'q" : e.message }); }
   });
 }
-/* ---------- YOZUVSIZ DARS: faqat doska rasmlari (B varianti) ----------
-   Dars kunlari «Bugun» sahifasida karta → sahifa ichidagi kamera ketma-ket suratga oladi (yoki galereya) → «dars» funksiyasi
-   kind = "photo" qator ochadi, rasmlar «dars-rasm» bucket'ga, Claude ~1 daqiqada o'qiydi (Gemini ishlatilmaydi).
-   Tayyor bo'lgach «Nima qo'shilsin?»: Ali so'zlarni tasdiqlaydi → «Mening so'zlarim» (src: dars:<id>), tanlov answers.review ga
-   yoziladi — ertangi repetitor faqat tasdiqlangan so'z va qoidalarni oladi. Yangi so'zlar Eslab qolish qatorida «+N darsdan». */
+
 const RS_MAX = 8, RS_SKIP = "ingliz-rs-skip";
-let RS = null, RSV = null; // RS — olinayotgan rasmlar, RSV — tekshirish ekranidagi belgilar
+let RS = null, RSV = null;
 const rsSkipped = () => { try { return localStorage.getItem(RS_SKIP) === today(); } catch (e) { return false; } };
 const rsIsPhoto = r => !!r && (r.kind === "photo" || (r.analysis && r.analysis.kind === "photo"));
 const rsReviewed = r => !!(r && r.answers && r.answers.review);
@@ -2815,8 +2507,7 @@ async function rsCamOpen() {
   } catch (e) { RS.cam = null; RS.noCam = true; }
   if (location.hash === "#rasm") render(); else rsCamStop();
 }
-/* iPhone rasmlari HEIC formatida: Chrome va Firefox uni o'zi o'qiy olmaydi (Safari o'qiydi).
-   Brauzer ocholmasa, kutubxona (vendor/heic2any.min.js, MIT) faqat shu paytda yuklanadi va rasmni JPEG ga aylantiradi. */
+
 let heicLib = null, rsSeq = 0;
 const heicLoad = () => heicLib || (heicLib = new Promise((ok, no) => {
   const sc = document.createElement("script"); sc.src = "vendor/heic2any.min.js";
@@ -2835,7 +2526,7 @@ async function rsFiles(files) {
   if (!RS) RS = { shots: [], phase: "cam" };
   const u = RS;
   const fs = all.filter(f => /^image\//.test(f.type) || /\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
-  u.pend = (u.pend || []).filter(x => x.st === "work"); // oldingi «ochilmadi» kataklari yangi tanlovda tozalanadi
+  u.pend = (u.pend || []).filter(x => x.st === "work");
   u.msg = all.length && !fs.length ? "Tanlangan fayl rasm emas. JPG, PNG yoki HEIC rasm tanlang." : "";
   const room = Math.max(0, RS_MAX - u.shots.length - u.pend.length), take = fs.slice(0, room);
   if (fs.length > take.length) u.msg = `Ko'pi bilan ${RS_MAX} ta rasm: ${fs.length - take.length} tasi qo'shilmadi.`;
@@ -2845,7 +2536,7 @@ async function rsFiles(files) {
   for (const j of jobs) {
     let b = null;
     try { b = await rsDecode(j.f); } catch (e) {}
-    if (RS !== u) return; // bekor qilindi
+    if (RS !== u) return;
     j.f = null;
     if (b && rsAdd(b)) u.pend = u.pend.filter(x => x !== j); else j.st = "bad";
     if (location.hash === "#rasm") rsGridPaint();
@@ -2873,7 +2564,7 @@ async function rsSend() {
       const path = `${AUTH.uid}/${u.id}/${i + 1}.jpg`;
       if (!s.up) {
         const r = await fetch(SB.url + "/storage/v1/object/dars-rasm/" + path, { method: "POST", headers: { Authorization: "Bearer " + await sbToken(), apikey: SB.key, "Content-Type": "image/jpeg", "x-upsert": "false" }, body: s.blob });
-        // qayta urinishda allaqachon yuklangan rasm — xato emas
+
         if (!(r.ok || r.status === 409 || r.status === 400)) throw Object.assign(new Error("HTTP " + r.status), { status: r.status });
         s.up = true;
       }
@@ -2892,7 +2583,6 @@ async function rsSend() {
 }
 addEventListener("hashchange", () => { if (location.hash !== "#rasm") rsCamStop(); });
 
-/* bosh sahifadagi karta (dars kuni, shu kun hali dars yuborilmagan bo'lsa) */
 function rsCard() {
   return `<section class="rs-card" aria-labelledby="rsct"><div class="rs-t"><span class="lic">${ICON_CAM}</span><div><b id="rsct">Darsdan doska rasmi bormi?</b><span>Doskadagi so'zlar takrorlashga, qoidalar ertangi repetitor darsiga qo'shiladi.</span></div></div>
     <div class="rs-a"><button type="button" class="btn" id="rscam1">Suratga olish</button><label class="btn ghost">Galereya<input type="file" id="rsgal1" class="sr-only" accept="image/*" multiple></label></div>
@@ -2906,8 +2596,6 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("change", e => { if (e.target && e.target.id === "rsgal1") { rsFiles(e.target.files); e.target.value = ""; } });
 
-/* #rasm grid: olingan rasmlar + tayyorlanayotgan / ochilmagan kataklar + qo'shish tugmalari.
-   Alohida chiziladi: rasm tayyor bo'lganda butun sahifa emas, faqat shu qism yangilanadi (fokus joyida qoladi). */
 function rsGridPaint() {
   const g = $("#rsgrid"); if (!g || !RS) return;
   const n = RS.shots.length, pend = RS.pend || [], work = pend.filter(x => x.st === "work").length, bad = pend.length - work;
@@ -2932,7 +2620,7 @@ function rsGridPaint() {
   ["#rsgal", "#rscap"].forEach(s => { const f = $(s); if (f) f.onchange = () => { rsFiles(f.files); f.value = ""; }; });
   if (had) { const f = document.getElementById(had) || g.querySelector(`[data-rm="${had}"],[data-pdrop="${had}"]`); if (f) f.focus(); }
 }
-/* #rasm: kamera, olingan rasmlar, yuborish */
+
 route(/^rasm$/, () => {
   if (!darsOn()) return go("");
   if (!RS) RS = { shots: [], phase: "cam" };
@@ -2972,7 +2660,7 @@ route(/^rasm$/, () => {
     };
     return;
   }
-  // kamera yopiq: olingan rasmlar, qo'shish va yuborish
+
   app.innerHTML = `${nav("#", "Bugun", "Doska rasmlari")}<h2 class="pg-h">Doska rasmlari</h2>
   <p class="sub" id="rssub"></p>
   ${RS.noCam ? `<p class="rs-note">${ICON.info}<span>Sahifa ichidagi kamera ochilmadi. Brauzerda kameraga ruxsat bering yoki telefon kamerasidan foydalaning.</span></p>` : ""}
@@ -2984,13 +2672,12 @@ route(/^rasm$/, () => {
   $("#rssend").onclick = () => { if (!(RS.pend || []).some(x => x.st === "work")) rsSend(); };
   const cx = $("#rscancel");
   cx.onclick = () => {
-    const k = RS.shots.length + (RS.pend || []).filter(x => x.st === "work").length; // tayyorlanayotganlar ham hisobda
+    const k = RS.shots.length + (RS.pend || []).filter(x => x.st === "work").length;
     if (k && !cx.dataset.sure) { cx.dataset.sure = "1"; cx.textContent = `${k} ta rasm o'chsinmi?`; return; }
     rsDrop(); go("");
   };
 });
 
-/* tekshirish: «Nima qo'shilsin?» — kitobda yoki lug'atda bor so'z va aniq o'qilmagani belgisiz keladi */
 function rsWState(w) {
   const s = aiWordState(w.en);
   if (s.st === "book") return { on: false, fixed: true, note: `kitobda bor · Unit ${un(s.unit)} — o'z vaqtida chiqadi` };
@@ -3043,7 +2730,7 @@ function rsPage(r) {
     bindSay(app); darsLoad();
     return;
   }
-  // tasdiqlangan (yoki tasdiqlaydigan narsa yo'q): konspekt
+
   const kw = rv ? ws.filter((_, i) => rv.w.includes(i)) : ws, kr = rv ? rl.filter((_, i) => rv.r.includes(i)) : rl;
   app.innerHTML = `${head}<h2 class="pg-h">${esc(a.headline)}</h2>
   <p class="sub">${[dsDate(r.day), c.unit, "ovoz yozuvisiz"].filter(Boolean).map(esc).join(" · ")}</p>
@@ -3069,7 +2756,6 @@ function rsFold() {
   b.onclick = () => { const o = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", o); $("#rsbdl").hidden = !o; if (o) dsImgLoad(); };
 }
 
-/* bosh sahifa: dars kuni kechqurun — yuklash taklifi; ishlov ketayotganda yoki tayyor bo'lsa — holati */
 function darsCard() {
   if (!darsOn()) return "";
   const a = dsActive(), d = new Date(), last = DS.list.find(x => x.status === "done" && dayDiff(x.day, today()) <= 1);
@@ -3086,10 +2772,6 @@ function darsCard() {
   return "";
 }
 
-/* ---------- HAFTALIK MAQSAD (C varianti, 18-noyabr) ----------
-   Dars tahlili eng ko'p takrorlangan muammoni tanlaydi → «Bugun»da bitta maqsad → har kuni 4 daqiqalik mashq (#maqsad)
-   → dars kuni tayyor gaplar va o'qituvchiga bitta jumla → keyingi to'liq dars (10 daqiqadan uzun) natijani o'lchaydi
-   → keyingi maqsad taklif qilinadi. Holat S.goal da (sinxron), tarix S.goalH da. Repetitor agenti S.goal ni /data orqali ko'radi. */
 const GOAL_T = {
   uz: { t: "Darsni inglizcha gapirish", teach: "Can we start with five minutes of small talk?", items: [["Bu dars men uchun qiyin.", "This lesson is difficult for me."], ["Bu hafta ishim ko'p.", "I have a lot of work this week."], ["Kecha futbol o'ynadim.", "I played football yesterday."], ["Darsga ikki oy oldin kela boshladim.", "I started lessons two months ago."], ["Bugun charchadim.", "I am tired today."], ["Iltimos, sekinroq gapiring.", "Please speak more slowly."]] },
   "be-ing": { t: "«am / is / are + ‑ing» ni xatosiz aytish", teach: "When I forget am, is or are, please stop me.", items: [["Men hozir non yeyapman.", "I am eating bread now."], ["U (qiz) kitob o'qiyapti.", "She is reading a book."], ["Biz ingliz tilini o'rganyapmiz.", "We are learning English."], ["Ular futbol o'ynayapti.", "They are playing football."], ["Sen nima qilyapsan?", "What are you doing?"], ["Men hozir ishlamayapman.", "I am not working now."]] },
@@ -3105,8 +2787,8 @@ const GOAL_T = {
   order: { t: "So'z tartibi: kim + nima qiladi + nimani", teach: "Can I say it again in the right order?", items: [["Men kofe ichaman.", "I drink coffee."], ["U (qiz) har kuni kitob o'qiydi.", "She reads a book every day."], ["Biz futbol o'ynaymiz.", "We play football."], ["Men ingliz tilini o'rganaman.", "I learn English."], ["Ular kechqurun televizor ko'radi.", "They watch TV in the evening."], ["Men non yeyman.", "I eat bread."]] },
   flow: { t: "Gapni to'xtamay davom ettirish", teach: "If I make a mistake, let me finish first.", items: [["Kechirasiz, aytmoqchi bo'lganim…", "Sorry, I mean…"], ["O'ylab olay…", "Let me think…"], ["Buni inglizcha qanday deyiladi?", "How do you say this in English?"], ["Qaytaring, iltimos.", "Could you repeat that, please?"], ["Bilmayman, lekin…", "I don't know, but…"], ["Boshqacha aytsam…", "In other words…"]] },
 };
-const GOAL_FULL = 600, GOAL_DAYS = 5; // to'liq dars — 10 daqiqadan uzun; maqsad — 5 kun mashq
-// eski tahlillarda mavzu belgisi yo'q: qoida nomi va misolidan aniqlanadi (yangi tahlillarda dars funksiyasi «topic» qo'yadi)
+const GOAL_FULL = 600, GOAL_DAYS = 5;
+
 function goalTopic(r) {
   if (!r) return null;
   if (r.topic && GOAL_T[r.topic]) return r.topic;
@@ -3125,13 +2807,13 @@ function goalTopic(r) {
   if (/\b(am|is|are)\b/.test(t)) return "be";
   return null;
 }
-// tahlil qilingan, ovozli darslar; bir xil yozuvni ikki marta yuklash hisobni buzmasin
+
 function goalLessons() {
   const seen = new Set();
   return DS.list.filter(x => x.status === "done" && x.analysis && !rsIsPhoto(x) && Array.isArray(x.analysis.mistakes))
     .filter(x => { const k = [x.day, x.duration_s, x.analysis.headline, ((x.analysis.mistakes[0] || {}).you || "")].join("|"); if (seen.has(k)) return false; seen.add(k); return true; });
 }
-// bitta darsdagi mavzular: { topic: soni }
+
 function goalCounts(x) {
   const out = {}, a = x.analysis, rt = {};
   (a.rules || []).forEach(r => { const t = goalTopic(r); rt[r.key] = t; if (t) out[t] = (out[t] || 0) + Math.max(1, +r.count || 1); });
@@ -3141,7 +2823,7 @@ function goalCounts(x) {
   return out;
 }
 const goalEn = x => { const m = ((x.analysis || {}).speech || {}).metrics; return m && m.words >= 10 ? m.en : null; };
-// takliflar: oxirgi 3 darsda eng ko'p uchragan mavzular (yaqinda bajarilganlari oxirida)
+
 function goalCands(skip) {
   const L = goalLessons().slice(0, 3), sc = {}, ln = {}, ex = {};
   L.forEach(x => Object.entries(goalCounts(x)).forEach(([t, n]) => { sc[t] = (sc[t] || 0) + n; ln[t] = (ln[t] || 0) + 1; (ex[t] = ex[t] || []).push(x.id); }));
@@ -3160,7 +2842,7 @@ function goalStart(c) {
   S.goal = { id: c.id, at: today(), ts: Date.now(), from: c.from, base: goalBase(c.id, c.from), days: [], st: "on", up: Date.now() };
   save();
 }
-// maqsad yo'q bo'lsa — birinchisini o'zi tanlaydi; faol maqsadni keyingi to'liq dars o'lchaydi
+
 function goalTick() {
   if (!darsOn()) return null;
   const g = S.goal;
@@ -3183,7 +2865,7 @@ function goalWhy(g) {
   return `${L} ta yozuvda ${Math.max(1, Math.round(b.n * L))} marta xato`;
 }
 const goalIsClassDay = () => clsDays().includes(new Date().getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading" && x.status !== "cancelled");
-// mashq gaplari: darsdagi o'z xatolaringiz (to'g'ri shakli bilan) + mavzu namunalari
+
 function goalItems(g, n) {
   const T = GOAL_T[g.id], own = [], seen = new Set();
   goalLessons().filter(x => g.from.includes(x.id)).forEach(x => {
@@ -3249,7 +2931,7 @@ function bindGoal() {
     goalStart(c); toast("Maqsad qabul qilindi", null, null, { sub: "Ertangi repetitor darsi ham shunga moslashadi" }); render();
   };
 }
-/* mashq: 6 ta gap — o'zbekchasi (yoki xato gap) ko'rsatiladi, ovoz chiqarib aytasiz, keyin to'g'risini ko'rasiz */
+
 let MQ = null;
 route(/^maqsad$/, () => {
   const g = S.goal;
@@ -3282,7 +2964,6 @@ route(/^maqsad$/, () => {
   const ok = $("#mqok"), hd = $("#mqhard"); if (ok) ok.onclick = () => nx(false); if (hd) hd.onclick = () => nx(true);
 });
 
-/* ---------- BUGUN ---------- */
 route(/^$/, () => {
   if (OAUTH && OAUTH.wait) return loadingPage();
   if (needWelcome()) return welcomePage();
@@ -3291,9 +2972,9 @@ route(/^$/, () => {
   const streak = liveStreak();
   const plan = dayPlan(cu.n), done = plan.filter(x => x.done).map(x => x.tag), left = plan.filter(x => !x.done && !x.lock && !x.off);
   const mins = left.reduce((a, x) => a + x.min, 0);
-  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length; // 19-noyabr: «N ta xato — qayta mashq» qatori bu sahifadan olindi (Ali); #xato sahifasi o'chmagan
+  const seen = WORDS.filter(isSeen).length, mast = WORDS.filter(isMastered).length;
   const lv = curLevel(), lvReady = !!lv.ready, askUnit = !S.course;
-  /* kirish animatsiyasi faqat boshqa sahifadan kelganda (joyida qayta chizilganda emas) */
+
   app.classList.add("home"); app.classList.toggle("hin", prevH !== "" && !calm()); app.innerHTML = `
   <h1 class="sr-only">Bugun</h1><p class="date hdate">${DAYS[d.getDay()]}, ${d.getDate()}-${MONTHS[d.getMonth()]}</p>
   <div class="hello hbar"><div class="pills">
@@ -3345,9 +3026,8 @@ route(/^$/, () => {
   bindGoal();
   if (app.classList.contains("hin")) countUp(app);
 });
-/* yangi versiya: sekin internetda eski nusxa ochilgan bo'lsa (sw.js 2,5 s dan keyin keshni beradi, GitHub Pages ham ~10 daq eski nusxani berishi mumkin) —
-   saytdagi versiya raqami tekshiriladi, yangisi keshga yoziladi va «Yangilash» taklif qilinadi. APP_V har o'zgarishda oshiriladi */
-const APP_V = "202611231702";
+
+const APP_V = "202611231729";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -3357,7 +3037,7 @@ function checkUpdate() {
     const mv = t.match(/<meta name="app-v" content="(\d+)">/);
     const changed = (newJs && curJs && newJs !== curJs) || (mv && mv[1] > APP_V);
     if (!changed) return;
-    // yangi versiyaning resurslari (styles/*, js/*, data/*) avval yuklab olinadi (sw.js ularni keshga yozadi), keyin sahifaning o'zi
+
     const assets = [...t.matchAll(/(?:src|href)="((?:data|styles|js)\/[^"?]+\.(?:js|css)\?v=[^"]+)"/g)].map(x => fetch("./" + x[1]).then(r => r.text()));
     const put = "caches" in window ? Promise.all(assets).then(() => caches.open("ingliz-v3")).then(c => Promise.all(["./", "./index.html"].map(u => c.put(u, new Response(t, { headers: { "Content-Type": "text/html; charset=utf-8" } }))))).catch(() => {}) : Promise.resolve();
     put.then(() => { updShown = true; toast("Yangi versiya", "Yangilash", () => location.reload(), { type: "info", sub: "Sayt yangilandi", ms: 15000 }); });
@@ -3365,38 +3045,37 @@ function checkUpdate() {
 }
 setTimeout(checkUpdate, 4000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });
-/* fon (aura) balandligi qotiriladi — klaviatura ochilib-yopilganda fon cho'zilib-qisqarmaydi */
+
 (() => { let mx = 0; const set = (reset) => { const h = innerHeight; if (reset) mx = 0; if (h > mx) { mx = h; document.documentElement.style.setProperty("--auraH", mx + "px"); } };
   set(); addEventListener("resize", () => set(false)); addEventListener("orientationchange", () => setTimeout(() => set(true), 400)); })();
-/* nusxalash/kesish faqat yozish maydonlarida (zaxira kodi «Nusxalash» tugmasi ishlayveradi); telefonda uzoq bosish menyusi o'chirilgan */
+
 const inField = el => !!(el && el.closest && el.closest("input,textarea,[contenteditable='true']"));
 ["copy", "cut"].forEach(ev => document.addEventListener(ev, e => { if (!inField(document.activeElement) && !inField(e.target)) e.preventDefault(); }));
 document.addEventListener("contextmenu", e => { if (matchMedia("(pointer:coarse)").matches && !inField(e.target)) e.preventDefault(); });
 document.addEventListener("dragstart", e => { if (!inField(e.target)) e.preventDefault(); });
-/* telefonda bosilish holati: iOS :active'ni yoqadi; variantga qisqa «prs» sinfi — tez teginishda ham botish ko'rinadi */
+
 document.addEventListener("touchstart", () => {}, { passive: true });
 document.addEventListener("pointerdown", e => { const o = e.target.closest && e.target.closest(".opt:not(:disabled)"); if (!o) return; o.classList.add("prs"); const off = () => setTimeout(() => o.classList.remove("prs"), 90); addEventListener("pointerup", off, { once: true }); addEventListener("pointercancel", off, { once: true }); }, { passive: true });
-/* tugmada barmoq tekkan nuqta — yumshoq nur shu yerdan tarqaladi */
+
 document.addEventListener("pointerdown", e => { const b = e.target.closest && e.target.closest(".btn"); if (!b) return; const r = b.getBoundingClientRect(); b.style.setProperty("--px", (e.clientX - r.left) + "px"); b.style.setProperty("--py", (e.clientY - r.top) + "px"); }, { passive: true });
-/* sonlar 0 dan sanab chiqadi (faqat kirish animatsiyasida) */
+
 function countUp(root) {
   root.querySelectorAll("[data-c]").forEach(el => { const to = +el.dataset.c, t0 = performance.now() + 220, d = 850; if (!(to > 0)) return;
     const f = t => { if (!el.isConnected) return; const k = Math.min(1, Math.max(0, (t - t0) / d)), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to * e); if (k < 1) requestAnimationFrame(f); };
     el.textContent = "0"; requestAnimationFrame(f); });
 }
-/* halqa/yoy: pathLength=100, to'ldirish = foiz */
+
 const arcRing = (size, sw, pct, cls, extra = "") => { const r = (size - sw) / 2, c = size / 2;
   return `<svg class="rg ${cls}" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" class="tk" stroke-width="${sw}"/><circle cx="${c}" cy="${c}" r="${r}" class="p" stroke-width="${sw}" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - Math.max(0, Math.min(100, pct))}" transform="rotate(-90 ${c} ${c})"/>${extra}</svg>`; };
-/* ---------- takrorlash tartibi va kunlik chegara: eng kechikkan va eng zaif so'z birinchi; qolgani keyingi kunlarga ---------- */
+
 const REV_CAP = 30;
-const revOrder = list => { const f = repFocus(), fr = id => { const i = f ? f.indexOf(id) : -1; return i < 0 ? 1e9 : i; }; return list.slice().sort((a, b) => { const fa = fr(a.id), fb = fr(b.id); if (fa !== fb) return fa - fb; const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; }); }; // repetitor tanlagan so'zlar (focus) birinchi
-/* «Mustahkamlash»: o'rganilayotgan (hali mustahkam emas) so'zlar — eng zaifi birinchi, 10 ta */
+const revOrder = list => { const f = repFocus(), fr = id => { const i = f ? f.indexOf(id) : -1; return i < 0 ? 1e9 : i; }; return list.slice().sort((a, b) => { const fa = fr(a.id), fb = fr(b.id); if (fa !== fb) return fa - fb; const x = rec(a.id), y = rec(b.id); return x.due < y.due ? -1 : x.due > y.due ? 1 : x.b - y.b; }); };
+
 const mastPool = () => shuffle(WORDS.filter(w => isSeen(w) && !isMastered(w))).sort((a, b) => rec(a.id).b - rec(b.id).b).slice(0, 10);
-/* «2 daqiqa»: charchagan kuni — 10 ta so'z, seriya saqlanadi */
+
 const miniPool = () => { const d = revOrder(dueWords()); return (d.length >= 5 ? d : d.concat(shuffle(WORDS.filter(w => isSeen(w) && !isDue(w))).sort((a, b) => rec(a.id).b - rec(b.id).b))).slice(0, 10); };
 const myEx = w => w.pe ? `<div class="ex pex"><span class="metag">Siz haqingizda</span>${esc(w.pe)}<small>${esc(w.pt)}</small></div>` : "";
-/* ---------- O'QISH: kitobdek uzun matnlar (gapni bossangiz — o'zbekcha tarjima) ----------
-   p — xatboshilar, har biri [inglizcha, o'zbekcha] gaplar ro'yxati. Matnlar o'zimizniki (Beginner → Elementary). */
+
 const BOOKS = [
  { id: "week", t: "My week", u: "Mening haftam", lv: "Beginner", p: [
   [["My name is Aziz, and I live in Tashkent.", "Mening ismim Aziz, men Toshkentda yashayman."],
@@ -4138,7 +3817,7 @@ const BOOKS = [
    ["She still misses Tashkent sometimes.", "U hali ham ba'zan Toshkentni sog'inadi."],
    ["But when she visits her parents, after a week she says, \"I want to go home.\"", "Lekin ota-onasinikiga borganda, bir haftadan keyin: \"Uyga qaytgim keldi\", deydi."],
    ["And by \"home\", she means Navoi.", "\"Uy\" deganda esa Navoiyni nazarda tutadi."]]] },
-/* bk-pi:start */
+
 {"id": "plaunch", "t": "The Lost Suitcase", "u": "Yo'qolgan chamadon", "lv": "Pre-intermediate", "p": [[["Last spring, my older brother was studying in Almaty, and I decided to visit him for a week.", "O'tgan bahorda akam Olmaotada o'qiyotgan edi va men bir haftaga uning oldiga borishga qaror qildim."], ["I had never flown alone before, so I was both excited and nervous.", "Men ilgari hech qachon yolg'iz uchmagan edim, shuning uchun ham hayajonlangan, ham xavotirda edim."], ["My mother packed so much food for him that my suitcase was almost too heavy to close.", "Onam unga shunchalik ko'p ovqat solib berdiki, chamadonim yopilmaydigan darajada og'ir bo'lib qoldi."], ["There was dried fruit, homemade bread and three jars of her famous apricot jam.", "Unda quruq meva, uy noni va onamning mashhur o'rik murabbosidan uch banka bor edi."]], [["The flight was short and calm, and I watched the mountains from the window the whole time.", "Parvoz qisqa va tinch o'tdi, men butun yo'l derazadan tog'larni tomosha qildim."], ["When we landed, I went to wait for my bag with the other passengers.", "Qo'nganimizdan keyin boshqa yo'lovchilar bilan birga sumkamni kutgani bordim."], ["One by one, they took their suitcases and left.", "Ular birin-ketin chamadonlarini olib ketishdi."], ["After forty minutes, I was standing alone next to an empty belt.", "Qirq daqiqadan keyin men bo'm-bo'sh lenta yonida yolg'iz turardim."]], [["I went to the lost baggage desk, where a tired woman was drinking coffee.", "Yo'qolgan bagaj bo'limiga bordim, u yerda charchagan bir ayol qahva ichib o'tirgan edi."], ["She checked her computer and told me that my suitcase had stayed in Tashkent.", "U kompyuterini tekshirib, chamadonim Toshkentda qolib ketganini aytdi."], ["Somebody had put the wrong label on it, so it had missed the plane.", "Kimdir unga noto'g'ri yorliq yopishtirgan ekan, shuning uchun u samolyotga ulgurmay qolgan edi."], ["\"Don't worry, it will arrive tomorrow evening,\" she said.", "«Xavotir olmang, u ertaga kechqurun yetib keladi», dedi u."], ["I wasn't worried about my clothes, but I was very worried about the jam.", "Kiyimlarim uchun xavotir olmasdim, lekin murabbo uchun juda xavotirda edim."]], [["My brother met me outside and laughed when he heard the story.", "Akam meni tashqarida kutib oldi va voqeani eshitib kulib yubordi."], ["He lent me a T-shirt that was two sizes too big.", "U menga ikki o'lcham katta futbolkasini berib turdi."], ["That evening, we walked around the city and ate in a small cafe near his university.", "O'sha oqshom shahar bo'ylab sayr qildik va universiteti yaqinidagi kichik kafeda ovqatlandik."], ["He told me that he had missed our mother's cooking more than anything else.", "U menga hammadan ko'ra onamizning ovqatlarini sog'inganini aytdi."], ["I didn't tell him what was in the suitcase, because I wanted it to be a surprise.", "Chamadonda nima borligini unga aytmadim, chunki bu kutilmagan sovg'a bo'lishini xohlardim."]], [["The next evening, a driver brought the suitcase to my brother's flat.", "Ertasi kuni kechqurun bir haydovchi chamadonni akamning kvartirasiga olib keldi."], ["It looked fine from the outside, but it smelled strongly of apricots.", "Tashqaridan u joyida ko'rinardi, lekin undan o'rikning kuchli hidi kelardi."], ["When I opened it, I saw that one jar had broken and the jam had covered my clothes.", "Uni ochganimda bitta banka sinib, murabbo kiyimlarimga to'kilganini ko'rdim."], ["Luckily, the bread and the other two jars had survived the journey.", "Baxtimizga, non va qolgan ikki banka yo'lda butun qolgan edi."]], [["My brother ate the bread with jam straight from the jar, standing in the kitchen.", "Akam oshxonada tik turgan holda nonni to'g'ridan-to'g'ri bankadagi murabbo bilan yedi."], ["He said it was the best thing that had happened to him all year.", "U buni butun yil davomidagi eng yaxshi voqea deb aytdi."], ["I spent the next morning at a laundry, washing apricot jam out of my shirts.", "Ertasi tongni kir yuvish joyida ko'ylaklarimdagi o'rik murabbosini yuvib o'tkazdim."], ["Now, whenever I fly, my mother wraps every jar in three plastic bags.", "Endi qachon samolyotda uchsam, onam har bir bankani uchta polietilen paketga o'rab beradi."]]]},
 {"id": "pfergana", "t": "The House in Fergana", "u": "Farg'onadagi uy", "lv": "Pre-intermediate", "p": [[["Every summer, Sardor and his two sisters used to spend their holidays at their grandmother's house in Fergana.", "Har yozda Sardor va uning ikki opa-singlisi ta'tilni Farg'onadagi buvisining uyida o'tkazishardi."], ["The house had a big garden full of apricot trees and a grapevine over the courtyard.", "Uyning o'rik daraxtlariga to'la katta bog'i va hovli ustida tok so'risi bor edi."], ["Now they were adults with jobs in Tashkent, and they rarely visited.", "Endi ular Toshkentda ishlaydigan katta odamlar edi va kamdan-kam kelishardi."], ["One day, their grandmother called and asked all three of them to come for an important conversation.", "Bir kuni buvisi qo'ng'iroq qilib, uchalasidan ham muhim suhbat uchun kelishlarini so'radi."]], [["On the train, the three of them tried to guess what it was about.", "Poyezdda uchalasi gap nima haqida ekanini taxmin qilishga urinishdi."], ["\"She's going to sell the house,\" said Malika, the oldest.", "«U uyni sotmoqchi», dedi eng kattasi Malika."], ["\"Maybe she's ill and doesn't want to tell us on the phone,\" said Zarina, looking worried.", "«Balki u kasaldir va telefonda aytishni istamayotgandir», dedi Zarina xavotir bilan."], ["Sardor didn't say anything, but he was thinking about the apricot trees.", "Sardor hech narsa demadi, lekin o'rik daraxtlari haqida o'ylayotgan edi."]], [["Their grandmother met them at the gate, looking healthy and cheerful.", "Buvisi ularni darvoza oldida sog'lom va xushchaqchaq holda kutib oldi."], ["She had cooked plov and laid the table under the grapevine, just like in the old days.", "U palov pishirib, xuddi eski kunlardagidek tok so'risi ostida dasturxon yozgan edi."], ["After dinner, she finally told them the news.", "Kechki ovqatdan keyin u nihoyat yangilikni aytdi."], ["A company from Tashkent had offered to buy the garden's apricots every year.", "Toshkentdagi bir kompaniya bog'dagi o'riklarni har yili sotib olishni taklif qilgan ekan."], ["But she was eighty-one, and she couldn't manage the harvest alone anymore.", "Lekin u sakson bir yoshda edi va hosilni endi yolg'iz uddalay olmasdi."]], [["\"If nobody helps me, I'll have to say no,\" she said simply.", "«Agar hech kim yordam bermasa, yo'q deyishimga to'g'ri keladi», dedi u oddiygina."], ["The three grandchildren looked at each other in silence.", "Uch nabira jimgina bir-biriga qarashdi."], ["Malika worked in a pharmacy, Zarina was a nurse, and Sardor was a school teacher.", "Malika dorixonada ishlardi, Zarina hamshira edi, Sardor esa maktab o'qituvchisi edi."], ["None of them knew anything about apricots, except how to eat them.", "Ularning hech biri o'rik haqida uni qanday yeyishdan boshqa hech narsa bilmasdi."]], [["Then Sardor had an idea.", "Shunda Sardorning xayoliga bir fikr keldi."], ["He could stay in Fergana for the whole summer, because the schools were closed until September.", "U butun yoz Farg'onada qolishi mumkin edi, chunki maktablar sentabrgacha yopiq edi."], ["His sisters promised to come every weekend during the harvest and to bring their children.", "Opa-singillari hosil paytida har dam olish kuni kelishga va bolalarini olib kelishga va'da berishdi."], ["Their grandmother listened, and for the first time that evening, her eyes were wet.", "Buvisi tingladi va o'sha oqshom birinchi marta uning ko'zlari namlandi."]], [["That summer was the busiest of Sardor's life.", "O'sha yoz Sardorning hayotidagi eng band yoz bo'ldi."], ["He prepared his lessons in the mornings and climbed trees in the afternoons.", "U ertalablari darslariga tayyorlandi, tushdan keyin esa daraxtlarga chiqdi."], ["The children ate more apricots than they picked, but nobody minded.", "Bolalar terganidan ko'ra ko'proq o'rik yeyishdi, lekin hech kim bunga qarshi emasdi."], ["In September, the company paid for two tonnes of fruit.", "Sentabrda kompaniya ikki tonna meva uchun pul to'ladi."], ["Their grandmother spent the money on a new roof, so that the house would be ready for many more summers.", "Buvisi pulni yangi tomga sarfladi, toki uy yana ko'p yozlarga tayyor bo'lsin."]]]},
 {"id": "pdried", "t": "From the Bazaar to Telegram", "u": "Bozordan Telegramgacha", "lv": "Pre-intermediate", "p": [[["For twelve years, Dilfuza had sold dried fruit and nuts at Chorsu Bazaar.", "O'n ikki yil davomida Dilfuza Chorsu bozorida quruq meva va yong'oq sotib kelgan edi."], ["Her stall was small, but her customers loved her raisins and her honest prices.", "Uning rastasi kichik edi, lekin xaridorlar uning mayizini va halol narxlarini yaxshi ko'rishardi."], ["However, in the last two years, fewer and fewer people had come to the bazaar.", "Biroq so'nggi ikki yilda bozorga keladigan odamlar tobora kamayib borgan edi."], ["Most of them now ordered everything on their phones.", "Ularning ko'pchiligi endi hamma narsani telefonlari orqali buyurtma qilardi."]], [["Her son Bekzod, who was studying marketing, suggested opening a Telegram shop.", "Marketing o'qiyotgan o'g'li Bekzod Telegram do'kon ochishni taklif qildi."], ["At first, Dilfuza laughed at the idea.", "Avvaliga Dilfuza bu fikrga kulib qo'ydi."], ["\"Who will buy almonds from a photo?\" she asked.", "«Kim surat orqali bodom sotib oladi?» deb so'radi u."], ["But Bekzod didn't give up, and one weekend he took photos of everything on her stall.", "Lekin Bekzod taslim bo'lmadi va bir dam olish kuni rastadagi hamma narsani suratga oldi."], ["He set up a channel, wrote short descriptions and added the prices.", "U kanal ochdi, qisqa tavsiflar yozdi va narxlarni qo'shdi."]], [["In the first week, only three people placed orders, and two of them were relatives.", "Birinchi haftada faqat uch kishi buyurtma berdi, ularning ikkitasi qarindoshlar edi."], ["Then a popular food blogger tried her apricots and posted a video about them.", "Keyin mashhur bir ovqat blogeri uning o'riklarini tatib ko'rdi va ular haqida video joylashtirdi."], ["By the next morning, the channel had six hundred new subscribers.", "Ertasi tongga kelib kanalda olti yuzta yangi obunachi paydo bo'lgan edi."], ["Dilfuza's phone didn't stop ringing all day.", "Dilfuzaning telefoni kun bo'yi jiringlashdan to'xtamadi."]], [["That was when the problems started.", "Muammolar aynan shunda boshlandi."], ["They had never packed so many orders before, and they had no system at all.", "Ular ilgari hech qachon bunchalik ko'p buyurtma qadoqlamagan edi va ularda hech qanday tizim yo'q edi."], ["One customer received walnuts instead of almonds, and another got two kilos of raisins instead of two hundred grams.", "Bir xaridor bodom o'rniga yong'oq oldi, boshqasi esa ikki yuz gramm o'rniga ikki kilo mayiz oldi."], ["A woman from Chilonzor called to complain that her package had been delivered to Yunusobod.", "Chilonzorlik bir ayol posilkasi Yunusobodga yetkazilganidan shikoyat qilib qo'ng'iroq qildi."]], [["Dilfuza wanted to close the channel, but Bekzod made a simple spreadsheet instead.", "Dilfuza kanalni yopmoqchi bo'ldi, lekin Bekzod buning o'rniga oddiy jadval tuzdi."], ["Every order was given a number, and every bag was checked twice before it left the house.", "Har bir buyurtmaga raqam berildi va har bir xalta uydan chiqishidan oldin ikki marta tekshirildi."], ["They also hired a neighbour's son to deliver packages on his bicycle.", "Ular posilkalarni velosipedda yetkazib berish uchun qo'shnining o'g'lini ham ishga olishdi."], ["The customer with two kilos of raisins was told to keep them as a gift.", "Ikki kilo mayiz olgan xaridorga ularni sovg'a sifatida olib qolishni aytishdi."]], [["Six months later, the online shop was earning more than the stall.", "Olti oydan keyin onlayn do'kon rastadan ko'ra ko'proq daromad keltirayotgan edi."], ["Dilfuza still goes to the bazaar, though, because she enjoys chatting with her old customers.", "Shunday bo'lsa-da, Dilfuza hali ham bozorga boradi, chunki eski xaridorlari bilan suhbatlashishni yoqtiradi."], ["The customer with the raisins has become her most loyal buyer.", "Mayiz olgan o'sha xaridor uning eng sodiq mijoziga aylandi."], ["\"A mistake can be good advertising too,\" Dilfuza likes to say, \"if you fix it with a smile.\"", "Dilfuza shunday deyishni yaxshi ko'radi: «Agar xatoni tabassum bilan tuzatsangiz, u ham yaxshi reklama bo'lishi mumkin.»"]]]},
@@ -4159,9 +3838,9 @@ const BOOKS = [
 {"id": "inotebook", "t": "Grandmother's Blue Notebook", "u": "Buvimning ko'k daftari", "lv": "Intermediate", "p": [[["After her grandmother passed away, Malika was given a small blue notebook.", "Buvisi olamdan o'tgach, Malikaga kichkina ko'k daftar berildi."], ["It was full of recipes in her grandmother's tiny, careful handwriting.", "U buvisining mayda, chiroyli yozuvidagi retseptlarga to'la edi."], ["Nobody else in the family had wanted it, because hardly anyone cooked anymore.", "Oiladagi boshqa hech kim uni olishni xohlamagan edi, chunki endi deyarli hech kim ovqat pishirmasdi."], ["Malika didn't cook either, but she couldn't bring herself to throw it away.", "Malika ham ovqat pishirmasdi, lekin uni tashlab yuborishga qo'li bormadi."], ["For a year, the notebook stayed on a shelf next to her laptop.", "Bir yil davomida daftar noutbuki yonidagi javonda turdi."]], [["Then one winter evening, she missed the smell of her grandmother's kitchen.", "Keyin qishning bir oqshomida u buvisining oshxonasi hidini qattiq sog'indi."], ["She opened the notebook and chose the simplest recipe: lentil soup.", "U daftarni ochib, eng oddiy retseptni tanladi: yasmiq sho'rva."], ["Most of the instructions were clear, but some were rather strange.", "Ko'rsatmalarning aksariyati tushunarli, lekin ba'zilari ancha g'alati edi."], ["\"Add salt until it tastes like Saturday,\" one line said.", "Bir qatorda «Shanba kunining ta'mi kelguncha tuz soling» deb yozilgan edi."], ["Another said, \"Cook it as long as a phone call with your aunt.\"", "Boshqasida «Xolang bilan telefonda gaplashadigan vaqtcha qaynating» deyilgan edi."]], [["Malika laughed out loud in the empty kitchen.", "Malika bo'm-bo'sh oshxonada baland ovozda kulib yubordi."], ["She called her mother to ask what these notes meant.", "U bu yozuvlar nimani anglatishini so'rash uchun onasiga qo'ng'iroq qildi."], ["Her mother explained that Saturday was the day Grandma cooked for the whole family.", "Onasi shanba buvisi butun oilaga ovqat pishiradigan kun bo'lganini tushuntirdi."], ["Everything was saltier on Saturdays, because the uncles liked it that way.", "Shanba kunlari hamma narsa sho'rroq bo'lardi, chunki tog'alar shuni yaxshi ko'rishardi."], ["And the aunt's phone calls, of course, usually lasted about forty minutes.", "Xolaning telefon suhbatlari esa, albatta, odatda qirq daqiqacha davom etardi."]], [["The soup was not perfect, but it was surprisingly close.", "Sho'rva mukammal chiqmadi, lekin buvisinikiga hayratlanarli darajada o'xshash edi."], ["Encouraged, Malika tried a new recipe every weekend.", "Bundan ruhlanib, Malika har dam olish kuni yangi retsept sinab ko'rdi."], ["She burned her first chak-chak and forgot to put onions in the chuchvara.", "Birinchi chak-chagini kuydirib qo'ydi, chuchvaraga esa piyoz solishni unutdi."], ["Slowly, she began to understand her grandmother's secret language.", "Asta-sekin u buvisining sirli tilini tushuna boshladi."], ["She also started writing her own notes in the margins.", "U hoshiyalarga o'z izohlarini ham yoza boshladi."]], [["On the last page, Malika found something that was not a recipe at all.", "Oxirgi sahifada Malika umuman retsept bo'lmagan narsani topdi."], ["It was a short list of names, and her own name was at the bottom.", "Bu qisqa ismlar ro'yxati edi, eng pastida esa uning o'z ismi turardi."], ["Next to each name, her grandmother had written that person's favourite dish.", "Har bir ism yoniga buvisi o'sha odamning sevimli taomini yozib qo'ygan edi."], ["Next to \"Malika,\" it said: \"Pumpkin manti. Teach her when she is ready.\"", "«Malika» yonida esa shunday yozilgan edi: «Qovoqli manti. Tayyor bo'lganda o'rgat.»"], ["Malika sat down on the kitchen floor and cried for a long time.", "Malika oshxona poliga o'tirib, uzoq yig'ladi."]], [["The pumpkin manti recipe was on page twelve, of course.", "Qovoqli manti retsepti, albatta, o'n ikkinchi sahifada edi."], ["She made it for the whole family on her grandmother's birthday.", "U buvisining tug'ilgan kunida uni butun oila uchun tayyorladi."], ["Her uncles said it needed a little more salt.", "Tog'alari biroz tuzi kamroq ekanini aytishdi."], ["Malika smiled and reminded them that it wasn't Saturday.", "Malika jilmayib, bugun shanba emasligini eslatdi."], ["Now she is copying the notebook so that each of her cousins can have one.", "Endi u amakivachchalarining har biriga bittadan bo'lishi uchun daftardan nusxa ko'chiryapti."]]]},
 {"id": "isleep", "t": "The Ten O'Clock Rule", "u": "Soat o'n qoidasi", "lv": "Intermediate", "p": [[["For years, I believed I was simply a night person.", "Yillar davomida o'zimni shunchaki tungi odam deb hisoblardim."], ["I usually went to bed after one and scrolled through my phone until two.", "Odatda soat birdan keyin yotardim va soat ikkigacha telefonimni varaqlardim."], ["In the morning, I needed three alarms and two cups of coffee to feel human.", "Ertalab o'zimni odamdek his qilishim uchun uchta budilnik va ikki finjon qahva kerak bo'lardi."], ["I told myself this was normal for people my age.", "O'zimga bu mening yoshimdagilar uchun odatiy hol, deb aytardim."], ["Then, at a routine check-up, my doctor asked me a simple question.", "Keyin navbatdagi tibbiy ko'rikda shifokorim menga oddiy bir savol berdi."]], [["\"How many hours do you sleep?\" she asked, looking at my blood pressure results.", "«Necha soat uxlaysiz?» — deb so'radi u qon bosimim natijalariga qarab."], ["When I answered \"about five,\" she put down her pen.", "«Besh soatcha», deb javob berganimda, u ruchkasini qo'ydi."], ["She explained that poor sleep could affect my heart, my memory and even my mood.", "U yomon uyqu yuragimga, xotiramga va hatto kayfiyatimga ta'sir qilishi mumkinligini tushuntirdi."], ["She didn't give me any pills, just one rule: no screens after ten o'clock.", "U menga hech qanday dori bermadi, faqat bitta qoida berdi: soat o'ndan keyin ekran yo'q."], ["I laughed, but she was completely serious.", "Men kuldim, lekin u mutlaqo jiddiy edi."]], [["The first week was much harder than I had expected.", "Birinchi hafta men kutganimdan ancha qiyin bo'ldi."], ["At ten, I would put my phone in the kitchen and then wander around the flat like a lost cat.", "Soat o'nda telefonimni oshxonaga qo'yib, keyin uyda adashgan mushukdek aylanib yurardim."], ["Twice, I went back to check my messages, telling myself they might be urgent.", "Ikki marta «balki shoshilinchdir» deb o'zimni aldab, xabarlarni tekshirgani qaytib bordim."], ["They never were.", "Ular hech qachon shoshilinch bo'lmagan."], ["Nobody really needs me at midnight.", "Aslida yarim tunda hech kimga kerak emasman."]], [["In the second week, I bought a paper book for the first time in years.", "Ikkinchi haftada yillar ichida birinchi marta qog'oz kitob sotib oldim."], ["It was a detective story, and I chose it because the cover looked nice.", "Bu detektiv hikoya edi va men uni muqovasi chiroyli bo'lgani uchun tanladim."], ["I fell asleep after reading only four pages.", "Atigi to'rt sahifa o'qib, uxlab qoldim."], ["The same thing happened the next night, and the night after that.", "Keyingi kechasi ham, undan keyingi kechasi ham xuddi shunday bo'ldi."], ["It took me a month to find out who the murderer was.", "Qotil kimligini bilib olishim uchun bir oy kerak bo'ldi."]], [["Slowly, other things began to change as well.", "Asta-sekin boshqa narsalar ham o'zgara boshladi."], ["I started waking up before my alarm, which had never happened before.", "Budilnikdan oldin uyg'ona boshladim, bunday hech qachon bo'lmagan edi."], ["My family noticed that I was less irritable in the mornings.", "Oilam ertalablari kamroq asabiylashayotganimni payqadi."], ["I even had time for breakfast, instead of eating a biscuit in the taxi.", "Taksida pechenye kavshash o'rniga hatto nonushtaga ham vaqtim qoladigan bo'ldi."], ["My life did not become perfect, but my problems became smaller.", "Hayotim mukammal bo'lib qolmadi, lekin muammolarim kichiklashdi."]], [["Three months later, I went back to the doctor for another check-up.", "Uch oydan keyin yana ko'rikdan o'tish uchun shifokorga bordim."], ["My blood pressure was normal, and she gave me a satisfied smile.", "Qon bosimim normal edi, u menga mamnun tabassum qildi."], ["I still break the rule sometimes, especially when there is a big football match on.", "Hali ham ba'zan qoidani buzaman, ayniqsa katta futbol o'yini bo'lganda."], ["But now I notice the difference the next day, and I don't like it.", "Lekin endi ertasi kuni farqni sezaman va bu menga yoqmaydi."], ["It turns out I was never a night person, just a tired one.", "Ma'lum bo'lishicha, men hech qachon tungi odam bo'lmaganman, shunchaki charchagan odam bo'lganman."]]]},
 {"id": "ivoice", "t": "Plov After Football", "u": "Futboldan keyin osh", "lv": "Intermediate", "p": [[["Every Tuesday evening, I play football with a group of friends on a small pitch in Yunusabad.", "Har seshanba kuni kechqurun Yunusoboddagi kichik maydonda bir guruh do'stlarim bilan futbol o'ynayman."], ["There are about twenty of us, including two Korean brothers and a German teacher called Markus.", "Biz yigirma kishicha bo'lamiz, ular orasida ikki koreys aka-uka va Markus ismli nemis o'qituvchi ham bor."], ["We organise everything in a group chat: who is coming, who brings the ball and who pays for the pitch.", "Hammasini guruh chatida kelishib olamiz: kim keladi, to'pni kim olib keladi va maydon puliga kim to'laydi."], ["One Tuesday, I was getting ready for the game when my mother asked to borrow my phone.", "Bir seshanba kuni o'yinga tayyorlanayotganimda onam telefonimni olib turishni so'radi."], ["She wanted to call my aunt, and I didn't think anything of it.", "U xolamga qo'ng'iroq qilmoqchi edi, men bunga hech qanday e'tibor bermadim."]], [["Ten minutes later, a voice message appeared in our football chat.", "O'n daqiqadan keyin futbol chatimizda ovozli xabar paydo bo'ldi."], ["It was my mother, speaking loudly in Uzbek.", "Bu onam edi, o'zbekcha baland ovozda gapirardi."], ["She said the plov was ready, that I should stop running after a ball like a child, and that everyone should come over.", "U osh tayyor ekanini, bolalardek to'p quvishni bas qilishim kerakligini va hamma kelaverishi mumkinligini aytdi."], ["Apparently, she had meant to send it to my aunt's family.", "Aftidan, u buni xolamning oilasiga yubormoqchi bo'lgan."], ["Instead, she had sent it to twenty grown men who were about to play football.", "Buning o'rniga esa uni futbol o'ynashga hozirlanib turgan yigirmata katta yoshli erkakka yuborib qo'ygan edi."]], [["My Uzbek friends started sending laughing faces immediately.", "O'zbek do'stlarim darhol kulayotgan smayliklar yubora boshlashdi."], ["Markus and the Korean brothers, however, used an automatic translator to understand the message.", "Markus va koreys aka-ukalar esa xabarni tushunish uchun avtomatik tarjimondan foydalanishdi."], ["The translation said something like: \"The rice is finished. Stop running. All guests come now.\"", "Tarjimada shunga o'xshash gap chiqdi: «Guruch tugadi. Yugurishni to'xtat. Barcha mehmonlar hozir kelsin.»"], ["Markus asked politely whether he should bring anything.", "Markus xushmuomalalik bilan biror narsa olib kelishi kerakmi, deb so'radi."], ["I tried to explain, but by then the chat was completely out of control.", "Tushuntirishga urindim, lekin bu paytga kelib chat butunlay nazoratdan chiqib bo'lgan edi."]], [["When I told my mother what had happened, she wasn't embarrassed at all.", "Onamga nima bo'lganini aytganimda, u umuman xijolat bo'lmadi."], ["\"Then invite them properly,\" she said.", "«Unda ularni yaxshilab taklif qil», — dedi u."], ["She explained that if people have heard about plov, you can't just leave them hungry.", "Agar odamlar osh haqida eshitgan bo'lsa, ularni shunchaki och qoldirib bo'lmasligini tushuntirdi."], ["I thought she was joking, but she was already making a list of ingredients.", "Hazillashyapti deb o'yladim, lekin u allaqachon masalliqlar ro'yxatini tuzayotgan edi."], ["In our family, nobody argues with my mother about food.", "Bizning oilada ovqat masalasida hech kim onam bilan bahslashmaydi."]], [["Two weeks later, after our Tuesday game, the whole team came to our house.", "Ikki haftadan keyin seshanbadagi o'yinimizdan so'ng butun jamoa uyimizga keldi."], ["They sat at our table in the courtyard, still in their football shirts.", "Ular futbolkalarini ham yechmay, hovlimizdagi dasturxon atrofida o'tirishdi."], ["My mother had cooked plov in a huge kazan, as if she expected a hundred guests.", "Onam go'yo yuzta mehmon kutayotgandek, ulkan qozonda osh damlagan edi."], ["Markus ate three plates and asked for the recipe.", "Markus uch likopcha yedi va retseptini so'radi."], ["She refused to give it to him, but she promised to send him a voice message instead.", "Onam retseptni bermadi, lekin o'rniga unga ovozli xabar yuborishga va'da qildi."]], [["Since then, the voice message has become a legend in our football group.", "O'shandan beri o'sha ovozli xabar futbol guruhimizda afsonaga aylandi."], ["New players hear the story on their first evening.", "Yangi o'yinchilar bu hikoyani birinchi kechasidayoq eshitishadi."], ["Someone even printed the words \"All guests come now\" on our football shirts.", "Kimdir hatto futbolkalarimizga «All guests come now» degan yozuvni bostirib qo'ydi."], ["And my mother? She now has her own phone and a chat with my football friends.", "Onam-chi? Endi uning o'z telefoni va futbolchi do'stlarim bilan alohida chati bor."], ["I am not allowed to join it.", "Menga unga qo'shilishga ruxsat yo'q."]]]}
-/* bk-pi:end */
+
 ];
-/* matnlar darajasi: tanlangan daraja birinchi, keyin pastroqlari (yaqinidan), keyin yuqorilari */
+
 const BK_LV = ["Beginner", "Elementary", "Pre-intermediate", "Intermediate"];
 const BK_OF = { zero: "Beginner", beginner: "Beginner", elementary: "Elementary", pre: "Pre-intermediate", inter: "Intermediate" };
 const curBk = () => BK_OF[curLevel().id] || "Beginner";
@@ -4173,7 +3852,7 @@ const bookRec = b => (S.read || {})[b.id];
 const bookWords = b => b.p.flat().map(x => x[0]).join(" ").split(/\s+/).length;
 const bookMin = b => Math.max(2, Math.round(bookWords(b) / 70));
 const bookPct = b => { const r = bookRec(b); return !r ? 0 : r.done ? 100 : Math.min(99, Math.round((r.p || 0) / b.p.length * 100)); };
-/* bugungi hikoya: boshlangan, tugamagani → aks holda birinchi o'qilmagani */
+
 const nextBook = () => { const L = bookList(), mine = lvBooks(), open = b => { const r = bookRec(b); return r && !r.done && r.p > 0; }, unread = b => !bookRec(b) || !bookRec(b).done;
   return mine.find(open) || mine.find(unread) || L.find(open) || L.find(unread); };
 function hikCard() {
@@ -4215,7 +3894,7 @@ route(/^oqish-([a-z]+)$/, id => {
   const toggle = el => { const o = el.classList.toggle("open"); el.setAttribute("aria-expanded", o); };
   sp.forEach(el => { el.onclick = () => toggle(el); el.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(el); } }; });
   app.querySelectorAll(".bu-say").forEach(x => x.onclick = e => { e.stopPropagation(); say(lines[+x.dataset.i]); });
-  /* hammasini tinglash: o'qilayotgan gap ajratiladi; yana bosilsa — to'xtaydi */
+
   const all = $("#bkall"), lab = all.querySelector("span");
   const stopAll = () => { BK_PLAY = false; stopVoice(); sp.forEach(e => e.classList.remove("say")); lab.textContent = "Hammasini tinglash"; };
   const playFrom = (i, g) => { if (!BK_PLAY || g !== VG || i >= lines.length) { if (i >= lines.length) stopAll(); return; }
@@ -4224,7 +3903,7 @@ route(/^oqish-([a-z]+)$/, id => {
     speakOne(lines[i], () => { if (g === VG) setTimeout(() => playFrom(i + 1, g), 300); }); };
   const startAll = from => { stopVoice(); BK_PLAY = true; lab.textContent = "To'xtatish"; playFrom(Math.max(0, from), VG); };
   all.onclick = () => BK_PLAY ? stopAll() : startAll([...sp].findIndex(e => e.getBoundingClientRect().bottom > 90));
-  /* qayergacha o'qilgani: ko'ringan eng pastki xatboshi saqlanadi */
+
   const paras = app.querySelectorAll(".bp");
   let tm = 0; const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const n = +e.target.dataset.p + 1, rr = S.read[b.id] || { p: 0, done: "" };
     if (n > (rr.p || 0)) { rr.p = n; S.read[b.id] = rr; clearTimeout(tm); tm = setTimeout(save, 800); } }), { threshold: .6 });
@@ -4232,12 +3911,10 @@ route(/^oqish-([a-z]+)$/, id => {
   const bindEnd = () => { const d = $("#bkdone"); if (d) d.onclick = () => { const rr = S.read[b.id] || { p: 0 }; rr.p = b.p.length; rr.done = today(); S.read[b.id] = rr; touchStreak(); save(); $("#bkend").innerHTML = end(); bindEnd(); toast("Hikoya o'qildi", null, null, { type: "ok", sub: BOOKS.filter(x => bookRec(x) && bookRec(x).done).length + " / " + BOOKS.length + " o'qildi" }); }; };
   bindEnd();
   if (r && !r.done && r.p > 1) setTimeout(() => { const t = paras[r.p - 1]; if (t) t.scrollIntoView({ block: "start" }); scrollBy(0, -80); }, 60);
-  /* bosh sahifadagi «Tinglash»dan kelinganda: qolgan joydan (yoki boshidan) */
+
   if (BK_PLAY) { BK_PLAY = false; const from = r && !r.done && r.p > 1 ? +(paras[r.p - 1].querySelector(".bs") || { dataset: { i: 0 } }).dataset.i : 0; setTimeout(() => startAll(from), 300); }
 });
-/* ---------- IBORALAR: jonli so'zlashuv iboralari (Cake usuli, lekin yozib) ----------
-   Har ibora 3 qadam: iboraning o'zi (ko'chirib) → shu ma'no boshqacha → teskari ma'no yoki javob.
-   Holat S.srs["ib|..."] da (fe'llardagi kabi): b — pog'ona, due — keyingi kun. Kuniga 1 ta yangi («Yana bitta» bilan 3 tagacha). */
+
 const IB_T = [{"t": "Maqtov va dalda", "i": [{"id": "ib|there-you-go", "en": "There you go!", "uz": "Bo'larkanu! / Ana ko'rdingmi!", "se": "You fixed the bug? There you go!", "su": "Xatoni tuzatdingmi? Bo'larkanu!", "v": ["That's it!", "Ana shunaqa!"], "t": ["Not quite.", "Unchalik emas.", "Teskari"]}, {"id": "ib|good-job", "en": "Good job!", "uz": "Barakalla!", "se": "Good job on the presentation!", "su": "Taqdimot zo'r chiqdi, barakalla!", "v": ["Well done!", "Ofarin!"], "t": ["That's not good enough.", "Bu yetarli emas.", "Teskari"]}, {"id": "ib|keep-it-up", "en": "Keep it up!", "uz": "Shunday davom et!", "se": "Your English is getting better. Keep it up!", "su": "Ingliz tiling yaxshilanyapti. Shunday davom et!", "v": ["Keep up the good work!", "Yaxshi ishingni davom ettir!"], "t": ["Thanks, I'll try!", "Rahmat, harakat qilaman!", "Javob"]}, {"id": "ib|give-it-a-shot", "en": "Give it a shot.", "uz": "Sinab ko'r.", "se": "You've never tried sushi? Give it a shot.", "su": "Sushi yeb ko'rmaganmisan? Sinab ko'r.", "v": ["Try your luck.", "Omadingni sinab ko'r."], "t": ["Don't even bother.", "Urinib ham o'tirma.", "Teskari"]}, {"id": "ib|you-ve-got-this", "en": "You've got this!", "uz": "Sen uddalaysan!", "se": "Big interview tomorrow? You've got this!", "su": "Ertaga muhim suhbatmi? Sen uddalaysan!", "v": ["I believe in you.", "Senga ishonaman."], "t": ["Thanks, I hope so.", "Rahmat, umid qilaman.", "Javob"]}]}, {"t": "Rozilik va rad etish", "i": [{"id": "ib|i-m-in", "en": "I'm in.", "uz": "Men ham borman.", "se": "Football on Saturday? I'm in.", "su": "Shanba kuni futbolmi? Men ham borman.", "v": ["Count me in.", "Meni ham qo'shinglar."], "t": ["Count me out.", "Mensiz.", "Teskari"]}, {"id": "ib|fair-enough", "en": "Fair enough.", "uz": "Mayli, to'g'ri.", "se": "You're busy today? Fair enough, let's meet tomorrow.", "su": "Bugun bandmisan? Mayli, ertaga ko'rishamiz.", "v": ["That makes sense.", "Mantiqan to'g'ri."], "t": ["That doesn't make sense.", "Bu mantiqsiz.", "Teskari"]}, {"id": "ib|sounds-good", "en": "Sounds good.", "uz": "Yaxshi, kelishdik.", "se": "Lunch at one? Sounds good.", "su": "Tushlik soat birdami? Yaxshi, kelishdik.", "v": ["Works for me.", "Menga to'g'ri keladi."], "t": ["That doesn't work for me.", "Menga to'g'ri kelmaydi.", "Teskari"]}, {"id": "ib|no-way", "en": "No way!", "uz": "Yo'g'-e!", "se": "You won a car? No way!", "su": "Mashina yutdingmi? Yo'g'-e!", "v": ["You're kidding!", "Hazillashyapsan!"], "t": ["Of course!", "Albatta!", "Teskari"]}, {"id": "ib|i-m-not-sure-about-that", "en": "I'm not sure about that.", "uz": "Bunga ishonchim komil emas.", "se": "A meeting at 7 a.m.? I'm not sure about that.", "su": "Ertalab yettida uchrashuvmi? Bunga ishonchim komil emas.", "v": ["I have my doubts.", "Shubham bor."], "t": ["I'm absolutely sure.", "Mutlaqo ishonaman.", "Teskari"]}]}, {"t": "Kechirim va rahmat", "i": [{"id": "ib|no-worries", "en": "No worries.", "uz": "Hechqisi yo'q.", "se": "Sorry I'm late. — No worries.", "su": "Kechikkanim uchun uzr. — Hechqisi yo'q.", "v": ["Don't worry about it.", "Bu haqda qayg'urma."], "t": ["Thanks for understanding.", "Tushunganing uchun rahmat.", "Javob"]}, {"id": "ib|my-bad", "en": "My bad.", "uz": "Mening aybim.", "se": "I sent the wrong file. My bad.", "su": "Noto'g'ri faylni yuboribman. Mening aybim.", "v": ["That's on me.", "Bu mening xatoyim."], "t": ["It's not your fault.", "Sening aybing emas.", "Teskari"]}, {"id": "ib|i-owe-you-one", "en": "I owe you one.", "uz": "Sendan qarzdorman.", "se": "Thanks for the ride. I owe you one.", "su": "Olib borganing uchun rahmat. Sendan qarzdorman.", "v": ["Thanks a million.", "Ming rahmat."], "t": ["Don't mention it.", "Arzimaydi.", "Javob"]}, {"id": "ib|sorry-to-bother-you", "en": "Sorry to bother you.", "uz": "Bezovta qilganim uchun uzr.", "se": "Sorry to bother you, but where is the metro?", "su": "Bezovta qilganim uchun uzr, metro qayerda?", "v": ["Sorry to interrupt.", "Gapingizni bo'lganim uchun uzr."], "t": ["No problem at all.", "Hech qisi yo'q.", "Javob"]}, {"id": "ib|it-s-my-pleasure", "en": "It's my pleasure.", "uz": "Bajonidil.", "se": "Thank you for your help! — It's my pleasure.", "su": "Yordamingiz uchun rahmat! — Bajonidil.", "v": ["Anytime.", "Har doim marhamat."], "t": ["Thanks again!", "Yana bir bor rahmat!", "Javob"]}]}, {"t": "Hayrat va kayfiyat", "i": [{"id": "ib|you-crack-me-up", "en": "You crack me up!", "uz": "Kulaverib ichagim uzildi!", "se": "Your stories crack me up!", "su": "Hikoyalaring meni kuldirib yuboradi!", "v": ["That's hilarious!", "Juda kulgili!"], "t": ["That's not funny.", "Bu kulgili emas.", "Teskari"]}, {"id": "ib|i-m-feeling-blue", "en": "I'm feeling blue.", "uz": "Kayfiyatim yo'q.", "se": "It's raining again. I'm feeling blue.", "su": "Yana yomg'ir. Kayfiyatim yo'q.", "v": ["I'm a bit down.", "Biroz xafaman."], "t": ["I'm on cloud nine!", "Osmonda uchyapman! (juda baxtliman)", "Teskari"]}, {"id": "ib|what-a-relief", "en": "What a relief!", "uz": "Yengil tortdim!", "se": "The flight isn't cancelled. What a relief!", "su": "Reys bekor qilinmabdi. Yengil tortdim!", "v": ["Thank goodness!", "Xayriyat!"], "t": ["Oh no!", "Voy, yo'q!", "Teskari"]}, {"id": "ib|lucky-you", "en": "Lucky you!", "uz": "Omadingni qara!", "se": "Two weeks in Turkey? Lucky you!", "su": "Turkiyada ikki hafta? Omadingni qara!", "v": ["You're so lucky.", "Juda omading bor ekan."], "t": ["Bad luck.", "Omading kelmabdi.", "Teskari"]}, {"id": "ib|i-can-t-believe-it", "en": "I can't believe it!", "uz": "Ishonolmayman!", "se": "We won the match! I can't believe it!", "su": "O'yinda yutdik! Ishonolmayman!", "v": ["Seriously?", "Rostdanmi?"], "t": ["I knew it!", "Bilgandim!", "Teskari"]}]}, {"t": "Ishda", "i": [{"id": "ib|i-m-on-it", "en": "I'm on it.", "uz": "Hozir qilaman.", "se": "Can you check the report? — I'm on it.", "su": "Hisobotni tekshirib bera olasizmi? — Hozir qilaman.", "v": ["Leave it with me.", "Menga qoldiring."], "t": ["I can't do it right now.", "Hozir qila olmayman.", "Teskari"]}, {"id": "ib|let-me-get-back-to-you", "en": "Let me get back to you.", "uz": "Keyinroq javob beraman.", "se": "I need to check my calendar. Let me get back to you.", "su": "Taqvimimni ko'rishim kerak. Keyinroq javob beraman.", "v": ["I'll let you know.", "Sizga xabar beraman."], "t": ["I can answer now.", "Hozir javob bera olaman.", "Teskari"]}, {"id": "ib|good-point", "en": "Good point.", "uz": "To'g'ri gap.", "se": "Good point, we need more time for testing.", "su": "To'g'ri gap, testlash uchun ko'proq vaqt kerak.", "v": ["You have a point.", "Gapingizda jon bor."], "t": ["I see it differently.", "Men buni boshqacha ko'raman.", "Teskari"]}, {"id": "ib|it-s-up-to-you", "en": "It's up to you.", "uz": "O'zingiz hal qiling.", "se": "Blue or green? It's up to you.", "su": "Ko'kmi yoki yashil? O'zingiz hal qiling.", "v": ["Your call.", "Qaror sizda."], "t": ["Let me decide.", "Men hal qilay.", "Teskari"]}, {"id": "ib|let-s-call-it-a-day", "en": "Let's call it a day.", "uz": "Bugunga yetar.", "se": "It's seven o'clock. Let's call it a day.", "su": "Soat yetti bo'ldi. Bugunga yetar.", "v": ["That's it for today.", "Bugungi ish shu."], "t": ["Let's keep going.", "Davom etaylik.", "Teskari"]}]}];
 const IBS = IB_T.flatMap((t, k) => t.i.map(e => Object.assign(e, { k })));
 const ibRec = e => S.srs[e.id];
@@ -4328,7 +4005,7 @@ function ibFinish() {
   const m = $("#ibmore"); if (m) m.onclick = () => startIb("new");
   $("#ibhome").onclick = () => go("");
 }
-/* bosh sahifa kartasi: takror bo'lsa — takror, bo'lmasa bugungi yangi ibora, bajarilgan bo'lsa — bugungisi + «Yana bitta» */
+
 function ibCard() {
   const due = ibDue(), nt = ibNewToday(), nx = ibNext(), seen = IBS.filter(ibRec).length;
   const head = `<div class="xm-h"><b>${ICON.ibc}Kunlik ibora</b><a href="#iboralar">Barchasi${ICON.chev}</a></div>`;
@@ -4359,7 +4036,7 @@ route(/^ibora-(\d+)$/, k => {
   navBig();
   app.querySelectorAll(".li[data-j]").forEach(b => b.onclick = () => startIb("", t.i[+b.dataset.j]));
 });
-/* ---------- HIKOYA: unit so'zlari bilan qisqa matn ---------- */
+
 function storyLine(en, vocab) {
   return en.split(/(\s+)/).map(t => { const k = t.toLowerCase().replace(/[^a-z'-]/g, ""); return k.length > 1 && vocab.has(k) ? "<b>" + esc(t) + "</b>" : esc(t); }).join("");
 }
@@ -4371,7 +4048,7 @@ function sayAll(lines, i = 0, done, g) {
 }
 route(/^hikoya-(\d+)$/, n => {
   n = +n; const st = STORIES[n]; if (!st) return go("unitlar");
-  // faqat bitta so'zli lug'at birliklari (ko'p so'zlilardan «the», «in» kabi yordamchi so'zlar ajralib qolmasin)
+
   const vocab = new Set(byUnit(n).flatMap(w => w.w.toLowerCase().split(/\s*\/\s*/)).filter(x => !/\s/.test(x)).map(x => x.replace(/[^a-z'-]/g, "")).filter(x => x.length > 1));
   const read = S.story && S.story[n];
   app.innerHTML = `${nav(`#unit-${n}`, `Unit ${un(n)}`, "Hikoya")}<h2 class="pg-h">${esc(st.t)}</h2><p class="sub">${esc(st.u)} · gapni bossangiz, tarjimasi chiqadi va o'qiladi. Qalin so'zlar — shu unitdan.</p>
@@ -4384,7 +4061,7 @@ route(/^hikoya-(\d+)$/, n => {
   $("#rd").onclick = () => { mark(); go("unit-" + n); };
   if (LES) { mark(); bindLesson(); }
 });
-/* ---------- eslatma: telefon kalendariga har kungi voqea (sayt o'zi bildirishnoma yubora olmaydi) ---------- */
+
 const SITE = "https://easywords.uz/";
 function calLinks(title, hhmm, details) {
   const t = addDays(1).replace(/-/g, ""), [h, m] = hhmm.split(":"), end = new Date(2000, 0, 1, +h, +m + 10);
@@ -4413,7 +4090,7 @@ function bindRem() {
   $("#remg").onclick = mark; $("#remi").onclick = () => { mark(); icsDownload("ingliz-dars.ics", day().ics); };
   $("#remkg").href = eve.g; $("#remkg").onclick = mark; $("#remki").onclick = () => { mark(); icsDownload("ingliz-kechki.ics", eve.ics); };
 }
-/* ---------- dars kunlari (kursdagi darslar): standart Se, Pa, Sh ---------- */
+
 const clsDays = () => S.cls || [2, 4, 6];
 function clsCard() {
   const DN = [["Du", 1], ["Se", 2], ["Ch", 3], ["Pa", 4], ["Ju", 5], ["Sh", 6], ["Ya", 0]], on = clsDays();
@@ -4421,7 +4098,7 @@ function clsCard() {
     <div class="chips" role="group" aria-labelledby="clsl">${DN.map(([t, d]) => `<button class="chip${on.includes(d) ? " on" : ""}" data-d="${d}" aria-pressed="${on.includes(d)}">${t}</button>`).join("")}</div></div>`;
 }
 function bindCls() { app.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { const d = +b.dataset.d, c = clsDays().slice(), i = c.indexOf(d); if (i >= 0) c.splice(i, 1); else c.push(d); S.cls = c; save(); render(); }); }
-/* Bugun: dars kuni kartasi — kunduzi tayyorgarlik, kechqurun «qaysi unitni o'tdingiz?» */
+
 function classCard(cu) {
   const d = new Date(); if (!clsDays().includes(d.getDay()) || !S.course) return "";
   const n = cu.n, bl = unitBuild(n), eve = d.getHours() >= 18;
@@ -4441,7 +4118,7 @@ function lostCard() {
   const L = S.lost; if (!L || dayDiff(L.d, today()) > 2) return "";
   return `<section class="cls lost"><span class="lic">${ICON.flame}</span><div class="tx"><b>Seriya uzildi — ${L.n} kun</b><span>Ketma-ket 2 kun darsni oxirigacha qilsangiz, qaytadi · ${L.k}/2</span></div></section>`;
 }
-/* ---------- haftalik xulosa va mustahkam so'z bosqichlari ---------- */
+
 const MS = [25, 50, 100, 200, 300, 400, 500, 600, 700];
 function msCard(mast) {
   if (S.ms == null) { S.ms = MS.filter(x => x <= mast).pop() || 0; save(); return ""; }
@@ -4459,14 +4136,14 @@ function bindHomeCards() {
   const a = $("#msok"); if (a) a.onclick = () => { S.ms = +a.dataset.m; save(); render(); };
   const w = $("#wkok"); if (w) w.onclick = () => { S.wkSum = weekOf(today()); save(); render(); };
 }
-/* ---------- Bugungi dars: qadamlar yo'li ---------- */
+
 function stepView(x) {
   const m = /^([^:]+):\s*(.+)$/.exec(x.t), title = m ? m[1] : x.t, topic = m ? m[2] : "";
   const sub = x.s.replace(/^Unit \d+ · /, "");
   if (x.tag === "esla") return { title: "Oldingi xatolar", sub, more: sub };
   return { title, sub: topic ? topic + " · " + sub : sub, more: x.d || (topic ? topic + " · " + sub : sub) };
 }
-/* qo'llanmalar progressi: kichik halqa ichida «0/8» */
+
 const nwRing = (d, n) => `<span class="nwr" role="img" aria-label="${n} tadan ${d} tasi o'rganilgan">${arcRing(40, 4, n ? d / n * 100 : 0, "")}<b>${d}/${n}</b></span>`;
 function lessonCard(cu, st, info, plan, done, left, mins) {
   const vis = plan.filter(x => !x.off), dn = vis.filter(x => done.includes(x.tag)).length, all = vis.length, next = left[0], lock = plan.find(x => x.lock && !done.includes(x.tag));
@@ -4488,7 +4165,7 @@ function lessonCard(cu, st, info, plan, done, left, mins) {
     <a class="unitrow" href="#unit-${cu.n}"><span class="ub">${ICON.book}</span><span class="tx"><b>Unit ${un(cu.n)} · ${esc(info[0])}</b><span>${esc(info[1])} · ${unitSub(cu.n)}</span><span class="ubar" role="img" aria-label="Unitning ${st.pct}% o'tilgan"><i style="width:${st.pct}%"></i></span></span><span class="pc">${st.pct}%</span><span class="chev">${ICON.chev}</span></a>
   </section>`;
 }
-/* daraja tanlash (Bugun kartasida va kurs oynasida) */
+
 function levelPicker() {
   const cur = curLevel();
   return `<p class="pick-l" id="lvl">Daraja · Navigate</p><div class="lvl" role="radiogroup" aria-labelledby="lvl">${LEVELS.map(l => `<button role="radio" aria-checked="${l === cur}" class="${l === cur ? "on" : ""}${l.zero ? " wide" : ""}" data-l="${l.id}"><b>${l.t}</b><span>${l.cefr}${l.ready || l.zero ? "" : " · tez orada"}</span></button>`).join("")}</div>`;
@@ -4506,11 +4183,8 @@ function emptyLevelCard(lv) {
   </section>`;
 }
 
-/* ---------- KURS: daraja va unit ---------- */
-/* eski #kurs havolasi: bosh sahifa + pastki oyna */
 route(/^kurs$/, () => { history.replaceState(null, "", location.pathname + location.search); curH = ""; routes.find(r => r[0].test(""))[1](); setTimeout(courseSheet, 60); });
-/* ---------- KURS: daraja va unit — pastki oyna (bottom sheet) ---------- */
-/* kind: "lvl" — faqat daraja, "unit" — faqat unit, bo'sh — ikkalasi (eski #kurs havolasi) */
+
 function courseSheet(kind) {
   if (document.getElementById("ksheet")) return;
   const wrap = document.createElement("div"); wrap.id = "ksheet"; wrap.className = "qsheet ksheet";
@@ -4539,11 +4213,11 @@ function courseSheet(kind) {
     if (!fromPop && history.state && history.state.ks) history.back(); setTimeout(() => wrap.remove(), 300); if (prev && prev.focus && prev.isConnected) prev.focus(); };
   const pop = () => close(true);
   const key = e => { if (e.key === "Escape") { e.preventDefault(); close(); } };
-  // Android «orqaga» tugmasi oynani yopadi
+
   history.pushState({ ks: 1 }, ""); addEventListener("popstate", pop);
   document.addEventListener("keydown", key, true);
   wrap.querySelectorAll("[data-x]").forEach(x => x.onclick = () => close());
-  // tutqichdan pastga tortib yopish
+
   const top = wrap.querySelector(".ks-top"); let y0 = null, dy = 0;
   top.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; y0 = e.clientY; dy = 0; sheet.style.transition = "none"; top.setPointerCapture(e.pointerId); });
   top.addEventListener("pointermove", e => { if (y0 === null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
@@ -4551,12 +4225,11 @@ function courseSheet(kind) {
   top.addEventListener("pointerup", up); top.addEventListener("pointercancel", up);
   requestAnimationFrame(() => { wrap.classList.add("on"); const on = body.querySelector(".lad .st.on, .ug .uc.on") || wrap.querySelector(".ks-x"); on.focus({ preventScroll: true }); });
 }
-/* ---------- Bugun: xotira ko'rsatkichi ----------
-   asosiy son — takrorlashda birinchi urinishda topilgan so'zlar ulushi (log.rv / log.rk), haftalik, maqsad 80% */
+
 const MSH = ["yan", "fev", "mar", "apr", "may", "iyun", "iyul", "avg", "sen", "okt", "noy", "dek"];
 const DSH = ["Ya", "Du", "Se", "Ch", "Pa", "Ju", "Sh"];
 const tipA = t => `tabindex="0" role="button" aria-label="${esc(t.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())}" data-tip="${t.replace(/"/g, "&quot;")}"`;
-/* grafik kengligi ekranga qarab: matn har doim 11px qoladi (keng ekranda kattalashib ketmaydi) */
+
 function retWeeks(n) {
   const out = [], dow = (new Date().getDay() + 6) % 7;
   for (let off = n - 1; off >= 0; off--) {
@@ -4588,16 +4261,15 @@ function fcTile() {
   const mini = miniPool().length >= 5, tg = mini ? "button" : "div";
   return `<${tg} class="xm-t xg${mini ? " tap" : ""}"${mini ? ' id="mini" aria-label="2 daqiqalik takrorlashni boshlash"' : ""}><p class="xm-k">${ICON.redo}Takrorlash</p><div class="gw" role="img" aria-label="Bugun ${fc[0]} ta so'z takrorlanadi${did ? ", " + did + " tasi takrorlandi" : ""}">${arc}<b data-c="${fc[0]}">${fc[0]}</b></div><p class="xm-s">${fc[0] ? "bugun" : did ? "bugungisi tugadi" : "bugun yo'q"} · ${fc[1] ? "ertaga " + fc[1] : "ertaga yo'q"}<br>7 kunda ${wk}</p>${mini ? `<span class="mchip">2 daqiqalik mashq</span>` : ""}</${tg}>`;
 }
-/* Xotira plitkasi: halqa — mustahkam so'zlar (yutuq), past qator — hozir unutilayotganlar; plitka → #xotira, tugma → qutqarish mashqi */
+
 function mastTile(seen, mast) {
   const k = WORDS.length, st = memStats(), go = xmPick(st).length > 0, risk = st.weak.some(x => x.R < .9);
   const now = st.bd ? `<span class="xm-r bd">${st.bd} ta unutilmoqda</span>` : st.wk ? `<span class="xm-r wk">${st.wk} ta zaiflashgan</span>` : `<span class="xm-r">hammasi esda</span>`;
   return `<div class="xm-t xg xmt"><a class="xmt-a" href="#xotira" aria-label="Xotira: ${mast} ta mustahkam so'z, ${st.bd} ta unutilmoqda"></a><p class="xm-k">${ICON.curve}Xotira<span class="xmt-go">${ICON.chev}</span></p><div class="gw gr" aria-hidden="true">${arcRing(88, 11, mast / k * 100, "mst")}<b data-c="${mast}">${mast}</b></div><p class="xm-s">mustahkam · ${k} tadan<br>${now}</p>${go ? `<button class="mchip" id="mast">${risk ? "Qutqarish" : "Mustahkamlash"}</button>` : ""}</div>`;
 }
-/* «Mashqlar» to'ri: kutubxona bo'limlari bitta joyda (oldin So'z boyligi va Tinglash alohida qatorlar edi) */
+
 function mxGrid(zero) {
-  // 19-noyabr: Tinglash, Hikoyalar, Tez yozish va «2 daqiqa» kartalari bu to'rdan olindi (Ali: «bu yerda kerak emas»).
-  // Sahifalarning o'zi o'chmagan: Hikoyalar — «Bugungi hikoya → Barchasi», Tez yozish — fe'llar kartasi, 2 daqiqa — «Takrorlash» kartasi, Tinglash — #tinglash
+
   const ibSeen = IBS.filter(ibRec).length;
   const t = (tag, attr, ic, name, sub, off) => `<${tag} class="mxt${off ? " off" : ""}" ${attr}><span class="mxi">${ic}</span><b>${name}</b><span>${sub}</span></${tag}>`;
   const tiles = [
@@ -4605,7 +4277,7 @@ function mxGrid(zero) {
     t("a", 'href="#iboralar"', ICON.ibc, "Iboralar", ibSeen ? `${ibSeen} / ${IBS.length}` : `${IBS.length} ta · ${IB_T.length} mavzu`)].join("");
   return `<div class="mxw"><p class="mx-l">Mashqlar</p><div class="mx">${tiles}</div></div>`;
 }
-/* Fe'llar kartasi: bugungi dars ochilmasa ham fe'llar ko'rinib tursin. Lesson qadami bilan bir xil holat (felPlanInfo) */
+
 function felCard() {
   const lv = r => !r ? 0 : (r.b || 0) >= 4 ? 3 : (r.b || 0) >= 3 ? 2 : 1;
   const seen = felSeen().length, strong = FEL.filter(v => lv(felRec(v)) === 3).length;
@@ -4625,14 +4297,12 @@ function felCard() {
     ${seen ? `<p class="flk"><span><i class="s1"></i>o'rganilmoqda ${seen - strong}</span><span><i></i>mustahkam ${strong}</span></p>` : ""}
     ${note ? `<p class="xm-note">${note}</p>` : `<p class="xm-note">Eng ko'p ishlatiladiganidan boshlab, kuniga 5 tadan. Har birini yozib o'rganasiz.</p>`}${btn}</section>`;
 }
-/* kompyuterda ikki ustunni tenglash: o'ng ustun ancha uzun bo'lsa, uning oxiridagi kartalar (So'z boyligi/Tinglash, zaxira, xatolar) chapga o'tadi.
-   Qolgan kichik farqni CSS cho'zilishi oladi. Telefonda tartib o'zgarmaydi (.lcol/.side — display:contents). */
+
 const HOME_WIDE = matchMedia("(min-width:980px)");
 function balanceHome() {
   const L = $(".lcol"), Rc = $(".stack>.side"), W = app; if (!L || !Rc || !HOME_WIDE.matches) return;
   W.classList.add("bal-m");
-  /* variantlar: «Bugungi hikoya» chapda yoki o'ngda × o'ngning oxiridan 0..n karta chapga.
-     Qolgan farqni cho'ziladigan karta oladi; «Bugungi hikoya» uni eng chiroyli oladi (matn ko'proq ko'rinadi), shuning uchun u yutadi */
+
   const H = e => e.offsetHeight + 16, kids = [...Rc.children], xi = kids.findIndex(e => e.classList.contains("xm2"));
   const ai = xi >= 0 ? xi : Math.max(0, kids.findIndex(e => e.classList.contains("xm") && !e.classList.contains("hkc"))), tail = kids.slice(ai + 1), hk = L.querySelector(":scope>.hkc"), x2 = kids[ai] || null, hh = hk ? H(hk) : 0;
   const hL = L.offsetHeight, hR = Rc.offsetHeight; let best = null;
@@ -4646,7 +4316,7 @@ function balanceHome() {
   W.classList.remove("bal-m");
 }
 HOME_WIDE.addEventListener("change", () => { if (app.classList.contains("home")) render(); });
-/* grafik nuqtalari: bosilganda yoki sichqoncha kelganda aniq son */
+
 (() => {
   const tip = document.createElement("div"); tip.id = "xmtip"; tip.setAttribute("role", "status"); document.body.appendChild(tip);
   const show = el => { tip.innerHTML = el.dataset.tip; tip.classList.add("on"); const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
@@ -4657,13 +4327,13 @@ HOME_WIDE.addEventListener("change", () => { if (app.classList.contains("home"))
   document.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest("svg.xm-ch [data-tip]"); el ? show(el) : hide(); });
   addEventListener("scroll", hide, { passive: true }); addEventListener("hashchange", hide);
 })();
-/* seriya: olov + shu hafta */
+
 function streakCard(n) {
   const did = S.streak && S.streak.last === today();
   const sub = n ? did ? "Ertaga qaytsangiz — " + (n + 1) + " kun" : "Bugun darsni tugatsangiz — " + (n + 1) + " kun" : "Darsni oxirigacha qilgan kun olov yonadi";
   return `<section class="skc"><div class="sh"><span class="fl">${ICON.flame}</span><span class="tx"><b>${n ? `<span data-c="${n}">${n}</span> kun ketma-ket` : "Seriyani boshlang"}</b><span>${sub}</span></span></div><div class="week" aria-label="Shu hafta">${weekDays()}</div>${spkCard()}</section>`;
 }
-/* haftalik qator: Dushanbadan boshlab, seriya kunlari belgilanadi */
+
 function weekDays() {
   const dow = (new Date().getDay() + 6) % 7, rest = new Set(S.rest || []);
   return ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"].map((n, i) => {
@@ -4672,8 +4342,6 @@ function weekDays() {
   }).join("");
 }
 
-/* ---------- DARS YAKUNI ---------- */
-/* maskot «Donacha»: yumshoq terrakota qahramon, boshida nihol — dars oxiridagi quvonch lahzasi */
 const MASCOT = `<svg class="masc" viewBox="0 0 150 150" aria-hidden="true"><defs><radialGradient id="mascg" cx="36%" cy="28%" r="85%"><stop offset="0" stop-color="#FFD3BD"/><stop offset=".5" stop-color="#F29068"/><stop offset="1" stop-color="#D2552B"/></radialGradient></defs>
 <ellipse cx="75" cy="139" rx="40" ry="6" fill="#000" opacity=".12"/>
 <g class="bd"><ellipse cx="56" cy="131" rx="11" ry="6" fill="#D2552B"/><ellipse cx="94" cy="131" rx="11" ry="6" fill="#D2552B"/>
@@ -4684,7 +4352,7 @@ const MASCOT = `<svg class="masc" viewBox="0 0 150 150" aria-hidden="true"><defs
 <ellipse cx="52" cy="104" rx="7" ry="4.5" fill="#FF8E7A" opacity=".75"/><ellipse cx="98" cy="104" rx="7" ry="4.5" fill="#FF8E7A" opacity=".75"/>
 <g class="leaf"><path d="M75 47V30" stroke="#6E9E5F" stroke-width="3.5" stroke-linecap="round"/><path d="M75 34c2-10 10-15 20-14-2 10-10 15-20 14Z" fill="#79B26B"/><path d="M75 38c-2-9-9-13-17-12 1 9 8 13 17 12Z" fill="#8FC67F"/></g></g></svg>`;
 const FLAME = `<svg class="sflame" viewBox="0 0 96 112" aria-hidden="true"><defs><linearGradient id="sflg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7A86F"/><stop offset="1" stop-color="#D2552B"/></linearGradient></defs><path d="M48 6c6 20 34 30 34 62a34 34 0 0 1-68 0c0-16 8-26 16-34 2 10 6 15 12 18-2-18 0-32 6-46Z" fill="url(#sflg)"/><path d="M48 58c4 10 16 14 16 28a16 16 0 0 1-32 0c0-8 6-12 9-16 2 6 4 7 7 8-1-8-1-14 0-20Z" fill="#FFE2C8"/></svg>`;
-/* bir martalik yengil konfetti (2 soniya), harakat kamaytirilgan bo'lsa — yo'q */
+
 function confetti() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const c = ["#B9441F", "#F4A27E", "#F2C14E", "#79B26B", "#E8805C"], box = document.createElement("div");
@@ -4692,7 +4360,7 @@ function confetti() {
   box.innerHTML = Array.from({ length: 28 }, (_, i) => `<i style="left:${Math.random() * 100}%;background:${c[i % 5]};--dx:${(Math.random() - .5) * 140}px;--r:${(Math.random() - .5) * 720}deg;animation-delay:${Math.random() * .35}s${i % 3 ? "" : ";border-radius:50%;width:9px;height:9px"}"></i>`).join("");
   document.body.appendChild(box); setTimeout(() => box.remove(), 2600);
 }
-/* ---------- DARS YAKUNI: maskot, yengil bayram, seriya va bugungi natija ---------- */
+
 route(/^yakun$/, () => {
   const streak = liveStreak(), cu = curUnit(), st = unitStat(cu.n), L = S.log[today()];
   const eb = earnBack(), wk = weekOf(today()), rl = restLeft(wk);
@@ -4715,7 +4383,6 @@ route(/^yakun$/, () => {
   confetti(); buzz(true);
 });
 
-/* ---------- UNITLAR ro\'yxati ---------- */
 route(/^unitlar$/, () => {
   const cu = curUnit();
   app.innerHTML = `${nav(null, "", "Unitlar")}
@@ -4729,9 +4396,6 @@ route(/^unitlar$/, () => {
 `;
 });
 
-/* ---------- SO'Z O'YINI: o'zbekcha so'z → 4 ta bir-biriga juda o'xshash inglizcha variant ----------
-   Savollar faqat ko'rilgan so'zlardan. Variantlar shakli (harflari) yoki talaffuzi o'xshash so'zlardan tanlanadi.
-   Xato javob: ikkala so'z yonma-yon ko'rsatiladi, so'z takrorga tushadi, juftlik S.conf ga yoziladi */
 const OY_N = 10, OY_LVKEY = "ingliz-oyin-lv";
 const OY_POOLS = [
   { id: "beginner", t: "Beginner", s: "A1", f: w => !w.mine && !w.vb && w.unit > 0 && w.unit < 100 },
@@ -4744,7 +4408,7 @@ let OY = null;
 const oyLv = () => { let v = ""; try { v = localStorage.getItem(OY_LVKEY) || ""; } catch (e) {} return OY_POOLS.find(p => p.id === v) ? v : OY_POOLS.some(p => p.id === curLvId()) ? curLvId() : "beginner"; };
 const oyPr = w => norm(w.p || "").replace(/[^a-z']/g, "");
 const oyOk = w => w && w.w && w.u && norm(w.w).split(" ").length <= 2;
-/* kichik son — o'xshashroq; null — o'xshash emas. 0 — talaffuzi bir xil (meat / meet) */
+
 function oySim(t, c) {
   const a = norm(t.w), b = norm(c.w); if (a === b || norm(t.u) === norm(c.u) || synClash(t, c)) return null;
   const pa = oyPr(t), pb = oyPr(c);
@@ -4754,7 +4418,7 @@ function oySim(t, c) {
   if (pa && pb && pa.length >= 3 && lev(pa, pb) <= 1) return 1.6;
   return null;
 }
-/* variantlar manbasi: avval ko'rilgan so'zlar, keyin kitobdagi boshqa so'zlar (bir so'z bir marta) */
+
 function oyLexicon() {
   const seen = new Map(), rest = new Map();
   WORDS.forEach(w => { if (!oyOk(w)) return; const k = norm(w.w); if (isSeen(w)) { if (!seen.has(k)) seen.set(k, w); } else if (!rest.has(k)) rest.set(k, w); });
@@ -4775,20 +4439,20 @@ function oyRound(poolId) {
   const P = OY_POOLS.find(p => p.id === poolId), lex = oyLexicon(), conf = S.conf || {};
   const was = new Set(Object.values(conf).filter(x => x.d < today()).map(x => x.id));
   const cand = shuffle(WORDS.filter(w => P.f(w) && isSeen(w) && oyOk(w)));
-  cand.sort((a, b) => was.has(b.id) - was.has(a.id)); // avval ilgari chalkashtirilgan so'zlar
-  const q = [], weak = [], took = new Set(); // bir so'z (masalan letter — harf / xat) raundda bir marta
+  cand.sort((a, b) => was.has(b.id) - was.has(a.id));
+  const q = [], weak = [], took = new Set();
   for (const w of cand) {
     if (q.length >= OY_N) break;
     const kw = norm(w.w); if (took.has(kw)) continue; took.add(kw);
     const d = oyDistractors(w, lex);
     if (d.length === 3) q.push({ w, o: shuffle([w].concat(d)) }); else if (d.length === 2 && weak.length < OY_N) weak.push({ w, d });
   }
-  // o'xshash so'z yetmasa: 2 ta o'xshash + 1 ta shu mavzudan
+
   for (const x of weak) { if (q.length >= OY_N) break; const f = distractors(x.w, "w").find(z => !x.d.some(y => norm(y.w) === norm(z.w)) && norm(z.u) !== norm(x.w.u)); if (f) q.push({ w: x.w, o: shuffle([x.w, ...x.d, f]) }); }
   return shuffle(q);
 }
 const oySeenCount = P => WORDS.filter(w => P.f(w) && isSeen(w) && oyOk(w)).length;
-/* ikki so'zning farq qiladigan harflari */
+
 function oyDiff(a, b) {
   const m = a.length, n = b.length, d = [...Array(m + 1)].map(() => Array(n + 1).fill(0));
   for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
@@ -4837,7 +4501,7 @@ function oyPick(k) {
   OY.res[OY.i] = ok; segBar($("#oybar"), OY.q.length, OY.res, -1); buzz(ok);
   const next = () => { OY.i++; if (location.hash === "#oyinmashq") render(); };
   if (ok) { logAns(true); touchStreak(); save(); setTimeout(next, 750); return; }
-  // xato: so'z takrorga (grade), tanlangan so'z ham ko'rilgan bo'lsa — ertaga takrorga; juftlik eslab qolinadi
+
   grade(x.w, false);
   if (o.id && S.srs[o.id]) { const r = S.srs[o.id]; if (!r.due || r.due > addDays(1)) { r.due = addDays(1); save(); } }
   S.conf = S.conf && typeof S.conf === "object" ? S.conf : {};
@@ -4866,7 +4530,7 @@ function oySheet(g, m, done) {
   wrap.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say));
   requestAnimationFrame(() => { wrap.classList.add("on"); $("#oynx").focus({ preventScroll: true }); });
 }
-// sahifa almashsa (orqaga tugmasi, havola) — ochiq qolgan varaq yangi sahifa ustida qolmasin
+
 addEventListener("hashchange", () => ["oysheet", "qsheet"].forEach(id => { const w = document.getElementById(id); if (!w) return; const x = w.querySelector("[data-x]"); if (x) x.click(); else w.remove(); }));
 function oyFinish() {
   const N = OY.q.length, ok = OY.res.filter(Boolean).length, C = 2 * Math.PI * 52, pool = OY.pool;
@@ -4877,8 +4541,6 @@ function oyFinish() {
   $("#oyre").onclick = () => { const q = oyRound(pool); OY = { pool, q, i: 0, res: [], conf: [] }; render(); };
 }
 
-/* ---------- NOTO'G'RI FE'LLAR: 60 ta eng ko'p ishlatiladigan, 3 to'lqin, tovush oilalari ----------
-   [hozirgi, o'tgan, o'tganning o'qilishi, o'zbekcha, o'zbekcha o'tgan, oila, gap (o'tgan shakl bilan), tarjima, Did-savol (___ = oddiy shakl), tarjima] */
 const FEL_FAM = {
   yol: ["Yolg'iz", "o'z shakli — yodlanadi", null],
   ought: ["-ought / -aught", "oxiri «oot» eshitiladi", /(ought|aught)$/],
@@ -4893,7 +4555,7 @@ const FEL_FAM = {
   ot: ["→ o(t)", "get → got, lose → lost", /o(st|t|n)$/]
 };
 const FEL = [
-  // 1-to'lqin
+
   ["be", "was / were", "uoz / uyo", "bo'lmoq", "edim", "yol", "I was at home yesterday.", "Kecha uyda edim.", "", ""],
   ["have", "had", "hed", "ega bo'lmoq", "bor edi", "yol", "We had a meeting this morning.", "Bugun ertalab majlisimiz bo'ldi.", "Did you ___ lunch?", "Tushlik qildingizmi?"],
   ["do", "did", "did", "qilmoq", "qildim", "yol", "I did my homework.", "Uy vazifamni qildim.", "Did you ___ the task?", "Vazifani bajardingizmi?"],
@@ -4914,7 +4576,7 @@ const FEL = [
   ["put", "put", "put", "qo'ymoq", "qo'ydim", "same", "I put the file in the folder.", "Faylni papkaga qo'ydim.", "Did you ___ it on the table?", "Uni stol ustiga qo'ydingizmi?"],
   ["bring", "brought", "broot", "olib kelmoq", "olib keldim", "ought", "I brought my laptop.", "Noutbukimni olib keldim.", "Did you ___ your laptop?", "Noutbukingizni olib keldingizmi?"],
   ["send", "sent", "sent", "yubormoq", "yubordim", "dt", "I sent the file.", "Faylni yubordim.", "Did you ___ the file?", "Faylni yubordingizmi?"],
-  // 2-to'lqin
+
   ["buy", "bought", "boot", "sotib olmoq", "sotib oldim", "ought", "I bought a new phone.", "Yangi telefon sotib oldim.", "Did you ___ bread?", "Non oldingizmi?"],
   ["pay", "paid", "peyd", "to'lamoq", "to'ladim", "aid", "I paid by card.", "Karta bilan to'ladim.", "Did you ___ the bill?", "Hisobni to'ladingizmi?"],
   ["spend", "spent", "spent", "sarflamoq, o'tkazmoq", "o'tkazdim", "dt", "We spent the weekend at home.", "Dam olish kunlarini uyda o'tkazdik.", "Did you ___ a lot of money?", "Ko'p pul sarfladingizmi?"],
@@ -4935,7 +4597,7 @@ const FEL = [
   ["sell", "sold", "sould", "sotmoq", "sotdim", "ound", "He sold his car.", "U mashinasini sotdi.", "Did you ___ your car?", "Mashinangizni sotdingizmi?"],
   ["lose", "lost", "lost", "yo'qotmoq", "yo'qotdim", "ot", "I lost my keys.", "Kalitlarimni yo'qotdim.", "Did you ___ your phone?", "Telefoningizni yo'qotdingizmi?"],
   ["forget", "forgot", "fa-GOT", "unutmoq", "unutdim", "ot", "I forgot his name.", "Uning ismini unutdim.", "Did you ___ the password?", "Parolni unutdingizmi?"],
-  // 3-to'lqin
+
   ["break", "broke", "brouk", "sindirmoq", "sindirdim", "o", "I broke my phone screen.", "Telefonim ekranini sindirdim.", "Did you ___ the cup?", "Piyolani sindirdingizmi?"],
   ["choose", "chose", "chouz", "tanlamoq", "tanladim", "o", "I chose the blue color.", "Ko'k rangni tanladim.", "Did you ___ a hotel?", "Mehmonxona tanladingizmi?"],
   ["wake", "woke", "uouk", "uyg'onmoq", "uyg'ondim", "o", "I woke up at seven.", "Yettida uyg'ondim.", "Did you ___ up early?", "Erta uyg'ondingizmi?"],
@@ -4956,22 +4618,18 @@ const FEL = [
   ["grow", "grew", "gruu", "o'smoq", "o'sdi", "ew", "The company grew fast.", "Kompaniya tez o'sdi.", "Did your son ___ a lot?", "O'g'lingiz ancha o'sdimi?"],
   ["throw", "threw", "thruu", "otmoq, tashlamoq", "tashladim", "ew", "He threw the ball.", "U to'pni otdi.", "Did you ___ it away?", "Uni tashlab yubordingizmi?"],
   ["draw", "drew", "druu", "chizmoq", "chizdim", "ew", "I drew a quick sketch.", "Tezda eskiz chizdim.", "Did you ___ this picture?", "Bu rasmni chizdingizmi?"],
-  // Unit 9 (9.1 doskasi) dan qo'shilgan
+
   ["can", "could", "kud", "qila olmoq", "qila oldim", "yol", "I could swim when I was six.", "Olti yoshimda suza olardim.", "", ""],
   ["fall", "fell", "fel", "yiqilmoq", "yiqildim", "yol", "I fell in the park.", "Parkda yiqildim.", "Did you ___ in the park?", "Parkda yiqildingizmi?"]
 ].map((r, i) => ({ v1: r[0], v2: r[1], pr: r[2], u: r[3], up: r[4], fam: r[5], e: r[6], t: r[7], dq: r[8], dt: r[9], wave: Math.floor(i / 20) + 1, id: "irr|" + r[0] }));
-/* uchinchi shakl (V3, past participle). can — V3 yo'q (null). Bir nechta to'g'ri shakl «/» bilan */
+
 const FEL_V3 = { be: "been", have: "had", do: "done", say: "said", go: "gone", get: "got / gotten", make: "made", know: "known", think: "thought", take: "taken", see: "seen", come: "come", give: "given", find: "found", tell: "told", feel: "felt", leave: "left", put: "put", bring: "brought", send: "sent", buy: "bought", pay: "paid", spend: "spent", meet: "met", keep: "kept", sleep: "slept", sit: "sat", stand: "stood", understand: "understood", read: "read", write: "written", speak: "spoken", drive: "driven", eat: "eaten", drink: "drunk", begin: "begun", run: "run", sell: "sold", lose: "lost", forget: "forgotten", break: "broken", choose: "chosen", wake: "woken", teach: "taught", catch: "caught", fight: "fought", build: "built", lend: "lent", cut: "cut", hit: "hit", hear: "heard", hold: "held", win: "won", wear: "worn", swim: "swum", sing: "sung", fly: "flown", grow: "grown", throw: "thrown", draw: "drawn", can: null, fall: "fallen" };
 FEL.forEach(v => { v.v3 = FEL_V3[v.v1] === undefined ? null : FEL_V3[v.v1]; });
 const felAlts = f => f ? f.split("/").map(x => norm(x)).concat([norm(f)]) : [];
 const felFirst = f => String(f || "").split("/")[0].trim();
 const felSame = v => !!v.v3 && norm(felFirst(v.v3)) === norm(felFirst(v.v2));
 const felForms = v => `${esc(v.v1)} → ${felMark(v)}${v.v3 ? " → " + esc(v.v3) : ""}`;
-/* ---------- Fe'llar: yozish zinapoyasi ----------
-   Har bir fe'l S.srs["irr|..."] da: b — pog'ona (0–5), due — keyingi kun. Har qadam — klaviaturada yozish, tanlash yo'q.
-   1: ko'chirib yozish (2 marta) → 2: birinchi harf bilan → 3: xotiradan + teskari → 4: eshitib + gap ichida → 5: Did-tuzog'i / o'z gapingiz.
-   Pog'ona faqat hamma savol birinchi urinishda to'g'ri bo'lsa ko'tariladi; xato — bir pog'ona pastga va ertaga qaytadi.
-   Xato javobdan keyin to'g'risini qayta yozmaguncha keyingisiga o'tilmaydi. */
+
 const FEL_NEW = 5, FEL_DUE = 8, FEL_SPEED_GAP = 3;
 const felRec = v => S.srs[v.id];
 const felSeen = () => FEL.filter(v => felRec(v));
@@ -4980,13 +4638,13 @@ const felNew = n => FEL.filter(v => !felRec(v)).slice(0, n);
 const felOk = (v, kind) => kind === "rev" ? [v.v1] : kind === "did" ? [v.v1] : v.v2.split("/").map(x => norm(x)).concat([norm(v.v2)]);
 const felMark = v => { const f = FEL_FAM[v.fam], re = f && f[2]; return re && !v.v2.includes("/") ? esc(v.v2).replace(re, s => `<em>${s}</em>`) : esc(v.v2); };
 const felGap = v => { const w = v.v2.split("/")[0].trim(), re = new RegExp("\\b" + w + "\\b", "i"); return re.test(v.e) ? esc(v.e).replace(re, '<span class="fl-gap" aria-label="bo\'sh joy"></span>') : ""; };
-/* kuniga 5 ta yangi (bugun boshlanganlar ham hisobga olinadi); takror ko'p bo'lsa — kamroq yoki yo'q */
+
 function felPlanInfo() {
   const all = felDue(), d = all.slice(0, FEL_DUE), started = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length;
   const cap = Math.max(0, (all.length > 15 ? 0 : all.length > 10 ? 3 : FEL_NEW) - started);
   return { d, n: felNew(cap) };
 }
-/* savollar ro'yxati: yangi fe'llar — ko'chirish, keyin takrorlar, oxirida yangilarni birinchi harf bilan */
+
 function felQueue() {
   const { d, n } = felPlanInfo(), q = [];
   n.forEach(v => q.push({ v, k: "copy" }));
@@ -5001,12 +4659,11 @@ function felQueue() {
   n.forEach(v => q.push({ v, k: "first" }));
   return q;
 }
-/* bugungi rejadan tashqari: «Yana 5 ta yangi» (kuniga 15 tagacha, takror ko'p bo'lmasa) va «Takrorlab yozish» (jadvalni o'zgartirmaydi, xato bo'lsa — ertaga) */
+
 const felExtraOk = () => { const started = FEL.filter(v => { const r = felRec(v); return r && isToday(r.lt); }).length; return felNew(1).length > 0 && started < 15 && felDue().length <= 10; };
 const felExtraQueue = () => { const n = felNew(FEL_NEW); return n.map(v => ({ v, k: "copy" })).concat(n.map(v => ({ v, k: "first" }))); };
 const felFreeQueue = () => shuffle(felSeen()).slice(0, 10).map((v, i) => ({ v, k: i % 2 ? "rev" : felGap(v) && i % 4 === 2 ? "gap" : "recall" }));
-/* Unit fe'llari: kitob unitidagi ro'yxat (masalan 9.1 doskasi) — kunlik 5 ta chegarasisiz, hammasi bir mashqda.
-   Yangilari: ko'chirish → oxirida birinchi harf bilan; boshlanganlari: pog'onasiga qarab xotiradan / teskari / gap ichida. */
+
 const FEL_UNIT = { 9: ["be", "can", "come", "fall", "get", "go", "have", "know", "leave", "lose", "meet", "say", "see", "sell", "write", "buy", "think", "eat", "feel", "forget", "sleep"] };
 const felUnitList = n => FEL.filter(v => (FEL_UNIT[n] || []).includes(v.v1));
 function felUnitQueue(n) {
@@ -5069,7 +4726,7 @@ route(/^fellarmashq$/, () => {
   if (x.k === "listen") { const p = () => say(sayW); $("#flplay").onclick = p; setTimeout(p, 300); }
   if (x.k === "copy") {
     let k = 0; const ghost = $("#flghost"), dots = app.querySelectorAll(".fl-dots i"), st = $("#flstep"), gw = ghost.textContent;
-    /* yozilgan harflar ostidagi xira harflar yashiriladi — ikki qatlam bir-birining ustiga tushmasin */
+
     const ghUp = () => { const n = Math.min(inp.value.length, gw.length); ghost.innerHTML = `<span class="gh-t">${esc(gw.slice(0, n))}</span>${esc(gw.slice(n))}`; };
     inp.addEventListener("input", ghUp);
     btn.onclick = () => {
@@ -5086,7 +4743,7 @@ route(/^fellarmashq$/, () => {
     btn.onclick = async () => {
       if (done) return nextQ();
       const val = inp.value.trim(); if (!val) return inp.focus();
-      if (target) { // tuzatilgan gapni qayta yozish
+      if (target) {
         const a = norm(val).replace(/[.!?]+$/, ""), b = norm(target).replace(/[.!?]+$/, "");
         FL.typed++; if (a === b) { FL.fixed++; return finish("<b>Endi to'g'ri.</b> Bu fe'l ertaga yana yoziladi."); }
         show("bad", `Yana bir bor — to'g'risi:<span class="fl-df fl-dfs" lang="en">${esc(target)}</span>`); inp.value = ""; return;
@@ -5122,7 +4779,7 @@ route(/^fellarmashq$/, () => {
   inp.addEventListener("input", () => { if (!done) inp.classList.remove("bad"); });
   if (matchMedia("(pointer:fine)").matches || x.k !== "listen") setTimeout(() => inp.focus({ preventScroll: true }), 50);
 });
-/* yozilgan so'z → to'g'ri so'z: to'g'risida yetishmagan / farqli harflar belgilanadi */
+
 function felDiff(a, b) {
   const m = a.length, n = b.length, d = [...Array(m + 1)].map(() => Array(n + 1).fill(0));
   for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
@@ -5130,7 +4787,7 @@ function felDiff(a, b) {
   while (i < m && j < n) { if (a[i] === b[j]) { keep.add(j); i++; j++; } else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++; }
   return [...b].map((c, k) => keep.has(k) ? esc(c) : `<u>${esc(c)}</u>`).join("");
 }
-/* sessiya oxiri: pog'onalar yangilanadi */
+
 function felApply() {
   const up = [], down = [], ids = [...new Set(FL.q.map(x => x.v.id))];
   ids.forEach(id => {
@@ -5146,10 +4803,7 @@ function felApply() {
   touchStreak(); save(); markDone("fel");
   return { up, down };
 }
-/* ---------- uch shakl: V1 · V2 · V3 alohida maydonlarda (A variant) ----------
-   copy — shakllar ko'rinib turadi, bir marta ko'chiriladi; first — birinchi harf bilan; recall — o'zbekchadan xotiradan;
-   rev — V2 berilgan, V1 va V3 yoziladi. Bo'sh joy keyingi maydonga o'tkazadi, Enter — tekshirish.
-   Xato bo'lsa faqat xato maydon qizil, tagida to'g'risi; o'sha maydon qayta yoziladi (FL.miss — qadam xato hisoblanadi). */
+
 const FEL3 = ["copy", "first", "recall", "rev"];
 function felMulti(x, N) {
   const v = x.v, fam = FEL_FAM[v.fam], k = x.k;
@@ -5241,7 +4895,7 @@ function felFinish() {
   $("#flback").onclick = () => { LES = false; go(""); }; bindLesson();
   if (window.countUp) countUp(app);
 }
-/* ---------- tez yozish: 60 soniya, ko'rilgan fe'llar ---------- */
+
 const felSpeedOffer = () => { const seen = felSeen().length, last = (S.irr && S.irr.sp) || ""; return seen >= 8 && (!last || dayDiff(last, today()) >= FEL_SPEED_GAP); };
 route(/^fellartez$/, () => {
   const pool = shuffle(felSeen()); if (pool.length < 4) { go(""); return; }
@@ -5279,7 +4933,6 @@ route(/^fellartez$/, () => {
   $("#tzx").onclick = () => { clearInterval(tm); go(""); };
 });
 
-/* ---------- NOLDAN BOSHLASH: yangi o'rganuvchi uchun qo'llanmalar (kursdan oldin yoki u bilan birga) ---------- */
 const GUIDES = [
   { id: "yol", t: "Qanday o'rganamiz", s: "Yo'l xaritasi va 1-hafta rejasi", min: 2, kind: "plan",
     intro: "Ingliz tilini noldan boshlashda eng muhimi — har kuni oz-ozdan. Bu ilova Navigate Beginner kitobi va darslaringiz bilan birga ishlaydi: kitobdagi so'zlar, qoliplar va gaplar shu yerda takrorlanadi.",
@@ -5371,19 +5024,19 @@ const guideById = id => GUIDES.find(g => g.id === id);
 const guideDone = g => !!(S.guide && S.guide[g.id]);
 const guidesLeft = () => GUIDES.filter(g => !guideDone(g)).length;
 function markGuide(g) { S.guide = S.guide || {}; if (!S.guide[g.id]) { S.guide[g.id] = today(); save(); } }
-// mashq uchun savollar: tinglab tanlash (harf, son, tovush) yoki o'zbekchasidan inglizchasini tanlash
+
 function guidePool(g) {
   if (g.kind === "grid") return g.items.map(x => ({ say: g.id === "son" ? x[1] : x[0], label: x[0], uz: g.id === "son" ? x[1] : x[1] }));
   if (g.kind === "sounds") return [...new Set(g.items.flatMap(x => x[2]))].map(w => ({ say: w, label: w, uz: w }));
   return g.sections.flatMap(s => s[1]).map(r => ({ say: r[0], label: r[0], uz: r[2] }));
 }
-/* Bugun sahifasidagi taklif: hali ko'p so'z o'rganilmagan va qo'llanmalar tugamagan bo'lsa */
+
 function guideCard(seen) {
   const left = guidesLeft(); if (!left || seen > 60 || curLvId() !== "beginner") return "";
   const next = GUIDES.find(g => !guideDone(g));
   return `<a class="nwb" href="#asos-${next.id}"><span class="pmi">${ICON.spark}</span><span class="tx"><b>Noldan boshlash</b><span>Keyingisi: ${esc(next.t)} · ${next.min} daq</span></span>${nwRing(GUIDES.length - left, GUIDES.length)}<span class="go">${ICON.chev}</span></a>`;
 }
-/* «Noldan boshlash» darajasi tanlanganda Bugun sahifasidagi asosiy karta: keyingi qo'llanma va umumiy holat */
+
 function zeroCard() {
   const left = guidesLeft(), done = GUIDES.length - left, next = GUIDES.find(g => !guideDone(g)), due = dueWords().length;
   return `<section class="lesson dars">
@@ -5433,7 +5086,7 @@ route(/^asos-(\w+)$/, id => {
   const gd = $("#gdone"); if (gd) gd.onclick = () => { markGuide(g); toast("«" + g.t + "» o'rganildi", null, null, { sub: "Keyingi qo'llanmaga o'tishingiz mumkin" }); render(); };
   if (g.quiz) guideQuiz(g);
 });
-/* qo'llanma oxiridagi mashq: 8 savol, 4 variant; 6 va undan ko'p to'g'ri — o'rganildi */
+
 function guideQuiz(g) {
   const box = $("#gq"), pool = guidePool(g), canHear = "speechSynthesis" in window, listen = g.quiz === "listen" && canHear;
   if (!canHear && g.kind === "sounds") { box.innerHTML = `<p class="gqi">Bu mashq uchun telefonda ovoz (matnni o'qish) kerak.</p>`; return; }
@@ -5467,7 +5120,6 @@ function guideQuiz(g) {
   intro();
 }
 
-/* ---------- UNIT sahifasi: hammasi bir joyda ---------- */
 route(/^unit-(\d+)$/, n => {
   n = +n; const info = UNIT_INFO[n]; if (!info) return go("unitlar");
   const st = unitStat(n), pats = unitPats(n), bl = unitBuild(n), sp = SPEAKING.filter(t => t.unit === n);
@@ -5512,8 +5164,6 @@ route(/^unit-(\d+)$/, n => {
   app.querySelectorAll("[data-tz]").forEach(b => b.onclick = () => { tuzMode = b.dataset.tz; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} startTuz(bl, "Unit " + un(n), (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n); });
 });
 
-/* ---------- LUG'AT: qidiruv ---------- */
-/* ---------- MENING SO'ZLARIM: kitobda yo'q, darsda yoki ishda kerak bo'lgan so'zlar ---------- */
 let MYPRE = "";
 route(/^mening$/, () => {
   const mine = WORDS.filter(w => w.mine), fresh = mine.filter(w => !isSeen(w));
@@ -5561,7 +5211,7 @@ route(/^mening$/, () => {
     }, { type: "warn", sub: "Natijalari ham o'chdi" });
   });
 });
-/* ---------- SO'Z BOYLIGI: daraja + kunlik maqsad → ro'yxatda saralash → «bilaman» tekshiruvi → o'rganish (mavjud tizim) ---------- */
+
 const VB_LV = { easy: ["Oson", "A1–A2", "Eng ko'p ishlatiladigan 1000 so'z"], mid: ["O'rta", "B1", "Keyingi 1000 so'z: ish, fikr bildirish"], hard: ["Qiyin", "B2", "2000+ so'zlar: rasmiy matn, ishbilarmonlik"] };
 const VB_GOALS = [5, 10, 15, 25, 50], VB_RECHECK = 60, VB_BATCH = 10;
 const vbMin = n => Math.max(3, Math.round(n * .8));
@@ -5570,7 +5220,7 @@ const vbWords = () => WORDS.filter(w => w.vb);
 const vbLeft = () => (VBANK[S.vb.lvl] || []).filter(x => !S.vb.known[x.w] && !S.vb.learn.includes(x.w));
 const vbRecheck = () => Object.entries(S.vb.known).filter(([, d]) => d <= addDays(-VB_RECHECK)).map(([k]) => VB_ALL.get(k)).filter(Boolean);
 const vbW = k => WORDS.find(w => w.id === "vb|" + k);
-let VBT = null; // joriy saralash / tekshiruv
+let VBT = null;
 function vbSetup(first) {
   const lv = S.vb.lvl || (["pre", "inter"].includes(curLvId()) ? "mid" : "easy"), g = S.vb.goal || 10, [bh, bl] = first ? backOf("vb") : ["#boylik", "So'z boyligi"];
   app.innerHTML = `${nav(bh, bl, "So'z boyligi")}
@@ -5627,7 +5277,7 @@ route(/^boylik$/, () => {
   const k = $("#vbrc"); if (k) k.onclick = () => { VBT = { recheck: true, q: shuffle(rc).slice(0, 10), i: 0, res: [] }; go("boylik-sar"); };
 });
 route(/^boylik-sozla$/, () => vbSetup(!S.vb.lvl));
-/* saralash: ro'yxatda bilganlarini belgilaydi → faqat ular 4 variant bilan tekshiriladi */
+
 route(/^boylik-sar$/, () => {
   if (!S.vb.lvl) return go("boylik");
   if (!VBT || VBT.done) { const need = Math.max(1, S.vb.goal - vbToday()); VBT = { list: vbLeft().slice(0, Math.max(5, Math.min(VB_BATCH, need + 3))), picked: new Set(), need }; }
@@ -5685,7 +5335,7 @@ function vbApply() {
   bindSay(app);
   const b = $("#vbl"); if (b) b.onclick = () => startLearn(lw, "So'z boyligi", "#boylik");
 }
-/* darajani aniqlash: har darajadan 5 tadan, 15 savol; to'g'ri topilganlar bilgan so'zlarga qo'shiladi */
+
 let VBP = null;
 route(/^boylik-test$/, () => {
   if (!VBP || VBP.done) VBP = { q: ["easy", "mid", "hard"].flatMap(l => shuffle(VBANK[l].slice()).slice(0, 5)), i: 0, ok: { easy: 0, mid: 0, hard: 0 }, kn: [] };
@@ -5711,10 +5361,10 @@ route(/^boylik-test$/, () => {
     setTimeout(() => { VBP.i++; render(); }, 450);
   });
 });
-/* bo'limga bosh sahifadan kirilsa — orqaga bosh sahifaga, Lug'atdan kirilsa — Lug'atga (ichki sahifalar va mashqdan qaytish manbani o'zgartirmaydi) */
+
 const ORIG = {};
 function backOf(k) { if (prevH === "" || prevH === "lugat") ORIG[k] = prevH === "" ? "#" : "#lugat"; const h = ORIG[k] || "#lugat"; return [h, h === "#" ? "Bugun" : "Lug'at"]; }
-/* ---------- XOTIRA bo'limi: «Qutqarish» — eng zaif so'zlar, holatlar, bugungi yuk ---------- */
+
 const XM_N = 10;
 function xmPick(st) {
   const a = st.weak.filter(x => x.R < .9).slice(0, XM_N).map(x => x.w);
@@ -5761,7 +5411,7 @@ route(/^xotira$/, () => {
   };
   draw();
 });
-/* lug'at sahifasidagi kirish kartasi */
+
 function vbCard() {
   if (!S.vb.lvl) return `<a class="nwb vb-entry" href="#boylik"><span class="pmi">${ICON.spark}</span><span class="tx"><b>So'z boyligi</b><span>Kuniga 5–25 ta yangi so'z · bilganlaringiz qaytmaydi</span></span><span class="go">${ICON.chev}</span></a>`;
   const n = vbToday(), g = S.vb.goal, k = Object.keys(S.vb.known).length;
@@ -5788,7 +5438,6 @@ route(/^lugat$/, () => {
 });
 let LQ = "";
 
-/* ---------- UNIT page ---------- */
 let pick = { groups: null };
 const SOLO = [["uz-en", "Tanlash", "pick", "O'zbekchasi chiqadi — 4 ta variantdan inglizchasini tanlaysiz"], ["en-uz", "Eshitish", "vol", "So'zni eshitasiz — o'zbekcha ma'nosini tanlaysiz"],
   ["spell", "Yozish", "pen", "O'zbekchasiga qarab inglizchasini xotiradan yozasiz"], ["say", "Ayting", "mic", "Inglizchasini ovoz chiqarib aytasiz — telefon tekshiradi"]];
@@ -5805,7 +5454,7 @@ route(/^soz-(\d+)$/, n => {
       <div class="legend">${n > 200 ? `So'z, tarjima va misol gap — ilova uchun tuzilgan to'plam (${unitSub(n)}). <b>[o'qilishi]</b> — o'zbekcha harflarda, urg'uli bo'g'in katta harfda.` : `So'z va tarjima — kitobdan. <b>[o'qilishi]</b> va misol gap — qo'shimcha. ★ — kitobdagi tarjima aniqlashtirilgan.`}</div>
       <div id="list"></div></div>
   </div>`;
-  // Har guruh — belgilash katakli qator: holat chizig'i (to'q — mustahkam, och — o'rganilmoqda) va mustahkam foizi
+
   const allIdx = () => new Set(u.groups.map((_, i) => i));
   const chips = () => {
     const all = pick.groups.size === u.groups.length;
@@ -5820,7 +5469,7 @@ route(/^soz-(\d+)$/, n => {
     goLabel();
   };
   $("#gall").onclick = () => { pick.groups = pick.groups.size === u.groups.length ? new Set() : allIdx(); chips(); list(); };
-  // Asosiy yo'l — «Mashqni boshlash» (aralash: har so'zga darajasiga mos savol); yangi so'z bo'lsa — avval tanishish; aniq tur — pastdagi qatorlar o'zi boshlaydi
+
   const sel = () => byUnit(n).filter(w => pick.groups.has(w.g));
   const goLabel = () => {
     const ws = sel(), cnt = ws.length, nu = ws.filter(w => !isSeen(w)).length;
@@ -5836,7 +5485,7 @@ route(/^soz-(\d+)$/, n => {
     bindSay($("#list"));
   };
   document.querySelectorAll(".mrow").forEach(b => b.onclick = () => startChunk(sel(), b.dataset.m, "Unit " + un(n), "#soz-" + n, new Set()));
-  // pastdagi lug'at ro'yxati birinchi kadrdan keyin chiziladi — sahifa darrov ochiladi; chuqurga qaytilsa (scroll tiklash) darhol
+
   chips(); if ((SCROLLS["soz-" + n] || 0) > 400) list(); else requestAnimationFrame(() => setTimeout(() => { if (location.hash === "#soz-" + n) list(); }, 0));
 });
 const modeBtn = (m, t, s) => `<button class="mode" data-m="${m}"><i class="dot"></i><div><b>${t}</b><span>${s}</span></div></button>`;
@@ -5850,9 +5499,6 @@ function wordLi(w) {
 }
 function bindSay(root) { root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => say(b.dataset.say)); }
 
-/* ---------- O'RGANISH: yangi so'z avval ko'rsatiladi, keyin seansning o'zida 3 marta eslab topiladi ----------
-   1 — o'zbekchasiga qarab inglizchasini tanlash, 2 — eshitib ma'nosini tanlash, 3 — xotiradan yozish.
-   Bir vaqtda ko'pi bilan 3 ta so'z «ochiq» turadi; har bosqich orasiga boshqa so'zlar tushadi (oraliq). Xato bo'lsa — shu bosqich 2 savoldan keyin yana. */
 const LEARN_N = 5, ACTIVE = 3, LMODE = ["intro", "uz-en", "en-uz", "spell"];
 function startLearn(list, title, back, tag) {
   const words = list.slice(0, LEARN_N); if (!words.length) return;
@@ -5876,7 +5522,7 @@ function learnResult(ok) {
     if (t.k === 3) Z.fin.add(w.id); else learnAt({ w, k: t.k + 1 }, 2);
   } else {
     Z.errs[w.id]++;
-    if (Z.errs[w.id] > 4) Z.fin.add(w.id); // juda ko'p xato: seansni cho'zmaymiz, so'z ertaga yana chiqadi
+    if (Z.errs[w.id] > 4) Z.fin.add(w.id);
     else learnAt({ w, k: t.k, re: true }, 2);
   }
   refill();
@@ -5899,7 +5545,6 @@ function finishLearn() {
   $("#back").onclick = () => { location.hash = back; };
 }
 
-/* ---------- ESLATGICH: so'zni o'zi tanish tovush yoki rasm bilan bog'lash (keyword usuli). O'quvchining o'zi yozadi ---------- */
 function hookBox(w, edit) {
   const h = S.hook[w.id];
   if (!edit && h) return `<div class="hook" data-hw="${esc(w.id)}"><span class="hi">${ICON.bulb}</span><span class="ht"><b>Eslatgich</b>${esc(h)}</span><button class="hl" data-hedit>O'zgartirish</button></div>`;
@@ -5917,11 +5562,10 @@ document.addEventListener("click", e => {
 });
 document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("hin")) { e.preventDefault(); e.stopPropagation(); e.target.closest(".hook").querySelector("[data-hsave]").click(); } }, true);
 
-/* ---------- AYTING: o'zbekchasiga qarab inglizchasini ovoz chiqarib aytish (telefon Chrome'idagi nutqni tanish) ---------- */
-const canSpeak = () => !!(window.SpeechRecognition || window.webkitSpeechRecognition); // SR pastda, «Tayyor gaplar» bilan umumiy
+const canSpeak = () => !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 const spkOn = () => { try { return localStorage.getItem("ingliz-spk") !== "0"; } catch (e) { return true; } };
 let srObj = null;
-// solishtirish: katta-kichik harf, tire, tinish belgisi va boshidagi a/an/the/to farq qilmaydi
+
 const normSay = s => norm(s).replace(/[-.,!?']/g, " ").replace(/^(a|an|the|to) /, "").replace(/\s+/g, " ").trim();
 function hearWord(onres, onerr, onact) {
   let got = false;
@@ -5935,7 +5579,7 @@ function hearWord(onres, onerr, onact) {
     srObj = r; r.start();
   } catch (e) { srObj = null; onerr("start"); }
 }
-/* Telegram uslubidagi ovoz to'lqini: mikrofon atrofida ikki qatlam «suyuq» shakl; gapirganda o'sadi, jimlikda tinchlanadi */
+
 const blobPath = (R, amp, t, seed) => { let d = ""; for (let i = 0; i <= 64; i++) { const a = i / 64 * Math.PI * 2, r = R * (1 + amp * (Math.sin(3 * a + t * 1.3 + seed) * .5 + Math.sin(5 * a - t * 1.7 + seed * 2) * .3 + Math.sin(2 * a + t * .9) * .2)); d += (i ? "L" : "M") + (Math.cos(a) * r).toFixed(1) + " " + (Math.sin(a) * r).toFixed(1); } return d + "Z"; };
 let micAnim = null;
 function micWave(stage) {
@@ -5952,7 +5596,7 @@ function micWave(stage) {
     const dt = now - last; last = now; target *= Math.pow(.2, dt / 1000); lvl += (target - lvl) * Math.min(1, dt / 90);
     const t = (now - t0) / 1000;
     if (!calm) { b1.setAttribute("d", blobPath(52 + lvl * 30, .05 + lvl * .14, t, 0)); b2.setAttribute("d", blobPath(46 + lvl * 18, .04 + lvl * .1, t * 1.4, 2)); }
-    // gapirib bo'lingach 1,2 s jimlik — o'zi to'xtaydi va tekshiradi
+
     if (heardAt) { quiet = now - heardAt; if (bar) bar.style.width = Math.min(100, quiet / 1200 * 100) + "%"; if (quiet > 1200 && srObj) { srObj.stop(); heardAt = 0; } }
     requestAnimationFrame(frame);
   };
@@ -5977,7 +5621,7 @@ function askSay(w) {
       st.textContent = err === "not-allowed" || err === "service-not-allowed" ? "Mikrofonga ruxsat yo'q. Manzil satridagi belgini bosib, Mikrofon → Ruxsat bering." : err === "no-speech" ? "Hech narsa eshitilmadi. Yana bosing." : "Eshitib bo'lmadi. Yana bosing yoki yozib javob bering.";
     }, v => micAnim && micAnim.act(v));
   };
-  // seansda bir marta bosilgandan keyin keyingi «Ayting» savollarida mikrofon o'zi yoqiladi (ovoz tugashini kutib — o'z ovozini eshitmasin)
+
   if (Z.micAuto) { const q = Z.cur, t0 = Date.now(); const wait = () => { if (!Z || Z.cur !== q || Z.state !== "ask" || location.hash !== "#quiz" || srObj || Z.micUsed) return; const busy = voiceBusy(); if (busy && Date.now() - t0 < 6000) return setTimeout(wait, 200); setTimeout(() => { const m = $("#mic"); if (m && Z && Z.cur === q && Z.state === "ask" && !srObj && !Z.micUsed) m.click(); }, 450); }; setTimeout(wait, 300); }
 }
 function heard(w, alts) {
@@ -5992,16 +5636,14 @@ function heard(w, alts) {
   toNext();
 }
 
-/* ---------- gapdagi bo'sh joy: mustahkam so'z misol gapning ichida, kontekstda yoziladi ---------- */
 function clozeOf(w) {
   const s = spoken(w); if (!w.e || !s) return null;
   const m = w.e.match(new RegExp("\\b(" + s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:s|es|ed|d|ing)?)\\b", "i"));
   return m ? { before: w.e.slice(0, m.index), word: m[1], after: w.e.slice(m.index + m[1].length) } : null;
 }
 
-/* ---------- QUIZ engine ---------- */
-let Z = null; // session
-/* mashq progressi: har savol alohida bo'lak (to'g'ri — yashil, xato — qizil, hozirgisi — brand); 20 tadan ko'p savolda oddiy chiziq */
+let Z = null;
+
 function segBar(bar, total, res, cur) {
   if (!bar) return false; const seg = total > 1 && total <= 20; bar.classList.toggle("seg", seg);
   if (!seg) return false;
@@ -6011,14 +5653,14 @@ function segBar(bar, total, res, cur) {
   return true;
 }
 const quizBar = () => { if (Z && !Z.learn) segBar(document.querySelector("#app > .top .bar"), Z.base, Z.res || [], Z.done.has(Z.cur && Z.cur.id) ? -1 : Math.min(Z.mainN || 0, Z.base)); };
-/* mashq seansi sahifa yangilansa ham davom etadi: Z (so'zlar — id, Set — ro'yxat) 6 soatgacha saqlanadi */
+
 const ZKEY = "ingliz-quiz", Z_SKIP = new Set(["cur", "state", "ph", "cvT", "cvTyped", "cvN", "att", "hintN", "ltTarget", "ltUsed", "ltWait", "cz", "qmode", "force", "retype", "re", "tag2"]);
 function zSave() {
   try {
     if (!Z) return localStorage.removeItem(ZKEY);
     const enc = v => v instanceof Set ? { $s: [...v].map(enc) } : Array.isArray(v) ? v.map(enc)
       : v && typeof v === "object" ? (typeof v.id === "string" && typeof v.w === "string" ? { $w: v.id } : Object.fromEntries(Object.entries(v).filter(([k, x]) => !Z_SKIP.has(k) && typeof x !== "function").map(([k, x]) => [k, enc(x)]))) : v;
-    const o = enc(Z); if (Z.state === "next") o.i = Z.i + 1; // javob berilgan savol qayta so'ralmaydi
+    const o = enc(Z); if (Z.state === "next") o.i = Z.i + 1;
     localStorage.setItem(ZKEY, JSON.stringify({ t: Date.now(), les: LES, z: o }));
   } catch (e) {}
 }
@@ -6028,15 +5670,14 @@ function zLoad() {
     const by = new Map(WORDS.map(w => [w.id, w])); let miss = false;
     const dec = v => Array.isArray(v) ? v.map(dec) : v && typeof v === "object" ? ("$w" in v ? (by.get(v.$w) || (miss = true, null)) : "$s" in v ? new Set(v.$s.map(dec)) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, dec(x)]))) : v;
     const z = dec(d.z);
-    const clean = a => a.filter(x => x && (!("w" in x) || x.w)); // o'chirilgan so'zlar tushib qoladi
+    const clean = a => a.filter(x => x && (!("w" in x) || x.w));
     z.q = clean(z.q || []); if (z.wrong) z.wrong = clean(z.wrong); if (z.words) z.words = clean(z.words); if (z.pool) z.pool = clean(z.pool);
     if (z.chunk && z.chunk.pool) z.chunk.pool = clean(z.chunk.pool);
     if (!z.q.length || z.i > z.q.length) return false;
     Z = Object.assign(z, { state: "ask", cur: null }); LES = !!d.les; return true;
   } catch (e) { return false; }
 }
-/* Katta ro'yxat (masalan, butun unit — 84 so'z) bitta seansda emas, 15 tadan beriladi.
-   Tartib: xato qilinganlar → muddati kelganlar → yangilar → qolganlari (eng uzoq ko'rilmagani birinchi). */
+
 const CHUNK = 15;
 function chunkOrder(list) {
   const rank = w => { const r = rec(w.id); return !r ? 2 : r.b === 0 ? 0 : r.due <= today() ? 1 : 3; };
@@ -6055,8 +5696,7 @@ function startQuiz(list, mode, title, back, tag, opts) {
   Z = Object.assign({ q, base: q.length, i: 0, right: 0, wrong: [], done: new Set(), rq: {}, mode, title, state: "ask", retype: false, cur: null, tag, back: back || location.hash || "#" }, opts || {});
   if (location.hash === "#quiz") render(); else go("quiz");
 }
-/* widgetdagi «Davom etish»: tugallanmagan takror bo'lsa — davom ettiradi, bo'lmasa bugungi takrorni boshlaydi.
-   Orqaga tugmasi bosh sahifaga qaytsin (#takror qayta ishga tushmasin) — shuning uchun tarixda «#» ga almashtiriladi */
+
 route(/^takror$/, () => {
   history.replaceState(null, "", "#");
   if ((Z || zLoad()) && Z.tag === "rev" && Z.i < Z.q.length) return go("quiz");
@@ -6081,7 +5721,7 @@ route(/^quiz$/, () => {
   $("#quit").onclick = () => confirmQuit(Z ? (Z.learn ? Z.i + (Z.state === "next" ? 1 : 0) : Math.min(Z.mainN || 0, Z.base)) : 0, Z ? Math.max(Z.base || 0, Z.learn ? Z.i + 1 : 0) : 0, () => { if (srObj) srObj.abort(); const b = Z.back; Z = null; zSave(); location.hash = b; });
   $("#say").onclick = () => say(spoken(Z.cur));
   $("#h1").onclick = () => { $("#hint").textContent = Z.cur.p ? "O'qilishi: [" + Z.cur.p + "]" : "O'qilishi yozilmagan"; };
-  /* eslay olmasa: har bosishda yana bitta harf ochiladi; «Bilmayman» — javob ko'rsatiladi va bir marta yozdiriladi (xato hisoblanadi) */
+
   const tgt = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
   $("#h2").onclick = () => { if (!Z || Z.state === "next" || Z.ph === "show" || Z.ph === "cover") return; const n = tgt().replace(/[ \-→]/g, "").length; Z.hintN = Math.min((Z.hintN || 0) + 1, Math.max(1, n - 1)); drawMask(); };
   $("#h3").onclick = () => giveUp();
@@ -6098,10 +5738,10 @@ document.addEventListener("keydown", e => {
   if (e.key === "Enter" && Z.state === "next") { e.preventDefault(); next(); }
   if (Z.state === "ask" && !typedQ() && Z.qmode !== "say" && /^[1-4]$/.test(e.key)) { const b = document.querySelectorAll(".opt")[+e.key - 1]; if (b) b.click(); }
 });
-/* Javob tekshirilgach maydon qulflanadi (disabled emas): fokus va klaviatura joyida qoladi, Enter keyingi so'zga o'tkazadi */
+
 document.addEventListener("beforeinput", e => { const t = e.target; if (t.classList && t.classList.contains("spell") && /^insert(LineBreak|Paragraph)$/.test(e.inputType)) { e.preventDefault(); t.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true })); } }, true);
 document.addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.lock != null) t.value = t.dataset.lock; else if (t.classList && t.classList.contains("spell") && /\n/.test(t.value)) t.value = t.value.replace(/\s*\n\s*/g, " "); }, true);
-/* Telefonda klaviatura: pastki menyu silliq yashirinadi, yozish kartasi klaviatura ustida silliq suriladi, karta tugmalari klaviaturani yopmaydi */
+
 (function () {
   if (!matchMedia("(pointer:coarse)").matches) return;
   const vv = window.visualViewport, root = document.documentElement;
@@ -6114,16 +5754,15 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
     if (!card || !root.classList.contains("typing")) return;
     const top = vv ? vv.offsetTop : 0, h = vv ? vv.height : innerHeight;
     const btn = card.querySelector(".row .btn:not(.hidden)") || el;
-    // javob chiqqach maydon va izoh muhimroq; savol paytida esa so'z tepadan chiqib ketmasin
+
     const anchor = card.querySelector(".fb:not(.hidden)") ? el : card;
     const hd = document.querySelector("#app > .top"), hb = hd ? Math.max(0, hd.getBoundingClientRect().bottom - top) : 0;
-    const room = anchor.getBoundingClientRect().top - 8 - hb - top;  // shuncha pastga surish mumkin (yopishqoq header ostida qolmasin)
-    const over = btn.getBoundingClientRect().bottom + 12 - (top + h);  // tugma ko'rinishi uchun shuncha surish kerak
+    const room = anchor.getBoundingClientRect().top - 8 - hb - top;
+    const over = btn.getBoundingClientRect().bottom + 12 - (top + h);
     const dy = over > room ? room : over > 0 ? over : room < 0 ? room : 0;
-    if (Math.abs(dy) > 2) scrollTo({ top: scrollY + dy, behavior: motion() }); // mutlaq nishon: ketma-ket chaqiruvlar bir-birini oshirib yubormaydi
+    if (Math.abs(dy) > 2) scrollTo({ top: scrollY + dy, behavior: motion() });
   };
-  // klaviatura haqiqatan ochiqmi — o'lcham tinchigandan keyin tekshiramiz, animatsiya o'rtasida emas
-  // klaviatura chiqishi kechiksa ham menyu shu orada qaytib chiqmasin: maydon bosilgach 1,2 s kutamiz
+
   const sync = () => {
     const field = isField(document.activeElement), kb = !vv || vv.height < full * 0.8;
     const wait = field && !kb ? 1200 - (performance.now() - armed) : 0;
@@ -6132,16 +5771,16 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
     fit();
   };
   const later = ms => { clearTimeout(timer); timer = setTimeout(sync, ms); };
-  // menyu klaviatura bilan bir vaqtda ketsin: maydon bosilishi yoki fokus olishi bilan darhol yashiramiz, klaviatura chiqmasa sync qaytaradi
+
   const arm = () => { armed = performance.now(); root.classList.add("typing"); later(700); };
   document.addEventListener("focusin", e => { if (isField(e.target)) arm(); });
-  // fokusdagi maydonni qayta bosish focusin chiqarmaydi (klaviatura orqaga tugmasi bilan yopilgan bo'lsa) — bosishning o'zini ushlaymiz
+
   document.addEventListener("pointerdown", e => { if (isField(e.target) && e.target === document.activeElement && !root.classList.contains("typing")) arm(); }, true);
   document.addEventListener("focusout", e => { if (isField(e.target)) later(400); });
   const kbVar = () => { const k = vv ? Math.max(0, Math.round(innerHeight - vv.height - vv.offsetTop)) : 0; root.style.setProperty("--kb", k + "px"); return k; };
-  /* suzuvchi tugmalar qatori: ekran o'lchami o'zgarganda oldingi joyidan yangi joyiga yumshoq suriladi (sakramaydi) */
+
   const bar = () => { const r = document.querySelector(".quizmode .card > .row:not(.hidden)"); return r && getComputedStyle(r).position === "fixed" ? r : null; };
-  // tugma ekran pastiga mahkamlangan: oyna balandligi qancha o'zgarsa, u shuncha siljiydi — shu farqdan boshlab 0 ga silliq olib kelamiz
+
   let lastH = innerHeight, barAnim = null;
   const glide = () => {
     const h = innerHeight, d = h - lastH; lastH = h; const r = bar();
@@ -6154,47 +5793,45 @@ document.addEventListener("input", e => { const t = e.target; if (t.dataset && t
   if (vv) vv.addEventListener("resize", () => { if (vv.height > full) full = vv.height; later(120); });
   addEventListener("orientationchange", () => setTimeout(() => { if (vv) full = vv.height; }, 500));
   addEventListener("hashchange", () => later(120));
-  // karta ichidagi tugmalar (Eshitish, yordam, Tekshirish) bosilganda maydon fokusni yo'qotmasin — klaviatura yopilib-ochilib sakramaydi
+
   document.addEventListener("mousedown", e => {
     const el = document.activeElement, b = e.target.closest && e.target.closest("button");
     if (b && isSpell(el) && b.closest(".card") === el.closest(".card")) e.preventDefault();
   });
-  // izoh yoki yordam qatori paydo bo'lsa, karta qayta joylashadi
+
   if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(fit)).observe(app);
 })();
 const typedQ = () => !!Z && (Z.qmode === "spell" || Z.qmode === "cloze" || Z.qmode === "listen" || Z.qmode === "pic");
 function qmodeFor(w) {
   if (Z.mode !== "auto") return Z.mode;
   const m = qmodeRaw(w), r = rec(w.id), b = r ? r.b : 0;
-  // aralash: ketma-ket ikki marta bir xil turdagi savol chiqmasin (mustahkamroq so'zlarda)
+
   if (b >= 2 && m === Z.prevQ) { const alt = ["spell", "listen"].concat(clozeOf(w) ? ["cloze"] : []).filter(x => x !== m); Z.prevQ = alt[Math.floor(Math.random() * alt.length)]; return Z.prevQ; }
   Z.prevQ = m; return m;
 }
 function qmodeRaw(w) {
   const r = rec(w.id); const b = r ? r.b : 0;
   if (b >= 2 && "speechSynthesis" in window && Math.random() < .25) return "listen";
-  // mustahkamroq so'z goh yolg'iz, goh gap ichida yoziladi, goh ovoz chiqarib aytiladi
+
   if (b >= 2 && canSpeak() && spkOn() && Math.random() < .25) return "say";
   if (b >= 3 && clozeOf(w) && Math.random() < .5) return "cloze";
-  // xotira mashqi (prod): tanlash yo'q — zaif so'z ham xotiradan yoziladi (eslab yozish tanib olishdan ko'ra yaxshiroq esda qoldiradi)
+
   return b >= 2 || Z.prod ? "spell" : b === 0 ? "uz-en" : "en-uz";
 }
 function pool(w) { const same = WORDS.filter(x => x.unit === w.unit && x.id !== w.id); return same.length >= 3 ? same : WORDS.filter(x => x.id !== w.id); }
-/* ---------- ma'nosi bir xil yoki juda yaqin so'zlar (good / nice / well = yaxshi; bored / boring) ----------
-   O'zbekcha so'z berilganda ulardan qaysi biri kutilayotgani noma'lum bo'ladi. Shuning uchun:
-   variantlarda ular birga chiqmaydi; yozish mashqida gap-misol ko'rsatiladi; «sinonim» yozilsa xato hisoblanmaydi */
+
 const SYN_STOP = new Set(["qilmoq", "bo'lmoq", "olmoq", "bermoq", "etmoq", "va", "yoki", "bilan", "uchun", "ham", "bir", "narsa", "kishi", "odam", "juda"]);
 const synParts = u => norm(u).replace(/\(.*?\)/g, " ").split(/[,;/]+/).map(x => x.trim()).filter(x => x && !SYN_STOP.has(x));
 const synStem = w => { const x = norm(w); if (x.includes(" ")) return ""; const m = x.match(/^(.{3,}?)(ing|ed|d)$/); return m ? m[1].replace(/e$/, "") : ""; };
 function synClash(a, b) {
   if (!a || !b || norm(a.w) === norm(b.w)) return false;
   const A = synParts(a.u), B = synParts(b.u); if (A.some(x => B.includes(x))) return true;
-  // bored / boring, interested / interesting: inglizcha o'zagi bir xil, biri -ed, biri -ing
+
   const sa = synStem(a.w), sb = synStem(b.w);
   return !!sa && sa === sb && /ing$/.test(norm(a.w)) !== /ing$/.test(norm(b.w));
 }
 const synOf = w => WORDS.filter(x => x.id !== w.id && synClash(w, x));
-/* gap-misolda so'z o'rniga ___ */
+
 function synCtx(w) {
   const e = w.e || "", k = spoken(w); if (!e || !k) return "";
   const re = new RegExp("\\b" + k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i");
@@ -6207,8 +5844,7 @@ function distractors(w, f) {
   return out;
 }
 const EYE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" transform="translate(2 4)" d="M10.0029,0.0005 C14.1389,0.0035 17.8529,2.9025 19.9389,7.7565 C20.0209,7.9455 20.0209,8.1595 19.9389,8.3485 C17.8539,13.2035 14.1389,16.1025 10.0029,16.1055 L9.9969,16.1055 C5.8609,16.1025 2.1469,13.2035 0.0609,8.3485 C-0.0201,8.1595 -0.0201,7.9455 0.0609,7.7565 C2.1469,2.9025 5.8619,0.0035 9.9969,0.0005 Z M9.9999,1.5005 C6.5639,1.5015 3.4299,3.9445 1.5699,8.0525 C3.4299,12.1615 6.5629,14.6045 9.9999,14.6055 C13.4369,14.6045 16.5699,12.1615 18.4299,8.0525 C16.5699,3.9445 13.4369,1.5015 9.9999,1.5005 Z M9.9996,4.1413 C12.1566,4.1413 13.9116,5.8963 13.9116,8.0533 C13.9116,10.2093 12.1566,11.9633 9.9996,11.9633 C7.8426,11.9633 6.0886,10.2093 6.0886,8.0533 C6.0886,5.8963 7.8426,4.1413 9.9996,4.1413 Z M9.9996,5.6413 C8.6696,5.6413 7.5886,6.7233 7.5886,8.0533 C7.5886,9.3823 8.6696,10.4633 9.9996,10.4633 C11.3296,10.4633 12.4116,9.3823 12.4116,8.0533 C12.4116,6.7233 11.3296,5.6413 9.9996,5.6413 Z"/></svg>`;
-/* rasmli savol: rasm + «Tarjimani ko'rish» (bosilsa o'zbekcha so'z chiqadi — odatdagi yozish savoliga aylanadi, jarima yo'q).
-   Rasm yuklanmasa (oflayn, birinchi marta) — savol odatdagi yozish savoliga o'tadi */
+
 function picAsk(w, pq) {
   $("#qword").className = "q qpicw"; $("#qpron").textContent = "";
   $("#qword").innerHTML = `<div class="qpic"><img src="img/soz/${pq.f}.png" alt="${pq.cap ? "Rasm — to'p qayerda ekanini inglizcha yozing" : "Rasm — inglizcha nomini yozing"}" width="128" height="128" decoding="async"></div><p class="qpic-cap">${esc(pq.cap || "Bu nima? Inglizcha yozing")}</p><button class="icon qpeek" id="qpeek" type="button">${EYE}Tarjimani ko'rish</button>`;
@@ -6226,20 +5862,18 @@ function picReveal() {
 function ask() {
   const t = Z.learn ? Z.q[Z.i] : null;
   const w = Z.cur = t ? t.w : Z.q[Z.i]; Z.state = "ask"; Z.retype = false; zSave(); Z.ph = null; Z.cvTyped = ""; Z.cvN = 0; Z.att = 0; clearTimeout(Z.cvT); const fq = Z.force; Z.qmode = fq || (t ? LMODE[t.k] : qmodeFor(w)); Z.force = null;
-  // rasmli so'z: yozish savollarining yarmi rasm bilan (o'zbekcha so'z o'rniga rasm); qolgani odatdagidek
-  // joy so'zlari (x: in, on, next to): tarjimasi noaniq («(ichi) -da»), shuning uchun tanishtiruvdan boshqa har qanday savol o'rniga rasm chiqadi
+
   const pq0 = !fq && (Z.learn || Z.mode === "auto") ? picOf(w) : null;
   if (pq0 && (pq0.x ? Z.qmode !== "intro" : Z.qmode === "spell" && Math.random() < .5)) Z.qmode = "pic";
   if (t) {
-    // o'rganish: nechta so'z 3 bosqichdan o'tgani; chiziq — bosqichlar yig'indisi
+
     Z.re = !!t.re; Z.tag2 = t.re ? "Yana bir bor" : t.k === 0 ? "Yangi so'z" : t.k === 1 ? "1-bosqich" : t.k === 2 ? "2-bosqich" : "3-bosqich";
     const stp = Z.words.reduce((a, x) => a + (Z.fin.has(x.id) ? 3 : Z.lv[x.id] || 0), 0), all = Z.words.length * 3;
     $("#pos").textContent = Math.min(stp + 1, all) + "/" + all;
     $("#pts").textContent = "✓ " + Z.right;
     $("#barfill").style.transform = "translateX(" + (stp / all - 1) * 100 + "%)";
   } else {
-    // umumiy son o'zgarmaydi: xato so'zlar asosiy savollardan keyin «Takror» bo'lib qaytadi
-    // xato so'z 3 savoldan keyin «Takror» bo'lib qaytadi; hisoblagich faqat asosiy savollarni sanaydi
+
     const re = Z.done.has(w.id), mn = Z.mainN || 0;
     Z.re = re; Z.tag2 = re ? "Yana bir bor" : "";
     $("#pos").textContent = re ? "Takror" : Math.min(mn + 1, Z.base) + "/" + Z.base;
@@ -6252,7 +5886,7 @@ function ask() {
   const sp = $("#spell"); sp.readOnly = false; sp.removeAttribute("inputmode");
   $("#say").classList.toggle("hidden", Z.qmode === "cloze" || Z.qmode === "say" || Z.qmode === "listen");
   if (Z.qmode === "intro") {
-    // tanishuv kartasi: so'z, o'qilishi, ovoz, ma'nosi, misol gap va eslatgich — keyin darhol 1-bosqich
+
     if (document.activeElement === sp) sp.blur();
     sp.className = "spell hidden"; delete sp.dataset.lock;
     setLabel(Z.title + " · tanishing, keyin eslab topasiz");
@@ -6280,14 +5914,14 @@ function ask() {
     else if (ls) { $("#qword").innerHTML = `<button class="lbig" id="lplay" aria-label="So'zni qayta eshitish">${ICON.vol}<span>Qayta eshitish</span></button>`; $("#qword").className = "q"; $("#qpron").textContent = ""; $("#lplay").onclick = () => say(spoken(w)); setTimeout(() => { if (Z && Z.cur === w) say(spoken(w)); }, 250); }
     else if (cz) { $("#qword").innerHTML = esc(cz.before) + '<span class="gap">' + "_".repeat(Math.max(4, cz.word.length)) + "</span>" + esc(cz.after); $("#qword").className = "q qsmall"; $("#qpron").textContent = w.t; $("#qpron").className = "pron tr"; }
     else { $("#qword").textContent = w.u; $("#qword").className = "q"; $("#qpron").textContent = "";
-      // ma'nosi bir xil so'z bor (yaxshi: good / nice / well) — qaysi biri kerakligini gap-misol ko'rsatadi
+
       if (synOf(w).length) { const c = synCtx(w); $("#qpron").className = "pron synh"; $("#qpron").innerHTML = c ? `<span>Shu ma'noda bir nechta so'z bor — gapga qarang:</span><i lang="en">${esc(c)}</i>` : `<span>Shu ma'noda bir nechta so'z bor — «${esc(spoken(w)[0])}» harfi bilan boshlanadi</span>`; } }
     $("#tools").classList.remove("hidden"); $("#h1").classList.remove("hidden"); $("#h2").classList.remove("hidden"); $("#h3").classList.remove("hidden");
     sp.className = "spell"; delete sp.dataset.lock; sp.value = ""; sp.placeholder = "Inglizcha yozing…";
     $("#next").classList.remove("hidden"); $("#next").textContent = "Tekshirish";
     setInputMode(cz ? cz.word : w.a[0]); rlDraw(); pairSync();
   } else {
-    if (document.activeElement === sp) sp.blur(); // tanlov savolida klaviatura yopilsin
+    if (document.activeElement === sp) sp.blur();
     sp.className = "spell hidden"; delete sp.dataset.lock; $("#next").classList.add("hidden");
     const en = Z.qmode === "en-uz";
     setLabel(Z.title + (en ? " · ma'nosini tanlang" : " · inglizchasini tanlang"));
@@ -6302,8 +5936,7 @@ function ask() {
     });
   }
 }
-/* ---------- yozish: klaviaturasiz harflar banki ----------
-   so'z harflari aralashtiriladi + 2–5 ta chalg'ituvchi harf (o'xshash tovushlar: a/e, c/k/s, b/p…). Klaviatura tugmasi bilan odatiy yozishga o'tiladi */
+
 const useLetters = () => { try { return localStorage.getItem("ingliz-kbd") !== "1"; } catch (e) { return true; } };
 const LT_CONF = { a: "eo", e: "ai", i: "ey", o: "ua", u: "oa", y: "ie", c: "ks", k: "c", s: "cz", z: "s", b: "pd", p: "b", d: "tb", t: "d", g: "jk", j: "g", v: "wf", w: "v", m: "n", n: "m", l: "r", r: "l", f: "v", h: "e", q: "k", x: "s" };
 function bankLetters(t) {
@@ -6334,19 +5967,19 @@ function setInputMode(target) {
   ltDraw();
 }
 function ltTap(b) {
-  const sp = $("#spell"); if (!Z || Z.state === "next" || Z.ltWait || b.disabled || b.classList.contains("used") || sp.value.length >= (Z.ltTarget || "").length) return; // to'liq terilgach tekshiruv kutiladi
+  const sp = $("#spell"); if (!Z || Z.state === "next" || Z.ltWait || b.disabled || b.classList.contains("used") || sp.value.length >= (Z.ltTarget || "").length) return;
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
   sp.value += b.dataset.c; b.classList.add("used"); b.disabled = true; Z.ltUsed.push(b); ltNew = true; ltDraw(); ltNew = false;
-  // hamma harf terilgach o'zi tekshiradi (oxirgi harf ko'rinib turishi uchun qisqa pauza)
+
   if (sp.value.length >= Z.ltTarget.length) { const q = Z.cur; setTimeout(() => { if (location.hash === "#quiz" && sp.isConnected && Z && Z.cur === q && Z.state === "ask" && sp.value.length >= Z.ltTarget.length) check(); }, 280); }
 }
 function ltUndo() {
   const sp = $("#spell"), b = Z && Z.ltUsed.pop(); if (!b || Z.state === "next") return;
   sp.value = sp.value.slice(0, -1); b.classList.remove("used"); b.disabled = false; ltDraw();
 }
-/* tepaga chiqqan harf bosilsa — o'sha harf pastdagi joyiga qaytadi (o'chirish tugmasi kerak emas) */
+
 let ltNew = false;
-/* xato javob: qator yumshoq «bosh chayqaydi», xato harflar qizil — so'ng harflar pastga, panelga qaytadi va qayta terish boshlanadi */
+
 function ltFail(then) {
   const q = Z && Z.cur; Z.ltWait = true;
   const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -6361,7 +5994,7 @@ function ltBack(k) {
   if (sp.classList.contains("bad")) sp.className = "spell ltm";
   ltDraw();
 }
-/* javob qatori: terilgan harflar — har biri tugma; bo'sh bo'lsa ko'rsatma matni */
+
 function ltDraw() {
   const sp = $("#spell"), box = $("#lans"); if (!sp || !box) return;
   const show = sp.dataset.lt === "1" && !sp.classList.contains("hidden");
@@ -6374,7 +6007,7 @@ function ltDraw() {
 }
 function bankLock() { $("#bank").querySelectorAll("button").forEach(b => b.disabled = true); $("#bank").classList.add("done"); }
 function bankNudge() { const b = $("#bank"); b.classList.remove("nudge"); void b.offsetWidth; b.classList.add("nudge"); }
-/* kompyuterda: harflar rejimida ham klaviaturadan terish mumkin */
+
 document.addEventListener("keydown", e => {
   if (!Z || !location.hash.startsWith("#quiz") || !useLetters() || !typedQ() || Z.state !== "ask" || e.metaKey || e.ctrlKey || e.altKey) return;
   const bank = $("#bank"); if (!bank || bank.classList.contains("hidden")) return;
@@ -6388,7 +6021,7 @@ function result(ok, hinted) {
   if (Z.learn) return learnResult(ok);
   Z.need = Z.need || {}; Z.rq = Z.rq || {};
   const reAsk = gap => { if ((Z.rq[w.id] = (Z.rq[w.id] || 0) + 1) <= 4) Z.q.splice(Math.min(Z.i + 1 + gap, Z.q.length), 0, w); };
-  // qayta so'ralgan so'z ikkinchi marta baholanmaydi; bugun 2 marta yordamsiz to'g'ri yozilguncha qaytadi
+
   if (Z.done.has(w.id)) {
     if (ok && !hinted) Z.need[w.id] = Math.max(0, (Z.need[w.id] == null ? 1 : Z.need[w.id]) - 1); else if (!ok) Z.need[w.id] = 2;
     if (Z.need[w.id] > 0) reAsk(ok ? 5 : 3);
@@ -6397,7 +6030,7 @@ function result(ok, hinted) {
   Z.mainN = (Z.mainN || 0) + 1; Z.res = Z.res || []; Z.res[Z.mainN - 1] = !!ok;
   const spelled = typedQ();
   if (Z.kech) {
-    // kechki takrorlash qutini o'zgartirmaydi; faqat xato bo'lsa so'z ertaga boshidan qaytadi
+
     const r = rec(w.id); logAns(ok, true); r.ev = today();
     if (ok) Z.right++; else { r.b = 0; r.bad++; r.due = addDays(1); misAdd("w:" + w.id); Z.wrong.push(w); Z.done.add(w.id); Z.need[w.id] = spelled ? 2 : 1; reAsk(3); }
     save(); return;
@@ -6432,16 +6065,10 @@ function diffHTML(typed, target) {
   let h = ""; for (let k = 0; k < m; k++) { const ch = target[k] === " " ? "&nbsp;" : esc(target[k]); h += bad[k] ? '<span class="x">' + ch + "</span>" : ch; }
   return { html: h, extra };
 }
-/* ---------- yozishda xato: «To'liq sikl» ----------
-   1) javob darrov ko'rsatilmaydi: 1- va 2-xatoda hech narsa ochilmaydi, faqat qayta urinasiz (o'zingiz eslash — eng foydali qism);
-   2) 3-xatoda yoki «Bilmayman» — ko'r → yop → yoz (Cover-Copy-Compare): so'z 3 soniya ko'rinadi, yopiladi, xotiradan yoziladi;
-   3) xato so'z 3 savoldan keyin qaytadi va bugun 2 marta yordamsiz yozilguncha qaytib turadi (Rawson & Dunlosky, successive relearning). */
-const SCAF_MAX = 3, CV_MS = 3000; // SCAF_MAX — nechanchi xatoda so'z ko'rsatiladi
+
+const SCAF_MAX = 3, CV_MS = 3000;
 const spTarget = () => Z.qmode === "cloze" && Z.cz ? Z.cz : Z.cur.a[0];
-/* ---------- juft javob: «fall → fell» ----------
-   Javob ikki shakldan iborat bo'lsa (darsdan qo'shilgan fe'l juftlari), klaviatura rejimida ikkita alohida maydon chiqadi — strelkani yozish shart emas.
-   #spell qiymati ikki maydondan yig'iladi («a → b»), shuning uchun tekshiruv, ko'r → yop → yoz va xato ko'rsatish o'zgarmaydi.
-   Bitta maydonga «fall fell» deb yozilsa ham to'g'ri hisoblanadi (pairKey). */
+
 const pairOf = t => { const m = /^(.+?)\s*(?:→|->)\s*(.+)$/.exec(String(t || "")); return m ? [m[1].trim(), m[2].trim()] : null; };
 const pairKey = s => norm(s).replace(/\s*(?:→|->|=>|[,;])\s*/g, " ").replace(/\s+/g, " ").trim();
 const TA_V = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value");
@@ -6453,12 +6080,12 @@ function pairBind() {
   sp.focus = o => sp._p2 ? end(A.value.trim() && !B.value.trim() ? B : A) : HTMLElement.prototype.focus.call(sp, o);
   sp.blur = () => sp._p2 ? [A, B].forEach(x => x.blur()) : HTMLElement.prototype.blur.call(sp);
   const go2 = () => { if (Z && Z.state === "next") return check(); if (!A.value.trim()) return end(A); if (!B.value.trim()) return end(B); check(); };
-  // birinchi maydonda bo'sh joy yoki strelka yozilsa — ikkinchisiga o'tadi («fall fell» deb yozish odati)
+
   A.addEventListener("input", () => {
     const t = sp._p2; if (!t) return; const m = /^(.*?)(?:\s*(?:→|->|>)\s*|\s+)(.*)$/.exec(A.value);
     if (m && m[1].trim() && (/→|>/.test(A.value) || !/\s/.test(t[0]))) { A.value = m[1].trim(); if (m[2].trim()) B.value = m[2].trim(); end(B); }
   });
-  // ikkinchi maydonga ikkala shakl yozilsa («fall fell») — birinchisi tashlanadi
+
   B.addEventListener("input", () => { const t = sp._p2; if (!t || /\s/.test(t[1])) return; const m = /^(\S+)(?:\s*(?:→|->|>)\s*|\s+)(\S+)\s*$/.exec(B.value); if (m && (!A.value.trim() || norm(m[1]) === norm(A.value))) { A.value = m[1]; B.value = m[2]; } });
   A.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); go2(); } });
   B.addEventListener("keydown", e => {
@@ -6467,7 +6094,7 @@ function pairBind() {
   });
   new MutationObserver(pairSync).observe(sp, { attributes: true, attributeFilter: ["class", "data-lt", "data-lock"] });
 }
-/* juft javobda xato: to'g'ri yozilgan shakl qoladi, faqat xato maydon tozalanadi */
+
 function pairKeep(sp) { [$("#spA"), $("#spB")].forEach((x, i) => { if (norm(x.value) !== norm(sp._p2[i])) x.value = ""; }); }
 function pairSync() {
   const sp = $("#spell"), box = $("#sp2"), A = $("#spA"), B = $("#spB"); if (!sp || !box) return;
@@ -6492,7 +6119,7 @@ function rlDraw() {
   el.innerHTML = `<span class="rld" aria-hidden="true"><i class="${got > 0 ? "on" : ""}"></i><i class="${got > 1 ? "on" : ""}"></i></span><span>Bugun: ${got} / 2 yordamsiz</span>`;
   el.classList.remove("hidden");
 }
-// xato javobdan keyin maydon tozalanib, qayta yozishga tayyorlanadi
+
 function spRetry(t) {
   const q = Z.cur;
   if (useLetters()) return ltFail(() => setInputMode(t));
@@ -6513,7 +6140,7 @@ function spWin(head) {
   if (!Z.learn && Z.need && Z.need[w.id] > 0) $("#fb").insertAdjacentHTML("beforeend", `<span class="you">3 savoldan keyin yana so'raladi</span>`);
   toNext();
 }
-/* ko'r: to'g'ri so'z katta, xato qilingan harflar belgilangan; 3 soniyadan keyin (yoki «Esladim») yopiladi */
+
 function coverShow(typed) {
   if (!Z) return;
   const w = Z.cur, t = spTarget(), sp = $("#spell"); if (typed != null) Z.cvTyped = typed;
@@ -6528,11 +6155,11 @@ function coverShow(typed) {
   const fb = $("#fb"), bad = rec(w.id) && rec(w.id).bad >= 3;
   fb.className = "fb bad"; fb.innerHTML = (tp ? `Siz yozdingiz: <s>${esc(tp.trim())}</s>${df.html.includes('class="x"') ? " — belgilangan harflarga e'tibor bering" : ""}.` : "To'g'risi shunday yoziladi.") + (bad ? `<span class="you"><b>Bu so'z ${rec(w.id).bad}-marta xato bo'ldi — eslatgich yozing.</b></span>` : "");
   $("#next").classList.remove("hidden"); $("#next").textContent = "Esladim";
-  if (Z.cvN >= 3) { $("#skip").textContent = "O'tkazish"; $("#skip").classList.remove("hidden"); } // bir necha marta topilmasa — chiqish yo'li
+  if (Z.cvN >= 3) { $("#skip").textContent = "O'tkazish"; $("#skip").classList.remove("hidden"); }
   say(spoken(w));
   clearTimeout(Z.cvT); Z.cvT = setTimeout(() => { if (Z && Z.cur === w && Z.ph === "show" && Z.cvN === n) coverWrite(); }, CV_MS);
 }
-/* yop → yoz: so'z yopiladi, maydonda javob yo'q — xotiradan yoziladi */
+
 function coverWrite() {
   if (!Z || Z.ph !== "show") return; clearTimeout(Z.cvT);
   const t = spTarget(), sp = $("#spell"); Z.ph = "cover";
@@ -6550,19 +6177,19 @@ function giveUp() {
 function check() {
   const sp = $("#spell"), w = Z.cur, val = norm(sp.value);
   if (Z.state === "next") return next();
-  if (Z.ltWait) return; // xato animatsiyasi tugamaguncha ikkinchi tekshiruv bo'lmaydi
+  if (Z.ltWait) return;
   if (Z.ph === "show") return coverWrite();
   if (!val) return useLetters() ? bankNudge() : sp.focus();
   const cands = Z.qmode === "cloze" && Z.cz ? [Z.cz].concat(w.a) : w.a;
   const ok = cands.some(x => norm(x) === val || (pairOf(x) && pairKey(x) === pairKey(val))), t = spTarget(), n = t.replace(/[ \-→]/g, "").length;
-  // rasmga mos, lekin darslikdagi so'z emas (bike ↔ bicycle) — xato hisoblanmaydi, kerakli so'z so'raladi
+
   if (!ok && Z.qmode === "pic" && Z.ph !== "cover") {
     const pq = picOf(w), typed = sp.value.trim();
     if (pq && pq.alt.some(a => norm(a) === val)) { buzz(false); sp.value = ""; sp.className = "spell";
       $("#hint").innerHTML = `<span class="synalt"><b lang="en">${esc(typed)}</b> — rasmga mos, lekin darslikdagi so'z boshqa. Yana o'ylang yoki tarjimani ko'ring</span>`;
       if (!useLetters()) sp.focus(); return; }
   }
-  // ma'nosi to'g'ri, lekin boshqa so'z (hi ↔ hello) — xato hisoblanmaydi, kerakli so'z so'raladi
+
   if (!ok && Z.qmode === "spell" && Z.ph !== "cover") {
     const alt = synOf(w).find(x => (x.a || [x.w]).some(a => norm(a) === val) || norm(spoken(x)) === val);
     if (alt) { buzz(false); sp.value = ""; sp.className = "spell"; const c = synCtx(w);
@@ -6592,10 +6219,10 @@ function check() {
   $("#pts").textContent = "✓ " + Z.right;
 }
 function next() {
-  const hb = app.querySelector(".hook.edit"); if (hb && hb.querySelector(".hin").value.trim()) saveHook(hb); // «Saqlash»siz yozilgan eslatgich ham saqlanadi
+  const hb = app.querySelector(".hook.edit"); if (hb && hb.querySelector(".hin").value.trim()) saveHook(hb);
   Z.i++; if (Z.i < Z.q.length) ask(); else if (Z.learn) finishLearn(); else finish();
 }
-/* ---------- mashq natijasi: halqa, yulduzlar, sarlavha — yutuq hissi ball bilan mos ---------- */
+
 const STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/></svg>`;
 function resultHero(label, right, total) {
   const pct = total ? Math.round(right / total * 100) : 0, wrong = total - right;
@@ -6620,13 +6247,12 @@ function finish() {
     <button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
   bindSay(app); bindLesson();
   Z = null; zSave();
-  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch || prod ? Object.assign(ch ? { chunk: ch } : {}, prod ? { prod } : {}) : null); // xatolardan keyin ham «Keyingi N ta so'z» qoladi
+  const a = $("#again"); if (a) a.onclick = () => startQuiz(again, mode, title, back, null, ch || prod ? Object.assign(ch ? { chunk: ch } : {}, prod ? { prod } : {}) : null);
   const mo = $("#more"); if (mo) mo.onclick = () => startChunk(ch.pool, ch.mode, ch.title, ch.back, ch.asked);
   $("#back").onclick = () => { location.hash = back; };
   $("#barfill") && ($("#barfill").style.transform = "none");
 }
 
-/* ---------- QOLIPLAR ---------- */
 route(/^qolip$/, () => {
   app.innerHTML = `${nav(`#unitlar`, `Unitlar`, `Grammatika qoliplari`)}
   <div class="stack">${[...new Set(PATTERNS.filter(p => lvOf(p.unit) === curLvId()).map(p => p.unit))].sort((a, b) => a - b).map(u => `<section><p class="label">Unit ${un(u)} · ${esc(UNIT_INFO[u][0])}</p><div class="list">${PATTERNS.filter(p => p.unit === u).map(p => { const b = S.pat[p.id], full = patFrac(p) === 1; return `<a class="li" href="#qolip-${p.id}"><span class="tx"><b>${esc(p.title)}</b><span class="clamp">${esc(p.lead)}</span></span><span class="st ${full ? "full" : ""}">${b != null ? (full ? ICON.check : "") + b + "/" + p.drill.length : "yangi"}</span><span class="go">${ICON.chev}</span></a>`; }).join("")}</div></section>`).join("")}</div>`;
@@ -6642,7 +6268,7 @@ route(/^qolip-([\w-]+)$/, id => {
   const run = () => runDrill($("#drill"), own().concat(extra), res => {
     const mine = res.filter(r => r.it.pid === p.id), right = mine.filter(r => r.ok).length, rv = res.filter(r => r.it.pid !== p.id);
     S.pat[p.id] = Math.max(S.pat[p.id] || 0, right); gradePat(p, right >= mine.length * .8); gradeReview(rv); save(); markDone("gram");
-    const nx = LES ? null : patNext(p), weak = right < mine.length / 2; // yarmidan kam bo'lsa avval «Qaytadan»
+    const nx = LES ? null : patNext(p), weak = right < mine.length / 2;
     $("#drill").innerHTML = `${resultHero(p.title, right, mine.length)}${rv.length ? `<p class="muted" style="text-align:center;margin:0 0 14px">Takrorlash: ${rv.filter(r => r.ok).length} / ${rv.length}</p>` : ""}${lessonBtn("gram")}${nx && !weak ? `<button class="btn" id="pnx">${esc(nx.label)}</button><div style="height:10px"></div>` : ""}<button class="btn${LES || (nx && !weak) ? " ghost" : ""}" id="re">Qaytadan</button>${nx && weak ? `<div style="height:10px"></div><button class="btn ghost" id="pnx">${esc(nx.label)}</button>` : ""}`;
     bindLesson(); $("#re").onclick = () => runAgain();
     const nb = $("#pnx"); if (nb) nb.onclick = nx.run;
@@ -6652,7 +6278,7 @@ route(/^qolip-([\w-]+)$/, id => {
   const runAgain = () => { extra.length = 0; run(); };
   run();
 });
-/* qolip mashqidan keyin: unitdagi keyingi qolip → Gap tuzish → Hikoya → Gapirish (unit sahifasidagi tartib) */
+
 function patNext(p) {
   const n = p.unit, ps = unitPats(n), i = ps.indexOf(p);
   if (i >= 0 && i < ps.length - 1) { const q = ps[i + 1]; return { label: "Keyingisi: " + q.title, run: () => go("qolip-" + q.id) }; }
@@ -6662,12 +6288,12 @@ function patNext(p) {
   if (SPEAKING.some(t => t.unit === n)) return { label: "Keyingisi: Gapirish", run: () => go("gapir-" + n) };
   return { label: "Unit " + un(n) + " ga qaytish", run: () => go("unit-" + n) };
 }
-/* takrorlash: har bir qolip uchun hamma savoli to'g'ri bo'lsa keyingi quti */
+
 function gradeReview(res) {
   const by = {}; res.forEach(r => { by[r.it.pid] = (by[r.it.pid] !== false) && r.ok; });
   Object.keys(by).forEach(id => { const p = PATTERNS.find(x => x.id === id); if (p) gradePat(p, by[id]); });
 }
-/* qolip savollari: 3 ta variantdan tanlash; xato «Xatolarim»ga tushadi, to'g'ri javob uni o'chiradi */
+
 function runDrill(box, items, done, own) {
   let i = 0; const res = [];
   const draw = () => {
@@ -6687,7 +6313,7 @@ function runDrill(box, items, done, own) {
   };
   draw();
 }
-/* grammatika takrorlash: o'tilgan qoliplardan aralash savollar */
+
 route(/^gtakror$/, () => {
   const items = GX; GX = null; if (!items || !items.length) return go("");
   app.innerHTML = `${nav(`#`, `Bugun`, `Grammatika takrorlash`)}<p class="sub">O'tilgan qoliplardan ${items.length} ta savol. Xato qilganlaringiz shu yerga qaytadi.</p><div class="card" id="drill"></div>`;
@@ -6699,8 +6325,6 @@ route(/^gtakror$/, () => {
   });
 });
 
-/* ---------- XATOLARIM ---------- */
-/* ---------- NATIJALAR: haftalik ko'rsatkichlar va maqsadlar ---------- */
 route(/^natija$/, () => {
   const r = weekStat(0), p = weekStat(1), od = overdueWords().length, acc = pctOf(r.sp, r.sw);
   const row = (t, sub, v, met) => `<div class="li"><span class="tx"><b>${t}</b><span>${sub}</span></span><span class="st${met ? " full" : ""}">${met ? ICON.check : ""}${v}</span></div>`;
@@ -6726,7 +6350,7 @@ route(/^natija$/, () => {
   </div></section>
   <section class="sec"><div class="sec-h"><h2>Oxirgi 7 kun</h2></div><div class="list">${days.join("")}</div></section>${picStat(row)}`;
 });
-/* rasmli so'zlar tajribasi (pilot): rasm bilan o'rganilgan va rasmsiz so'zlarning keyingi kunlardagi odatdagi savollarda esda qolishi (butun davr) */
+
 function picStat(row) {
   const t = { ipv: 0, ipk: 0, icv: 0, ick: 0 };
   for (const k in S.log) for (const f in t) t[f] += S.log[k][f] || 0;
@@ -6765,7 +6389,6 @@ route(/^xato$/, () => {
   const b = $("#xb"); if (b) b.onclick = () => { startTuz(mb, "Xatolarim", null); T.back = "#xato"; };
 });
 
-/* ---------- GAPIRISH ---------- */
 route(/^gapir(?:-(\d+))?$/, n => {
   const list = n ? SPEAKING.filter(t => t.unit === +n) : SPEAKING.filter(t => lvOf(t.unit) === curLvId());
   app.innerHTML = `${nav(n ? "#unit-" + n : "#unitlar", n ? "Unit " + un(n) : "Unitlar", "Gapirish")}<p class="sub">Ilovadagi speaking topshiriqlari · [sariq] joylarni o'zingizga moslang</p>
@@ -6780,7 +6403,6 @@ route(/^gapir(?:-(\d+))?$/, n => {
   document.querySelectorAll(".sp .show").forEach(b => b.onclick = () => { b.parentElement.querySelector(".ans").classList.remove("hidden"); b.classList.add("hidden"); });
 });
 
-/* ---------- mikrofon: talaffuzni tekshirish ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const toks = s => norm(s).replace(/[^a-z0-9' ]/g, " ").split(" ").filter(Boolean);
 function listen(target, out, btn) {
@@ -6810,7 +6432,6 @@ function listen(target, out, btn) {
 function bindMic(root) { root.querySelectorAll("[data-mic]").forEach(b => b.onclick = () => listen(b.dataset.mic, b.closest("[data-micbox]").querySelector(".micout"), b)); }
 const micBtn = t => SR ? `<button class="icon" data-mic="${esc(t)}">Aytib ko'rish</button>` : "";
 
-/* ---------- TAYYOR GAPLAR ---------- */
 const PH = [];
 PHRASES.forEach(c => c.items.forEach(it => PH.push({ id: "gap|" + it.e, w: it.e, p: it.p, u: it.u, cat: c.id })));
 const phDue = () => PH.filter(isDue);
@@ -6872,11 +6493,10 @@ function phFinish() {
   $("#back").onclick = () => { location.hash = back; };
 }
 
-/* ---------- GAP TUZISH ---------- */
 const words = s => String(s).split(/\s+/).map(w => w.replace(/[.,?!]/g, "")).filter(Boolean);
 const BLD = [];
 BUILD.forEach(b => b.items.forEach(it => BLD.push(Object.assign({ unit: b.unit }, it))));
-// Yozish rejimi: qisqartmalar ochiladi (I'm = I am), tinish belgilari va katta-kichik harf hisobga olinmaydi.
+
 const CONTR = [[/\b(do|does|did|is|are|was|were|have|has|could|would)nt\b/g, "$1n't"], [/\bcant\b/g, "can't"], [/\bwont\b/g, "won't"], [/\bim\b/g, "i'm"],
   [/\b(he|she|it|what|where|that|there|who)'s got\b/g, "$1 has got"], [/\b(i|you|we|they)'ve\b/g, "$1 have"],
   [/\bi'm\b/g, "i am"], [/\b(you|we|they)'re\b/g, "$1 are"], [/\b(he|she|it|what|where|that|there|who)'s\b/g, "$1 is"],
@@ -6884,7 +6504,7 @@ const CONTR = [[/\b(do|does|did|is|are|was|were|have|has|could|would)nt\b/g, "$1
   [/\b(i|you|he|she|we|they)'d\b/g, "$1 would"], [/\b(i|you|he|she|we|they)'ll\b/g, "$1 will"]];
 const canon = s => { let t = norm(s).replace(/[.,?!"]/g, " "); CONTR.forEach(([re, to]) => { t = t.replace(re, to); }); return t.replace(/\s+/g, " ").trim().split(" ").filter(Boolean); };
 function lev(a, b) { const d = [...Array(a.length + 1)].map((_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j; for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; }
-/* eng uzun umumiy ketma-ketlik: to'g'ri tartibda turgan so'zlar (got indekslari) */
+
 function lcsKeep(got, want) {
   const n = got.length, m = want.length, L = [...Array(n + 1)].map(() => Array(m + 1).fill(0)), keep = new Set(); let i = 0, j = 0;
   for (let a = n - 1; a >= 0; a--) for (let b = m - 1; b >= 0; b--) L[a][b] = got[a] === want[b] ? L[a + 1][b + 1] + 1 : Math.max(L[a + 1][b], L[a][b + 1]);
@@ -6900,11 +6520,9 @@ function wordDiff(got, want) {
 }
 let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
-/* uzun gaplar: tanlangan darajadagi hikoyalardan 9–18 so'zli gaplar (tarjimasi bilan). Tuzoq so'zlar — o'quvchi adashadigan juftlar */
+
 const TZ_PAIRS = { was: "were", were: "was", is: "are", are: "is", has: "have", have: "has", did: "does", does: "did", went: "go", in: "on", on: "in", at: "in", to: "for", for: "to", the: "a", a: "the", an: "a", my: "me", his: "he", her: "she", their: "they", our: "we", this: "these", that: "what", which: "who", who: "which", much: "many", many: "much", than: "then", then: "than", would: "will", will: "would", could: "can", can: "could" };
-/* ---------- UZUN GAPLAR: xatodan keyin aniq qoida — pastki varaq (faqat xato bo'lganda) ----------
-   To'g'ri gap oldindan ma'lum: javob bilan solishtirib xato turini AIsiz topamiz (tuzoq so'z, tartib, is/are, a/an, -s, o'tgan shakl…).
-   Varaqda: to'g'ri gap, 1–3 ta qoida kartasi, «Savolingiz bormi?» — tayyor savollar (hamma uchun) va o'z savoli (faqat AI yoqilgan hisobda). */
+
 const ICON_BULB = sv('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3Z"/>');
 const TZ_QA = {
   order: [["Nega fe'l gap oxirida emas?", "Ingliz tilida tartib qat'iy: avval kim, darhol keyin nima qiladi. «Men choy ichaman» — I drink tea. «I tea drink» deyilmaydi."], ["Joy va vaqt qaysi tartibda?", "Odatda avval joy, keyin vaqt: I drink tea at home in the morning. Vaqtni gap boshiga ham chiqarish mumkin: In the morning, I drink tea at home."]],
@@ -6977,7 +6595,7 @@ function tzRules(A, W, raw, tile) {
       }[k]; card = [k, Object.assign(H, { ex: sw(a, b) })]; break; }
     if (card && j >= 0) { add(card[0], card[1]); subs.push([a, miss[j]]); miss.splice(j, 1); extra.splice(i, 1); i--; }
   }
-  // tuzoq so'z qo'shilgan, to'g'risi ham bor (are + is): qaysi biri kerakligini aytamiz
+
   for (let i = 0; i < extra.length; i++) { const a = extra[i]; for (const [g, k] of TZ_GRP) { if (!g.includes(a) || k === "art") continue; const b = W.find(w => w !== a && g.includes(w)); if (!b) continue;
     add(k + "x", { n: k === "be" || k === "bepast" ? 2 : k === "conj" ? 4 : k === "has" ? 5 : 0, t: { be: "is / am / are", bepast: "was / were", has: "has / have", do: "do / does / did", prep: "in / on / at", tofor: "to / for", that: "that / what", this: "this / these", much: "much / many", than: "than / then", modal: "will / would · can / could", who: "who / which", conj: "Bog'lovchilar", pron: "my / me · he / his", past: "O'tgan ish" }[k] || g.join(" / "), h: `Bu gapda ${b} kerak, ${a} ortiqcha`, ex: `<s>${esc(a)}</s> · <b>${esc(b)}</b>` }); drops.push(a); extra.splice(i, 1); i--; break; } }
   const BE = ["is", "am", "are", "was", "were"], ART = ["a", "an", "the"];
@@ -6986,7 +6604,7 @@ function tzRules(A, W, raw, tile) {
   const xa = extra.filter(x => ART.includes(x)); if (xa.length) add("artx", { t: "a / the", h: "Bu yerda " + [...new Set(xa)].join(", ") + " kerak emas", p: "Ismlar, umumiy ma'nodagi ko'plik va at home kabi iboralar oldidan a / the qo'yilmaydi." });
   const rm = miss.filter(x => !BE.includes(x) && !ART.includes(x)), rx = extra.filter(x => !ART.includes(x));
   if (rm.length || rx.length) add("words", { t: "So'zlar", h: rm.length ? (rm.length === 1 ? "Bitta so'z tushib qoldi" : rm.length + " ta so'z tushib qoldi") : "Ortiqcha so'z bor", ex: (rm.length ? "Kerak: <b>" + esc(rm.join(", ")) + "</b>" : "") + (rm.length && rx.length ? " · " : "") + (rx.length ? "Ortiqcha: <s>" + esc(rx.join(", ")) + "</s>" : "") });
-  // ortiqchalar olib tashlangach so'zlar to'g'ri, lekin tartib xato bo'lsa — tartib qoidasi ham
+
   if (!miss.length && !rx.length && cards.length < 3) { const B = A.slice(); subs.forEach(([a, b]) => { const i = B.indexOf(a); if (i >= 0) B[i] = b; }); [...xa, ...drops].forEach(w => { const i = B.lastIndexOf(w); if (i >= 0) B.splice(i, 1); });
     if (B.length === W.length && B.join(" ") !== W.join(" ")) { const keep = lcsKeep(B, W); cards.push({ k: "order", n: 1, t: "So'z tartibi", h: "Inglizchada so'z tartibi o'zbekchadan boshqacha", p: "Fe'l oxirida emas, kimdan keyin darhol keladi.", ex: "", order: { got: B.map((w, j) => [w, keep.has(j)]), want: W } }); } }
   const out = cards.slice(0, 3);
@@ -6995,7 +6613,7 @@ function tzRules(A, W, raw, tile) {
 }
 const ICON_RETRY = sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>');
 const tzCard = c => `<div class="rq"><p class="rq-k">${ICON_BULB}${c.n ? "Qoida " + c.n + " · " : ""}${esc(c.t)}</p><h3>${esc(c.h)}</h3>${c.p ? `<p>${esc(c.p)}</p>` : ""}${c.ex ? `<p class="rq-ex">${c.ex}</p>` : ""}${c.order ? `<div class="rq-fx" aria-label="Kim, nima qiladi, nimani, qayerda, qachon"><span class="s1">Kim</span>→<span class="s2">nima qiladi</span>→<span class="s3">nimani</span>→<span class="s4">qayerda</span>→<span class="s5">qachon</span></div>` : ""}</div>`;
-/* so'z ma'nosi (gloss): gap ichidagi har bir inglizcha so'zning qisqa o'zbekcha ma'nosi — unit lug'atlari + tez-tez uchraydigan kichik so'zlar */
+
 const GL_BASE = { a: "bir (ta)", an: "bir (ta)", the: "(ma'lum)", i: "men", you: "siz", he: "u", she: "u", it: "u", we: "biz", they: "ular", me: "meni", him: "uni", her: "uning", us: "bizni", them: "ularni", my: "mening", your: "sizning", his: "uning", its: "uning", our: "bizning", their: "ularning", mine: "meniki", yours: "sizniki",
   am: "-man", is: "-dir", are: "-dir", was: "edi", were: "edi", be: "bo'lmoq", been: "bo'lgan", being: "bo'lib",
   do: "qilmoq", does: "qiladi", did: "qildi", done: "qilingan", "don't": "-maydi", "doesn't": "-maydi", "didn't": "-madi", "isn't": "emas", "aren't": "emas", "wasn't": "emas edi", "weren't": "emas edi", "can't": "qila olmaydi", "won't": "-maydi", "couldn't": "qila olmadi",
@@ -7021,8 +6639,7 @@ function gloss(word) {
   for (const t of tries) if (t !== k && GL[t]) return GL[t];
   return "";
 }
-/* Siz yozgan ↔ to'g'risi: so'zma-so'z solishtirish va aniq tuzatish qadamlari (AIsiz).
-   ok — joyida · mv — joyi almashgan · add — qo'shish kerak · x — ortiqcha · sub — boshqa so'z kerak */
+
 function tzFix(gotD, wantD) {
   const g = gotD.map(w => w.toLowerCase()), w = wantD.map(x => x.toLowerCase()), n = g.length, m = w.length;
   const L = [...Array(n + 1)].map(() => Array(m + 1).fill(0));
@@ -7034,13 +6651,13 @@ function tzFix(gotD, wantD) {
   const subs = [];
   for (let a = 0; a < n; a++) if (!gs[a]) { const b = w.findIndex((x, k) => !ws[k] && rel(g[a], x)); if (b >= 0) { gs[a] = ws[b] = "sub"; subs.push([a, b]); } }
   gs.forEach((s, a) => { if (!s) gs[a] = "x"; }); ws.forEach((s, b) => { if (!s) ws[b] = "add"; });
-  // qadamlar: to'g'ri gap tartibida
+
   const q = s => `«${esc(s)}»`, steps = [], plain = [];
   const runs = st => { const r = []; ws.forEach((s, b) => { if (s !== st) return; const last = r[r.length - 1]; if (last && last[1] === b - 1) last[1] = b; else r.push([b, b]); }); return r; };
   const words = ([a, b]) => wantD.slice(a, b + 1).join(" ");
   const anchorBefore = a => { for (let k = a - 1; k >= 0; k--) if (ws[k] === "ok") return k; return -1; };
   const anchorAfter = b => { for (let k = b + 1; k < m; k++) if (ws[k] === "ok") return k; return -1; };
-  // chapdan o'ngga: har qadam to'g'ri gapdagi oldingi so'zga tayanadi (oldingi qadamlar bajarilgach u joyida bo'ladi)
+
   const subAt = new Map(subs.map(([a, b]) => [b, a])), seq = [];
   runs("mv").forEach(r => seq.push(["mv", r])); runs("add").forEach(r => seq.push(["add", r])); subs.forEach(([a, b]) => seq.push(["sub", [b, b]]));
   seq.sort((x, y) => x[1][0] - y[1][0]).forEach(([k, r]) => {
@@ -7078,7 +6695,7 @@ function ruleSheet(it, answer, cards, next, fx, retry) {
   const sheet = wrap.querySelector(".ks"), body = wrap.querySelector(".ks-body"), th = wrap.querySelector(".rs-th"), prev = document.activeElement;
   const bubble = (q, html) => { const d = document.createElement("div"); d.className = "rs-qa"; d.innerHTML = `<p class="rs-my">${esc(q)}</p><div class="rs-an">${html}</div>`; th.appendChild(d); bindSay(d); d.scrollIntoView({ block: "nearest", behavior: "smooth" }); return d; };
   wrap.querySelectorAll(".rs-chip").forEach(b => b.onclick = () => { const q = qa[+b.dataset.q]; b.remove(); bubble(q[0], `<p>${esc(q[1])}</p>`); });
-  /* AI: har bir farqni alohida tushuntiradi (mode «xato»); birinchi javobda «Siz yozdingiz / To'g'risi» solishtiruvi ham chiqadi */
+
   let shown = false;
   const askAI = async (q, lock) => {
     const d = bubble(q || "Xatoimni to'liq tushuntiring", `<div class="sk"></div><div class="sk" style="width:72%"></div><div class="sk" style="width:84%"></div>`), an = d.querySelector(".rs-an");
@@ -7107,7 +6724,7 @@ function ruleSheet(it, answer, cards, next, fx, retry) {
   const close = (fromPop) => { if (closed) return; closed = true; wrap.classList.remove("on"); document.removeEventListener("keydown", key, true); removeEventListener("popstate", pop);
     if (!fromPop && history.state && history.state.rs) history.back(); setTimeout(() => wrap.remove(), 300); if (prev && prev.focus && prev.isConnected) prev.focus({ preventScroll: true }); };
   const pop = () => close(true);
-  // varaq ichidagi tugmalar mashqning Enter/raqam tugmalariga yetib bormasin
+
   const key = e => { if (!wrap.contains(e.target) && e.target !== document.body) return; if (e.key === "Escape") { e.preventDefault(); close(); return; } if (e.key === "Enter" && e.target.id !== "rsq" && !e.target.closest("button")) { e.preventDefault(); e.stopPropagation(); wrap.querySelector("#rsgo").click(); } };
   history.pushState({ rs: 1 }, ""); addEventListener("popstate", pop);
   document.addEventListener("keydown", key, true);
@@ -7122,9 +6739,7 @@ function ruleSheet(it, answer, cards, next, fx, retry) {
   top.addEventListener("pointerup", up); top.addEventListener("pointercancel", up);
   requestAnimationFrame(() => { wrap.classList.add("on"); if (!matchMedia("(pointer:coarse)").matches) wrap.querySelector("#rsgo").focus({ preventScroll: true }); else sheet.focus({ preventScroll: true }); body.scrollTop = 0; });
 }
-/* ---------- KICHIK SO'ZLAR: in, on, at, to, from, of, with, for, about, the, a/an ----------
-   Hikoya va gap tuzish gaplaridan bitta kichik so'z olib tashlanadi — o'quvchi 3–4 variantdan tanlaydi.
-   Asosiy fikr: bu so'zlar — o'zbekchadagi qo'shimchalar (-da, -ga, -dan, -ning…), faqat so'zning OLDIDA turadi. */
+
 const KS_RULE = {
   in: ["-da (ichida)", "ichida; shahar, xona, oy, yil", "in the box · in Tashkent · in May"],
   on: ["-da (ustida)", "ustida; hafta kuni", "on the table · on Sunday"],
@@ -7201,7 +6816,7 @@ function ksFinish() {
   $("#ksre").onclick = ksStart;
 }
 function ksStart() { const q = ksRound(); if (q.length < 4) { toast("Bu darajada gap kam", null, null, { type: "info" }); return; } KS = { q, n: q.length, i: 0, res: [], wrong: [], again: new Set() }; if (location.hash === "#ksmashq") render(); else go("ksmashq"); }
-/* daraja oshgani sari «uzun» chegarasi ham oshadi: Beginner/Elementary hikoyalarida 12+ so'zli gap kam */
+
 const TZ_MIN = { "Pre-intermediate": 11, Intermediate: 11 };
 function longPool() {
   const out = [], cl = curBk(), min = TZ_MIN[cl] || 9;
@@ -7237,7 +6852,7 @@ route(/^tuz$/, () => {
   document.querySelectorAll("[data-tu]").forEach(b => b.onclick = () => { const n = +b.dataset.tu; startTuz(BLD.filter(x => x.unit === n), "Unit " + un(n), kp + n); });
 });
 let T = null;
-/* gap tuzish seansi ham yangilanishda davom etadi: gaplar indeks bilan saqlanadi (again/wrong — o'sha obyektlar) */
+
 const TKEY = "ingliz-tuz";
 function tSave() {
   try {
@@ -7261,9 +6876,7 @@ function startTuz(list, title, key, tag) {
 }
 function tuzResult(it, ok) { if (!T.again.has(it)) { (T.res = T.res || []).push(!!ok); segBar(document.querySelector("#app > .top .bar"), T.total, T.res, -1); logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
 const ICON_BOOK_GL = sv('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z"/>');
-/* ---------- GAP SKELETI: gapni ma'no bo'laklariga ajratib yig'ish ----------
-   Bo'laklar: AI hisobida seans boshida bir so'rov bilan tayyorlanadi va telefonda saqlanadi (inglizcha bo'lak + o'zbekcha gapdagi mos qism).
-   AI yo'q yoki javob kelmasa — ilova o'zi ajratadi (vergul, bog'lovchi va predloglar oldidan), o'zbekcha belgisi so'z ma'nolaridan. */
+
 const BKK = "ingliz-bolak"; let BKC = {};
 try { BKC = JSON.parse(localStorage.getItem(BKK) || "{}") || {}; } catch (e) { BKC = {}; }
 const bkSave = () => { try { const k = Object.keys(BKC); if (k.length > 600) k.slice(0, k.length - 600).forEach(x => delete BKC[x]); localStorage.setItem(BKK, JSON.stringify(BKC)); } catch (e) {} };
@@ -7275,9 +6888,9 @@ function bkAuto(it) {
   const toks = String(it.e).split(/\s+/).filter(Boolean), out = []; let cur = [];
   toks.forEach((t, i) => { const w = t.replace(/[.,?!;:]/g, ""); if (cur.length && BK_SPLIT.test(w) && !(w.toLowerCase() === "to" && cur.length < 2)) { out.push(cur); cur = []; } cur.push(w); if (/[,.!?;:]$/.test(t) && i < toks.length - 1) { out.push(cur); cur = []; } });
   if (cur.length) out.push(cur);
-  // uzun bo'lakni (5+ so'z) aniqlovchi so'z oldidan bo'lamiz: «He loves | the smell of fresh bread»
+
   for (let i = 0; i < out.length; i++) { const c = out[i]; if (c.length < 5) continue; const k = c.findIndex((w, x) => x >= 2 && /^(the|a|an|my|his|her|their|our|your|this|that|some)$/i.test(w)); if (k > 0) { out.splice(i, 1, c.slice(0, k), c.slice(k)); } }
-  // juda mayda (1 so'zli) bo'laklarni keyingisiga qo'shamiz, ko'pi bilan 6 bo'lak
+
   for (let i = 0; i < out.length - 1; i++) if (out[i].length === 1 && out.length > 2) { out[i + 1] = out[i].concat(out[i + 1]); out.splice(i, 1); i--; }
   while (out.length > 6) { const i = out.reduce((b, c, j, a) => j < a.length - 1 && c.length + a[j + 1].length < a[b].length + a[b + 1].length ? j : b, 0); out[i] = out[i].concat(out[i + 1]); out.splice(i + 1, 1); }
   return out.map(ws => ({ en: ws.join(" "), uz: ws.filter(w => !BK_FN.test(w) && !/'/.test(w)).map(w => (gloss(w) || "").split(";")[0].trim()).filter(Boolean).slice(0, 3).join(" · ") || "", auto: 1 }));
@@ -7293,20 +6906,19 @@ async function bkFetch(list) {
       const r = await aiAsk({ mode: "bolak", answer: "-", target: "-", items: need.map(it => ({ uz: it.u, en: it.e })) });
       (Array.isArray(r.bolaklar) ? r.bolaklar : []).forEach((ch, i) => { const it = need[i]; if (it && bkValid(ch, it)) BKC[voiceId(it.e)] = ch.map(c => ({ en: String(c.en).trim(), uz: String(c.uz || "").trim() })); });
       bkSave();
-    } catch (e) { /* AI bo'lmasa — avtomatik bo'laklar */ }
+    } catch (e) {  }
     BK_BUSY = null;
   })();
   return BK_BUSY;
 }
-/* o'zbekcha gapdagi mos qismlarni bo'lak rangi bilan tagiga chizish */
+
 function bkMarkUz(u, ch) {
   let html = esc(u);
   ch.forEach((c, i) => { if (!c.uz || c.auto) return; const q = esc(c.uz), at = html.toLowerCase().indexOf(q.toLowerCase()); if (at < 0 || /<[^>]*$/.test(html.slice(0, at))) return; html = html.slice(0, at) + `<u class="bku k${i % 6}">` + html.slice(at, at + q.length) + "</u>" + html.slice(at + q.length); });
   return html;
 }
 const ICON_SKEL = sv('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="14" y="5" width="7" height="5" rx="1.5"/><rect x="3" y="14" width="11" height="5" rx="1.5"/><path d="M18 14v5"/>');
-/* so'z ma'nosi pufakchasi: kompyuterda — kursor so'z ustida (0,15 s), telefonda — so'zni bosib turish (0,5 s), klaviaturada — fokus.
-   Bosib turish so'zni javobga qo'shmaydi (keyingi «click» bekor qilinadi). Barcha [data-gl] elementlar uchun bitta. */
+
 (function glTip() {
   let tipEl = null, tmr = 0, lpEl = null, lpXY = null, hideT = 0;
   const box = () => { if (!tipEl) { tipEl = document.createElement("div"); tipEl.id = "gltip"; tipEl.setAttribute("role", "tooltip"); document.body.appendChild(tipEl); } return tipEl; };
@@ -7333,7 +6945,7 @@ const ICON_SKEL = sv('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="
   document.addEventListener("pointermove", e => { if (e.pointerType === "mouse" || !lpXY || lpEl) return; if (Math.hypot(e.clientX - lpXY[0], e.clientY - lpXY[1]) > 10) { clearTimeout(tmr); lpXY = null; } }, { passive: true });
   const end = () => { clearTimeout(tmr); lpXY = null; if (lpEl) hide(1600); };
   document.addEventListener("pointerup", end, { passive: true }); document.addEventListener("pointercancel", end, { passive: true });
-  // bosib turilgan so'z javobga qo'shilmasin
+
   document.addEventListener("click", e => { if (lpEl && e.target.closest && e.target.closest("[data-gl]") === lpEl) { e.preventDefault(); e.stopImmediatePropagation(); } lpEl = null; }, true);
   document.addEventListener("contextmenu", e => { if (e.target.closest && e.target.closest("[data-gl]")) e.preventDefault(); });
   document.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest("[data-gl]"); if (el && el.matches(":focus-visible")) show(el); });
@@ -7342,7 +6954,7 @@ const ICON_SKEL = sv('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="
   document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
 })();
 function tuzNext() { T.retryOf = null; T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
-/* xato gapni darhol qayta yozish: natija (ball) o'zgarmaydi — faqat to'g'ri yozishni mashq qilish uchun */
+
 function tuzRetry() { if (!T) return; stopVoice(); T.retryOf = T.q[T.i]; render(); }
 route(/^tuzmashq$/, () => {
   if (!T && !tLoad()) return go("tuz");
@@ -7367,7 +6979,7 @@ route(/^tuzmashq$/, () => {
     $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
     if (cls !== "ok" && !$("#tzre")) { const b = document.createElement("button"); b.className = "btn ghost"; b.id = "tzre"; b.type = "button"; b.innerHTML = ICON_RETRY + "Qayta yozish"; b.onclick = tuzRetry; $("#chk").before(b); }
   };
-  /* uzun gap xato bo'lsa: qoida varag'i ochiladi; yopilsa — javob ostida «Qoidani ko'rish» qoladi */
+
   const ruleOpen = (A, W, ans, tile, gotD) => {
     const fx = tzFix(gotD || words(ans), words(it.e));
     let cards = tzRules(A, W, tile ? "" : ans, tile).filter(c => c.k !== "words");
@@ -7379,7 +6991,7 @@ route(/^tuzmashq$/, () => {
   };
   if (yoz) {
     const inp = $("#tin"), want = canon(it.e);
-    inp.focus(); // darhol: oldingi gapdan qolgan klaviatura yopilmasdan yangi maydonga o'tadi
+    inp.focus();
     inp.oninput = () => { if (!done) $("#chk").disabled = !inp.value.trim(); };
     $("#th1").onclick = () => { $("#thint").textContent = "1-so'z: " + words(it.e)[0]; };
     $("#th2").onclick = () => { $("#thint").textContent = words(it.e).length + " ta so'z: " + words(it.e).map(w => w[0] + "…").join(" "); };
@@ -7403,7 +7015,7 @@ route(/^tuzmashq$/, () => {
   const want = words(it.e), have = new Set(want.map(w => w.toLowerCase()));
   const tiles = shuffle(want.concat((it.x || []).filter(x => !have.has(x.toLowerCase()))));
   const picked = [];
-  let sk = null, skUsed = false; // sk — ochiq skelet bo'laklari
+  let sk = null, skUsed = false;
   const tileB = j => `<button class="tile" data-j="${j}" data-gl="${esc(tiles[picked[j]])}">${esc(tiles[picked[j]])}</button>`;
   const skDraw = () => {
     let j = 0, curSet = false;
@@ -7440,10 +7052,10 @@ route(/^tuzmashq$/, () => {
     const ok = picked.map(k => tiles[k].toLowerCase()).join(" ") === want.join(" ").toLowerCase();
     tuzResult(it, ok);
     if ($("#tzsk")) $("#tzsk").remove();
-    // bo'laklab yig'ilgan to'g'ri gap seans oxirida yana beriladi — endi skeletsiz (natija baribir to'g'ri sanaladi)
+
     if (ok && skUsed && !T.skAgain) { T.skAgain = new Set(); }
     if (ok && skUsed && !T.skAgain.has(it) && T.q.indexOf(it, T.i + 1) < 0) { T.skAgain.add(it); T.q.push(it); T.again.add(it); }
-    // javob qatori: to'g'ri tartibda turgan so'zlar — yashil, ortiqcha yoki joyi xato — qizil; to'g'ri bo'lsa to'lqin + belgi, xato bo'lsa silkinish
+
     const A = $("#ans"), keep = lcsKeep(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()));
     A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
     A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
@@ -7466,15 +7078,13 @@ function tuzFinish() {
   $("#back").onclick = () => { location.hash = back; };
 }
 
-/* ---------- TUSHUNTIR: «Nega xato?» — Claude (Supabase Edge Function «tushuntir») ----------
-   Faqat so'ralganda chaqiriladi. Kirmagan bo'lsa tugma o'rnida izoh, internet yo'q bo'lsa — mashq davom etadi. */
 const ICON_WHY = sv('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4"/><path d="M12 16h.01"/>');
 const ICON_PEN = sv('<path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/>');
 async function aiAsk(body) {
   if (!AUTH) throw Object.assign(new Error("auth"), { code: "auth" });
   if (navigator.onLine === false) throw Object.assign(new Error("offline"), { code: "offline" });
   let tok; try { tok = await sbToken(); } catch (e) { throw Object.assign(new Error("auth"), { code: e.status === 0 ? "offline" : "auth" }); }
-  // chat / xato / fix / check — Opus (javob 15–40 s), qolganlari — tez model
+
   const slow = ["chat", "xato", "fix", "check"].includes(body && body.mode), ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), slow ? 75000 : 25000);
   try {
     const r = await fetch(SB.url + "/functions/v1/tushuntir", { method: "POST", signal: ctl.signal, headers: { apikey: SB.key, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -7486,9 +7096,7 @@ async function aiAsk(body) {
 }
 const aiErr = c => c === "not_allowed" ? "Tushuntirish bu hisob uchun yoqilmagan." : c === "limit" ? "Bugungi 120 ta so'rov ishlatildi. Ertaga yana." : c === "offline" ? "Internet yo'q — tushuntirish keyin. Mashqni davom ettiring." : c === "auth" ? "Tushuntirish uchun qayta kiring (Sozlamalar)." : c === "no_key" ? "Tushuntirish hali yoqilmagan." : c === "slow" ? "Javob kechikdi. Qayta urinib ko'ring." : "Tushuntirib bo'lmadi.";
 const aiExample = m => m && m.en ? `<div class="ai-ex" ><b>${esc(m.en)}</b><button class="icon" data-say="${esc(m.en)}" aria-label="Tinglash">${ICON.vol}</button>${m.uz ? `<small>${esc(m.uz)}</small>` : ""}</div>` : "";
-/* ---------- YORDAMCHI: har sahifada suzuvchi tugma — tarjima, gapni tekshirish, so'z ma'nosi, savollar ----------
-   Faqat AI_ALLOW hisoblarida ko'rinadi. Mashq, test, o'yin va tinglash darsida yashirin (javob xotiradan topilsin).
-   Telefonda — pastdan varaq, kompyuterda (≥980px) — o'ng panel, sahifa yonida ochiq turadi. Suhbat shu qurilmada saqlanadi (oxirgi 20 ta xabar). */
+
 const AIC_KEY = "ingliz-ai-chat", AIC_MAX = 20, AI_LIMIT = 120;
 const ICON_UP = sv('<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>'), ICON_COPY = sv('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>');
 let AIC = (() => { try { const o = JSON.parse(localStorage.getItem(AIC_KEY) || "null"); return o && Array.isArray(o.m) ? o : { m: [] }; } catch (e) { return { m: [] }; } })();
@@ -7498,7 +7106,7 @@ const aiHideRoute = h => /^(quiz|repetitor|dars-|yozish|rasm|lahza-|sahna|suhbat
 const aiWide = () => matchMedia("(min-width:980px)").matches;
 let aiW = null, aiBusy = false, aiCtxOff = false, aiLastH = null;
 const AI_SUGG = [["Tarjima qil: ", "Tarjima qil"], ["Gapimni tekshir: ", "Gapimni tekshir"], ["Bu so'z nima: ", "Bu so'z nima?"], ["Farqi nima: ", "Farqi nima?"]];
-/* ko'rib turgan sahifa — yordamchiga kontekst */
+
 function aiCtx() {
   const h = location.hash.replace(/^#/, ""); let m;
   if ((m = h.match(/^(unit|soz)-(\d+)$/))) {
@@ -7510,7 +7118,7 @@ function aiCtx() {
   const map = { unitlar: "Unitlar", lugat: "Lug'at", gap: "Tayyor gaplar", tinglash: "Tinglash", oyin: "So'z o'yini", qolip: "Grammatika", tuz: "Gap tuzish", gapir: "Gapirish", natija: "Natijalar", xotira: "Xotira", boylik: "So'z boyligi" };
   return map[h] ? { label: map[h], detail: "Sahifa: " + map[h] } : null;
 }
-/* tugma: har render'da ko'rinish holati */
+
 function aiFabSync() {
   const h = location.hash.replace(/^#/, ""), show = aiOn() && !aiHideRoute(h) && !document.body.classList.contains("welcome");
   let b = document.getElementById("aifab");
@@ -7569,7 +7177,7 @@ function aiCtxDraw() {
   const x = el.querySelector("button"); if (x) x.onclick = () => { aiCtxOff = true; aiCtxDraw(); };
 }
 const AI_TUR = { tarjima: "Tarjima", tekshirish: "Tekshiruv", soz: "So'z", savol: "Javob" };
-/* so'zni «Mening so'zlarim»ga qo'shish — kitobda bo'lsa qo'shilmaydi (rejaga o'zi tushadi) */
+
 function aiWordState(w) {
   const book = WORDS.find(x => !x.mine && !x.vb && (norm(x.w) === norm(w) || norm(spoken(x)) === norm(w)));
   if (book) return { st: "book", unit: book.unit };
@@ -7637,8 +7245,6 @@ async function aiSend(text, retry) {
 }
 addEventListener("resize", () => { if (aiW) document.body.classList.toggle("ai-open", aiWide()); });
 
-/* host — xato kartasi (#tf); ctx: { uz, target, answer, rule } */
-/* faqat Ali uchun (API krediti boshqalarga sarflanmasin) — server ham shu ro'yxatni tekshiradi */
 const AI_ALLOW = ["aliumirov.me@gmail.com"];
 function whyButton(host, ctx) {
   if (cloud.kind === "claude" || !AUTH || !AI_ALLOW.includes(String(AUTH.email || "").toLowerCase())) return;
@@ -7663,7 +7269,7 @@ function whyButton(host, ctx) {
     }
   };
 }
-/* 2-funksiya: shu qoida bilan o'z gapini yozadi → tekshiriladi */
+
 function ownTry(el, ctx) {
   el.innerHTML = `<label class="ai-l" for="aiown">Shu qoida bilan o'z gapingizni yozing</label>
     <textarea id="aiown" class="spell" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="Inglizcha gap…"></textarea>
@@ -7681,8 +7287,7 @@ function ownTry(el, ctx) {
     } catch (e) { out.innerHTML = `<p class="ai-err" role="alert">${aiErr(e.code)}</p>`; b.disabled = false; b.textContent = "Qayta urinish"; }
   };
 }
-/* ---------- SINXRONLASH: email → kod → kirgan holat ----------
-   Kod bosqichi 15 daqiqa eslab qolinadi: pochtaga o'tib qaytganda telefon ilovani qayta ochsa ham, kod maydoni o'sha joyda turadi. */
+
 const SYK = "ingliz-sy";
 window.addEventListener("pageshow", e => { if (e.persisted && SY.goog) { SY.goog = false; syRedraw(); } });
 const SY = (() => { let o = {}; try { o = JSON.parse(localStorage.getItem(SYK) || "{}") || {}; } catch (e) {} return o.step === "code" && Date.now() - (o.t || 0) < 15 * 6e4 ? { step: "code", email: o.email || "", until: o.until || 0, err: "", busy: false } : { step: "email", email: o.email || "", until: 0, err: "", busy: false }; })();
@@ -7724,11 +7329,10 @@ function syncCardInner() {
     ${SYW || SYS ? "" : `<button class="btn ghost sy-out" id="syguest" type="button">Mehmon rejimidan chiqish</button><p class="sy-note">Mehmon sifatida kirgansiz · natijalar shu qurilmada qoladi</p>`}`;
 }
 let syTick = 0, SYW = false;
-/* birinchi ochilish: progress ham, hisob ham yo'q, ekran oldin yopilmagan bo'lsa (telefondagi mavjud tarix bor qurilmada chiqmaydi) */
+
 const WKEY = "ingliz-welcome";
 const fresh = () => !Object.keys(S.srs).length && !S.course && !(S.my || []).length && !Object.keys(S.log || {}).length && !Object.keys(S.vb.known || {}).length;
-/* landing: hisobga kirilmagan va «Mehmon» tanlanmagan bo'lsa (chiqish ham shu holatga qaytaradi). Avval mehmon bo'lib ishlagan qurilma — bir marta «mehmon» deb belgilanadi, landing to'satdan chiqmasin */
-/* WKEY: "in" — kirgan, "guest" — mehmon, "out" — hisobdan/mehmondan chiqqan (refresh qilinsa ham landing turadi), yo'q — birinchi marta */
+
 const needWelcome = () => { if (AUTH || cloud.kind === "claude") return false; try { const w = localStorage.getItem(WKEY); return !w || w === "out"; } catch (e) { return false; } };
 try { if (!AUTH && !localStorage.getItem(WKEY) && !fresh()) localStorage.setItem(WKEY, "guest"); } catch (e) {}
 const toLanding = () => { try { localStorage.setItem(WKEY, "out"); } catch (e) {} SY.step = "email"; SY.err = ""; scrollTo(0, 0); location.hash = ""; render(); };
@@ -7736,9 +7340,7 @@ function loadingPage() {
   document.body.classList.add("welcome");
   app.innerHTML = `<div class="wel"><div class="wel-hero"><img src="icons/icon-192.png" alt="" width="72" height="72"><h1>Ingliz tili</h1><p role="status">Progress yuklanmoqda…</p></div><div class="wel-spin" aria-hidden="true"></div></div>`;
 }
-/* ---------- LANDING: birinchi marta kirgan, hisobi yo'q odam uchun ----------
-   Tuzilma (Duolingo kabi): hero + 2 tugma → darajalar → 4 afzallik (haqiqiy ekranlar) → o'rnatish → yakuniy chaqiriq.
-   Faqat haqiqiy raqamlar va saytning o'z ekranlari; soxta foydalanuvchi soni yoki sharh yo'q. */
+
 const lpPic = (n, cls, eager) => `<div class="lp-ph${cls ? " " + cls : ""}"><picture><source media="(prefers-color-scheme: dark)" srcset="img/lp-${n}-dark.jpg"><img src="img/lp-${n}-light.jpg" alt="" width="290" height="628"${eager ? "" : ' loading="lazy"'} decoding="async"></picture></div>`;
 let WIO = null;
 function welcomePage() {
@@ -7831,18 +7433,18 @@ function welcomePage() {
   </div></div>`;
   app.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} SYW = false; scrollTo(0, 0); render(); });
   app.querySelectorAll("[data-in]").forEach(b => b.onclick = () => { app.querySelectorAll("[data-in]").forEach(x => { x.disabled = true; const t = x.querySelector("span"); if (t) t.textContent = "Google ochilmoqda…"; }); googleLogin(); });
-  /* yopishqoq panel: hero ko'rinmay qolganda tepada «Bepul boshlash» */
+
   const stk = $("#lxst"), hero = $("#lxhero");
   if (stk && hero && "IntersectionObserver" in window) { const io = new IntersectionObserver(([e]) => { const on = !e.isIntersecting; stk.classList.toggle("on", on); }, { rootMargin: "-80px 0px 0px 0px" }); io.observe(hero);
-    /* sahifa sal pastga surilishi bilan panelga fon — yozuv ostidan ko'rinib qolmasin */
+
     const io2 = new IntersectionObserver(([e]) => stk.classList.toggle("sc", !e.isIntersecting)); io2.observe($("#lxsent")); WIO = { disconnect: () => { io.disconnect(); io2.disconnect(); } }; }
-  /* darajani tanlash → shu darajadan mehmon sifatida boshlash */
+
   app.querySelectorAll(".lx-node").forEach(n => n.onclick = () => { const i = +n.dataset.lv;
     app.querySelectorAll(".lx-node").forEach(x => { const on = x === n; x.classList.toggle("sel", on); x.setAttribute("aria-pressed", on); });
     const c = $("#lxlv"); c.hidden = false; c.innerHTML = `<span><b>${lv[i][1]}</b> tanlandi · ${lv[i][3]}</span><button class="lx-btn lx-p" type="button" id="lxlvgo">${lv[i][1]}'dan boshlash →</button>`;
     $("#lxlvgo").onclick = () => { try { localStorage.setItem(WKEY, "guest"); } catch (e) {} setLevel(LVID[i]); if (!S.course) { const r = readyUnits(LVID[i]); if (r.length) { S.course = r[0]; save(); } } SYW = false; scrollTo(0, 0); render(); }; });
   app.querySelectorAll("[data-to]").forEach(a => a.onclick = e => { e.preventDefault(); const t = document.getElementById(a.dataset.to); if (t) t.scrollIntoView({ behavior: calm() ? "auto" : "smooth" }); });
-  /* jonli sinov: so'zni yozib, harfma-harf tekshirish (ilovadagi asosiy mashq) */
+
   const DW = [["kitob", "book", "[buk]"], ["do'st", "friend", "[frend]"], ["ertaga", "tomorrow", "[ta-MO-rou]"]];
   let k = 0, hint = 0;
   const inp = $("#lxin"), df = $("#lxdf");
@@ -7863,8 +7465,7 @@ function syRedraw(focus) {
   c.innerHTML = syncCardInner(); bindSync();
   if (focus) { const f = $(focus); if (f) f.focus(); }
 }
-/* ---------- HISOB: bosh sahifa tepasida avatar yoki «Kirish» ----------
-   Kirgan: sozlamalar tugmasi o'rnida avatar (Google surati yoki bosh harf). Kirmagan: «Kirish» + sozlamalar, bosilsa pastki oyna. */
+
 const ICON_USER = sv('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>');
 const inClaude = () => cloud.kind === "claude" || !!(window.claude && window.claude.use);
 function avatar() {
@@ -7873,20 +7474,19 @@ function avatar() {
 }
 function meBtn() {
   const gear = `<a class="me" href="#sozlama" aria-label="Sozlamalar">${ICON.gear}</a>`;
-  /* kirgan: «Kirish» o'rnida avatar (hisob oynasi), sozlamalar ⚙️ doim o'z joyida */
+
   if (AUTH) { const relog = cloud.status === "relogin";
     return `<div class="hme"><button class="me acc${relog ? " warn" : ""}" id="accb" type="button" aria-haspopup="dialog" aria-label="${relog ? "Hisob: sinxron to'xtadi — qayta kiring" : "Hisob: " + esc(AUTH.name || AUTH.email || "")}">${avatar()}${relog ? `<span class="av-warn" aria-hidden="true">!</span>` : ""}</button>${gear}</div>`; }
   return cloud.kind === "claude" ? gear : `<div class="hme"><button class="inb" id="inb" type="button" aria-haspopup="dialog">${ICON_USER}<span>Kirish</span></button>${gear}</div>`;
 }
-/* tor ekranda pillar ikki qatorga tushsa: avval «Kirish» belgisiz (faqat matn), baribir sig'masa — faqat belgi (matn ekran o'quvchi uchun qoladi).
-   Shrift yuklanganda va o'lcham o'zgarganda qayta o'lchanadi */
+
 function fitHbar() {
   const hb = $(".hbar"), pl = hb && hb.querySelector(".pills"); if (!pl || !$("#inb")) return;
   hb.classList.remove("tight", "tight2"); if (pl.offsetHeight > 44) hb.classList.add("tight"); if (pl.offsetHeight > 44) hb.classList.add("tight2");
 }
 try { document.fonts.ready.then(fitHbar); } catch (e) {}
 addEventListener("resize", () => { clearTimeout(fitHbar.t); fitHbar.t = setTimeout(fitHbar, 120); });
-/* bir marta o'zi so'raladi: progressi bor, lekin kirish ekranini ko'rmagan (u chiqishidan oldingi) qurilmada. Mehmonni tanlagan yoki chiqib ketganga — yo'q */
+
 const ASKK = "ingliz-signin-ask";
 function askSignIn() {
   if (AUTH || OAUTH || inClaude() || fresh()) return;
@@ -7899,7 +7499,7 @@ function askSignIn() {
 }
 let SYS = false, signClose = null;
 function signSheet(auto) {
-  if ((AUTH && auto) || document.querySelector(".qsheet") || $("#sycard")) return; // sahifada ikkinchi #sycard bo'lmasin; kirganga — faqat avatar bosilganda
+  if ((AUTH && auto) || document.querySelector(".qsheet") || $("#sycard")) return;
   SYS = true; SY.err = ""; SY.goog = false;
   const wrap = document.createElement("div"); wrap.id = "sgsheet"; wrap.className = "qsheet";
   wrap.innerHTML = `<div class="qs-bd" data-x></div><div class="qs ks" role="dialog" aria-modal="true" aria-labelledby="sgh" aria-describedby="sgd" tabindex="-1"><div class="ks-top"><span class="qs-grab" aria-hidden="true"></span><div class="ks-h"><h2 id="sgh">${AUTH ? "Hisobingiz" : "Hisobingizga kiring"}</h2><button class="ks-x" type="button" data-x aria-label="Yopish">${ICON.x}</button></div><p class="sg-sub" id="sgd">${AUTH ? "Sinxronlash va chiqish" : "Mac va telefonda bir xil progress"}</p></div>
@@ -7926,13 +7526,13 @@ function signSheet(auto) {
   document.addEventListener("keydown", key, true);
   wrap.addEventListener("click", e => { if (e.target.closest("[data-x]")) close(); });
   signClose = close;
-  // tutqichdan pastga tortib yopish
+
   const top = wrap.querySelector(".ks-top"); let y0 = null, dy = 0;
   top.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; y0 = e.clientY; dy = 0; sheet.style.transition = "none"; top.setPointerCapture(e.pointerId); });
   top.addEventListener("pointermove", e => { if (y0 === null) return; dy = Math.max(0, e.clientY - y0); sheet.style.transform = `translateY(${dy}px)`; });
   const up = () => { if (y0 === null) return; y0 = null; sheet.style.transition = ""; sheet.style.transform = ""; if (dy > 90) close(); };
   top.addEventListener("pointerup", up); top.addEventListener("pointercancel", up);
-  // o'zi ochilganda fokus oynaning o'zida (halqa ko'rinmaydi), tugmadan ochilganda — Google tugmasida
+
   requestAnimationFrame(() => { wrap.classList.add("on"); const f = auto ? sheet : wrap.querySelector("#sygoo") || wrap.querySelector(".ks-x"); f.focus({ preventScroll: true }); });
 }
 async function sySendCode() {
@@ -7987,12 +7587,7 @@ function bindSync() {
   const re = $("#syre"); if (re) re.onclick = () => { const via = AUTH && AUTH.via; SY.email = (AUTH && AUTH.email) || SY.email; authSave(null); cloud.status = "local"; if (via === "google") googleLogin(); else sySendCode(); };
 }
 
-/* ---------- SOZLAMA: export / import ---------- */
-/* ---------- TINGLASH: VOA «Let's Learn English» video darslari, gap-gap rejim ----------
-   Video VOA serveridan (erkin kontent). Gaplar va vaqtlari tinglash.json da (Whisper bilan bir marta tayyorlangan, tarjimalar qo'lda).
-   «Avval eshit»: matn va video subtitri eshitguncha yopiq; eshitgach bitta savol (tlQuiz), javobdan keyin matn ochiladi. So'z bosilsa — tarjima va «Takrorga qo'shish».
-   Natija seriyaga (logAns + touchStreak) hisoblanadi; oxirida qiyin gaplar mashqi va butun sahnani matnsiz ko'rish. */
-var TL = null; // var: bosh sahifa rejasi (tlPick) skript oxirigacha o'qilmasdan ham murojaat qilishi mumkin
+var TL = null;
 const ICON_TL = sv('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M20 15a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2z"/><path d="M4 15a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2z"/>');
 const ICON_RE = sv('<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>');
 function tlLoad() { if (TL) return Promise.resolve(TL); return fetch("tinglash.json", { cache: "no-cache" }).then(r => { if (!r.ok) throw new Error("tl"); return r.json(); }).then(d => (TL = d)); }
@@ -8001,7 +7596,7 @@ function tlSave(n, patch) { S.tl = S.tl || {}; S.tl[n] = Object.assign({}, tlSt(
 const tlPref = (k, d) => { try { const v = localStorage.getItem("ingliz-tl-" + k); return v == null ? d : v; } catch (e) { return d; } };
 const tlSetPref = (k, v) => { try { localStorage.setItem("ingliz-tl-" + k, v); } catch (e) {} };
 const mmss = s => Math.floor(s / 60) + ":" + String(Math.round(s % 60)).padStart(2, "0");
-/* kunlik rejadagi tinglash qadami: boshlangan dars yoki keyingi tugallanmagan dars */
+
 function tlPick() {
   const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
   if (cur) return { t: cur[1].t || cur[0] + "-dars", s: `${cur[1].i + 1} / ${cur[1].len} gap · davom etish`, href: "tinglash-" + cur[0] };
@@ -8009,7 +7604,7 @@ function tlPick() {
   tlLoad().catch(() => {});
   return { t: "video dars", s: "Avval eshitib, keyin savol", href: "tinglash" };
 }
-/* bosh sahifadagi qator */
+
 function tlCard() {
   const cur = Object.entries(S.tl || {}).filter(([, v]) => v.len && !v.done && v.i > 0).sort((a, b) => (b[1].at || 0) - (a[1].at || 0))[0];
   const sub = cur ? `Davom etish: ${esc(cur[1].t || cur[0] + "-dars")} · ${cur[1].i + 1} / ${cur[1].len}` : "VOA video darslari · gap-gap";
@@ -8031,7 +7626,7 @@ route(/^tinglash$/, () => {
       <p class="gohint" style="text-align:left">Video va matn: VOA Learning English (learningenglish.voanews.com).</p>`;
   }).catch(() => { const b = $("#tll"); if (b) b.innerHTML = `<div class="card"><p>Darslarni yuklab bo'lmadi. Internetni tekshirib, qayta oching.</p></div>`; });
 });
-/* so'z: avval ilovadagi lug'atdan (kitob, o'z so'zlarim, so'z boyligi), oddiy qo'shimchalarni olib tashlab */
+
 function tlLookup(raw) {
   const w = String(raw).toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z']+|[^a-z']+$/g, "");
   if (!w) return null;
@@ -8056,9 +7651,7 @@ const ICON_PLAY = ICF("M10,0 C15.51,0 20,4.49 20,10.01 C20,15.51 15.51,20 10,20 
 const ICON_PAUSE = ICF("M8.59 3.5H6.28C5.45 3.5 4.78 4.17 4.78 5V19C4.78 19.83 5.45 20.5 6.28 20.5H8.59C9.42 20.5 10.09 19.83 10.09 19V5C10.09 4.17 9.42 3.5 8.59 3.5Z M17.72 3.5H15.41C14.58 3.5 13.91 4.17 13.91 5V19C13.91 19.83 14.58 20.5 15.41 20.5H17.72C18.55 20.5 19.22 19.83 19.22 19V5C19.22 4.17 18.55 3.5 17.72 3.5Z");
 const ICON_HIDE = ICF("M18.42,0.22 C18.71,0.51 18.71,0.99 18.42,1.28 L2.64,17.05 C2.5,17.2 2.31,17.27 2.11,17.27 C1.92,17.27 1.73,17.2 1.58,17.05 C1.29,16.76 1.29,16.29 1.58,15.99 L3.56,14.02 C2.14,12.73 0.94,10.99 0.06,8.93 C-0.02,8.74 -0.02,8.53 0.06,8.34 C1.08,5.98 2.52,4.02 4.22,2.68 C7.51,0.08 11.84,-0.06 15.27,2.31 L17.36,0.22 C17.65,-0.07 18.12,-0.07 18.42,0.22 Z M18.05,5.04 C18.77,6 19.41,7.11 19.94,8.34 C20.02,8.53 20.02,8.74 19.94,8.93 C17.84,13.79 14.13,16.69 10,16.69 C9.06,16.69 8.13,16.54 7.23,16.24 C6.84,16.11 6.63,15.68 6.76,15.29 C6.89,14.9 7.31,14.69 7.71,14.81 C8.45,15.06 9.22,15.19 10,15.19 C13.43,15.19 16.56,12.75 18.43,8.64 C17.97,7.64 17.44,6.73 16.85,5.94 C16.6,5.61 16.67,5.14 17,4.89 C17.33,4.64 17.8,4.71 18.05,5.04 Z M5.15,3.86 C3.71,4.99 2.48,6.64 1.57,8.64 C2.36,10.39 3.41,11.87 4.62,12.96 L6.75,10.82 C6.32,10.18 6.09,9.43 6.09,8.64 C6.09,6.48 7.84,4.72 10,4.72 C10.78,4.72 11.55,4.96 12.19,5.39 L14.19,3.39 C11.34,1.55 7.86,1.71 5.15,3.86 Z M13.24,8.46 C13.65,8.53 13.92,8.92 13.84,9.33 C13.56,10.93 12.29,12.19 10.7,12.48 C10.66,12.49 10.61,12.49 10.57,12.49 C10.21,12.49 9.9,12.24 9.83,11.88 C9.76,11.47 10.03,11.08 10.43,11 C11.41,10.83 12.19,10.05 12.37,9.07 C12.44,8.66 12.83,8.39 13.24,8.46 Z M10,6.22 C8.67,6.22 7.59,7.31 7.59,8.64 C7.59,9.02 7.68,9.4 7.85,9.73 L11.09,6.48 C10.76,6.31 10.38,6.22 10,6.22 Z", "2 3");
 const ICON_SHOW = ICF("M10,0 C14.14,0 17.85,2.9 19.94,7.76 C20.02,7.95 20.02,8.16 19.94,8.35 C17.85,13.2 14.14,16.1 10,16.11 L10,16.11 C5.86,16.1 2.15,13.2 0.06,8.35 C-0.02,8.16 -0.02,7.95 0.06,7.76 C2.15,2.9 5.86,0 10,0 Z M10,1.5 C6.56,1.5 3.43,3.94 1.57,8.05 C3.43,12.16 6.56,14.6 10,14.61 C13.44,14.6 16.57,12.16 18.43,8.05 C16.57,3.94 13.44,1.5 10,1.5 Z M10,4.14 C12.16,4.14 13.91,5.9 13.91,8.05 C13.91,10.21 12.16,11.96 10,11.96 C7.84,11.96 6.09,10.21 6.09,8.05 C6.09,5.9 7.84,4.14 10,4.14 Z M10,5.64 C8.67,5.64 7.59,6.72 7.59,8.05 C7.59,9.38 8.67,10.46 10,10.46 C11.33,10.46 12.41,9.38 12.41,8.05 C12.41,6.72 11.33,5.64 10,5.64 Z", "2 4");
-/* ---------- «Tez savol»: har gapdan keyin bitta savol (gapning o'zidan avtomatik) ----------
-   3 so'zdan qisqa yoki mazmunli so'zi yo'q gapda savol yo'q — matn shunchaki ochiladi.
-   Turlari: «cloze» — bo'sh joyga eshitilgan so'z (3 variant), «pick» — ikki o'xshash gapdan eshitilganini tanlash. */
+
 const TL_STOP = new Set("the a an and or but to of in on at for is are am was were be been i i'm i've you you're he she it it's we they me my your his her our their this that there here what who where when how why yes no not do does did don't can can't oh hi hey okay ok so with from just very too let's let who's what's where's that's he's she's there's here's isn't aren't i'll you'll we're they're well right".split(" "));
 const tlClean = t => String(t).toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z0-9']+|[^a-z0-9']+$/g, "");
 const tlHash = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
@@ -8068,7 +7661,7 @@ function tlQuiz(L, i) {
   const key = L.n + ":" + i; if (key in TL_Q) return TL_Q[key];
   const toks = L.s[i][2].split(/\s+/).filter(Boolean);
   let q = null;
-  // ismlar: gap o'rtasida bosh harf bilan yozilgan so'zlar (Anna, Pete, Marsha) — savolga ham, chalg'ituvchiga ham olinmaydi
+
   const names = L._names || (L._names = new Set(L.s.flatMap(x => x[2].split(/\s+/).slice(1).filter(t => /^[A-Z][a-z]/.test(t.replace(/^[^A-Za-z]+/, ""))).map(tlClean))));
   const all = toks.length >= 3 ? toks.map((t, k) => ({ k, w: tlClean(t) })).filter(o => tlOkWord(o.w)) : [];
   const cand = all.filter(o => !names.has(o.w)).length ? all.filter(o => !names.has(o.w)) : all;
@@ -8083,7 +7676,7 @@ function tlQuiz(L, i) {
     const cap = d => /^[A-Z]/.test(word) ? d[0].toUpperCase() + d.slice(1) : d;
     const mix = a => a.map((o, j) => ({ o, r: tlHash(o + ":" + h + ":" + j) })).sort((x, y) => x.r - y.r).map(x => x.o);
     const with_ = w => toks.map((t, k) => k === tg.k ? m[1] + w + m[3] : t).join(" ");
-    // pick — har 3-savol; qisqa gaplarda (6 so'zgacha) yarmi diktant: so'zni o'zi yozadi
+
     const kind = h % 3 === 2 ? "pick" : toks.length <= 6 && (h >> 2) % 2 === 0 ? "dict" : "cloze";
     q = kind === "pick"
       ? { kind, k: tg.k, word, opts: mix([L.s[i][2], with_(cap(ds[0]))]), ans: L.s[i][2] }
@@ -8093,7 +7686,7 @@ function tlQuiz(L, i) {
 }
 const TL_COL = ["#3B6FB6", "#B9441F", "#5F7D3A", "#8A4FA0", "#A0612A", "#2F7F7A", "#9C3D63"];
 const tlWho = w => w ? `<span class="tl-who">${w.split(" → ").map(nm => `<span class="tl-wc"><i style="background:${TL_COL[tlHash(nm) % TL_COL.length]}" aria-hidden="true">${esc(nm[0])}</i>${esc(nm)}</span>`).join('<span class="tl-arr" aria-hidden="true">→</span>')}</span>` : "";
-/* diktant: katta-kichik harf va tutuq belgisi farq qilmaydi; 5+ harfli so'zda bitta harf xatosi kechiriladi */
+
 const tlLev = (a, b) => { const d = Array.from({ length: a.length + 1 }, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j;
   for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; };
 const tlNorm = w => String(w).toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9']/g, "");
@@ -8105,10 +7698,10 @@ function tlLesson(L) {
   let arr = (st0.r || "").padEnd(N, " ").slice(0, N).split("");
   let i = Math.min(st0.i || 0, N - 1), phase = "idle", playing = false, raf = 0, endAt = 0, onEnd = null, picked = null, uzOpen = false;
   let mode = "main", seq = null, k = 0, answered = 0;
-  // sahnalar: [boshlanish gapi, o'zbekcha kirish]; har sahna kirishi birinchi eshitishgacha ko'rsatiladi
+
   const SC = L.sc && L.sc.length ? L.sc : [[0, ""]], seenSc = new Set();
   const scOf = j => { let x = 0; SC.forEach((c, y) => { if (c[0] <= j) x = y; }); return x; };
-  const scEnd = x => x + 1 < SC.length ? SC[x + 1][0] : N; // mode: main · hard (qiyin gaplar) · watch (butun sahna)
+  const scEnd = x => x + 1 < SC.length ? SC[x + 1][0] : N;
   tlSave(L.n, { len: N, t: L.t, i });
   app.innerHTML = `${nav("#tinglash", "Tinglash", L.t)}
   <div class="stack tlz">
@@ -8128,7 +7721,6 @@ function tlLesson(L) {
   const repChip = (t = "Yana eshitish") => `<button class="tl-chip" id="tlrep">${ICON_RE}<span>${t}</span></button>`;
   const score = () => { const q = arr.filter(c => c === "1" || c === "0").length, ok = arr.filter(c => c === "1").length; return { q, ok, pct: q ? Math.round(ok / q * 100) : null }; };
 
-  /* ---- video ---- */
   const stopWatch = () => { cancelAnimationFrame(raf); raf = 0; };
   const halt = () => { stopWatch(); try { v.pause(); } catch (e) {} playing = false; };
   const tick = () => { if (v.currentTime >= endAt - 0.05 || v.ended) { halt(); const f = onEnd; onEnd = null; if (f) f(); else draw(); return; } raf = requestAnimationFrame(tick); };
@@ -8143,7 +7735,6 @@ function tlLesson(L) {
   const pause = () => { halt(); draw(); };
   const playCur = first => (seenSc.add(scOf(i)), run(L.s[i][0], L.s[i][1], first ? () => { phase = tlQuiz(L, i) ? "ask" : "shown"; if (phase === "shown" && arr[i] === " ") { arr[i] = "-"; saveR(); } draw(); } : null));
 
-  /* ---- javob ---- */
   const answer = opt => {
     const q = tlQuiz(L, i), ok = opt != null && (q.kind === "dict" ? tlSame(opt, q.ans) : opt === q.ans);
     picked = opt; phase = "res"; uzOpen = false;
@@ -8165,7 +7756,6 @@ function tlLesson(L) {
     i++; phase = "idle"; tlSave(L.n, { i }); draw(); playCur(true);
   };
 
-  /* ---- chizish ---- */
   function segs() {
     const list = mode === "hard" ? seq : L.s.map((_, j) => j);
     segEl.innerHTML = list.map(j => { const c = arr[j]; return `<i class="${mode === "main" && j && SC.some(x => x[0] === j) ? "s0 " : ""}${j === i && mode !== "watch" && (phase === "idle" || phase === "ask") ? "cur" : c === "1" ? "ok" : c === "0" ? "no" : c === "-" ? "seen" : ""}"></i>`; }).join("");
@@ -8210,7 +7800,7 @@ function tlLesson(L) {
       }
       $("#tlidk").onclick = () => { halt(); answer(null); };
     } else {
-      // res / shown: matn ochiq
+
       const ok = phase === "res" && picked != null && (q.kind === "dict" ? tlSame(picked, q.ans) : picked === q.ans), hl = q ? q.k : -1;
       const info = q ? tlLookup(q.word) : null;
       const addOk = info && info.u && !info.book && !info.inPlan && !info.mine && !(tlSt(L.n).w || []).includes(info.w);
@@ -8225,7 +7815,7 @@ function tlLesson(L) {
       $("#tlre").onclick = () => playing ? pause() : playCur(false);
       $("#tlmain").onclick = nextSentence;
       const ub = $("#tluzb"); if (ub) ub.onclick = () => { uzOpen = true; draw(); };
-      // shadowing: gap yana eshitiladi, tugagach mikrofon o'zi yoqiladi — gapni ortidan qaytarasiz
+
       const mic = $("#tlmic"); if (mic) mic.onclick = () => run(s[0], s[1], () => { draw(); const b = $("#tlmic"), o = $("#tlmo"); if (b && o) listen(s[2], o, b); });
       const ad = $("#tladd2"); if (ad) ad.onclick = () => { addWord(info, s); draw(); };
       body.querySelectorAll(".tl-w").forEach(b => { b.onclick = () => wordSheet(b.dataset.w); b.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wordSheet(b.dataset.w); } }; });
@@ -8242,7 +7832,6 @@ function tlLesson(L) {
     const rp = $("#tlrep"); if (rp) rp.onclick = () => playCur(false);
   }
 
-  /* ---- natija ---- */
   function finish() {
     halt(); phase = "fin"; aiBox.innerHTML = ""; segs(); cov.classList.add("hidden");
     const sc = score(); if (sc.pct != null && tlSt(L.n).done) tlSave(L.n, { pct: sc.pct });
@@ -8270,7 +7859,6 @@ function tlLesson(L) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  /* ---- so'z oynasi ---- */
   const sh = $("#tlsh"), shb = $("#tlshb");
   const closeSheet = () => { sh.classList.add("hidden"); };
   sh.querySelectorAll("[data-x]").forEach(x => x.onclick = closeSheet);
@@ -8300,7 +7888,6 @@ function tlLesson(L) {
     const cl = shb.querySelector(".tl-shx"); if (cl) cl.focus({ preventScroll: true });
   }
 
-  /* ---- holatlar ---- */
   v.addEventListener("loadedmetadata", () => { if (v.paused && v.currentTime < 0.1) { try { v.currentTime = L.s[i][0]; } catch (e) {} } }, { once: true });
   v.addEventListener("waiting", () => { const b = $("#tlmain span"); if (playing && b) b.textContent = "Yuklanmoqda…"; });
   v.addEventListener("playing", () => { if (playing) draw(); });
@@ -8314,9 +7901,7 @@ function tlLesson(L) {
   const off = () => { if (location.hash !== "#tinglash-" + L.n) { halt(); const o = document.getElementById("tlsh"); if (o) o.remove(); window.removeEventListener("hashchange", off); } };
   window.addEventListener("hashchange", off);
 }
-/* ---------- TELEFON WIDGETI: uy ekranida bugungi takror soni va seriya ----------
-   Android — kichik ilova (ingliz-takror.apk), iPhone — Scriptable skripti. Ikkalasi ham shaxsiy kalit bilan (widget_keys)
-   faqat raqamlarni oladi (Edge Function «widget»). */
+
 const ICON_WG = sv('<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="18" height="8" rx="2"/>');
 const WG = { key: "", text: "", busy: false, os: /iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? "ios" : "android" };
 function wgSteps() {
@@ -8360,7 +7945,7 @@ async function wgScript(key) {
 function bindWidget() {
   const box = $("#wgc"); if (!box) return;
   const msg = $("#wgmsg");
-  // tayyor kalitni joriy tabdagi tugmaga qo'yadi (iPhone uchun skript ham oldindan tayyorlanadi: Safari kechikkan nusxani taqiqlaydi)
+
   const fill = async () => {
     if (WG.os === "android") { const a = $("#wglink"); if (!a || !WG.key) return; a.href = "ingliztakror://k/" + WG.key; a.removeAttribute("aria-disabled"); a.textContent = "Ilovaga ulash"; return; }
     const btn = $("#wgcp"), tx = $("#wgtx"); if (!btn || !WG.key) return;
@@ -8384,7 +7969,7 @@ function bindWidget() {
     box.querySelectorAll(".wg-os [data-os]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
     $("#wgbody").innerHTML = wgSteps(); if (WG.key) fill().catch(() => {});
   });
-  // eski widget ishlamay qoladi — ikkinchi bosish bilan tasdiqlanadi
+
   const nb = $("#wgnew"); let armed = 0;
   nb.onclick = () => { if (Date.now() - armed < 4000) { armed = 0; nb.textContent = "Kalitni yangilash"; prep(true); return; }
     armed = Date.now(); nb.textContent = "Ha, yangilash"; setTimeout(() => { if (armed && Date.now() - armed >= 4000) { armed = 0; nb.textContent = "Kalitni yangilash"; } }, 4100); };

@@ -26,7 +26,7 @@ const APP_JS = fs.readFileSync(path.join(ROOT, "js/app.js"), "utf8");
 
 function extractFn(source, name) {
   const start = source.indexOf(`function ${name}(`);
-  assert.notEqual(start, -1, `${name}() topilmadi`);
+  assert.notEqual(start, -1, `${name}() not found`);
   let depth = 0;
   let started = false;
   for (let i = start; i < source.length; i++) {
@@ -41,13 +41,13 @@ function extractFn(source, name) {
       }
     }
   }
-  throw new Error(`${name}() yopuvchi qavsi topilmadi`);
+  throw new Error(`Closing brace for ${name}() not found`);
 }
 
 const fixState = new Function(`${extractFn(APP_JS, "fixState")}; return fixState;`)();
 const merge = new Function(`${extractFn(APP_JS, "merge")}; return merge;`)();
 
-test("Edge Functions _shared/common.ts: safeEq va hasCronOrAgentAuth", () => {
+test("Edge Functions _shared/common.ts: safeEq and hasCronOrAgentAuth", () => {
   assert.equal(safeEq("abc123", "abc123"), true);
   assert.equal(safeEq("abc123", "abc124"), false);
   assert.equal(safeEq("abc", "abcd"), false);
@@ -77,7 +77,7 @@ test("Edge Functions _shared/common.ts: safeEq va hasCronOrAgentAuth", () => {
 test("Edge Functions _shared/common.ts: cors, clip, enText, uzText, tashkentDay", () => {
   assert.equal(cors("https://easywords.uz")["Access-Control-Allow-Origin"], "https://easywords.uz");
   assert.equal(cors("https://evil.example")["Access-Control-Allow-Origin"], "https://easywords.uz");
-  assert.equal(clip("  salom   dunyo  ", 10), "salom duny");
+  assert.equal(clip("  hello   world  ", 10), "hello worl");
   assert.equal(enText("Hello world", 50), "Hello world");
   assert.equal(enText("Привет", 50), "");
   assert.equal(uzText("Salom, yaxshimisiz?", 50), "Salom, yaxshimisiz?");
@@ -85,7 +85,7 @@ test("Edge Functions _shared/common.ts: cors, clip, enText, uzText, tashkentDay"
   assert.match(tashkentDay(), /^\d{4}-\d{2}-\d{2}$/);
 });
 
-test("js/app.js fixState(): buzilgan holatni tozalaydi va FSRS maydonlarini saqlaydi", () => {
+test("js/app.js fixState(): sanitizes corrupt state and preserves FSRS fields", () => {
   const clean = fixState({
     srs: {
       "1|hello": { b: 99, due: "2026-11-23", ok: 3, bad: -5, fs: 12.345, fd: 4.567 },
@@ -107,7 +107,7 @@ test("js/app.js fixState(): buzilgan holatni tozalaydi va FSRS maydonlarini saql
   assert.deepEqual(clean.vb.learn, ["book"]);
 });
 
-test("js/app.js merge(): ikki qurilma progressi va tombstone/untomb to'g'ri birlashadi", () => {
+test("js/app.js merge(): merges multi-device progress and tombstone/untomb records", () => {
   const now = Date.now();
   const devA = fixState({
     srs: {
@@ -143,66 +143,60 @@ test("js/app.js merge(): ikki qurilma progressi va tombstone/untomb to'g'ri birl
   assert.equal("1|city" in m2.srs, true);
 });
 
-test("js/fsrs.js: yangi so'z, muvaffaqiyatli takror, xato (lapse), yordam va eski Leitner migratsiyasi", () => {
-  // 1. Yangi so'z: Good (3)
+test("js/fsrs.js: new word, review growth, lapse, caps, and legacy migration", () => {
   const s1 = FSRS.schedule(null, 3, 0);
   assert.ok(s1.fs >= 2 && s1.interval >= 2);
   assert.equal(s1.b, 1);
 
-  // 2. 3 kundan keyin yana Good (3) -> stability va interval o'sadi
   const s2 = FSRS.schedule({ fs: s1.fs, fd: s1.fd, ok: 1, bad: 0, b: s1.b }, 3, 3);
   assert.ok(s2.fs > s1.fs);
   assert.ok(s2.interval > s1.interval);
 
-  // 3. Xato (Again = 1) -> interval = 1, box = 0, stability pasayadi
   const lapse = FSRS.schedule({ fs: 15, fd: 5, ok: 5, bad: 0, b: 4 }, 1, 14);
   assert.equal(lapse.interval, 1);
   assert.equal(lapse.b, 0);
   assert.ok(lapse.fs < 15 && lapse.fs >= 0.4);
 
-  // 4. Yozilmagan so'z cheklovi (capUnspelled) va yordam (hinted)
   const unsp = FSRS.schedule({ fs: 10, fd: 4, ok: 3, bad: 0, b: 3 }, 3, 10, { capUnspelled: true });
   assert.ok(unsp.b <= 2 && unsp.fs <= 5);
   const hnt = FSRS.schedule({ fs: 10, fd: 4, ok: 3, bad: 0, b: 3 }, 2, 10, { hinted: true });
   assert.ok(hnt.b <= 1 && hnt.fs <= 2);
 
-  // 5. Eski Leitner yozuvidan migratsiya
   const leg = FSRS.schedule({ b: 3, ok: 4, bad: 0 }, 3, 7);
   assert.ok(leg.fs > 7.5 && leg.b >= 3);
 });
 
-test("js/mastery.js: 2+ toza qo'ng'iroqdan keyin mavzu o'zlashtirilgan deb belgilanadi", () => {
-  // CLS odatda eng yangisi boshida turadi
+test("js/mastery.js: marks topic mastered after 2+ clean calls", () => {
   const calls = [
     { id: "c4", day: "2026-11-23", fixes: [{ topic: "art", you: "a apple", fix: "an apple" }], off: [] },
-    { id: "c3", day: "2026-11-22", fixes: [{ topic: "past", you: "I go", fix: "I went" }], off: [0] }, // off: bu xato emas!
+    { id: "c3", day: "2026-11-22", fixes: [{ topic: "past", you: "I go", fix: "I went" }], off: [0] },
     { id: "c2", day: "2026-11-21", fixes: [], off: [] },
     { id: "c1", day: "2026-11-20", fixes: [{ topic: "past", you: "I eat", fix: "I ate" }], off: [] },
   ];
   const res = MASTERY.computeMastery(calls, 2);
   assert.equal(res.mastered.length, 1);
   assert.equal(res.mastered[0].topic, "past");
-  assert.equal(res.mastered[0].cleanStreak, 3); // c2, c3 (off), c4 — 3 ta toza qo'ng'iroq
+  assert.equal(res.mastered[0].cleanStreak, 3);
   assert.equal(res.active.length, 1);
   assert.equal(res.active[0].topic, "art");
   assert.equal(res.active[0].cleanStreak, 0);
 });
 
-test("index.html va js/app.js dagi barcha versiyali resurslar (?v=HASH) mavjud va hash mos", () => {
+test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match SHA-1", () => {
   const pat = /["']((?:data|styles|js)\/[^"'?]+\.(?:js|css))\?v=([0-9a-f]+)["']/g;
   const all = [...HTML.matchAll(pat), ...APP_JS.matchAll(pat)];
-  assert.ok(all.length >= 12, "Kamida 12 ta versiyali resurs (data, styles, js) bo'lishi kerak");
+  assert.ok(all.length >= 14, "Expected at least 14 versioned assets (data, styles, js)");
   for (const [, asset, hash] of all) {
     const filePath = path.join(ROOT, asset);
-    assert.ok(fs.existsSync(filePath), `${asset} topilmadi`);
+    assert.ok(fs.existsSync(filePath), `${asset} not found`);
     const actual = crypto.createHash("sha1").update(fs.readFileSync(filePath)).digest("hex").slice(0, 8);
-    assert.equal(actual, hash, `${asset} hash mos emas (python3 tools/versiya.py ishga tushiring)`);
+    assert.equal(actual, hash, `${asset} hash mismatch (run python3 tools/versiya.py)`);
   }
 });
 
-test("JS fayllarida sintaksis xatosi yo'q", () => {
-  for (const rel of ["js/fsrs.js", "js/mastery.js", "js/app.js", "sw.js"]) {
+test("All JS files parse without syntax errors", () => {
+  for (const rel of ["data/stories.js", "data/pictures.js", "js/fsrs.js", "js/mastery.js", "js/app.js", "sw.js"]) {
     const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
-    assert.doesNotThrow(() => new Function(code), `${rel} da sintaksis xatosi bor`);
+    assert.doesNotThrow(() => new Function(code), `Syntax error in ${rel}`);
   }
 });

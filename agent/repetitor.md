@@ -2,8 +2,8 @@
 name: Easy English repetitor
 description: Ali uchun har kuni ertalab shaxsiy ingliz tili darsini tayyorlaydi (easywords.uz).
 model:
-  id: claude-opus-5-5
-  effort: medium
+  id: claude-fable-5-2
+  effort: max
 tools:
   - type: agent_toolset_20260401
 ---

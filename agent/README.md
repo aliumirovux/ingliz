@@ -3,7 +3,7 @@
 Har kuni 06:30 da (Toshkent) agent Ali'ning natijalarini o'qiydi, shaxsiy dars tuzadi va saytga yozadi. Sayt uni «Bugun» sahifasida, «Bugungi dars» kartasi tepasida ko'rsatadi.
 
 ```
-Console deployment (06:30) ─► agent sessiyasi (Opus 5.5, xotira bilan)
+Console deployment (06:30) ─► agent sessiyasi (Fable 5.2 · max effort, xotira bilan)
       │  GET  /functions/v1/repetitor/data    (x-agent-key)
       │  POST /functions/v1/repetitor/lesson  (x-agent-key)
       ▼
@@ -30,7 +30,7 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 3. **Console → Environments**: «easy-english», networking `limited`, allowed hosts: `rqeirdempadfwirefyit.supabase.co`, `easywords.uz`.
 4. **Console → Memory**: «Ali ingliz» store, `xotira/` dagi fayllar bilan.
 5. **Console → Agents**: `repetitor.md` dagi ta'rif.
-6. **Console → Deployments**: cron `30 6 * * *`, timezone `Asia/Tashkent`, budget `max_list_cost` = 100 (≈ $1) har ishga tushishga, memory store (read_write) va vault ulangan, xabar — `kunlik-xabar.md`.
+6. **Console → Deployments**: cron `30 6 * * *`, timezone `Asia/Tashkent`, budget $5 har ishga tushishga, memory store (read_write) va vault ulangan, xabar — `kunlik-xabar.md`.
 7. Bir marta qo'lda «Run» → saytda karta chiqqanini tekshirish.
 
 ## Xavfsizlik

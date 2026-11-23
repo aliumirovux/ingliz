@@ -1,18 +1,17 @@
-// «Tushuntir»: xatoni o'zbekcha tushuntiradi (mode: fix; gap tuzishda har bir farqni qadam-baqadam — mode: xato), o'quvchi gapini tekshiradi (mode: check), Tinglash bo'limida gapni (sentence) va so'zni (word) tushuntiradi,
-// gap skeleti (mode: bolak) — gaplarni ma'no bo'laklariga ajratadi; saytdagi yordamchi (mode: chat) — tarjima, gapni tekshirish, so'z ma'nosi va savollar.
-// Faqat kirgan foydalanuvchi (verify_jwt), kuniga LIMIT ta (barcha rejimlar uchun umumiy). Kalit: Edge Function secret ANTHROPIC_API_KEY.
+// On-demand AI explainer and chat assistant (modes: fix, xato, check, sentence, word, bolak, chat).
+// Endpoint: POST /tushuntir (verified Supabase user JWT + allowlist + daily quota).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { clip, cors, CYR, json, whoUser } from "../_shared/common.ts";
 
 const LIMIT = 120;
-// Savol-javob va xato tushuntirish (chat, xato, fix, check) — aniqroq javob uchun Opus 5.5; tez va oddiy ishlar (bolak, word, sentence) — Haiku 5.5.
+
 const SMART = ["chat", "xato", "fix", "check"];
 const pick = (mode: unknown) => {
   const m = String(mode || "fix");
   if (!SMART.includes(m)) return { model: "claude-haiku-5-5", effort: "low", max: 2000 };
   return { model: "claude-opus-5-5", effort: m === "chat" || m === "xato" ? "medium" : "low", max: 6000 };
 };
-// «Nega xato?» va yordamchi faqat ruxsat berilgan hisoblar uchun (ALLOW_EMAILS secret orqali vergul bilan beriladi).
+
 const ALLOW = (Deno.env.get("ALLOW_EMAILS") || "aliumirov.me@gmail.com")
   .split(",")
   .map((s) => s.trim().toLowerCase())
@@ -28,7 +27,6 @@ Qoidalar:
 - Bitta oddiy misol gap ber (A1 so'zlari bilan) va uning o'zbekcha tarjimasini ber. Misol topshiriqdagi gapdan ham, o'quvchining gapidan ham BOSHQA gap bo'lsin, lekin aynan shu qoidani ko'rsatsin.
 - Javobni FAQAT JSON obyekt qilib qaytar, boshqa matn qo'shma.`;
 
-// yordamchi: o'quvchi ishdagi xabarlarini tarjima qildiradi, gapini tekshiradi, so'z so'raydi yoki savol beradi
 function chatPrompt(b: Record<string, unknown>) {
   const hist = Array.isArray(b.history) ? (b.history as Record<string, unknown>[]).slice(-4) : [];
   const h = hist.map((x) => `O'quvchi: ${clip(x.q, 300)}\nSen: ${clip(x.a, 300)}`).join("\n");
@@ -46,7 +44,6 @@ function chatPrompt(b: Record<string, unknown>) {
     `"pron": "...", "uz": "o'zbekcha ma'nosi (soz va tarjimada qisqa)", "izoh": "...", "misol": {"en": "...", "uz": "..."}, "qosh": [{"w": "...", "u": "..."}]}`;
 }
 
-// gap tuzish: o'quvchi javobidagi HAR BIR farqni alohida, qadam-baqadam tushuntiradi (qoida varag'idagi chat)
 function xatoPrompt(b: Record<string, unknown>) {
   const hist = Array.isArray(b.history) ? (b.history as Record<string, unknown>[]).slice(-4) : [];
   const h = hist.map((x) => `O'quvchi: ${clip(x.q, 300)}\nSen: ${clip(x.a, 400)}`).join("\n");
@@ -63,7 +60,6 @@ function xatoPrompt(b: Record<string, unknown>) {
     `JSON: {"izoh": "1–2 gap umumiy xulosa yoki savolga javob", "qadamlar": [{"xato": "...", "togri": "...", "nega": "..."}], "eslatma": "...", "misol": {"en": "...", "uz": "..."}}`;
 }
 
-// gap skeleti: inglizcha gapni ma'no bo'laklariga ajratadi va har bo'lakka o'zbekcha gapdagi mos qismni beradi
 function bolakPrompt(b: Record<string, unknown>) {
   const items = (Array.isArray(b.items) ? (b.items as Record<string, unknown>[]) : []).slice(0, 10);
   const list = items.map((x, i) => `${i + 1}. O'zbekcha: ${clip(x.uz, 240)}\n   Inglizcha: ${clip(x.en, 240)}`).join("\n");
@@ -79,14 +75,14 @@ function prompt(b: Record<string, unknown>) {
   if (b.mode === "bolak") return bolakPrompt(b);
   if (b.mode === "xato") return xatoPrompt(b);
   if (b.mode === "sentence") {
-    // Tinglash: video darsdagi gapni tushuntirish
+
     return `Video darsdagi (VOA, A1) inglizcha gap: ${clip(b.answer, 240)}\n` +
       (b.uz ? `Uning o'zbekcha tarjimasi: ${clip(b.uz, 240)}\n` : "") +
       `Shu gapni A1 o'quvchiga tushuntir: eng muhim so'z yoki qolip nima va qanday ma'no beradi (qisqartmalar bo'lsa — ochib ber).\n` +
       `JSON: {"izoh": "...", "misol": {"en": "...", "uz": "..."}}`;
   }
   if (b.mode === "word") {
-    // Tinglash: lug'atda yo'q so'zning shu gapdagi ma'nosi
+
     return `Video darsdagi gap: ${clip(b.answer, 240)}\nShu gapdagi so'z: ${clip(b.word, 40)}\n` +
       `So'zning shu gapdagi ma'nosini ber. pron — o'qilishi o'zbek lotin harflarida, urg'uli bo'g'in katta harfda (masalan: «EA-poot»).\n` +
       `JSON: {"tarjima": "1–3 so'z o'zbekcha", "pron": "...", "izoh": "shu gapdagi ma'nosi, 1 qisqa gap"}`;
@@ -114,7 +110,6 @@ Deno.serve(async (req) => {
   const chat = b.mode === "chat", bolak = b.mode === "bolak";
   if (bolak ? !(Array.isArray(b.items) && b.items.length) : chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
 
-  // foydalanuvchini Supabase Auth orqali haqiqiy tekshirish (verify_jwt o'chiq bo'lsa ham xavfsiz)
   const user = await whoUser(req);
   if (!user || !user.email) return json({ error: "auth" }, 401, origin);
   if (!ALLOW.includes(user.email)) return json({ error: "not_allowed" }, 403, origin);
@@ -122,7 +117,6 @@ Deno.serve(async (req) => {
   const key = Deno.env.get("ANTHROPIC_API_KEY");
   if (!key) return json({ error: "no_key" }, 503, origin);
 
-  // kunlik limit: foydalanuvchi o'z tokeni bilan ai_take() ni chaqiradi (kirmagan bo'lsa — 401)
   const sbUrl = Deno.env.get("SUPABASE_URL")!, anon = Deno.env.get("SUPABASE_ANON_KEY")!;
   const auth = req.headers.get("Authorization") || "";
   const t = await fetch(`${sbUrl}/rest/v1/rpc/ai_take`, {
@@ -147,7 +141,7 @@ Deno.serve(async (req) => {
   try { out = JSON.parse(m ? m[0] : text); } catch { out = { izoh: text.trim().slice(0, 600) }; }
   if (bolak) return Array.isArray(out.bolaklar) ? json({ bolaklar: out.bolaklar, left: LIMIT - used }, 200, origin) : json({ error: "empty" }, 502, origin);
   if (!String(out.izoh || "").trim() && !(chat && String(out.en || "").trim())) { console.error("empty", data.stop_reason, JSON.stringify(data.content).slice(0, 500)); return json({ error: "empty" }, 502, origin); }
-  // kirill harfi tushib qolgan tarjimani ko'rsatmaymiz (o'quvchi lotin yozuvida o'qiydi)
+
   const cyr = CYR;
   const mis = out.misol as Record<string, unknown> | undefined;
   if (mis && cyr.test(String(mis.uz || ""))) delete mis.uz;

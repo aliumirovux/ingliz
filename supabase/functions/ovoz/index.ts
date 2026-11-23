@@ -1,16 +1,12 @@
-// «Ovoz»: inglizcha so'z va gaplarni Google Cloud TTS (Chirp 3 HD) bilan ovozga aylantiradi.
-// sample — bitta matn, MP3 (base64) qaytaradi: namunalarni solishtirish uchun (admin).
-// gen    — matnlar ro'yxatini MP3 qilib Storage'ga (bucket «ovoz») yozadi: bir martalik yozib olish (admin).
-// Kalit: Edge Function secret GOOGLE_TTS_KEY. Admin: x-admin sarlavhasi (faqat uning sha256 i kodda turadi).
+// Admin Google Cloud TTS (Chirp 3 HD) audio generator for vocabulary and sentences.
+// Endpoint: POST /ovoz (modes: sample, gen; protected by x-admin SHA-256).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-// Zaxira nusxa: repo ochiq bo'lgani uchun admin kalitining sha256 i bu yerga yozilmagan.
-// Haqiqiy qiymat Supabase'dagi deploy qilingan nusxada. Qayta deploy qilishdan oldin shu qatorga qo'ying.
 const ADMIN_SHA = "";
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 const hex = (buf: ArrayBuffer) => [...new Uint8Array(buf)].map((x) => x.toString(16).padStart(2, "0")).join("");
 const sha = async (algo: string, s: string) => hex(await crypto.subtle.digest(algo, new TextEncoder().encode(s)));
-// saytdagi bilan bir xil kalit: kichik harf, bo'shliqlar bitta, ’ → '
+
 export const norm = (s: string) => s.toLowerCase().replace(/[’‘`]/g, "'").replace(/\s+/g, " ").trim();
 
 async function tts(key: string, text: string, voice: string, rate?: number) {
@@ -19,7 +15,7 @@ async function tts(key: string, text: string, voice: string, rate?: number) {
   const r = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(`tts ${r.status}: ${JSON.stringify(d).slice(0, 300)}`);
-  return d.audioContent as string; // base64 MP3
+  return d.audioContent as string;
 }
 
 Deno.serve(async (req) => {

@@ -1,8 +1,5 @@
-// «Bugungi sahna»: har kuni bitta hayotiy vaziyat — dialog (tinglash), 2 ta kalit gap (aytish), 3 qadamli rolli suhbat (o'ynash).
-//   POST /sahna/today (sayt, egasi) — { day, unit, unit_title, words: [{en, uz}] } → shu kungi sahna; yo'q bo'lsa Claude yozadi va saqlaydi.
-// Sahna kuniga bir marta yoziladi (scenes jadvali, user_id+day). Javoblarni sayt o'zi tekshiradi (brauzerda), shuning uchun kuniga bitta Claude chaqiruvi.
-// Mazmun: kursdagi unit so'zlari va mavzusi, dars tahlilidagi xatolar; Alining ishi haqida emas (o'zi so'ragan).
-// verify_jwt = false: foydalanuvchi tokeni shu yerda tekshiriladi.
+// Daily speaking scenario generator (dialog, key phrases, 3-step roleplay).
+// Endpoint: POST /sahna/today (owner JWT).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { clip, cors, CYR, db, json, Row, tashkentDay, who } from "../_shared/common.ts";
 
@@ -54,7 +51,6 @@ async function claude(p: string) {
   try { return JSON.parse(m ? m[0] : text); } catch { throw new Error(`claude JSON buzuq (${d.stop_reason})`); }
 }
 
-// tekshirish va tozalash: sayt shu shaklni chiza oladi
 function clean(S: Row) {
   const uz = (v: unknown, n: number) => { const s = clip(v, n); return s && !CYR.test(s) ? s : ""; };
   const en = (v: unknown, n: number) => { const s = clip(v, n); return s && /[A-Za-z]/.test(s) && !CYR.test(s) ? s : ""; };
@@ -104,7 +100,7 @@ Deno.serve(async (req) => {
     if (uid !== OWNER) return json({ error: "not_allowed" }, 403, o);
     const b = await req.json().catch(() => ({}));
     if (p !== "today") return json({ error: "not_found", use: ["POST /sahna/today"] }, 404, o);
-    // kun: saytdagi (telefon) sana, Toshkent sanasidan ko'pi bilan 1 kun farq qilsa
+
     const day = typeof b.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.day) && [tashkentDay(-1), tashkentDay(), tashkentDay(1)].includes(b.day) ? b.day : tashkentDay();
     const have = await db(`scenes?user_id=eq.${uid}&day=eq.${day}&select=day,scene,progress,done_at`);
     if (have && have[0]) return json(have[0], 200, o);
@@ -112,7 +108,7 @@ Deno.serve(async (req) => {
     const ctx = await context(uid);
     for (let i = 0; i < 2 && !scene; i++) { try { scene = clean(await claude(prompt(b, ctx))); } catch (e) { last = e; console.error("sahna", e); } }
     if (!scene) return json({ error: "generate", detail: clip(String(last), 200) }, 502, o);
-    // bir vaqtda ikki so'rov kelsa — birinchisi qoladi
+
     await db("scenes?on_conflict=user_id,day", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ user_id: uid, day, scene, model: MODEL }) });
     const row = await db(`scenes?user_id=eq.${uid}&day=eq.${day}&select=day,scene,progress,done_at`);
     return json(row[0], 200, o);

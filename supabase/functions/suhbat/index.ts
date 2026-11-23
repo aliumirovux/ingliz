@@ -1,12 +1,5 @@
-// «Repetitorga qo'ng'iroq»: 5 daqiqalik ovozli suhbat (faqat egasi).
-//   POST /suhbat/start — { goal? }                         → { id, say, uz, hint, topic }   (repetitorning birinchi gapi)
-//   POST /suhbat/turn  — { id, audio (base64), mime, turns, left } yoki { id, text, turns, left }
-//                        → { heard, unclear[], say, uz, hint, fix|null, end }  yoki { empty: true }
-//   POST /suhbat/end   — { id, turns, fixes, secs }        → { ok: true }
-// Har gap: Gemini ovozni SO'ZMA-SO'Z matnga aylantiradi (xatoni tuzatmasdan, noaniq so'zlarni belgilab),
-// Claude javob yozadi va xato bo'lsa tuzatadi. Ovoz hech qayerda saqlanmaydi.
-// Chegaralar: kuniga MAX_CALLS ta qo'ng'iroq, har birida MAX_TURNS ta gap. verify_jwt = false: token shu yerda tekshiriladi.
-// Kalitlar (Edge Function secrets): GEMINI_API_KEY, ANTHROPIC_API_KEY (ikkalasi ham bor).
+// 5-minute AI voice call tutor (Gemini STT -> Claude reply & correction -> optional Google Chirp 3 HD TTS).
+// Endpoints: POST /suhbat/{start,turn,end} (owner JWT).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { clip, cors, CYR, db, enText as en, json, Row, tashkentDay, uzText as uz, who } from "../_shared/common.ts";
 
@@ -16,7 +9,7 @@ const MODEL = Deno.env.get("SUHBAT_MODEL") || "claude-opus-5-5";
 const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
 const G_MODELS = [G_MODEL, ...(Deno.env.get("GEMINI_FALLBACK") ?? "gemini-3.7-flash,gemini-3.5-flash").split(",").map((x) => x.trim()).filter((x) => x && x !== G_MODEL)];
-const MAX_CALLS = +(Deno.env.get("SUHBAT_MAX_CALLS") || 3), MAX_TURNS = 24, MAX_AUDIO = 1_400_000; // base64 belgilar (~1 MB ovoz, 25 soniyaga bemalol)
+const MAX_CALLS = +(Deno.env.get("SUHBAT_MAX_CALLS") || 3), MAX_TURNS = 24, MAX_AUDIO = 1_400_000;
 const TTS_VOICE = Deno.env.get("SUHBAT_VOICE") || "en-US-Chirp3-HD-Charon";
 const TOPICS = ["uz", "be-ing", "wh-q", "past", "art", "prep", "be", "do", "s3", "plural", "pron", "order", "word", "other"];
 
@@ -43,7 +36,6 @@ async function tts(text: string): Promise<string | null> {
   }
 }
 
-// --- Gemini: «quloq». Aytilganini aynan yozadi; grammatikani tuzatmaydi. ---
 const HEAR = `This is a short recording of an adult beginner (A1) English learner whose first language is Uzbek, answering a tutor's question.
 Transcribe EXACTLY what the learner says, word for word.
 - Do NOT correct grammar, do NOT add missing words (am/is/are, a/the, -ed, -s), do NOT fix word order. If they say "I go yesterday", write "I go yesterday".
@@ -79,7 +71,6 @@ async function hear(audio: string, mime: string) {
   throw Object.assign(last, { busy: true });
 }
 
-// --- Claude: repetitor ---
 const SYS = `You are a warm, patient English tutor on a short voice call with Ali, an adult Uzbek beginner (A1–A2, Navigate Beginner). Your replies are read aloud by a phone voice.
 Rules for "say" (English, spoken):
 - At most 2 short sentences, each 12 words or fewer, simple everyday words. Always end with exactly one easy question, unless you are ending the call.
@@ -175,7 +166,7 @@ Deno.serve(async (req) => {
       if (call.done_at) return json({ error: "ended" }, 409, o);
       if (call.n_turns >= MAX_TURNS) return json({ error: "limit_turns" }, 429, o);
       let heard = "", lang = "en", unclear: string[] = [];
-      if (typeof b.text === "string" && b.text.trim()) heard = clip(b.text, 300); // yozib gaplashish (mikrofon yo'q bo'lsa)
+      if (typeof b.text === "string" && b.text.trim()) heard = clip(b.text, 300);
       else {
         const audio = typeof b.audio === "string" ? b.audio : "";
         if (!audio || audio.length > MAX_AUDIO) return json({ error: "bad_audio" }, 400, o);

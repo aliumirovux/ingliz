@@ -1,19 +1,36 @@
-# Ingliz tili Beginner
+# Easy English (`easywords.uz`)
 
-Navigate Beginner kitobi bo'yicha shaxsiy ingliz tili mashq sayti: bugungi reja, unitlar, so'zlar, grammatika qoliplari, gap tuzish va tayyor gaplar.
+Personal English learning PWA based on Navigate Beginner (A1–B1): daily study plan, unit vocabulary, grammar patterns, sentence building, FSRS spaced repetition, AI daily tutor, class audio/board analysis, voice calls, and Android/iOS home-screen widgets.
 
-Sayt: https://easywords.uz/
+Live site: https://easywords.uz/
 
-Kod `index.html` da, ma'lumotlar (so'zlar, qoliplar, hikoyalar, so'z bazasi) `data/*.js` fayllarida. O'zgartirib push qilinsa, sayt bir-ikki daqiqada yangilanadi.
+## Project Structure
 
-`data/` dagi biror faylni o'zgartirgandan keyin push qilishdan oldin:
+- `index.html` — lightweight PWA shell
+- `styles/app.css` — application styles
+- `js/app.js` — main client app
+- `js/fsrs.js` — FSRS-4.5 spaced repetition scheduler
+- `js/mastery.js` — speaking mistake mastery tracker
+- `data/*.js` — vocabulary, grammar patterns, stories, pictures, and lazy-loaded level packs
+- `sw.js` — offline-first service worker with versioned asset caching
+- `supabase/functions/` — Edge Functions (`repetitor`, `dars`, `suhbat`, `sahna`, `tushuntir`, `ovoz`, `widget`) + `_shared/common.ts`
+- `supabase/migrations/` — Postgres schema, RLS policies, and `pg_cron` jobs
+- `tests/core.test.mjs` — automated unit & asset-integrity tests
+
+## Development & Release
+
+After editing any file in `data/`, `styles/`, or `js/`, update version hashes before pushing:
 
 ```bash
 python3 tools/versiya.py
 ```
 
-Bu `index.html` dagi fayl versiyalarini (`?v=...`) va `APP_V` ni yangilaydi — shunda brauzer va telefondagi ilova yangi ma'lumotni yuklab oladi.
+Run automated tests (requires Node 24+):
 
-## So'z boyligi bazasi
+```bash
+node --test tests/core.test.mjs
+```
 
-So'zlar ro'yxati va darajalari [New General Service List](https://www.newgeneralservicelist.com/) (NGSL 1.01, Browne, Culligan & Phillips) asosida, CC BY-SA 4.0 litsenziyasi bilan. Oson = 1–1000, O'rta = 1001–2000, Qiyin = 2001+ (kitobdagi so'zlar chiqarib tashlangan). O'qilishi, o'zbekcha tarjimalar va misol gaplar shu loyiha uchun yozilgan va ular ham CC BY-SA 4.0.
+## Vocabulary Dataset
+
+Additional vocabulary lists and difficulty tiers are based on the [New General Service List](https://www.newgeneralservicelist.com/) (NGSL 1.01, Browne, Culligan & Phillips) under CC BY-SA 4.0. Easy = 1–1000, Medium = 1001–2000, Hard = 2001+ (textbook words excluded). Pronunciations, Uzbek translations, and example sentences were authored for this project under CC BY-SA 4.0.

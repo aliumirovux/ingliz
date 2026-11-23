@@ -1,15 +1,9 @@
-// «Repetitor»: Claude Console'dagi Managed Agent uchun ikki eshik.
-//   GET  /repetitor/data   — egasining (Ali) natijalari xulosasi: kurs, seriya, oxirgi 14 kun, xatolar, qiyin va kechikkan so'zlar, oxirgi darslar va javoblar.
-//   POST /repetitor/lesson — agent tayyorlagan darsni yozadi ({ day?, lesson }), bir kunga bitta (qayta yozilsa almashtiriladi).
-// Kirish faqat «x-agent-key» sarlavhasi bilan (Edge Function secret AGENT_KEY; agentga Console vault orqali beriladi, sandboxda ochiq turmaydi).
-// verify_jwt = false (agentda Supabase hisobi yo'q). Egasi: OWNER_ID secret yoki OWNER_DEFAULT.
-// Telegram (ixtiyoriy, secret TELEGRAM_BOT_TOKEN bo'lsa):
-//   dars yozilganda — ertalabki xabar; POST /repetitor/remind (pg_cron, 20:00) — dars bajarilmagan bo'lsa kuniga bitta eslatma;
-//   GET /repetitor/tg-setup — botga webhook o'rnatadi; POST /repetitor/tg — Telegram webhook: birinchi /start yozgan chat egasiniki deb saqlanadi.
+// Daily AI tutor bridge for Claude Managed Agent & Telegram reminders.
+// Endpoints: GET /repetitor/{data,tg-setup}, POST /repetitor/lesson (x-agent-key), POST /repetitor/remind (x-cron-key), POST /repetitor/tg (Telegram webhook).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { db, safeEq, tashkentDay, verifyCronOrAgentAuth } from "../_shared/common.ts";
 
-const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2"; // OWNER_ID secret bilan almashtirsa bo'ladi
+const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
 
 type Rec = { b?: number; ok?: number; bad?: number; due?: string; ls?: string };
@@ -26,32 +20,32 @@ async function data(owner: string) {
   const log = Object.fromEntries(Object.entries(S.log || {}).filter(([d]) => d >= from14).sort());
   const mis = Object.entries(S.mis || {}).filter(([, d]) => String(d) >= from21).sort((a, b) => (String(a[1]) < String(b[1]) ? 1 : -1)).map(([k, d]) => ({ k, d }));
   const lessons = await db(`agent_lessons?user_id=eq.${owner}&day=gte.${tashkentDay(-7)}&select=day,lesson,answers,done_at&order=day.desc`);
-  // Inter Nation darslari (dars funksiyasi tahlil qilgan): oxirgi 10 kun, ko'pi bilan 3 ta
+
   let cls: Record<string, unknown>[] = [];
   try {
     const c = await db(`class_lessons?user_id=eq.${owner}&status=eq.done&day=gte.${tashkentDay(-10)}&select=id,day,analysis,answers&order=day.desc&limit=3`);
-    // saytda ovoz chiqarib mashq: har gap uchun eng oxirgi urinish
+
     let sp: Record<string, any>[] = [];
     try { sp = await db(`speak_log?user_id=eq.${owner}&src=eq.dars&day=gte.${tashkentDay(-10)}&select=lesson_id,item,lat_ms,hints,score,at&order=at.desc&limit=200`) || []; } catch (e) { console.error("speak_log", e); }
     cls = (c || []).map((r: Record<string, any>) => {
       const a = r.analysis || {}, ct = a.content || {}, ans = r.answers || {};
-      // yozuvsiz dars (faqat doska rasmlari): Ali saytda tasdiqlagan so'z va qoidalar (answers.review); tasdiqlanmagan bo'lsa — hammasi
+
       const photo = a.kind === "photo", rv = photo && ans.review ? ans.review : null;
       const pickI = (list: unknown[], keep: number[] | undefined) => rv && Array.isArray(keep) ? list.filter((_, i) => keep.includes(i)) : list;
       return {
         day: r.day, unit: ct.unit || null, headline: a.headline, source: photo ? "doska rasmlari (dars yozilmagan, xatolar yo'q)" : "dars yozuvi",
         rules: pickI(a.rules || [], rv && rv.r).map((x: Record<string, any>) => photo ? ({ key: x.key, title: x.title, text: x.text, ex: x.ex }) : ({ key: x.key, ex: x.ex, count: x.count })),
-        // retyped: sayt sahifasida xatoni qayta to'g'ri yozdimi (null — hali urinmagan)
+
         mistakes: (a.mistakes || []).map((m: Record<string, unknown>, i: number) => ({ kind: m.kind, rule: m.rule, you: m.you, fix: m.fix, why: m.why, retyped: ans["m" + i] ? !!ans["m" + i].ok : null })),
         words: pickI(ct.words || [], rv && rv.w).map((w: Record<string, unknown>) => ({ en: w.en, uz: w.uz })), homework: ct.homework || null,
-        // gapirish: tutilib qolgan gaplar (siz aytgan → oddiy inglizchasi), qutqaruvchi iboralar, raqamlar
+
         speaking: a.speech ? { metrics: a.speech.metrics, stuck: (a.speech.stuck || []).map((x: Record<string, unknown>) => ({ kind: x.kind, you: x.you, en: x.en })), rescue: a.speech.rescue || [], patterns: a.speech.patterns || [],
-          // practice: uyda ovoz bilan aytgani — lat_ms gapni boshlagungacha, hints 0–3, score aytilgan so'zlar %
+
           practice: (a.speech.stuck || []).map((x: Record<string, unknown>) => { const p = sp.find((y) => y.lesson_id === r.id && y.item === x.en); return p ? { en: x.en, lat_ms: p.lat_ms, hints: p.hints, score: p.score, at: p.at } : null; }).filter(Boolean) } : null,
       };
     });
   } catch (e) { console.error("class_lessons", e); }
-  // Repetitorga qo'ng'iroqlar (saytdagi ovozli suhbat): oxirgi 7 kun, ko'pi bilan 5 ta; «bu xato emas» deb belgilangan tuzatishlar chiqarilgan
+
   let calls: Record<string, unknown>[] = [];
   try {
     const c = await db(`calls?user_id=eq.${owner}&done_at=not.is.null&day=gte.${tashkentDay(-7)}&select=day,topic,secs,fixes,off&order=created_at.desc&limit=5`);
@@ -64,18 +58,18 @@ async function data(owner: string) {
     today: day,
     note: "id formati: «unit|so'z» (masalan «9|come»). Unit 1–10 — Beginner, 101+ — Pre-intermediate, «vb» — so'z boyligi bazasi. So'zlarning tarjimasi va misollari: https://easywords.uz/data/beginner.js (UNITS). mis kalitlari: w: — so'z, g: — grammatika qolipi, b: — gap tuzish gapi.",
     course: S.course ?? null, level: S.level ?? null, streak: S.streak ?? null,
-    log, // a — javoblar, ok — to'g'ri, t — soniya, sp/sw — yozib javoblar (to'g'ri/jami)
+    log,
     srs: { total: all.length, overdue: overdue.length, hard: hard.length, hardest: pick(hard, 40), oldest_overdue: pick(overdue, 60) },
     mistakes_21d: mis,
     confusions: Object.values(S.conf || {}),
     grammar: { scores: S.pat || {}, review: S.gr || {} },
     class_lessons: cls,
-    // ovozli qo'ng'iroqlardagi tuzatishlar: Ali gapirganda qilgan xatolari (ovoz Gemini orqali matnga aylangan — bir-ikki so'z noto'g'ri eshitilgan bo'lishi mumkin)
+
     voice_calls: calls.length ? {
       calls,
       instruction: "These are mistakes Ali made while SPEAKING on a voice call with the site's tutor. If a call from yesterday or today has mistakes that no earlier lesson of yours has used, add 2–3 items about them to today's lesson, in new everyday sentences (do not copy his sentence as the question). The same mistake in two calls or in a class and a call comes first.",
     } : null,
-    // haftalik maqsad (saytdagi «Bu haftaning maqsadi»): Ali shu hafta bitta mavzu ustida ishlaydi
+
     weekly_goal: S.goal && S.goal.st === "on" ? {
       topic: S.goal.id, title: GOAL_TITLES[S.goal.id] || S.goal.id, since: S.goal.at, practice_days: (S.goal.days || []).length, base: S.goal.base, hard: S.goal.hard || [],
       instruction: "Make one section of today's lesson (3–4 items) about this topic, in new everyday sentences. Put sentences from `hard` first. Mention the weekly goal in `why`.",
@@ -85,7 +79,6 @@ async function data(owner: string) {
   };
 }
 
-// --- darsni tekshirish: sayt shu shaklni chiza oladi ---
 const TYPES = new Set(["choice", "type", "story", "write"]);
 const str = (v: unknown, n: number) => typeof v === "string" && v.trim().length > 0 && v.length <= n;
 function check(L: Record<string, unknown>): string | null {
@@ -123,7 +116,6 @@ function check(L: Record<string, unknown>): string | null {
   return null;
 }
 
-// --- Telegram ---
 const TG = () => Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
 const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
 const SITE = "https://easywords.uz/#repetitor";
@@ -169,7 +161,6 @@ async function remind(owner: string) {
   return { sent: true };
 }
 
-// saytdagi GOAL_T bilan bir xil nomlar
 const GOAL_TITLES: Record<string, string> = { uz: "Darsni inglizcha gapirish", "be-ing": "am / is / are + -ing", "wh-q": "Savolni so'roq so'zi bilan boshlash", past: "O'tgan ish haqida fe'lni o'zgartirish", art: "Bitta narsa oldidan a / an", prep: "in / on / at", be: "am / is / are", do: "do / does bilan savol va inkor", s3: "he / she dan keyin -s", plural: "Ko'plik", pron: "he / she", order: "So'z tartibi", flow: "Gapni to'xtamay davom ettirish" };
 
 Deno.serve(async (req) => {
@@ -177,7 +168,7 @@ Deno.serve(async (req) => {
   if (!key || !owner) return json({ error: "not_configured" }, 503);
   const p0 = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
-    // Telegram webhook: maxfiy sarlavha bilan; birinchi /start yozgan chat saqlanadi, keyingilari e'tiborsiz
+
     if (req.method === "POST" && p0 === "tg") {
       if (!safeEq(req.headers.get("X-Telegram-Bot-Api-Secret-Token") || "", await tgSecret())) return json({ error: "auth" }, 401);
       const u = await req.json().catch(() => ({}));
@@ -188,7 +179,7 @@ Deno.serve(async (req) => {
       await send(m.chat.id, "Ulandi. Har kuni ertalab dars tayyor bo'lganda shu yerga xabar keladi. Kechqurun, dars qilinmagan bo'lsa, bitta eslatma keladi.", "Saytni ochish");
       return json({ ok: true });
     }
-    // kechki eslatma: pg_cron (x-cron-key) yoki agent (x-agent-key) bilan himoyalangan
+
     if (req.method === "POST" && p0 === "remind") {
       if (!await verifyCronOrAgentAuth(req)) return json({ error: "auth" }, 401);
       return json(await remind(owner));
@@ -200,7 +191,7 @@ Deno.serve(async (req) => {
   if (!safeEq(req.headers.get("x-agent-key") || "", key)) return json({ error: "auth" }, 401);
   const path = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
-    // webhookni o'rnatish (faqat x-agent-key bilan; takror chaqirilsa ham zararsiz)
+
     if (req.method === "GET" && path === "tg-setup") {
       if (!TG()) return json({ error: "no_token" }, 503);
       const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/repetitor/tg`;
@@ -217,7 +208,7 @@ Deno.serve(async (req) => {
       const err = L && typeof L === "object" ? check(L) : "lesson obyekti kerak";
       if (err) return json({ error: "invalid", detail: err }, 422);
       if (JSON.stringify(L).length > 60000) return json({ error: "too_big" }, 413);
-      // boshlangan darsning ustiga yozilmaydi (javoblar o'chib ketmasin); majburan — {force: true}
+
       const ex = await db(`agent_lessons?user_id=eq.${owner}&day=eq.${day}&select=answers`);
       if (ex && ex[0] && Object.keys(ex[0].answers || {}).length && b.force !== true) return json({ error: "already_started", detail: "Bu kungi dars boshlangan, ustiga yozilmadi." }, 409);
       await db("agent_lessons?on_conflict=user_id,day", {

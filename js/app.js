@@ -1974,7 +1974,7 @@ async function clBegin(typed) {
   CL.st = "conn"; clDraw();
   try {
     const g = S.goal && S.goal.st === "on" && GOAL_T[S.goal.id] ? GOAL_T[S.goal.id].t : "";
-    const d = await clApi("start", { goal: g }, 40000);
+    const d = await clApi("start", { goal: g }, 100000);
     if (!CL) return;
     CL.id = d.id; CL.topic = d.topic || ""; CL.cur = { say: d.say, uz: d.uz || "", hint: d.hint || "", audio: d.audio || "" }; CL.turns = [{ r: "T", x: d.say, uz: d.uz || "" }];
     CL.t0 = Date.now(); CL.pz = 0;
@@ -2044,7 +2044,7 @@ async function clSend(job) {
   try {
     const body = { id: CL.id, turns: CL.turns.slice(-12), left: clLeft() };
     if (job.text) body.text = job.text; else { body.audio = await clB64(job.blob); body.mime = job.blob.type; }
-    const d = await clApi("turn", body, 35000);
+    const d = await clApi("turn", body, 110000);
     if (!CL || g !== CL.gen) return;
     CL.job = null;
     if (d.empty) { CL.st = "silent"; return clDraw(); }
@@ -2968,7 +2968,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611240041";
+const APP_V = "202611240054";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -7035,7 +7035,7 @@ async function aiAsk(body) {
   if (navigator.onLine === false) throw Object.assign(new Error("offline"), { code: "offline" });
   let tok; try { tok = await sbToken(); } catch (e) { throw Object.assign(new Error("auth"), { code: e.status === 0 ? "offline" : "auth" }); }
 
-  const slow = ["chat", "xato", "fix", "check"].includes(body && body.mode), ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), slow ? 75000 : 25000);
+  const slow = ["chat", "xato", "fix", "check"].includes(body && body.mode), ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 140000);
   try {
     const r = await fetch(SB.url + "/functions/v1/tushuntir", { method: "POST", signal: ctl.signal, headers: { apikey: SB.key, Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
     const d = await r.json().catch(() => ({}));

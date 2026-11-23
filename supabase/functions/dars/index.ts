@@ -1,7 +1,7 @@
 // Class lesson analysis pipeline (audio recording & board photos -> Gemini transcription -> Claude analysis -> Telegram).
 // Endpoints: POST /dars/{new,start,retry,cancel,delete} (owner JWT) and POST /dars/tick (pg_cron via x-cron-key).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { clip, cors, db, json, Row, tashkentDay, verifyCronOrAgentAuth, who } from "../_shared/common.ts";
+import { AI_EFFORT, AI_MODEL, clip, cors, db, json, Row, tashkentDay, verifyCronOrAgentAuth, who } from "../_shared/common.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -23,7 +23,9 @@ const TRANSIENT = new Set([429, 500, 502, 503, 504, 529]);
 const isTransient = (e: unknown) => TRANSIENT.has(+(e as Row)?.status) || /\b(gemini|anthropic|storage)[^:]{0,24}\b(429|50[0234]|529)\b|overloaded|UNAVAILABLE|high demand/i.test(String((e as Error)?.message || e));
 const backoff = (n: number) => G_GAP * Math.min(2 ** Math.max(0, n - 1), 5);
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
-const C_MODEL = Deno.env.get("DARS_MODEL") || "claude-opus-5-5";
+const C_MODEL = AI_MODEL;
+// Effort ladder: the first attempt runs at full effort; if it cannot finish inside the 150 s stage limit, retries step down.
+const effortFor = (attempts: number) => attempts > 2 ? "medium" : attempts > 1 ? "high" : AI_EFFORT;
 const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
 const SITE = "https://easywords.uz/#dars";
 
@@ -335,6 +337,7 @@ async function claude(prompt: string | Row[], maxTokens: number, effort: string)
     method: "POST",
     headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({ model: C_MODEL, max_tokens: maxTokens, output_config: { effort }, system: SYS, messages: [{ role: "user", content: prompt }] }),
+    signal: AbortSignal.timeout(135000),
   });
   if (!r.ok) throw new Error(`anthropic ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const d = await r.json();
@@ -440,7 +443,7 @@ function cleanBoard(B: Row, n: number) {
 async function stagePhotos(row: Row) {
   const imgs = await boardImages(row);
   if (!imgs.length) throw Object.assign(new Error("rasmlar topilmadi"), { final: true });
-  const B = await claude(promptBoard(await courseCtx(row), imgs), 6000, row.attempts > 1 ? "low" : "medium");
+  const B = await claude(promptBoard(await courseCtx(row), imgs), 32000, effortFor(row.attempts));
   const an = cleanBoard(B, imgs.length);
   if (!an.content.board.length && !an.content.words.length) throw Object.assign(new Error("rasmda yozuv topilmadi"), { final: true });
   if (!await patchDone(row.id, { analysis: an, status: "done", done_at: new Date().toISOString(), attempts: 0, waits: 0, error: null, locked_until: null })) return "done";
@@ -453,11 +456,11 @@ async function stagePhotos(row: Row) {
 async function stageAnalyze(row: Row) {
   const ctx = await courseCtx(row);
 
-  const effort = row.attempts > 1 ? "low" : "medium";
+  const effort = effortFor(row.attempts);
   const turns = row.transcript.turns as Row[];
   const dur = row.duration_s || (turns.length ? toSec(turns[turns.length - 1].t) + 30 : 0);
   const imgs = await boardImages(row);
-  const [A, B, C] = await Promise.all([claude(promptMistakes(row, ctx), 9000, effort), claude(promptContent(row, ctx, imgs), 5000, effort), claude(promptCoach(row, ctx, dur), 6000, effort)]);
+  const [A, B, C] = await Promise.all([claude(promptMistakes(row, ctx), 48000, effort), claude(promptContent(row, ctx, imgs), 32000, effort), claude(promptCoach(row, ctx, dur), 32000, effort)]);
   const an: Row = clean(A, B, row);
   let prev = null;
   try {

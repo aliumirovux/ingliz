@@ -1,11 +1,11 @@
 // 5-minute AI voice call tutor (Gemini STT -> Claude reply & correction -> optional Google Chirp 3 HD TTS).
 // Endpoints: POST /suhbat/{start,turn,end} (owner JWT).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { clip, cors, CYR, db, enText as en, json, Row, tashkentDay, uzText as uz, who } from "../_shared/common.ts";
+import { AI_EFFORT, AI_MODEL, clip, cors, CYR, db, enText as en, json, Row, tashkentDay, uzText as uz, who } from "../_shared/common.ts";
 
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
-const MODEL = Deno.env.get("SUHBAT_MODEL") || "claude-opus-5-5";
+const MODEL = AI_MODEL;
 const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleapis.com";
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
 const G_MODELS = [G_MODEL, ...(Deno.env.get("GEMINI_FALLBACK") ?? "gemini-3.7-flash,gemini-3.5-flash").split(",").map((x) => x.trim()).filter((x) => x && x !== G_MODEL)];
@@ -87,12 +87,17 @@ Other fields:
 - "end": true only when told the call must end now; then "say" is one warm goodbye sentence with no question.
 Return only a JSON object: {"say": "...", "uz": "...", "hint": "...", "fix": null | {...}, "end": false}`;
 
+// Full effort first (up to 60 s); if it is too slow or fails, one quick low-effort answer so the call does not die.
 async function claude(user: string) {
+  try { return await ask(user, AI_EFFORT, 16000, 60000); }
+  catch (e) { console.error("suhbat full-effort reply failed:", String(e).slice(0, 160)); return await ask(user, "low", 3000, 20000); }
+}
+async function ask(user: string, effort: string, maxTokens: number, ms: number) {
   const r = await fetch(`${A_API}/v1/messages`, {
     method: "POST",
     headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 700, system: SYS, messages: [{ role: "user", content: user }] }),
-    signal: AbortSignal.timeout(25000),
+    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, output_config: { effort }, system: SYS, messages: [{ role: "user", content: user }] }),
+    signal: AbortSignal.timeout(ms),
   });
   if (!r.ok) throw Object.assign(new Error(`anthropic ${r.status}: ${(await r.text()).slice(0, 200)}`), { status: r.status });
   const d = await r.json();

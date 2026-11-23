@@ -1,15 +1,14 @@
 // On-demand AI explainer and chat assistant (modes: fix, xato, check, sentence, word, bolak, chat).
 // Endpoint: POST /tushuntir (verified Supabase user JWT + allowlist + daily quota).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { clip, cors, CYR, json, whoUser } from "../_shared/common.ts";
+import { AI_EFFORT, AI_MODEL, clip, cors, CYR, json, whoUser } from "../_shared/common.ts";
 
 const LIMIT = 120;
 
 const SMART = ["chat", "xato", "fix", "check"];
 const pick = (mode: unknown) => {
   const m = String(mode || "fix");
-  if (!SMART.includes(m)) return { model: "claude-haiku-5-5", effort: "low", max: 2000 };
-  return { model: "claude-opus-5-5", effort: m === "chat" || m === "xato" ? "medium" : "low", max: 6000 };
+  return { model: AI_MODEL, effort: AI_EFFORT, max: SMART.includes(m) ? 24000 : 16000 };
 };
 
 const ALLOW = (Deno.env.get("ALLOW_EMAILS") || "aliumirov.me@gmail.com")
@@ -128,11 +127,19 @@ Deno.serve(async (req) => {
   if (typeof used !== "number" || used < 0) return json({ error: "limit", limit: LIMIT }, 429, origin);
 
   const cfg = pick(b.mode);
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  // Full effort first (up to 80 s); if it is too slow or fails, one medium-effort try — both fit the 150 s function limit.
+  const ask = (effort: string, max: number, ms: number) => fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: cfg.model, max_tokens: cfg.max, output_config: { effort: cfg.effort }, system: SYSTEM, messages: [{ role: "user", content: prompt(b) }] }),
+    body: JSON.stringify({ model: cfg.model, max_tokens: max, output_config: { effort }, system: SYSTEM, messages: [{ role: "user", content: prompt(b) }] }),
+    signal: AbortSignal.timeout(ms),
   });
+  let r: Response;
+  try { r = await ask(cfg.effort, cfg.max, 80000); if (!r.ok && r.status >= 500) throw new Error("anthropic " + r.status); }
+  catch (e) {
+    console.error("tushuntir full-effort try failed:", String(e).slice(0, 160));
+    try { r = await ask("medium", 8000, 50000); } catch (e2) { console.error("anthropic", String(e2).slice(0, 160)); return json({ error: "upstream" }, 502, origin); }
+  }
   if (!r.ok) { console.error("anthropic", r.status, (await r.text()).slice(0, 300)); return json({ error: "upstream" }, 502, origin); }
   const data = await r.json();
   const text = (data.content || []).filter((c: { type: string }) => c.type === "text").map((c: { text: string }) => c.text).join("");

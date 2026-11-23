@@ -1,6 +1,11 @@
 // Shared helpers for Supabase Edge Functions (CORS, auth, DB, text sanitization, date).
 export type Row = Record<string, any>;
 
+// Model and effort for every site AI call (sahna, suhbat, tushuntir, dars). Change here to move them all.
+// Fable 5.2 always thinks; max_tokens covers thinking + answer, so callers pass large caps and a fallback effort.
+export const AI_MODEL = "claude-fable-5-2";
+export const AI_EFFORT = "max";
+
 export const ORIGINS = [
   "https://easywords.uz",
   "https://www.easywords.uz",

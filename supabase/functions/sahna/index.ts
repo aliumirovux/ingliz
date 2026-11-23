@@ -1,11 +1,11 @@
 // Daily speaking scenario generator (dialog, key phrases, 3-step roleplay).
 // Endpoint: POST /sahna/today (owner JWT).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { clip, cors, CYR, db, json, Row, tashkentDay, who } from "../_shared/common.ts";
+import { AI_EFFORT, AI_MODEL, clip, cors, CYR, db, json, Row, tashkentDay, who } from "../_shared/common.ts";
 
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
-const MODEL = Deno.env.get("SAHNA_MODEL") || "claude-sonnet-5-5";
+const MODEL = AI_MODEL;
 
 const SYS = `Sen ingliz tilini o'rganayotgan o'zbek kattalar uchun mohir o'qituvchisan. O'quvchi — Ali, darajasi A1–A2 (Navigate Beginner).
 Har kuni unga bitta qisqa hayotiy sahna yozasan: u avval dialogni tinglaydi, keyin 2 ta kalit gapni ovoz chiqarib aytadi, oxirida sahnadagi boshqa odam bilan o'zi gaplashadi.
@@ -38,11 +38,12 @@ JSON shakli:
 }`;
 }
 
-async function claude(p: string) {
+async function claude(p: string, effort: string, ms: number) {
   const r = await fetch(`${A_API}/v1/messages`, {
     method: "POST",
     headers: { "x-api-key": Deno.env.get("ANTHROPIC_API_KEY") || "", "anthropic-version": "2023-06-01", "content-type": "application/json" },
-    body: JSON.stringify({ model: MODEL, max_tokens: 4000, system: SYS, messages: [{ role: "user", content: p }] }),
+    body: JSON.stringify({ model: MODEL, max_tokens: 32000, output_config: { effort }, system: SYS, messages: [{ role: "user", content: p }] }),
+    signal: AbortSignal.timeout(ms),
   });
   if (!r.ok) throw Object.assign(new Error(`anthropic ${r.status}: ${(await r.text()).slice(0, 200)}`), { status: r.status });
   const d = await r.json();
@@ -106,7 +107,7 @@ Deno.serve(async (req) => {
     if (have && have[0]) return json(have[0], 200, o);
     let scene: Row | null = null, last: unknown = null;
     const ctx = await context(uid);
-    for (let i = 0; i < 2 && !scene; i++) { try { scene = clean(await claude(prompt(b, ctx))); } catch (e) { last = e; console.error("sahna", e); } }
+    for (let i = 0; i < 2 && !scene; i++) { try { scene = clean(await claude(prompt(b, ctx), i ? "medium" : AI_EFFORT, i ? 45000 : 95000)); } catch (e) { last = e; console.error("sahna", e); } }
     if (!scene) return json({ error: "generate", detail: clip(String(last), 200) }, 502, o);
 
     await db("scenes?on_conflict=user_id,day", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ user_id: uid, day, scene, model: MODEL }) });

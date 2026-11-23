@@ -484,20 +484,54 @@ async function audioUrl(id) {
   return u;
 }
 function voiceBusy() { if (VBUSY) return true; try { return speechSynthesis.speaking; } catch (e) { return false; } }
-function stopVoice() { VG++; VBUSY = false; if (AEL) { AEL.onended = AEL.onerror = null; try { AEL.pause(); } catch (e) {} } try { speechSynthesis.cancel(); } catch (e) {} }
+/* Voice diagnostics (owner only): one row per playback — engine, text, how far it got, and what ended it. */
+let VL = null, VLT = 0, VL_UA = false; const VLQ = [];
+const vlOk = () => { try { return darsOn(); } catch (e) { return false; } };
+function vlWho() {
+  try {
+    return (new Error().stack || "").split("\n").map(l => { const m = l.match(/at (?:async )?(?:(\S+) \()?.*?:(\d+):\d+\)?\s*$/) || l.match(/^\s*([^@]*)@.*?:(\d+):\d+\s*$/); return m ? (m[1] || "").replace(/^.*\./, "") + ":" + m[2] : ""; })
+      .filter(x => x && !/^(vlWho|vlEnd|vlStart|stopVoice):/.test(x)).slice(0, 4).join("<");
+  } catch (e) { return ""; }
+}
+function vlStart(eng, text, el, live) {
+  if (VL) vlEnd(VL, "noend");
+  if (!vlOk()) return null;
+  return VL = { eng, txt: String(text).slice(0, 120), route: location.hash.slice(0, 60), t0: performance.now(), el: el || null, live: !!live };
+}
+function vlEnd(v, why) {
+  if (!v || VL !== v) return; VL = null;
+  let exp = 0, got = Math.round(performance.now() - v.t0);
+  try { if (v.el && v.live) { exp = Math.round((v.el.duration || 0) * 1000) || 0; got = Math.round(v.el.currentTime * 1000) || 0; } } catch (e) {}
+  const row = { eng: v.eng, txt: v.txt, route: v.route, exp_ms: Math.min(exp, 600000), got_ms: Math.min(got, 600000), why: String(why).slice(0, 110), ua: null };
+  if (!VL_UA) { VL_UA = true; row.ua = navigator.userAgent.slice(0, 200); }
+  VLQ.push(row); clearTimeout(VLT); VLT = setTimeout(vlFlush, 4000);
+}
+function vlFlush() {
+  if (!VLQ.length || !vlOk()) { VLQ.length = 0; return; }
+  const b = VLQ.splice(0, 50);
+  sbToken().then(t => sbFetch("/rest/v1/voice_log", { method: "POST", headers: { Prefer: "return=minimal" }, body: JSON.stringify(b) }, t)).catch(() => {});
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) { clearTimeout(VLT); vlFlush(); } });
+if (AEL) AEL.addEventListener("pause", () => { const v = VL; if (v && v.el === AEL && v.live && !AEL.ended && AEL.currentTime < (AEL.duration || 0) - .15) vlEnd(v, "pause:system"); });
+function stopVoice() { if (VL) vlEnd(VL, "stop " + vlWho()); VG++; VBUSY = false; if (AEL) { AEL.onended = AEL.onerror = null; try { AEL.pause(); } catch (e) {} } try { speechSynthesis.cancel(); } catch (e) {} }
 function synth(text, done) {
-  try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85; if (done) u.onend = done; speechSynthesis.speak(u); } catch (e) {}
+  try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85;
+    const v = vlStart("synth", text);
+    u.onend = () => { vlEnd(v, "ended"); if (done) done(); };
+    u.onerror = e => vlEnd(v, "err " + ((e && e.error) || ""));
+    speechSynthesis.speak(u); } catch (e) {}
 }
 function speakOne(text, done) {
   text = String(text).replace(/[\[\]]/g, "");
   const id = AEL && OVM && OVM.set.has(voiceId(text)) ? voiceId(text) : null;
   if (!id) return synth(text, done);
   const g = VG; let fell = false; VBUSY = true;
-  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; synth(text, done); };
+  const v = vlStart("apollo", text, AEL);
+  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; vlEnd(v, "error>synth"); synth(text, done); };
   audioUrl(id).then(u => {
     if (g !== VG) return;
-    AEL.onended = () => { if (g !== VG) return; VBUSY = false; if (done) done(); };
-    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE;
+    AEL.onended = () => { if (g !== VG) return; VBUSY = false; vlEnd(v, "ended"); if (done) done(); };
+    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE; if (v) v.live = true;
     const p = AEL.play(); if (p && p.catch) p.catch(back);
   }).catch(back);
 }
@@ -1953,8 +1987,8 @@ function clSpeak(slow) {
   if (!CL) return; clStopRec(); stopVoice();
   if (CL.aud) { try { CL.aud.pause(); CL.aud.src = ""; } catch (e) {} CL.aud = null; }
   CL.st = "speak"; if (!slow) CL.tr = false; clDraw();
-  const g = CL.gen, text = CL.cur.say, b64 = CL.cur.audio || ""; let fin = false;
-  const done = () => { if (fin || !CL || g !== CL.gen || CL.st !== "speak") return; fin = true; if (CL.aud) { try { CL.aud.pause(); } catch (e) {} CL.aud = null; } if (CL.cur.end) clEnd(); else clListen(); };
+  const g = CL.gen, text = CL.cur.say, b64 = CL.cur.audio || ""; let fin = false, vl = null;
+  const done = () => { if (fin || !CL || g !== CL.gen || CL.st !== "speak") return; fin = true; vlEnd(vl, CL.aud && !CL.aud.ended ? "timeout" : "ended"); if (CL.aud) { try { CL.aud.pause(); } catch (e) {} CL.aud = null; } if (CL.cur.end) clEnd(); else clListen(); };
   const fallback = () => {
     if (fin || !CL || g !== CL.gen || CL.st !== "speak") return;
     if (slow) { try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .6; u.onend = done; speechSynthesis.speak(u); } catch (e) {} }
@@ -1964,11 +1998,12 @@ function clSpeak(slow) {
     try {
       const a = new Audio("data:audio/mpeg;base64," + b64);
       a.playbackRate = slow ? 0.78 : 1.0;
+      vl = vlStart("chirp", text, a, true);
       a.onended = done;
-      a.onerror = fallback;
+      a.onerror = () => { vlEnd(vl, "error>fallback"); fallback(); };
       CL.aud = a;
       const p = a.play();
-      if (p && p.catch) p.catch(fallback);
+      if (p && p.catch) p.catch(() => { vlEnd(vl, "play-rejected>fallback"); fallback(); });
     } catch (e) { fallback(); }
   } else {
     fallback();
@@ -2929,7 +2964,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611231742";
+const APP_V = "202611240029";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

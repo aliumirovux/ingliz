@@ -2312,3 +2312,37 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .rs-empty{margin:4px 0 0;padding:12px 14px;border:1.5px dashed var(--line-strong);border-radius:16px;font-size:13.5px;color:var(--muted);line-height:1.45}
 .rs-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--ok-bg);color:var(--ok);font-size:11.5px;font-weight:700;vertical-align:1px}
 .xrow.ds-x .ic{background:var(--marker-soft);color:var(--accent-text)}
+/* Xatolar davrasi — the AI mistake round of the sentence exercise (#tuzmashq) */
+:root{--wait:#6A4E1E;--wait-bg:#F6EBD3;--wait-strong:#A9782A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--wait:#E6C98C;--wait-bg:#33290F;--wait-strong:#C79A4A}}
+:root[data-theme="dark"]{--wait:#E6C98C;--wait-bg:#33290F;--wait-strong:#C79A4A}
+.qcard .fb.tz.wait{background:var(--wait-bg);color:var(--wait)}
+.fb.wait .tzh svg{background:var(--wait-strong);color:var(--wait-bg)}
+.spell.wt,.spell.wt:focus{box-shadow:inset 0 0 0 2px var(--wait-strong)}
+.qcard .answer.wt:not(.ok):not(.bad){box-shadow:inset 0 0 0 2px var(--wait-strong)}
+#app > .top .bar.seg i.wt{background:var(--wait-strong)}
+#app > .top .bar.seg i.rd{flex:.6;background:transparent;box-shadow:inset 0 0 0 1.5px var(--marker)}
+#app > .top .bar.seg i.rd.now{flex:1.8;background:var(--marker);box-shadow:none}
+.dv-st{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface);color:var(--ink);font-size:14px;line-height:1.35}
+.dv-pu{flex:none;width:8px;height:8px;border-radius:50%;background:var(--wait-strong);animation:dv-pu 1.4s ease-in-out infinite}
+.dv-pu.ok{animation:none;background:var(--ok-strong)}.dv-pu.no{animation:none;background:var(--bad-strong)}
+@keyframes dv-pu{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.dv-pu{animation:none}}
+.dv-h{margin:0 0 6px;font-size:13px;font-weight:600;color:var(--accent-text)}
+@media (pointer:coarse){.wrap .card.dv.dv-yz{padding:14px 16px 0}.wrap .card.dv.dv-yz > .row{margin-left:-16px;margin-right:-16px}}
+.dv-p{margin:0 0 4px}
+.dv-l{margin:10px 0 2px;font-size:13px;font-weight:600;opacity:.85}
+.dv-k{margin:14px 0 2px;font-size:13px;font-weight:600;color:var(--muted)}
+.dv-c{margin:0;font-size:17px;line-height:1.4}
+.dv-c s{color:var(--bad);text-decoration-thickness:1.5px}
+.dv-c.diff{font-size:19px;letter-spacing:-.01em}
+.dv-ai{margin-top:16px}
+.dv-pair{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;margin:4px 0 0!important;padding:6px 10px;border-radius:10px;background:var(--surface);font-weight:600}
+.dv-pair s{color:var(--bad);text-decoration-thickness:1.5px}.dv-pair b{color:var(--ok)}
+.dv-ld{margin-top:16px}
+.dv [tabindex="-1"]:focus{outline:0}
+.dv-tag{flex:none;align-self:center;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--wait-bg);color:var(--wait)}
+.wl .dv-e{font-size:14px;line-height:1.45;margin-top:6px}
+.wl .dv-e .dv-pair{display:flex;width:max-content;max-width:100%;margin-top:6px!important;background:var(--surface-2)}
+.dv .icon[data-say]{position:relative}
+.dv .icon[data-say]::after{content:"";position:absolute;inset:-6px -8px}

@@ -2968,7 +2968,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611240054";
+const APP_V = "202611240233";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -5594,12 +5594,13 @@ function clozeOf(w) {
 
 let Z = null;
 
-function segBar(bar, total, res, cur) {
+// res[k]: true (right), false (wrong), "w" (being checked by the AI). rd adds the mistake-round segment: "wait" (coming) or "on" (running).
+function segBar(bar, total, res, cur, rd) {
   if (!bar) return false; const seg = total > 1 && total <= 20; bar.classList.toggle("seg", seg);
   if (!seg) return false;
-  const got = res.filter(x => x != null).length;
-  bar.setAttribute("role", "img"); bar.setAttribute("aria-label", `${total} tadan ${got} ta savol: ${res.filter(x => x === true).length} to'g'ri, ${res.filter(x => x === false).length} xato`);
-  bar.innerHTML = Array.from({ length: total }, (_, k) => `<i class="${res[k] === true ? "ok" : res[k] === false ? "bad" : k === cur ? "now" : ""}"></i>`).join("");
+  const got = res.filter(x => x != null).length, wt = res.filter(x => x === "w").length;
+  bar.setAttribute("role", "img"); bar.setAttribute("aria-label", `${total} tadan ${got} ta savol: ${res.filter(x => x === true).length} to'g'ri, ${res.filter(x => x === false).length} xato` + (wt ? `, ${wt} tasi tekshirilmoqda` : "") + (rd ? ". Oxirida xatolar davrasi" : ""));
+  bar.innerHTML = Array.from({ length: total }, (_, k) => `<i class="${res[k] === true ? "ok" : res[k] === false ? "bad" : res[k] === "w" ? "wt" : k === cur ? "now" : ""}"></i>`).join("") + (rd ? `<i class="rd${rd === "on" ? " now" : ""}"></i>` : "");
   return true;
 }
 const quizBar = () => { if (Z && !Z.learn) segBar(document.querySelector("#app > .top .bar"), Z.base, Z.res || [], Z.done.has(Z.cur && Z.cur.id) ? -1 : Math.min(Z.mainN || 0, Z.base)); };
@@ -6808,14 +6809,20 @@ function tSave() {
   try {
     if (!T) return localStorage.removeItem(TKEY);
     const U = [...new Set(T.q)], ix = x => U.indexOf(x);
-    localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), les: LES, u: U, q: T.q.map(ix), w: T.wrong.map(ix), a: [...T.again].map(ix), o: { i: T.i, right: T.right, total: T.total, res: T.res || [], title: T.title, key: T.key, tag: T.tag, mode: T.mode, back: T.back } }));
+    const dv = (T.dv || []).map(j => ({ x: ix(j.it), a: j.ans, k: j.k, alt: j.alt ? 1 : 0, s: j.seen ? 1 : 0, f: j.fu || "", d: j.st === "ok" ? j.d : null }));
+    localStorage.setItem(TKEY, JSON.stringify({ t: Date.now(), les: LES, u: U, q: T.q.map(ix), w: T.wrong.map(ix), a: [...T.again].map(ix), dv, o: { i: T.i, right: T.right, total: T.total, res: T.res || [], title: T.title, key: T.key, tag: T.tag, mode: T.mode, back: T.back } }));
   } catch (e) {}
 }
 function tLoad() {
   try {
-    const d = JSON.parse(localStorage.getItem(TKEY) || "null"); if (!d || Date.now() - d.t > 6 * 36e5 || !d.u || d.o.i >= d.q.length) return false;
+    const d = JSON.parse(localStorage.getItem(TKEY) || "null"), dv = d && Array.isArray(d.dv) ? d.dv : [];
+    if (!d || Date.now() - d.t > 6 * 36e5 || !d.u || (d.o.i >= d.q.length && !dv.some(j => !j.s && !j.f))) return false;
     const it = k => d.u[k];
-    T = Object.assign({}, d.o, { q: d.q.map(it), wrong: d.w.map(it), again: new Set(d.a.map(it)) }); LES = !!d.les; return true;
+    T = Object.assign({}, d.o, { q: d.q.map(it), wrong: d.w.map(it), again: new Set(d.a.map(it)) }); LES = !!d.les;
+    // Mistake round: answers the AI had already checked come back as they were, the rest are asked again.
+    if (dv.length) { T.dv = dv.map(j => ({ it: it(j.x), ans: j.a, k: j.k, alt: !!j.alt, seen: !!(j.s || j.f), fu: j.f || "", st: j.d ? "ok" : j.s ? "fail" : "wait", d: j.d || null, err: "", ses: T })); T.dv.forEach(j => { if (!j.d && !j.seen) dvAsk(j); }); }
+    if (T.i >= T.q.length) T.round = { cur: null, sub: "" };
+    return true;
   } catch (e) { return false; }
 }
 function startTuz(list, title, key, tag) {
@@ -6824,7 +6831,79 @@ function startTuz(list, title, key, tag) {
   if (list.some(x => x.long)) bkFetch(T.q);
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
-function tuzResult(it, ok) { if (!T.again.has(it)) { (T.res = T.res || []).push(!!ok); segBar(document.querySelector("#app > .top .bar"), T.total, T.res, -1); logAns(ok); if (ok) { T.right++; misDel("b:" + it.e); } else { T.wrong.push(it); T.again.add(it); T.q.push(it); misAdd("b:" + it.e); } save(); } }
+// Counts a first answer. A wrong sentence normally comes back at the end of the session. With the AI on it goes to
+// the mistake round instead (dvAdd): the job is returned so the caller can show "being checked" for a reordered answer.
+function tuzResult(it, ok, ans) {
+  if (T.again.has(it)) return null;
+  const dv = !ok && !!ans && dvCan(it), alt = dv && DAVRA.moved(canon(ans), canon(it.e));
+  (T.res = T.res || []).push(ok ? true : alt ? "w" : false); logAns(ok);
+  let job = null;
+  if (ok) { T.right++; misDel("b:" + it.e); }
+  else { T.wrong.push(it); T.again.add(it); misAdd("b:" + it.e); if (dv) job = dvAdd(it, ans, alt); else T.q.push(it); }
+  tuzBar(-1); save();
+  return job;
+}
+
+// ── Xatolar davrasi (mistake round, AI) ─────────────────────────────────────────────────────────────────────
+// One job per wrong answer: { it, ans, alt, k (index in T.res), st: wait | ok | fail, d (AI reply), seen, fu (new question: ok | bad), ses (its session) }.
+// The AI works while the learner goes on; after the last sentence tuzRound() shows the reason and one new question per mistake.
+const dvCan = it => !!window.DAVRA && !it.long && navigator.onLine !== false && !(T && T.dvOff) && aiOn();
+const dvJob = it => T && T.dv ? T.dv.find(j => j.it === it) || null : null;
+const dvLeft = () => !!(T && T.dv && T.dv.some(j => !j.seen));
+const dvAgain = c => /^(fail|slow|offline)$/.test(c);      // worth asking again; the rest (limit, sign-in, not enabled) will not change in this session
+const dvErr = c => c === "limit" ? `Bugungi ${AI_LIMIT} ta AI so'rovi ishlatildi.` : c === "offline" ? "Internet yo'q." : c === "auth" ? "Hisobga qayta kirish kerak (Sozlamalar)." : c === "not_allowed" || c === "no_key" ? "AI bu hisob uchun yoqilmagan." : "";
+const dvStat = j => `<div class="dv-st" role="status"><span class="dv-pu${j.st === "wait" ? "" : j.st === "ok" ? " ok" : " no"}" aria-hidden="true"></span><span>${j.st === "fail" ? (dvAgain(j.err) ? (dvErr(j.err) || "AI javob bermadi.") + " Mashq oxirida yana so'rab ko'rish mumkin." : dvErr(j.err) + " Sababi bu safar chiqmaydi.") : j.st === "ok" ? "Sababi va yangi savol tayyor. Mashq oxirida ko'rasiz." : "Sababi va yangi savol mashq oxirida. AI hozir tayyorlayapti."}</span></div>`;
+const dvWaitHtml = it => `<p class="dv-p">AI ma'nosini solishtiryapti. Natijasi mashq oxiridagi davrada chiqadi.</p><p class="dv-l">Kitobda</p><b>${esc(it.e)}</b>`;
+function tuzBar(cur) {
+  if (!T) return;
+  if (cur !== undefined) T.bc = cur;
+  segBar(document.querySelector("#app > .top .bar"), T.total, T.res || [], T.round ? -1 : T.bc, T.round ? "on" : T.dv && T.dv.length ? "wait" : "");
+}
+function dvAdd(it, ans, alt) {
+  const j = { it, ans, alt: !!alt, k: T.res.length - 1, st: "wait", d: null, err: "", seen: false, fu: "", ses: T };
+  (T.dv = T.dv || []).push(j); dvAsk(j); return j;
+}
+async function dvAsk(j) {
+  const s = j.ses; j.st = "wait"; j.err = "";
+  try {
+    const d = DAVRA.clean(await aiAsk({ mode: "davra", uz: j.it.u, target: j.it.e, answer: j.ans, rule: j.it.h }));
+    if (!d) throw Object.assign(new Error("empty"), { code: "fail" });
+    if (d.savol && canon(d.savol.en).join(" ") === canon(j.it.e).join(" ")) d.savol = null;
+    j.d = d; j.st = "ok";
+    if (d.togri) dvAccept(j); else if (s.res[j.k] === "w") s.res[j.k] = false;
+  } catch (e) {
+    j.st = "fail"; j.err = e.code || "fail";
+    if (/^(limit|auth|not_allowed|no_key)$/.test(j.err)) s.dvOff = j.err;
+  }
+  if (s === T) tSave();
+  dvNote(j);
+}
+// The AI found the answer correct after all: fix the score, the mistake list and today's log.
+function dvAccept(j) {
+  const s = j.ses, it = j.it;
+  s.res[j.k] = true; s.right++; s.wrong = s.wrong.filter(x => x !== it);
+  misDel("b:" + it.e); const L = S.log[today()]; if (L && L.ok < L.a) L.ok++;
+  if (s.fin && s.key) S.pat[s.key] = Math.max(S.pat[s.key] || 0, s.right);
+  save();
+}
+// A job has finished: refresh whatever shows it. The question still on screen keeps its panel and its segment,
+// so the verdict is not shown twice in two places; the round is where it is told.
+function dvNote(j) {
+  const s = j.ses;
+  if (s.fin) { if (s.onDv) s.onDv(); return; }
+  if (s !== T || location.hash !== "#tuzmashq") return;
+  if (T.round) { if (!T.round.cur) render(); return; }
+  if (T.q[T.i] !== j.it) return tuzBar();
+  const el = document.querySelector("#tf .dv-st"); if (el && !(j.st === "ok" && j.d.togri)) el.outerHTML = dvStat(j);
+}
+// One sentence with the words the other one does not share marked, original spelling and punctuation kept:
+// dvMark(answer, book, "s") strikes what the learner wrote wrong or extra, dvMark(book, answer, "x") marks what was missed.
+function dvMark(text, other, how) {
+  const toks = String(text).split(/\s+/).filter(Boolean), cnt = toks.map(t => canon(t).length), mine = canon(text);
+  if (cnt.reduce((a, b) => a + b, 0) !== mine.length) return esc(text);
+  const keep = lcsKeep(mine, canon(other)); let p = 0;
+  return toks.map((t, i) => { let ok = true; for (let x = 0; x < cnt[i]; x++) if (!keep.has(p + x)) ok = false; p += cnt[i]; return ok ? esc(t) : how === "s" ? `<s>${esc(t)}</s>` : `<span class="x">${esc(t)}</span>`; }).join(" ");
+}
 const ICON_BOOK_GL = sv('<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5Z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5Z"/>');
 
 const BKK = "ingliz-bolak"; let BKC = {};
@@ -6903,12 +6982,18 @@ const ICON_SKEL = sv('<rect x="3" y="5" width="7" height="5" rx="1.5"/><rect x="
   addEventListener("scroll", () => hide(), { passive: true, capture: true });
   document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
 })();
-function tuzNext() { T.retryOf = null; T.i++; if (T.i < T.q.length) render(); else tuzFinish(); }
+function tuzNext() {
+  T.retryOf = null; T.i++;
+  if (T.i < T.q.length) return render();
+  if (dvLeft() && window.DAVRA) { T.round = { cur: null, sub: "" }; return render(); }
+  tuzFinish();
+}
 
 function tuzRetry() { if (!T) return; stopVoice(); T.retryOf = T.q[T.i]; render(); }
 route(/^tuzmashq$/, () => {
   if (!T && !tLoad()) return go("tuz");
   tSave();
+  if (T.round || T.i >= T.q.length) return T.round && window.DAVRA ? tuzRound() : tuzFinish();
   const it = T.q[T.i], yoz = T.mode === "yoz";
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
   <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p>${T.retryOf === it ? `<p class="tz-re">${ICON_RETRY}Qayta urinish — natijaga ta'sir qilmaydi</p>` : ""}<div class="q qsmall">${esc(it.u)}</div>
@@ -6919,15 +7004,18 @@ route(/^tuzmashq$/, () => {
     <div class="fb hidden" id="tf"></div>
     <div class="row" style="margin-top:14px">${yoz ? "" : `<button class="btn ghost" id="tzsk" type="button" aria-pressed="false">${ICON_SKEL}<span>Bo'laklab</span></button>`}<button class="btn" id="chk" disabled>Tekshirish</button></div>
   </div>`;
-  segBar(document.querySelector("#app > .top .bar"), T.total, T.res || [], T.i < T.total && !T.again.has(T.q[T.i]) ? (T.res || []).length : -1);
+  tuzBar(T.i < T.total && !T.again.has(T.q[T.i]) ? (T.res || []).length : -1);
   $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; tSave(); location.hash = b; });
   let done = false;
+  // cls: ok | bad | wait (same words in another order, the AI is checking). A wrong answer that went to the mistake
+  // round shows where its reason will come instead of the fixed hint, which is about the unit and not about this mistake.
   const show = (cls, html) => {
-    $("#tf").className = "fb tz " + cls; buzz(cls === "ok");
-    $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : ICON.x + "Xato"}</div>` + html + ` <button aria-label="Tinglash" class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button><div style="margin-top:6px">${esc(it.h)}</div>`;
+    const j = cls === "bad" ? dvJob(it) : null;
+    $("#tf").className = "fb tz " + cls; if (cls !== "wait") buzz(cls === "ok");
+    $("#tf").innerHTML = `<div class="tzh">${cls === "ok" ? ICON.check + "To'g'ri!" : cls === "wait" ? ICON.clock + "Boshqacha yozdingiz" : ICON.x + "Xato"}</div>` + html + ` <button aria-label="Tinglash" class="icon" data-say="${esc(it.e)}" style="padding:4px 8px">${ICON.vol}</button>` + (cls === "wait" ? "" : j ? dvStat(j) : `<div style="margin-top:6px">${esc(it.h)}</div>`);
     bindSay($("#tf")); say(it.e);
-    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
-    if (cls !== "ok" && !$("#tzre")) { const b = document.createElement("button"); b.className = "btn ghost"; b.id = "tzre"; b.type = "button"; b.innerHTML = ICON_RETRY + "Qayta yozish"; b.onclick = tuzRetry; $("#chk").before(b); }
+    $("#chk").disabled = false; $("#chk").textContent = T.i + 1 < T.q.length ? "Keyingisi" : dvLeft() ? "Xatolar davrasiga" : "Natijani ko'rish"; if (document.activeElement !== $("#tin")) $("#chk").focus();
+    if (cls === "bad" && !$("#tzre")) { const b = document.createElement("button"); b.className = "btn ghost"; b.id = "tzre"; b.type = "button"; b.innerHTML = ICON_RETRY + "Qayta yozish"; b.onclick = tuzRetry; $("#chk").before(b); }
   };
 
   const ruleOpen = (A, W, ans, tile, gotD) => {
@@ -6951,12 +7039,13 @@ route(/^tuzmashq$/, () => {
       done = true; inp.dataset.lock = inp.value;
       const got = canon(inp.value), exact = got.join(" ") === want.join(" ");
       const close = !exact && got.length === want.length && lev(got.join(" "), want.join(" ")) === 1 && want.join(" ").length > 8;
-      const ok = exact || close; tuzResult(it, ok);
-      inp.className = "spell " + (ok ? "ok" : "bad"); inp.style.fontSize = "19px";
+      const ok = exact || close, job = tuzResult(it, ok, inp.value.trim()), wt = !!(job && job.alt);
+      inp.className = "spell" + (ok ? " ok" : wt ? " wt" : " bad"); inp.style.fontSize = "19px";
       if (exact) show("ok", `<b>${esc(it.e)}</b>`);
       else if (close) { const d = wordDiff(got, want); show("ok", `To'g'ri, faqat bitta harf xato: <div class="diff" style="font-size:18px">${d.want}</div>`); }
+      else if (wt) show("wait", dvWaitHtml(it));
       else { const d = wordDiff(got, want); show("bad", `To'g'risi: <b>${esc(it.e)}</b>${d.want.includes('class="x"') ? `<div style="margin-top:8px">Qizil — xato yozilgan yoki tushib qolgan so'zlar:</div><div class="diff" style="font-size:18px">${d.want}</div>` : ""}${d.extra.length ? `<div>Ortiqcha: <s>${esc(d.extra.join(" "))}</s></div>` : ""}`);
-        if (it.long) ruleOpen(got, want, inp.value.trim(), false); else whyButton($("#tf"), { uz: it.u, target: it.e, answer: inp.value.trim(), rule: it.h }); }
+        if (it.long) ruleOpen(got, want, inp.value.trim(), false); else if (!dvJob(it)) whyButton($("#tf"), { uz: it.u, target: it.e, answer: inp.value.trim(), rule: it.h }); }
     };
     inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
     $("#chk").onclick = check;
@@ -7000,32 +7089,147 @@ route(/^tuzmashq$/, () => {
     if (done) return tuzNext();
     done = true;
     const ok = picked.map(k => tiles[k].toLowerCase()).join(" ") === want.join(" ").toLowerCase();
-    tuzResult(it, ok);
+    const job = tuzResult(it, ok, picked.map(k => tiles[k]).join(" ")), wt = !!(job && job.alt);
     if ($("#tzsk")) $("#tzsk").remove();
 
     if (ok && skUsed && !T.skAgain) { T.skAgain = new Set(); }
     if (ok && skUsed && !T.skAgain.has(it) && T.q.indexOf(it, T.i + 1) < 0) { T.skAgain.add(it); T.q.push(it); T.again.add(it); }
 
     const A = $("#ans"), keep = lcsKeep(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()));
-    A.querySelectorAll(".tile").forEach((b, j) => { b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
-    A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#bank").classList.add("done");
-    show(ok ? "ok" : "bad", ok ? `<b>${esc(it.e)}</b>${skUsed ? `<div class="tz-skn">Bo'laklab yig'dingiz — bu gap seans oxirida yana beriladi, endi skeletsiz.</div>` : ""}` : `To'g'risi: <b>${esc(it.e)}</b>`);
+    A.querySelectorAll(".tile").forEach((b, j) => { if (!wt) b.classList.add(ok || keep.has(j) ? "g" : "r"); b.style.setProperty("--j", j); b.disabled = true; });
+    A.style.setProperty("--n", picked.length); A.classList.add(wt ? "wt" : ok ? "ok" : "bad"); $("#bank").classList.add("done");
+    show(ok ? "ok" : wt ? "wait" : "bad", ok ? `<b>${esc(it.e)}</b>${skUsed ? `<div class="tz-skn">Bo'laklab yig'dingiz — bu gap seans oxirida yana beriladi, endi skeletsiz.</div>` : ""}` : wt ? dvWaitHtml(it) : `To'g'risi: <b>${esc(it.e)}</b>`);
     if (!ok && it.long) ruleOpen(picked.map(k => tiles[k].toLowerCase()), want.map(w => w.toLowerCase()), picked.map(k => tiles[k]).join(" "), true, picked.map(k => tiles[k]));
-    else if (!ok) whyButton($("#tf"), { uz: it.u, target: it.e, answer: picked.map(k => tiles[k]).join(" "), rule: it.h });
+    else if (!ok && !dvJob(it)) whyButton($("#tf"), { uz: it.u, target: it.e, answer: picked.map(k => tiles[k]).join(" "), rule: it.h });
   };
   draw();
 });
+// The mistake round: runs after the last sentence while T.round is set. One card at a time —
+// alt (the AI accepted the answer), why (reason) → q (one new question on the same mistake), wait (still checking), fail.
+function tuzRound() {
+  const R = T.round, all = T.dv || [];
+  if (R.cur && R.cur.fu) R.cur.seen = true;
+  if (R.cur && (R.cur.seen || R.cur.st !== "ok")) R.cur = null;
+  const nx = R.cur ? null : DAVRA.next(all);
+  if (nx && nx.state === "end") return tuzFinish();
+  if (nx && nx.job) { R.cur = nx.job; R.sub = nx.state; }
+  const j = R.cur, st = j ? R.sub : nx.state, left = all.filter(x => !x.seen), last = left.length === 1, yoz = T.mode === "yoz";
+  const sayB = t => `<button aria-label="Tinglash" class="icon" data-say="${esc(t)}" style="padding:4px 8px">${ICON.vol}</button>`;
+  const nextL = last ? "Yakunlash" : "Davom etish";
+  let body;
+  if (st === "wait") body = `<div class="q qsmall" id="dvh" tabindex="-1">AI natijalarni olib kelyapti</div>
+    <div class="ai dv-ld" role="status"><span class="sr-only">Yuklanmoqda</span><div class="sk"></div><div class="sk" style="width:64%"></div></div>
+    <div class="row"><button class="btn ghost" id="dvend">Kutmasdan yakunlash</button></div>`;
+  else if (st === "fail") {
+    const bad = left.filter(x => x.st === "fail"), again = bad.some(x => dvAgain(x.err)), why = dvErr((bad.find(x => dvErr(x.err)) || {}).err);
+    body = `<div class="q qsmall" id="dvh" tabindex="-1">AI hozircha javob bermadi</div>
+    <div class="fb tz wait"><div class="tzh">${ICON.clock}Tayyor emas</div><p class="dv-p">${bad.length} ta xatoning sababi tayyor bo'lmadi.${why ? " " + why : ""} Javoblaringiz saqlandi, bu gaplar natija sahifasida turadi.</p></div>
+    <div class="row">${again ? `<button class="btn ghost" id="dvre">Yana so'rash</button>` : ""}<button class="btn" id="dvend">Yakunlash</button></div>`;
+  } else if (st === "alt") body = `<div class="q qsmall" id="dvh" tabindex="-1">${esc(j.it.u)}</div>
+    <p class="dv-k">Siz yozdingiz</p><p class="dv-c">${esc(j.ans)}</p>
+    <div class="fb tz ok"><div class="tzh">${ICON.check}To'g'ri deb qabul qilindi</div><p class="dv-p">${esc(j.d.izoh)}</p><p class="dv-l">Kitobda</p><b>${esc(j.it.e)}</b> ${sayB(j.it.e)}</div>
+    <div class="row"><button class="btn" id="dvnx">${nextL}</button></div>`;
+  else if (st === "why") body = `<div class="q qsmall" id="dvh" tabindex="-1">${esc(j.it.u)}</div>
+    <p class="dv-k">Siz yozdingiz</p><p class="dv-c">${dvMark(j.ans, j.it.e, "s")}</p>
+    <p class="dv-k">To'g'risi</p><p class="dv-c diff">${dvMark(j.it.e, j.ans, "x")} ${sayB(j.it.e)}</p>
+    <div class="ai dv-ai"><p class="ai-k">${ICON_WHY}Nega xato</p><p>${esc(j.d.izoh)}</p>${j.d.juft ? `<p class="dv-pair"><span class="sr-only">Xato: </span><s>${esc(j.d.juft.xato)}</s><span aria-hidden="true">→</span><span class="sr-only"> To'g'risi: </span><b>${esc(j.d.juft.togri)}</b></p>` : ""}</div>
+    <div class="row"><button class="btn" id="${j.d.savol ? "dvq" : "dvnx"}">${j.d.savol ? "Tushundim, savolga o'tish" : nextL}</button></div>`;
+  else body = `<p class="dv-k">Shu xatoga yana bitta savol</p><div class="q qsmall" id="dvqq" tabindex="-1">${esc(j.d.savol.uz)}</div>
+    ${yoz ? `<textarea class="spell" id="dvin" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…" aria-labelledby="dvqq"></textarea>`
+      : `<div class="answer" id="dvans" aria-live="polite"></div><div class="tiles" id="dvbank"></div>`}
+    <div class="fb hidden" id="dvf" role="status"></div>
+    <div class="row"><button class="btn" id="dvchk" disabled>Tekshirish</button></div>`;
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Davrani yopish" title="Davrani yopish">${ICON.x}</button><div class="bar"></div><span class="cnt">Davra</span></div>
+  <div class="card qcard dv${yoz ? " dv-yz" : ""}"><p class="dv-h">Xatolar davrasi · ${all.length - left.length + 1}/${all.length}</p>${body}</div>`;
+  tuzBar(); bindSay(app);
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  const nextCard = () => { j.seen = true; R.cur = null; R.sub = ""; render(); };
+  on("#quit", tuzFinish); on("#dvend", tuzFinish); on("#dvnx", nextCard);
+  on("#dvre", () => { left.filter(x => x.st === "fail" && dvAgain(x.err)).forEach(dvAsk); render(); });
+  on("#dvq", () => { R.sub = "q"; render(); });
+  if (st === "alt" && R.bz !== j) { R.bz = j; buzz(true); }
+  if (st !== "q") { const h = $("#dvh"); if (h) h.focus({ preventScroll: true }); return; }
+
+  const f = j.d.savol, chk = $("#dvchk"); let done = false;
+  // en: the wording to show and say — the learner's own accepted variant when it is not the first one.
+  const result = (ok, en, more) => {
+    j.fu = ok ? "ok" : "bad"; buzz(ok); tSave();
+    const fb = $("#dvf"); fb.className = "fb tz " + (ok ? "ok" : "bad");
+    fb.innerHTML = `<div class="tzh">${ok ? ICON.check + "To'g'ri. Xato yopildi" : ICON.x + "Yana xato"}</div>${ok ? "" : "To'g'risi: "}<b>${esc(en)}</b>${more || ""} ${sayB(en)}`;
+    bindSay(fb); say(en);
+    chk.disabled = false; chk.textContent = nextL; if (document.activeElement !== $("#dvin")) chk.focus();
+  };
+  if (yoz) {
+    const inp = $("#dvin"), acc = [f.en].concat(f.alt).map(x => canon(x).join(" "));
+    inp.focus();
+    inp.oninput = () => { if (!done) chk.disabled = !inp.value.trim(); };
+    const check = () => {
+      if (done) return nextCard();
+      if (!inp.value.trim()) return;
+      done = true; inp.dataset.lock = inp.value;
+      const got = canon(inp.value), hit = acc.indexOf(got.join(" ")), ok = hit >= 0, d = wordDiff(got, canon(f.en));
+      inp.className = "spell " + (ok ? "ok" : "bad"); inp.style.fontSize = "19px";
+      result(ok, hit > 0 ? f.alt[hit - 1] : f.en, ok ? "" : `${d.want.includes('class="x"') ? `<div class="diff" style="font-size:18px">${d.want}</div>` : ""}${d.extra.length ? `<div>Ortiqcha: <s>${esc(d.extra.join(" "))}</s></div>` : ""}`);
+    };
+    inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
+    chk.onclick = check;
+    return;
+  }
+  const want = words(f.en), have = new Set(want.map(w => w.toLowerCase())), acc = [f.en].concat(f.alt).map(x => words(x).join(" ").toLowerCase());
+  const tiles = shuffle(want.concat(f.chalg.filter(x => !have.has(x.toLowerCase())))), picked = [];
+  const draw = () => {
+    $("#dvans").innerHTML = picked.length ? picked.map((k, x) => `<button class="tile" data-j="${x}" data-gl="${esc(tiles[k])}">${esc(tiles[k])}</button>`).join("") : `<span class="muted">So'zlarni bosing…</span>`;
+    $("#dvbank").innerHTML = tiles.map((t, k) => `<button class="tile ${picked.includes(k) ? "used" : ""}" data-k="${k}" data-gl="${esc(t)}">${esc(t)}</button>`).join("");
+    $("#dvans").querySelectorAll("[data-j]").forEach(b => b.onclick = () => { if (done) return; picked.splice(+b.dataset.j, 1); draw(); });
+    $("#dvbank").querySelectorAll("[data-k]").forEach(b => b.onclick = () => { if (done || picked.includes(+b.dataset.k)) return; picked.push(+b.dataset.k); say(tiles[+b.dataset.k]); draw(); });
+    if (!done) chk.disabled = !picked.length;
+  };
+  chk.onclick = () => {
+    if (done) return nextCard();
+    done = true;
+    const got = picked.map(k => tiles[k].toLowerCase()), hit = acc.indexOf(got.join(" ")), ok = hit >= 0;
+    const A = $("#dvans"), keep = lcsKeep(got, want.map(w => w.toLowerCase()));
+    A.querySelectorAll(".tile").forEach((b, x) => { b.classList.add(ok || keep.has(x) ? "g" : "r"); b.style.setProperty("--j", x); b.disabled = true; });
+    A.style.setProperty("--n", picked.length); A.classList.add(ok ? "ok" : "bad"); $("#dvbank").classList.add("done");
+    result(ok, hit > 0 ? f.alt[hit - 1] : f.en);
+  };
+  draw(); $("#dvqq").focus({ preventScroll: true });
+}
+// Result screen. With the mistake round the list and the score can still change after it opens:
+// a skipped round leaves answers the AI is checking, and they land here (s.onDv) when ready.
+let TZ_FIN = null;
 function tuzFinish() {
   if (T.tag) markDone(T.tag);
-  const { right, total, wrong, title, key, back, tag } = T; T = null; tSave();
-  if (key) { S.pat[key] = Math.max(S.pat[key] || 0, right); save(); }
-  app.innerHTML = `<div class="stack"><div class="card">${resultHero(title, right, total)}
-    <p class="muted rh-m">${wrong.length ? "Xato gaplarni yana bir marta tuzib ko'ring." : "Hamma gap birinchi urinishda to'g'ri."}</p></div>
-    ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl">${wrong.map(it => `<li><div class="h"><span class="w">${esc(it.e)}</span><button aria-label="Tinglash" class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div><div class="e"><small>${esc(it.h)}</small></div></li>`).join("")}</ul></div>` : ""}
+  const s = T; T = null; tSave(); s.fin = true; s.round = null; TZ_FIN = s;
+  const dv = s.dv || [], { title, key, back, tag, total } = s, jobOf = it => dv.find(j => j.it === it);
+  const line = () => {
+    const wt = dv.filter(j => j.st === "wait").length, acc = dv.filter(j => j.st === "ok" && j.d.togri).length, told = dv.filter(j => j.st === "ok" && !j.d.togri && (j.seen || j.fu)).length, fixed = dv.filter(j => j.fu === "ok").length;
+    if (wt) return `${wt} ta javobni AI hali tekshiryapti. Natija shu yerda yangilanadi.`;
+    if (!s.wrong.length) return acc ? `Hamma gap to'g'ri. ${acc} tasini boshqacha yozdingiz, AI ma'nosiga qarab qabul qildi.` : "Hamma gap birinchi urinishda to'g'ri.";
+    if (told) return `${told} ta xato davrada tushuntirildi${fixed ? `, ${fixed} tasi yangi savolda to'g'ri yozildi` : ""}.${told < s.wrong.length ? " Qolganlarini qayta tuzib ko'ring." : ""}`;
+    return "Xato gaplarni yana bir marta tuzib ko'ring.";
+  };
+  const rows = () => s.wrong.map(it => {
+    const j = jobOf(it), d = j && j.st === "ok" ? j.d : null;
+    return `<li><div class="h"><span class="w">${esc(it.e)}</span>${j && j.st === "wait" ? `<span class="dv-tag">Tekshirilmoqda</span>` : ""}<button aria-label="Tinglash" class="icon say" data-say="${esc(it.e)}">${ICON.vol}</button></div><div class="u">${esc(it.u)}</div>
+      ${d ? `<div class="dv-e">${esc(d.izoh)}${d.juft ? `<p class="dv-pair"><span class="sr-only">Xato: </span><s>${esc(d.juft.xato)}</s><span aria-hidden="true">→</span><span class="sr-only"> To'g'risi: </span><b>${esc(d.juft.togri)}</b></p>` : ""}</div>` : `<div class="e"><small>${esc(it.h)}</small></div>`}</li>`;
+  }).join("");
+  let shown = -1;
+  const paint = () => {
+    dv.forEach(j => { if (j.st === "fail" && s.res[j.k] === "w") s.res[j.k] = false; });
+    if (key) { S.pat[key] = Math.max(S.pat[key] || 0, s.right); save(); }
+    if (shown === s.right) { $("#tzm").textContent = line(); const w = $("#tzw"); if (w) { w.innerHTML = rows(); bindSay(w); } return; }
+    shown = s.right; const wrong = s.wrong;
+    app.innerHTML = `<div class="stack" id="tzfin"><div class="card">${resultHero(title, s.right, total)}
+    <p class="muted rh-m" id="tzm" aria-live="polite">${line()}</p></div>
+    ${wrong.length ? `<div class="card"><p class="label">Xato qilingan gaplar</p><ul class="wl" id="tzw">${rows()}</ul></div>` : ""}
     <div class="card">${lessonBtn(tag)}${wrong.length ? `<button class="btn${LES && tag ? " ghost" : ""}" id="again">Xatolarni qayta tuzish</button><div style="height:10px"></div>` : ""}<button class="btn ghost" id="back">${backLabel(tag)}</button></div></div>`;
-  bindSay(app); bindLesson();
-  const a = $("#again"); if (a) a.onclick = () => { startTuz(wrong, title, null); T.back = back; };
-  $("#back").onclick = () => { location.hash = back; };
+    bindSay(app); bindLesson();
+    const a = $("#again"); if (a) a.onclick = () => { startTuz(s.wrong, title, null); T.back = back; };
+    $("#back").onclick = () => { location.hash = back; };
+  };
+  s.onDv = () => { if (TZ_FIN === s && $("#tzfin")) paint(); };
+  paint(); window.scrollTo(0, 0);
 }
 
 const ICON_WHY = sv('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4"/><path d="M12 16h.01"/>');

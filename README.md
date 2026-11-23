@@ -11,6 +11,7 @@ Live site: https://easywords.uz/
 - `js/app.js` — main client app
 - `js/fsrs.js` — FSRS-4.5 spaced repetition scheduler
 - `js/mastery.js` — speaking mistake mastery tracker
+- `js/davra.js` — pure helpers of the AI mistake round in the sentence exercise
 - `data/*.js` — vocabulary, grammar patterns, stories, pictures, and lazy-loaded level packs
 - `sw.js` — offline-first service worker with versioned asset caching
 - `supabase/functions/` — Edge Functions (`repetitor`, `dars`, `suhbat`, `sahna`, `tushuntir`, `ovoz`, `widget`) + `_shared/common.ts`

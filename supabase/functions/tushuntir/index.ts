@@ -1,11 +1,11 @@
-// On-demand AI explainer and chat assistant (modes: fix, xato, check, sentence, word, bolak, chat).
+// On-demand AI explainer and chat assistant (modes: fix, xato, davra, check, sentence, word, bolak, chat).
 // Endpoint: POST /tushuntir (verified Supabase user JWT + allowlist + daily quota).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { AI_EFFORT, AI_MODEL, clip, cors, CYR, json, whoUser } from "../_shared/common.ts";
+import { AI_EFFORT, AI_MODEL, clip, cors, CYR, enText, json, uzText, whoUser } from "../_shared/common.ts";
 
 const LIMIT = 120;
 
-const SMART = ["chat", "xato", "fix", "check"];
+const SMART = ["chat", "xato", "fix", "check", "davra"];
 const pick = (mode: unknown) => {
   const m = String(mode || "fix");
   return { model: AI_MODEL, effort: AI_EFFORT, max: SMART.includes(m) ? 24000 : 16000 };
@@ -59,6 +59,26 @@ function xatoPrompt(b: Record<string, unknown>) {
     `JSON: {"izoh": "1–2 gap umumiy xulosa yoki savolga javob", "qadamlar": [{"xato": "...", "togri": "...", "nega": "..."}], "eslatma": "...", "misol": {"en": "...", "uz": "..."}}`;
 }
 
+// "Xatolar davrasi": one background call per wrong answer of the sentence exercise. The model first judges
+// whether the answer is a correct translation after all, and for a real mistake gives a short reason and
+// one new sentence that tests the same mistake.
+function davraPrompt(b: Record<string, unknown>) {
+  return `Gap tuzish mashqi: o'quvchi o'zbekcha gapni inglizchaga o'girdi va javobi kitobdagi javobga so'zma-so'z to'g'ri kelmadi.\n` +
+    `O'zbekcha topshiriq: ${clip(b.uz, 240)}\nKitobdagi inglizcha javob: ${clip(b.target, 240)}\nO'quvchi javobi: ${clip(b.answer, 240)}\n` +
+    (b.rule ? `Saytdagi qisqa qoida: ${clip(b.rule, 160)}\n` : "") +
+    `\n1) Avval hukm chiqar: o'quvchi javobi topshiriqning to'g'ri inglizcha tarjimasimi?\n` +
+    `togri = true faqat shunda: gap grammatik to'g'ri VA ma'nosi topshiriqdagi bilan bir xil. Kitobdagi javobdan farqi faqat shularda bo'lishi mumkin: so'z tartibi (masalan vaqt so'zi gap boshida yoki oxirida), qisqartma («don't» / «do not»), teng ma'noli so'z yoki ibora, katta-kichik harf, tinish belgisi.\n` +
+    `togri = false: so'z tushib qolgan yoki ortiqcha, fe'l shakli, artikl, predlog, so'z tartibi yoki imlo xato, yoki ma'no o'zgargan. Ikkilansang — false.\n` +
+    `2) togri = true bo'lsa: izoh — bitta qisqa gap: javob kitobdagidan nimasi bilan farq qiladi va bu ham to'g'ri ekani. juft = null, savol = null.\n` +
+    `3) togri = false bo'lsa:\n` +
+    `- izoh — 1–2 qisqa gap: o'quvchi aynan nimani xato qildi va qanday bo'lishi kerak. Faqat eng muhim bitta xato.\n` +
+    `- juft — o'sha xato bo'lak va uning to'g'risi: «xato» o'quvchi javobidan, «togri» kitobdagi javobdan aynan ko'chiriladi, 1–4 so'z. So'z tushib qolgan bo'lsa, yonidagi so'z bilan yoz (masalan xato «is student», togri «is a student»).\n` +
+    `- savol — aynan shu xatoni tekshiradigan bitta YANGI gap: mazmuni, oti va fe'li boshqa, lekin qolipi o'sha — o'quvchi shu joyda yana adashishi mumkin bo'lsin. A1 so'zlari, 3–8 so'z, kundalik hayotdan.\n` +
+    `  uz — o'zbekcha topshiriq (o'quvchi shuni inglizchaga o'giradi); en — to'g'ri inglizcha javob; alt — yana qabul qilinadigan 0–3 ta to'g'ri variant (boshqa so'z tartibi yoki teng ma'noli so'z; qisqartmali shaklni yozma, sayt uni o'zi taniydi); chalg — 2–3 ta chalg'ituvchi inglizcha so'z: shu xatoning noto'g'ri shakllari (masalan «plays» kerak bo'lsa «play»), en dagi so'zlardan farq qilsin.\n` +
+    `juft va savol ichidagi inglizcha matnni «» siz, oddiy yoz. Bu rejimda misol gap kerak emas.\n` +
+    `JSON: {"togri": true|false, "izoh": "...", "juft": {"xato": "...", "togri": "..."} | null, "savol": {"uz": "...", "en": "...", "alt": ["..."], "chalg": ["..."]} | null}`;
+}
+
 function bolakPrompt(b: Record<string, unknown>) {
   const items = (Array.isArray(b.items) ? (b.items as Record<string, unknown>[]) : []).slice(0, 10);
   const list = items.map((x, i) => `${i + 1}. O'zbekcha: ${clip(x.uz, 240)}\n   Inglizcha: ${clip(x.en, 240)}`).join("\n");
@@ -73,6 +93,7 @@ function prompt(b: Record<string, unknown>) {
   if (b.mode === "chat") return chatPrompt(b);
   if (b.mode === "bolak") return bolakPrompt(b);
   if (b.mode === "xato") return xatoPrompt(b);
+  if (b.mode === "davra") return davraPrompt(b);
   if (b.mode === "sentence") {
 
     return `Video darsdagi (VOA, A1) inglizcha gap: ${clip(b.answer, 240)}\n` +
@@ -106,8 +127,8 @@ Deno.serve(async (req) => {
 
   let b: Record<string, unknown>;
   try { b = await req.json(); } catch { return json({ error: "bad_request" }, 400, origin); }
-  const chat = b.mode === "chat", bolak = b.mode === "bolak";
-  if (bolak ? !(Array.isArray(b.items) && b.items.length) : chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
+  const chat = b.mode === "chat", bolak = b.mode === "bolak", davra = b.mode === "davra";
+  if (bolak ? !(Array.isArray(b.items) && b.items.length) : chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || davra || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
 
   const user = await whoUser(req);
   if (!user || !user.email) return json({ error: "auth" }, 401, origin);
@@ -135,9 +156,11 @@ Deno.serve(async (req) => {
     signal: AbortSignal.timeout(ms),
   });
   let r: Response;
+  const t0 = Date.now(); let fallback = false;
   try { r = await ask(cfg.effort, cfg.max, 80000); if (!r.ok && r.status >= 500) throw new Error("anthropic " + r.status); }
   catch (e) {
     console.error("tushuntir full-effort try failed:", String(e).slice(0, 160));
+    fallback = true;
     try { r = await ask("medium", 8000, 50000); } catch (e2) { console.error("anthropic", String(e2).slice(0, 160)); return json({ error: "upstream" }, 502, origin); }
   }
   if (!r.ok) { console.error("anthropic", r.status, (await r.text()).slice(0, 300)); return json({ error: "upstream" }, 502, origin); }
@@ -154,6 +177,22 @@ Deno.serve(async (req) => {
   if (mis && cyr.test(String(mis.uz || ""))) delete mis.uz;
   if (out.tarjima && cyr.test(String(out.tarjima))) return json({ error: "empty" }, 502, origin);
   if (cyr.test(String(out.izoh || "")) || cyr.test(String(out.uz || ""))) return json({ error: "empty" }, 502, origin);
+  if (davra) {
+    // Only the fields the client uses, each one checked: a broken new question is dropped, the reason still goes out.
+    if (typeof out.togri !== "boolean") { console.error("davra: no verdict", data.stop_reason, text.length); return json({ error: "empty" }, 502, origin); }
+    const togri = out.togri === true;
+    // English the page compares answers with or builds tiles from: no «» around it, as the model writes inside explanations.
+    const plain = (v: unknown, n: number) => enText(String(v ?? "").replace(/[«»“”"]/g, ""), n);
+    const jf = (out.juft || null) as Record<string, unknown> | null, sv = (out.savol || null) as Record<string, unknown> | null;
+    const juft = !togri && jf && plain(jf.xato, 80) && plain(jf.togri, 80) ? { xato: plain(jf.xato, 80), togri: plain(jf.togri, 80) } : null;
+    const list = (a: unknown, n: number, one = false) => (Array.isArray(a) ? a : []).map((x) => plain(x, n)).filter((x) => x && (!one || !/\s/.test(x))).slice(0, 3);
+    const savol = !togri && sv && plain(sv.en, 200) && uzText(sv.uz, 200)
+      ? { uz: uzText(sv.uz, 200), en: plain(sv.en, 200), alt: list(sv.alt, 200), chalg: list(sv.chalg, 30, true) }
+      : null;
+    // One line per call for the trial review: how long it took and what came back. No sentences, nothing personal.
+    console.log("davra", JSON.stringify({ ms: Date.now() - t0, togri, savol: !!savol, juft: !!juft, fallback }));
+    return json({ togri, izoh: clip(out.izoh, 400), juft, savol, left: LIMIT - used }, 200, origin);
+  }
   if (Array.isArray(out.qadamlar)) out.qadamlar = (out.qadamlar as Record<string, unknown>[]).filter((x) => x && !cyr.test(String(x.nega || "")) && (clip(x.togri, 200) || clip(x.nega, 400))).slice(0, 6);
   if (out.eslatma && cyr.test(String(out.eslatma))) delete out.eslatma;
   if (chat && Array.isArray(out.qosh)) out.qosh = (out.qosh as Record<string, unknown>[]).filter((x) => x && clip(x.w, 60) && clip(x.u, 80) && !cyr.test(String(x.u))).slice(0, 3);

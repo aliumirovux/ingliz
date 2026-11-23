@@ -21,6 +21,7 @@ const { fixState, merge, dayDiff, addTo, weekOf } = require("../js/state.js");
 const FSRS = require("../js/fsrs.js");
 const MASTERY = require("../js/mastery.js");
 const PRONOUNCE = require("../js/pronounce.js");
+const DAVRA = require("../js/davra.js");
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HTML = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
@@ -175,6 +176,60 @@ test("js/pronounce.js: packs structure and speech evaluation (target vs confusab
   assert.deepEqual(PRONOUNCE.evaluate("hello", "think", "sink"), { ok: false, confused: false, heard: "hello" });
 });
 
+test("js/davra.js: reordered answers, AI reply cleaning, and the order of the mistake round", () => {
+  const w = t => t.toLowerCase().split(" ");
+  // A time or place phrase moved to the start or the end may be a correct alternative → shown as "being checked".
+  assert.equal(DAVRA.moved(w("yesterday i went to school"), w("i went to school yesterday")), true);
+  assert.equal(DAVRA.moved(w("i went to school yesterday"), w("yesterday i went to school")), true);
+  assert.equal(DAVRA.moved(w("usually i get up at seven"), w("i usually get up at seven")), true);
+  assert.equal(DAVRA.moved(w("every day she drinks tea"), w("she drinks tea every day")), true);
+  assert.equal(DAVRA.moved(w("in the morning i drink coffee"), w("i drink coffee in the morning")), true);
+  // The usual word-order mistakes keep their instant verdict: verb at the end, "Am I…" for "I am…".
+  assert.equal(DAVRA.moved(w("i football play"), w("i play football")), false);
+  assert.equal(DAVRA.moved(w("he a doctor is"), w("he is a doctor")), false);
+  assert.equal(DAVRA.moved(w("am i not on business"), w("i am not on business")), false);
+  assert.equal(DAVRA.moved(w("study i am here to"), w("i am here to study")), false);
+  // Identical, different words, a swap inside the sentence, too short → plain wrong.
+  assert.equal(DAVRA.moved(w("i went to school yesterday"), w("i went to school yesterday")), false);
+  assert.equal(DAVRA.moved(w("i go to school yesterday"), w("i went to school yesterday")), false);
+  assert.equal(DAVRA.moved(w("where you do live"), w("where do you live")), false);
+  assert.equal(DAVRA.moved(w("i never am late"), w("i am never late")), false);
+  assert.equal(DAVRA.moved(w("is he"), w("he is")), false);
+  assert.equal(DAVRA.moved(w("i went to school"), w("i went to school yesterday")), false);
+
+  assert.equal(DAVRA.clean(null), null);
+  assert.equal(DAVRA.clean({ togri: false, izoh: "  " }), null);
+  assert.deepEqual(DAVRA.clean({ togri: true, izoh: " Tartib boshqa, ma'no bir xil. ", juft: { xato: "a", togri: "b" }, savol: { uz: "x", en: "y" } }),
+    { togri: true, izoh: "Tartib boshqa, ma'no bir xil.", juft: null, savol: null });
+  // A reply without a real verdict is unusable: an older server answers this mode with a reason for a mistake that may not exist.
+  assert.equal(DAVRA.clean({ izoh: "«works» kerak.", misol: { en: "She reads.", uz: "U o'qiydi." } }), null);
+  assert.equal(DAVRA.clean({ togri: "true", izoh: "x" }), null);
+  const bad = DAVRA.clean({ togri: false, izoh: "«works» kerak.", juft: { xato: "He work", togri: "He works" },
+    savol: { uz: "U tennis o'ynaydi.", en: "She plays tennis.", alt: ["She plays  tennis every day.", "", 7, "a", "b"], chalg: ["play", "two words", "playing", "x", "y"] } });
+  assert.deepEqual(bad.juft, { xato: "He work", togri: "He works" });
+  assert.deepEqual(bad.savol, { uz: "U tennis o'ynaydi.", en: "She plays tennis.", alt: ["She plays tennis every day.", "7", "a"], chalg: ["play", "playing", "x"] });
+  // English the page compares answers with comes without the «» the model uses inside explanations.
+  assert.deepEqual(DAVRA.clean({ togri: false, izoh: "«works» kerak.", juft: { xato: "«He work»", togri: "«He works»" }, savol: { uz: "U o'ynaydi.", en: "«She plays tennis.»", alt: ["“She plays tennis”"], chalg: ["«play»"] } }),
+    { togri: false, izoh: "«works» kerak.", juft: { xato: "He work", togri: "He works" }, savol: { uz: "U o'ynaydi.", en: "She plays tennis.", alt: ["She plays tennis"], chalg: ["play"] } });
+  assert.equal(DAVRA.clean({ togri: false, izoh: "x", juft: { xato: "same", togri: "Same" } }).juft, null);
+  assert.equal(DAVRA.clean({ togri: false, izoh: "x", savol: { uz: "Salom", en: "123" } }).savol, null);
+  assert.equal(DAVRA.clean({ togri: false, izoh: "x", savol: "She plays" }).savol, null);
+
+  const ok = d => ({ st: "ok", d, seen: false }), wrong = { togri: false, izoh: "x" }, right = { togri: true, izoh: "x" };
+  const a = { st: "wait", seen: false }, b = ok(wrong), c = ok(right), f = { st: "fail", seen: false };
+  assert.equal(DAVRA.next([]).state, "end");
+  assert.deepEqual([DAVRA.next([a, b, c]).state, DAVRA.next([a, b, c]).job], ["why", b], "a ready answer goes before one still being checked");
+  b.seen = true;
+  assert.deepEqual([DAVRA.next([a, b, c]).state, DAVRA.next([a, b, c]).job], ["alt", c]);
+  c.seen = true;
+  assert.equal(DAVRA.next([a, b, c, f]).state, "wait");
+  a.st = "fail";
+  assert.equal(DAVRA.next([a, b, c, f]).state, "fail");
+  assert.equal(DAVRA.next([a, b, c, f]).left.length, 2);
+  a.seen = f.seen = true;
+  assert.equal(DAVRA.next([a, b, c, f]).state, "end");
+});
+
 test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match SHA-1", () => {
   const pat = /["']((?:data|styles|js)\/[^"'?]+\.(?:js|css))\?v=([0-9a-f]+)["']/g;
   const all = [...HTML.matchAll(pat), ...APP_JS.matchAll(pat)];
@@ -188,7 +243,7 @@ test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match
 });
 
 test("All JS files parse without syntax errors", () => {
-  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/app.js", "sw.js"]) {
+  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/davra.js", "js/app.js", "sw.js"]) {
     const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
     assert.doesNotThrow(() => new Function(code), `Syntax error in ${rel}`);
   }

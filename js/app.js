@@ -87,7 +87,9 @@ function loadPack(name) {
       if (name === "vocab") absorbVocab(); else absorbUnits();
       PACK_OK[name] = true;
       res();
-      if (typeof render === "function" && typeof quizNow === "function" && !quizNow()) render();
+      let tries = 0; // redraw with the new pack, but never cut a sentence that is being spoken
+      const redraw = () => { if (typeof render !== "function" || typeof quizNow !== "function" || quizNow()) return; if (voiceBusy() && tries++ < 20) return setTimeout(redraw, 400); render(); };
+      redraw();
     };
     s.onerror = () => { delete PACK_P[name]; rej(new Error("load " + name)); };
     document.head.appendChild(s);
@@ -474,9 +476,11 @@ if (AEL) document.addEventListener("pointerdown", () => {
   if (AEL_OK || VBUSY) return; AEL_OK = true; AEL.src = SILENT;
   const p = AEL.play(); if (p && p.then) p.then(() => { if (AEL.src === SILENT) AEL.pause(); }).catch(() => { AEL_OK = false; });
 }, { capture: true, passive: true });
+// Re-recorded takes that replace a flawed first recording ("there", "Do you talk to strangers on the bus?").
+const REDO = { "14j6bp0hoyf": "14j6bp0hoyfr1", "1fhf4i6081y": "1fhf4i6081yr1" };
 async function audioUrl(id) {
   if (BLOBS.has(id)) return BLOBS.get(id);
-  const url = OVOZ + "/a/" + id + ".mp3"; let c = null, r = null;
+  const url = OVOZ + "/a/" + (REDO[id] || id) + ".mp3"; let c = null, r = null;
   try { c = await caches.open(ACACHE); r = await c.match(url); } catch (e) {}
   if (!r) { r = await fetch(url); if (!r.ok) throw new Error("ovoz " + r.status); if (c) c.put(url, r.clone()).catch(() => {}); }
   const u = URL.createObjectURL(await r.blob()); BLOBS.set(id, u);
@@ -1984,7 +1988,7 @@ function clTick() {
   if (!CL.warned && el >= clLim() - (CL_MAX_S - CL_WARN_S) && ["listen", "speak", "think"].includes(CL.st)) { CL.warned = true; const b = document.getElementById("clwarn"); if (b) b.hidden = false; }
 }
 function clSpeak(slow) {
-  if (!CL) return; clStopRec(); stopVoice();
+  if (!CL) return; clStopRec(); stopVoice(); clearTimeout(CL.spT);
   if (CL.aud) { try { CL.aud.pause(); CL.aud.src = ""; } catch (e) {} CL.aud = null; }
   CL.st = "speak"; if (!slow) CL.tr = false; clDraw();
   const g = CL.gen, text = CL.cur.say, b64 = CL.cur.audio || ""; let fin = false, vl = null;
@@ -2008,7 +2012,7 @@ function clSpeak(slow) {
   } else {
     fallback();
   }
-  setTimeout(done, (slow ? 5000 : 3000) + text.length * (slow ? 170 : 110));
+  CL.spT = setTimeout(done, (slow ? 5000 : 3000) + text.length * (slow ? 170 : 110));
 }
 function clListen() {
   if (!CL) return; clStopRec();
@@ -2964,7 +2968,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611240029";
+const APP_V = "202611240041";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

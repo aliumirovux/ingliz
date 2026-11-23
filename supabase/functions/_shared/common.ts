@@ -117,3 +117,15 @@ export async function who(req: Request): Promise<string | null> {
   const u = await whoUser(req);
   return u ? u.id : null;
 }
+
+export async function getProfile(uid: string): Promise<Row | null> {
+  if (!uid) return null;
+  try {
+    const rows = await db(
+      `profiles?user_id=eq.${uid}&select=user_id,display_name,level,avoid_topics,allow_ai,ai_daily_limit&limit=1`,
+    );
+    return Array.isArray(rows) && rows[0] ? rows[0] : null;
+  } catch {
+    return null;
+  }
+}

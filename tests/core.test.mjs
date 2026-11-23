@@ -17,35 +17,14 @@ import {
 } from "../supabase/functions/_shared/common.ts";
 
 const require = createRequire(import.meta.url);
+const { fixState, merge, dayDiff, addTo, weekOf } = require("../js/state.js");
 const FSRS = require("../js/fsrs.js");
 const MASTERY = require("../js/mastery.js");
+const PRONOUNCE = require("../js/pronounce.js");
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HTML = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
 const APP_JS = fs.readFileSync(path.join(ROOT, "js/app.js"), "utf8");
-
-function extractFn(source, name) {
-  const start = source.indexOf(`function ${name}(`);
-  assert.notEqual(start, -1, `${name}() not found`);
-  let depth = 0;
-  let started = false;
-  for (let i = start; i < source.length; i++) {
-    const ch = source[i];
-    if (ch === "{") {
-      depth++;
-      started = true;
-    } else if (ch === "}") {
-      depth--;
-      if (started && depth === 0) {
-        return source.slice(start, i + 1);
-      }
-    }
-  }
-  throw new Error(`Closing brace for ${name}() not found`);
-}
-
-const fixState = new Function(`${extractFn(APP_JS, "fixState")}; return fixState;`)();
-const merge = new Function(`${extractFn(APP_JS, "merge")}; return merge;`)();
 
 test("Edge Functions _shared/common.ts: safeEq and hasCronOrAgentAuth", () => {
   assert.equal(safeEq("abc123", "abc123"), true);
@@ -85,7 +64,11 @@ test("Edge Functions _shared/common.ts: cors, clip, enText, uzText, tashkentDay"
   assert.match(tashkentDay(), /^\d{4}-\d{2}-\d{2}$/);
 });
 
-test("js/app.js fixState(): sanitizes corrupt state and preserves FSRS fields", () => {
+test("js/state.js fixState() & date helpers: sanitizes corrupt state and preserves FSRS fields", () => {
+  assert.equal(dayDiff("2026-11-20", "2026-11-23"), 3);
+  assert.equal(addTo("2026-11-23", 7), "2026-11-30");
+  assert.equal(weekOf("2026-11-23"), "2026-11-23");
+
   const clean = fixState({
     srs: {
       "1|hello": { b: 99, due: "2026-11-23", ok: 3, bad: -5, fs: 12.345, fd: 4.567 },
@@ -107,7 +90,7 @@ test("js/app.js fixState(): sanitizes corrupt state and preserves FSRS fields", 
   assert.deepEqual(clean.vb.learn, ["book"]);
 });
 
-test("js/app.js merge(): merges multi-device progress and tombstone/untomb records", () => {
+test("js/state.js merge(): merges multi-device progress and tombstone/untomb records", () => {
   const now = Date.now();
   const devA = fixState({
     srs: {
@@ -182,10 +165,20 @@ test("js/mastery.js: marks topic mastered after 2+ clean calls", () => {
   assert.equal(res.active[0].cleanStreak, 0);
 });
 
+test("js/pronounce.js: packs structure and speech evaluation (target vs confusable pair)", () => {
+  assert.equal(PRONOUNCE.PACKS.length, 4);
+  for (const p of PRONOUNCE.PACKS) {
+    assert.ok(p.items.length >= 6, `${p.id} should have at least 6 items`);
+  }
+  assert.deepEqual(PRONOUNCE.evaluate("I think so", "think", "sink"), { ok: true, confused: false, heard: "i think so" });
+  assert.deepEqual(PRONOUNCE.evaluate("sink", "think", "sink"), { ok: false, confused: true, heard: "sink" });
+  assert.deepEqual(PRONOUNCE.evaluate("hello", "think", "sink"), { ok: false, confused: false, heard: "hello" });
+});
+
 test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match SHA-1", () => {
   const pat = /["']((?:data|styles|js)\/[^"'?]+\.(?:js|css))\?v=([0-9a-f]+)["']/g;
   const all = [...HTML.matchAll(pat), ...APP_JS.matchAll(pat)];
-  assert.ok(all.length >= 14, "Expected at least 14 versioned assets (data, styles, js)");
+  assert.ok(all.length >= 16, "Expected at least 16 versioned assets (data, styles, js)");
   for (const [, asset, hash] of all) {
     const filePath = path.join(ROOT, asset);
     assert.ok(fs.existsSync(filePath), `${asset} not found`);
@@ -195,7 +188,7 @@ test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match
 });
 
 test("All JS files parse without syntax errors", () => {
-  for (const rel of ["data/stories.js", "data/pictures.js", "js/fsrs.js", "js/mastery.js", "js/app.js", "sw.js"]) {
+  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/app.js", "sw.js"]) {
     const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
     assert.doesNotThrow(() => new Function(code), `Syntax error in ${rel}`);
   }

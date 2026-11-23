@@ -14,7 +14,7 @@
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
 // verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { clip, cors, db, hasCronOrAgentAuth, json, Row, tashkentDay, who } from "../_shared/common.ts";
+import { clip, cors, db, json, Row, tashkentDay, verifyCronOrAgentAuth, who } from "../_shared/common.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -550,7 +550,7 @@ Deno.serve(async (req) => {
   const p = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
     if (p === "tick") {
-      if (!hasCronOrAgentAuth(req)) return json({ error: "auth" }, 401, o);
+      if (!await verifyCronOrAgentAuth(req)) return json({ error: "auth" }, 401, o);
       bg(work().catch((e) => console.error("tick", e)));
       return json({ ok: true }, 202, o);
     }

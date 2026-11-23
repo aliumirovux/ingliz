@@ -7,7 +7,7 @@
 //   dars yozilganda — ertalabki xabar; POST /repetitor/remind (pg_cron, 20:00) — dars bajarilmagan bo'lsa kuniga bitta eslatma;
 //   GET /repetitor/tg-setup — botga webhook o'rnatadi; POST /repetitor/tg — Telegram webhook: birinchi /start yozgan chat egasiniki deb saqlanadi.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { db, hasCronOrAgentAuth, safeEq, tashkentDay } from "../_shared/common.ts";
+import { db, safeEq, tashkentDay, verifyCronOrAgentAuth } from "../_shared/common.ts";
 
 const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2"; // OWNER_ID secret bilan almashtirsa bo'ladi
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
@@ -190,7 +190,7 @@ Deno.serve(async (req) => {
     }
     // kechki eslatma: pg_cron (x-cron-key) yoki agent (x-agent-key) bilan himoyalangan
     if (req.method === "POST" && p0 === "remind") {
-      if (!hasCronOrAgentAuth(req)) return json({ error: "auth" }, 401);
+      if (!await verifyCronOrAgentAuth(req)) return json({ error: "auth" }, 401);
       return json(await remind(owner));
     }
   } catch (e) {

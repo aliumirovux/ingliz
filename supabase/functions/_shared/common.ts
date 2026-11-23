@@ -70,6 +70,18 @@ export function hasCronOrAgentAuth(req: Request): boolean {
   return false;
 }
 
+export async function verifyCronOrAgentAuth(req: Request): Promise<boolean> {
+  if (hasCronOrAgentAuth(req)) return true;
+  const gotCron = (req.headers.get("x-cron-key") || "").trim();
+  if (!/^[0-9a-f]{64}$/.test(gotCron)) return false;
+  try {
+    const rows = await db(`agent_settings?cron_key=eq.${gotCron}&select=user_id&limit=1`);
+    return Array.isArray(rows) && rows.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export async function db(path: string, init: RequestInit = {}) {
   const sbUrl = env("SUPABASE_URL");
   const srv = env("SUPABASE_SERVICE_ROLE_KEY");

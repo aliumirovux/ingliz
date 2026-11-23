@@ -14,10 +14,10 @@
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY (Ali kiritadi), ANTHROPIC_API_KEY (bor), TELEGRAM_BOT_TOKEN (bor).
 // verify_jwt = false: sayt so'rovlari foydalanuvchi tokeni bilan shu yerda tekshiriladi, tick ochiq (faqat navbatdagi ishni suradi).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { clip, cors, db, hasCronOrAgentAuth, json, Row, tashkentDay, who } from "../_shared/common.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
 const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const BUCKET = "dars-audio";
 const PHOTOS = "dars-rasm", MAX_PHOTOS = 8;
@@ -40,29 +40,11 @@ const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
 const C_MODEL = Deno.env.get("DARS_MODEL") || "claude-opus-5-5";
 const TG_API = Deno.env.get("TG_API") || "https://api.telegram.org";
 const SITE = "https://easywords.uz/#dars";
-const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
 
-const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ORIGINS.includes(o) ? o : ORIGINS[0],
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-});
-const json = (body: unknown, status = 200, o: string | null = null) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors(o), "Content-Type": "application/json; charset=utf-8" } });
-const clip = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
 // fon ishi: Supabase'da EdgeRuntime.waitUntil, lokal testda oddiy promise
 const bg = (p: Promise<unknown>) => { const E = (globalThis as Record<string, any>).EdgeRuntime; if (E && E.waitUntil) E.waitUntil(p); };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const tashkentDay = () => new Date(Date.now() + 5 * 3600e3).toISOString().slice(0, 10);
 
-type Row = Record<string, any>;
-
-async function db(path: string, init: RequestInit = {}) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const t = await r.text(); return t ? JSON.parse(t) : null;
-}
 // bekor qilingan qatorni ishlovchi qayta yozmasin: oddiy patch «cancelled» qatorni o'zgartirmaydi; any = true — faqat cancel/retry/o'chirish uchun
 const patch = (id: string, v: Row, any = false) => db(`class_lessons?id=eq.${id}${any ? "" : "&status=neq.cancelled"}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ ...v, updated_at: new Date().toISOString() }) });
 // natijani yozadi va qator hali bekor qilinmaganmi — shuni qaytaradi (bekor qilingan bo'lsa Telegram xabari yuborilmaydi)
@@ -75,16 +57,6 @@ async function dropAudio(row: Row) {
   const r = await storage("DELETE", `object/${BUCKET}`, JSON.stringify({ prefixes: [row.audio_path] }));
   if (!r.ok) throw new Error(`storage delete ${r.status}`);
   await patch(row.id, { audio_path: null, audio_deleted_at: new Date().toISOString() }, true);
-}
-
-// --- foydalanuvchi: faqat egasi ---
-async function who(req: Request) {
-  const auth = req.headers.get("Authorization") || "";
-  if (!auth.startsWith("Bearer ")) return null;
-  const r = await fetch(`${SB_URL}/auth/v1/user`, { headers: { apikey: ANON || SRV, Authorization: auth } });
-  if (!r.ok) return null;
-  const u = await r.json().catch(() => null);
-  return u && u.id ? String(u.id) : null;
 }
 
 // --- Telegram ---
@@ -546,7 +518,12 @@ async function fail(row: Row, e: unknown) {
   }
 }
 const stageName = (s: string) => ({ queued: "Yuborish", transcribing: "Matnga o'girish", analyzing: "Tahlil" }[s] || s);
-const kick = () => fetch(`${SB_URL}/functions/v1/dars/tick`, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).then((r) => r.body?.cancel()).catch(() => {});
+const kick = () => {
+  const cronKey = Deno.env.get("CRON_KEY") || Deno.env.get("AGENT_KEY") || "";
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (cronKey) headers["x-cron-key"] = cronKey;
+  return fetch(`${SB_URL}/functions/v1/dars/tick`, { method: "POST", headers, body: "{}" }).then((r) => r.body?.cancel()).catch(() => {});
+};
 
 async function work() {
   const got = await db("rpc/dars_claim", { method: "POST", body: "{}" });
@@ -573,6 +550,7 @@ Deno.serve(async (req) => {
   const p = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
     if (p === "tick") {
+      if (!hasCronOrAgentAuth(req)) return json({ error: "auth" }, 401, o);
       bg(work().catch((e) => console.error("tick", e)));
       return json({ ok: true }, 202, o);
     }

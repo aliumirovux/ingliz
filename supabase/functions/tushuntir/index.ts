@@ -2,6 +2,7 @@
 // gap skeleti (mode: bolak) — gaplarni ma'no bo'laklariga ajratadi; saytdagi yordamchi (mode: chat) — tarjima, gapni tekshirish, so'z ma'nosi va savollar.
 // Faqat kirgan foydalanuvchi (verify_jwt), kuniga LIMIT ta (barcha rejimlar uchun umumiy). Kalit: Edge Function secret ANTHROPIC_API_KEY.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { clip, cors, CYR, json, whoUser } from "../_shared/common.ts";
 
 const LIMIT = 120;
 // Savol-javob va xato tushuntirish (chat, xato, fix, check) — aniqroq javob uchun Opus 5.5; tez va oddiy ishlar (bolak, word, sentence) — Haiku 5.5.
@@ -11,19 +12,11 @@ const pick = (mode: unknown) => {
   if (!SMART.includes(m)) return { model: "claude-haiku-5-5", effort: "low", max: 2000 };
   return { model: "claude-opus-5-5", effort: m === "chat" || m === "xato" ? "medium" : "low", max: 6000 };
 };
-// «Nega xato?» va yordamchi faqat shu hisoblar uchun (Ali'ning API krediti boshqalarga sarflanmasin). Qo'shish: shu ro'yxatga email.
-const ALLOW = ["aliumirov.me@gmail.com"];
-const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
-
-const cors = (origin: string | null) => ({
-  "Access-Control-Allow-Origin": origin && ORIGINS.includes(origin) ? origin : ORIGINS[0],
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-});
-const json = (body: unknown, status: number, origin: string | null) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors(origin), "Content-Type": "application/json" } });
-const clip = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
+// «Nega xato?» va yordamchi faqat ruxsat berilgan hisoblar uchun (ALLOW_EMAILS secret orqali vergul bilan beriladi).
+const ALLOW = (Deno.env.get("ALLOW_EMAILS") || "aliumirov.me@gmail.com")
+  .split(",")
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
 
 const SYSTEM = `Sen ingliz tilini noldan o'rganayotgan o'zbek kattalar uchun mehribon, aniq o'qituvchisan. O'quvchi darajasi: A1 (Navigate Beginner).
 Qoidalar:
@@ -121,12 +114,10 @@ Deno.serve(async (req) => {
   const chat = b.mode === "chat", bolak = b.mode === "bolak";
   if (bolak ? !(Array.isArray(b.items) && b.items.length) : chat ? !clip(b.text, 600) : (!clip(b.answer, 240) || (b.mode === "fix" || b.mode === "xato" || !b.mode ? !clip(b.target, 240) : false) || (b.mode === "word" && !clip(b.word, 40)))) return json({ error: "bad_request" }, 400, origin);
 
-  // tokenni gateway tekshirgan (verify_jwt) — bu yerda faqat emailni o'qiymiz
-  const auth0 = req.headers.get("Authorization") || "";
-  let email = "";
-  try { const pl = JSON.parse(atob(auth0.split(" ")[1].split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))); email = String(pl.email || "").toLowerCase(); } catch { /* anon */ }
-  if (!email) return json({ error: "auth" }, 401, origin);
-  if (!ALLOW.includes(email)) return json({ error: "not_allowed" }, 403, origin);
+  // foydalanuvchini Supabase Auth orqali haqiqiy tekshirish (verify_jwt o'chiq bo'lsa ham xavfsiz)
+  const user = await whoUser(req);
+  if (!user || !user.email) return json({ error: "auth" }, 401, origin);
+  if (!ALLOW.includes(user.email)) return json({ error: "not_allowed" }, 403, origin);
 
   const key = Deno.env.get("ANTHROPIC_API_KEY");
   if (!key) return json({ error: "no_key" }, 503, origin);
@@ -157,7 +148,7 @@ Deno.serve(async (req) => {
   if (bolak) return Array.isArray(out.bolaklar) ? json({ bolaklar: out.bolaklar, left: LIMIT - used }, 200, origin) : json({ error: "empty" }, 502, origin);
   if (!String(out.izoh || "").trim() && !(chat && String(out.en || "").trim())) { console.error("empty", data.stop_reason, JSON.stringify(data.content).slice(0, 500)); return json({ error: "empty" }, 502, origin); }
   // kirill harfi tushib qolgan tarjimani ko'rsatmaymiz (o'quvchi lotin yozuvida o'qiydi)
-  const cyr = /[Ѐ-ӿ]/;
+  const cyr = CYR;
   const mis = out.misol as Record<string, unknown> | undefined;
   if (mis && cyr.test(String(mis.uz || ""))) delete mis.uz;
   if (out.tarjima && cyr.test(String(out.tarjima))) return json({ error: "empty" }, 502, origin);

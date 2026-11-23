@@ -8,10 +8,8 @@
 // Chegaralar: kuniga MAX_CALLS ta qo'ng'iroq, har birida MAX_TURNS ta gap. verify_jwt = false: token shu yerda tekshiriladi.
 // Kalitlar (Edge Function secrets): GEMINI_API_KEY, ANTHROPIC_API_KEY (ikkalasi ham bor).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { clip, cors, CYR, db, enText as en, json, Row, tashkentDay, uzText as uz, who } from "../_shared/common.ts";
 
-const SB_URL = Deno.env.get("SUPABASE_URL")!;
-const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
 const MODEL = Deno.env.get("SUHBAT_MODEL") || "claude-opus-5-5";
@@ -19,36 +17,30 @@ const G_API = Deno.env.get("GEMINI_API") || "https://generativelanguage.googleap
 const G_MODEL = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
 const G_MODELS = [G_MODEL, ...(Deno.env.get("GEMINI_FALLBACK") ?? "gemini-3.7-flash,gemini-3.5-flash").split(",").map((x) => x.trim()).filter((x) => x && x !== G_MODEL)];
 const MAX_CALLS = +(Deno.env.get("SUHBAT_MAX_CALLS") || 3), MAX_TURNS = 24, MAX_AUDIO = 1_400_000; // base64 belgilar (~1 MB ovoz, 25 soniyaga bemalol)
-const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
+const TTS_VOICE = Deno.env.get("SUHBAT_VOICE") || "en-US-Chirp3-HD-Charon";
 const TOPICS = ["uz", "be-ing", "wh-q", "past", "art", "prep", "be", "do", "s3", "plural", "pron", "order", "word", "other"];
 
-type Row = Record<string, any>;
-const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ORIGINS.includes(o) ? o : ORIGINS[0],
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-});
-const json = (body: unknown, status = 200, o: string | null = null) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors(o), "Content-Type": "application/json; charset=utf-8" } });
-const clip = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
-const CYR = /[Ѐ-ӿ]/;
-const en = (v: unknown, n: number) => { const s = clip(v, n); return s && /[A-Za-z]/.test(s) && !CYR.test(s) ? s : ""; };
-const uz = (v: unknown, n: number) => { const s = clip(v, n); return s && !CYR.test(s) ? s : ""; };
-const tashkentDay = (off = 0) => new Date(Date.now() + 5 * 3600e3 + off * 864e5).toISOString().slice(0, 10);
-
-async function db(path: string, init: RequestInit = {}) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const t = await r.text(); return t ? JSON.parse(t) : null;
-}
-async function who(req: Request) {
-  const auth = req.headers.get("Authorization") || "";
-  if (!auth.startsWith("Bearer ")) return null;
-  const r = await fetch(`${SB_URL}/auth/v1/user`, { headers: { apikey: ANON || SRV, Authorization: auth } });
-  if (!r.ok) return null;
-  const u = await r.json().catch(() => null);
-  return u && u.id ? String(u.id) : null;
+async function tts(text: string): Promise<string | null> {
+  const key = Deno.env.get("GOOGLE_TTS_KEY") || "";
+  if (!key || !text) return null;
+  try {
+    const lang = TTS_VOICE.split("-").slice(0, 2).join("-");
+    const r = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        input: { text: text.slice(0, 300) },
+        voice: { languageCode: lang, name: TTS_VOICE },
+        audioConfig: { audioEncoding: "MP3" },
+      }),
+      signal: AbortSignal.timeout(4500),
+    });
+    if (!r.ok) return null;
+    const d = await r.json().catch(() => ({}));
+    return typeof d.audioContent === "string" ? d.audioContent : null;
+  } catch {
+    return null;
+  }
 }
 
 // --- Gemini: «quloq». Aytilganini aynan yozadi; grammatikani tuzatmaydi. ---
@@ -169,7 +161,8 @@ Deno.serve(async (req) => {
       const first = cleanReply(R, "", false);
       const topic = uz(R.topic, 60) || "Erkin suhbat";
       const row = await db("calls", { method: "POST", headers: { Prefer: "return=representation" }, body: JSON.stringify({ user_id: uid, topic, model: MODEL, turns: [{ r: "T", x: first.say, uz: first.uz }] }) });
-      return json({ id: row[0].id, say: first.say, uz: first.uz, hint: first.hint, topic }, 200, o);
+      const audio = await tts(first.say);
+      return json({ id: row[0].id, say: first.say, uz: first.uz, hint: first.hint, topic, ...(audio ? { audio } : {}) }, 200, o);
     }
 
     const id = clip(b.id, 40);
@@ -200,8 +193,11 @@ Deno.serve(async (req) => {
         (unclear.length ? `Words the speech recognition was NOT sure about (do not correct these): ${unclear.join(", ")}\n` : "") +
         (mustEnd ? `The call must end now: respond to what he said in a few words, then say goodbye. Set "end": true. Still return "fix" if there is a clear mistake.` : `About ${left} more exchange(s) are left.`));
       const reply = cleanReply(R, heard, mustEnd);
-      await db(`calls?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ n_turns: call.n_turns + 1 }) });
-      return json({ heard, unclear, ...reply }, 200, o);
+      const [audio] = await Promise.all([
+        tts(reply.say),
+        db(`calls?id=eq.${id}`, { method: "PATCH", headers: { Prefer: "return=minimal" }, body: JSON.stringify({ n_turns: call.n_turns + 1 }) }),
+      ]);
+      return json({ heard, unclear, ...reply, ...(audio ? { audio } : {}) }, 200, o);
     }
 
     if (p === "end") {

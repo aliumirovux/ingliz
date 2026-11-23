@@ -4,41 +4,11 @@
 // Mazmun: kursdagi unit so'zlari va mavzusi, dars tahlilidagi xatolar; Alining ishi haqida emas (o'zi so'ragan).
 // verify_jwt = false: foydalanuvchi tokeni shu yerda tekshiriladi.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { clip, cors, CYR, db, json, Row, tashkentDay, who } from "../_shared/common.ts";
 
-const SB_URL = Deno.env.get("SUPABASE_URL")!;
-const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
 const OWNER = Deno.env.get("OWNER_ID") || "6cc7d3c7-d237-486e-94f8-3f951a0437c2";
 const A_API = Deno.env.get("ANTHROPIC_API") || "https://api.anthropic.com";
 const MODEL = Deno.env.get("SAHNA_MODEL") || "claude-sonnet-5-5";
-const ORIGINS = ["https://easywords.uz", "https://www.easywords.uz", "https://aliumirovux.github.io", "http://localhost:8766"];
-
-type Row = Record<string, any>;
-const cors = (o: string | null) => ({
-  "Access-Control-Allow-Origin": o && ORIGINS.includes(o) ? o : ORIGINS[0],
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Vary": "Origin",
-});
-const json = (body: unknown, status = 200, o: string | null = null) =>
-  new Response(JSON.stringify(body), { status, headers: { ...cors(o), "Content-Type": "application/json; charset=utf-8" } });
-const clip = (v: unknown, n: number) => String(v ?? "").replace(/\s+/g, " ").trim().slice(0, n);
-const CYR = /[Ѐ-ӿ]/;
-const tashkentDay = (off = 0) => new Date(Date.now() + 5 * 3600e3 + off * 864e5).toISOString().slice(0, 10);
-
-async function db(path: string, init: RequestInit = {}) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const t = await r.text(); return t ? JSON.parse(t) : null;
-}
-async function who(req: Request) {
-  const auth = req.headers.get("Authorization") || "";
-  if (!auth.startsWith("Bearer ")) return null;
-  const r = await fetch(`${SB_URL}/auth/v1/user`, { headers: { apikey: ANON || SRV, Authorization: auth } });
-  if (!r.ok) return null;
-  const u = await r.json().catch(() => null);
-  return u && u.id ? String(u.id) : null;
-}
 
 const SYS = `Sen ingliz tilini o'rganayotgan o'zbek kattalar uchun mohir o'qituvchisan. O'quvchi — Ali, darajasi A1–A2 (Navigate Beginner).
 Har kuni unga bitta qisqa hayotiy sahna yozasan: u avval dialogni tinglaydi, keyin 2 ta kalit gapni ovoz chiqarib aytadi, oxirida sahnadagi boshqa odam bilan o'zi gaplashadi.

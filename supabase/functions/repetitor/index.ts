@@ -7,26 +7,10 @@
 //   dars yozilganda — ertalabki xabar; POST /repetitor/remind (pg_cron, 20:00) — dars bajarilmagan bo'lsa kuniga bitta eslatma;
 //   GET /repetitor/tg-setup — botga webhook o'rnatadi; POST /repetitor/tg — Telegram webhook: birinchi /start yozgan chat egasiniki deb saqlanadi.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { db, hasCronOrAgentAuth, safeEq, tashkentDay } from "../_shared/common.ts";
 
-const SB_URL = Deno.env.get("SUPABASE_URL")!;
-const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2"; // Ali (aliumirov.me@gmail.com); OWNER_ID secret bilan almashtirsa bo'ladi
-const SRV = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const OWNER_DEFAULT = "6cc7d3c7-d237-486e-94f8-3f951a0437c2"; // OWNER_ID secret bilan almashtirsa bo'ladi
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8" } });
-
-const tashkentDay = (offset = 0) => {
-  const d = new Date(Date.now() + 5 * 3600e3 + offset * 864e5);
-  return d.toISOString().slice(0, 10);
-};
-const safeEq = (a: string, b: string) => {
-  if (!a || !b || a.length !== b.length) return false;
-  let x = 0; for (let i = 0; i < a.length; i++) x |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return x === 0;
-};
-async function db(path: string, init: RequestInit = {}) {
-  const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SRV, Authorization: `Bearer ${SRV}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  if (!r.ok) throw new Error(`db ${r.status}: ${(await r.text()).slice(0, 200)}`);
-  const t = await r.text(); return t ? JSON.parse(t) : null;
-}
 
 type Rec = { b?: number; ok?: number; bad?: number; due?: string; ls?: string };
 
@@ -195,7 +179,7 @@ Deno.serve(async (req) => {
   try {
     // Telegram webhook: maxfiy sarlavha bilan; birinchi /start yozgan chat saqlanadi, keyingilari e'tiborsiz
     if (req.method === "POST" && p0 === "tg") {
-      if (req.headers.get("X-Telegram-Bot-Api-Secret-Token") !== await tgSecret()) return json({ error: "auth" }, 401);
+      if (!safeEq(req.headers.get("X-Telegram-Bot-Api-Secret-Token") || "", await tgSecret())) return json({ error: "auth" }, 401);
       const u = await req.json().catch(() => ({}));
       const m = u.message; if (!m || !m.chat || m.chat.type !== "private" || !String(m.text || "").startsWith("/start")) return json({ ok: true });
       const st = await settings(owner);
@@ -204,16 +188,11 @@ Deno.serve(async (req) => {
       await send(m.chat.id, "Ulandi. Har kuni ertalab dars tayyor bo'lganda shu yerga xabar keladi. Kechqurun, dars qilinmagan bo'lsa, bitta eslatma keladi.", "Saytni ochish");
       return json({ ok: true });
     }
-    // webhookni o'rnatish (takror chaqirilsa ham zararsiz)
-    if (req.method === "GET" && p0 === "tg-setup") {
-      if (!TG()) return json({ error: "no_token" }, 503);
-      const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/repetitor/tg`;
-      await tg("setWebhook", { url, secret_token: await tgSecret(), allowed_updates: ["message"], drop_pending_updates: false });
-      const st = await settings(owner);
-      return json({ ok: true, webhook: url, linked: !!(st && st.tg_chat_id) });
+    // kechki eslatma: pg_cron (x-cron-key) yoki agent (x-agent-key) bilan himoyalangan
+    if (req.method === "POST" && p0 === "remind") {
+      if (!hasCronOrAgentAuth(req)) return json({ error: "auth" }, 401);
+      return json(await remind(owner));
     }
-    // kechki eslatma: kuniga bitta, 19:00 dan keyin, dars bajarilmagan bo'lsa
-    if (req.method === "POST" && p0 === "remind") return json(await remind(owner));
   } catch (e) {
     console.error(e);
     return json({ error: "server", detail: String(e).slice(0, 200) }, 500);
@@ -221,6 +200,14 @@ Deno.serve(async (req) => {
   if (!safeEq(req.headers.get("x-agent-key") || "", key)) return json({ error: "auth" }, 401);
   const path = new URL(req.url).pathname.replace(/\/+$/, "").split("/").pop();
   try {
+    // webhookni o'rnatish (faqat x-agent-key bilan; takror chaqirilsa ham zararsiz)
+    if (req.method === "GET" && path === "tg-setup") {
+      if (!TG()) return json({ error: "no_token" }, 503);
+      const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/repetitor/tg`;
+      await tg("setWebhook", { url, secret_token: await tgSecret(), allowed_updates: ["message"], drop_pending_updates: false });
+      const st = await settings(owner);
+      return json({ ok: true, webhook: url, linked: !!(st && st.tg_chat_id) });
+    }
     if (req.method === "GET" && path === "data") return json(await data(owner));
     if (req.method === "POST" && path === "lesson") {
       let b: Record<string, unknown>;

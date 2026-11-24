@@ -2968,7 +2968,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611240233";
+const APP_V = "202611240750";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

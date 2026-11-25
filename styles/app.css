@@ -2352,3 +2352,19 @@ body .tl-wn{margin:0 0 4px;font-size:14px}body .tl-ok{color:var(--ok);font-weigh
 .wl .dv-e .dv-pair{display:flex;width:max-content;max-width:100%;margin-top:6px!important;background:var(--surface-2)}
 .dv .icon[data-say]{position:relative}
 .dv .icon[data-say]::after{content:"";position:absolute;inset:-6px -8px}
+
+/* Zina: so'z → birikma → gap («O'zim yozaman»ning isinish qadamlari) */
+.zn{display:flex;flex-direction:column;gap:6px;margin:4px 0 18px}
+.zn-r{display:flex;align-items:center;gap:10px;min-height:44px;padding:8px 14px;border-radius:14px;background:var(--surface);font-size:15px;color:var(--muted)}
+.zn-r:nth-child(1){width:62%}.zn-r:nth-child(2){width:82%}
+.zn-t{flex:none;width:62px;font-size:12px;font-weight:600}
+.zn-e{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zn-e mark{background:var(--marker-soft);color:var(--accent-text);border-radius:6px;padding:1px 5px;font-weight:600}
+.zn-r.done .zn-e{color:var(--ink);font-weight:600}
+.zn.hid .zn-r:not(.now) .zn-e{color:var(--muted);font-weight:400;font-style:italic}
+.zn-r svg{width:18px;height:18px;flex:none}
+.zn-r.done svg{color:var(--ok-strong)}.zn-r.lost svg{color:var(--bad-strong)}
+.zn-r.now{background:var(--marker-soft);color:var(--accent-text);box-shadow:inset 3px 0 0 var(--marker)}
+.zn-r.now .zn-t{color:var(--accent-text)}
+.zn-l{margin:0 0 8px;font-size:13px;font-weight:500;color:var(--muted)}
+@media (min-width:700px){.zn-r:nth-child(1){width:52%}.zn-r:nth-child(2){width:74%}}

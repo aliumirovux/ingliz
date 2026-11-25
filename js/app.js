@@ -784,7 +784,7 @@ function todayPlan(n) {
   const bl = unitBuild(n);
   if (bl.length) {
     const mb = misBuild(true).filter(x => x.unit <= n).slice(0, 2), list = mb.concat(shuffle(bl).filter(x => !mb.includes(x))).slice(0, 5);
-    plan.push({ tag: "tuz", t: "Gap tuzish", s: "Unit " + un(n) + " · 5 ta gap" + (mb.length ? " · " + mb.length + " tasi eski xato" : " · " + (tuzMode === "yoz" ? "o'zim yozaman" : "so'zlardan yig'aman")), run: () => { startTuz(list, "Unit " + un(n), null, "tuz"); T.back = "#"; } });
+    plan.push({ tag: "tuz", t: "Gap tuzish", s: "Unit " + un(n) + " · 5 ta gap" + (mb.length ? " · " + mb.length + " tasi eski xato" : " · " + (tuzMode === "zina" ? "zina: so'z → birikma → gap" : tuzMode === "yoz" ? "o'zim yozaman" : "so'zlardan yig'aman")), run: () => { startTuz(list, "Unit " + un(n), null, "tuz"); T.back = "#"; } });
   }
   const stv = STORIES[n]; S.story = S.story || {};
   if (stv && (!S.story[n] || S.story[n] === today()) && unitStat(n).pct >= 40) plan.push({ tag: "story", t: "Hikoya: " + stv.t, s: stv.u + " · 6 gap · o'qing va tinglang", min: 3, run: () => go("hikoya-" + n) });
@@ -1904,12 +1904,16 @@ function sceneHome3(n) {
   const er = DW.length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish<span class="rs-badge">+${DW.length} darsdan</span></b><span>${DW.length} ta yangi so'z darsdan · avval tanishasiz</span></span><span class="m">${Math.max(2, Math.round(DW.length * .6))} daq</span></button>`
     : !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
     : `<button type="button" class="sh-row" data-sr="esl"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish</b><span>${L.length} ta so'z${eslK(L) ? " · " + eslK(L) + " tasi sahnadan" : " · eng unutilayotganlari birinchi"}</span></span><span class="m">${Math.max(2, Math.round(L.length * .27))} daq</span></button>`;
-  return `<div class="sh3">${rr}${sceneHome()}${er}${next}${more}</div>`;
+  const ZL = BLD.filter(x => x.unit === n && zinaOf(x));
+  const zr = !ZL.length ? "" : dayDone().includes("zina") ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Gap zinasi</b><span>Bugungi gaplar yozildi</span></span></div>`
+    : `<button type="button" class="sh-row" data-sr="zina"><span class="ic">${ICON_ZINA}</span><span class="tx"><b>Gap zinasi</b><span>${Math.min(5, ZL.length)} ta gap · so'z → birikma → gap</span></span><span class="m">5 daq</span></button>`;
+  return `<div class="sh3">${rr}${sceneHome()}${er}${zr}${next}${more}</div>`;
 }
 function bindSceneHome(n) {
   const re = $("#shre"); if (re) re.onclick = () => { shState = ""; shLoad(true); render(); };
   app.querySelectorAll(".sh-row[data-sr]").forEach(b => b.onclick = () => {
     if (b.dataset.sr === "rep") { RP = null; go("repetitor"); return; }
+    if (b.dataset.sr === "zina") { const Z5 = shuffle(BLD.filter(x => x.unit === n && zinaOf(x))).slice(0, 5); if (Z5.length) { startTuz(Z5, "Gap zinasi · Unit " + un(n), null, "zina", "zina"); T.back = "#"; } return; }
     if (b.dataset.sr === "dnew") { const D = rsNewWords(); if (D.length) startLearn(D, "Darsdan so'zlar", "#", null); return; }
     const L = eslList(n); if (L.length) startQuiz(L, "auto", "Eslab qolish", "#", "esl");
   });
@@ -2968,7 +2972,7 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611240750";
+const APP_V = "202611250516";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -5100,6 +5104,7 @@ route(/^unit-(\d+)$/, n => {
     <div class="list">
       <button class="li" data-tz="tile"><span class="lic">${ICON.tiles}</span><span class="tx"><b>So'zlardan yig'aman</b><span>So'zlarni tartib bilan bosasiz, orasida tuzoq so'zlar bor</span></span><span class="st">${best("tuz-" + n)}</span><span class="go">${ICON.chev}</span></button>
       <button class="li" data-tz="yoz"><span class="lic">${ICON.pen}</span><span class="tx"><b>O'zim yozaman</b><span>Gapni klaviaturada to'liq yozasiz</span></span><span class="st">${best("tuzy-" + n)}</span><span class="go">${ICON.chev}</span></button>
+      ${bl.some(zinaOf) ? `<button class="li" data-tz="zina"><span class="lic">${ICON_ZINA}</span><span class="tx"><b>Zina</b><span>So'z → birikma → butun gapni yozasiz</span></span><span class="st">${best("tuzz-" + n)}</span><span class="go">${ICON.chev}</span></button>` : ""}
     </div>
   </section>` : ""}
 
@@ -5111,7 +5116,7 @@ route(/^unit-(\d+)$/, n => {
   </section>` : ""}`;
   $("#sozgo").onclick = () => go("soz-" + n);
   const uf = $("#ufel"); if (uf) uf.onclick = () => startFel("u" + n);
-  app.querySelectorAll("[data-tz]").forEach(b => b.onclick = () => { tuzMode = b.dataset.tz; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} startTuz(bl, "Unit " + un(n), (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n); });
+  app.querySelectorAll("[data-tz]").forEach(b => b.onclick = () => { tuzMode = b.dataset.tz; try { localStorage.setItem("ingliz-tuzmode", tuzMode); } catch (e) {} startTuz(bl, "Unit " + un(n), tzKp() + n); });
 });
 
 let MYPRE = "";
@@ -6234,7 +6239,7 @@ function patNext(p) {
   const n = p.unit, ps = unitPats(n), i = ps.indexOf(p);
   if (i >= 0 && i < ps.length - 1) { const q = ps[i + 1]; return { label: "Keyingisi: " + q.title, run: () => go("qolip-" + q.id) }; }
   const bl = unitBuild(n);
-  if (bl.length) return { label: "Keyingisi: Gap tuzish", run: () => startTuz(bl, "Unit " + un(n), (tuzMode === "yoz" ? "tuzy-" : "tuz-") + n) };
+  if (bl.length) return { label: "Keyingisi: Gap tuzish", run: () => startTuz(bl, "Unit " + un(n), tzKp() + n) };
   if (STORIES[n]) return { label: "Keyingisi: Hikoya", run: () => go("hikoya-" + n) };
   if (SPEAKING.some(t => t.unit === n)) return { label: "Keyingisi: Gapirish", run: () => go("gapir-" + n) };
   return { label: "Unit " + un(n) + " ga qaytish", run: () => go("unit-" + n) };
@@ -6471,6 +6476,12 @@ function wordDiff(got, want) {
 }
 let tuzMode = "tile";
 try { tuzMode = localStorage.getItem("ingliz-tuzmode") || "tile"; } catch (e) {}
+if (!/^(tile|yoz|zina)$/.test(tuzMode)) tuzMode = "tile";
+// Zina (ladder): the typed mode with two warm-up steps before each sentence — a word, then a phrase (data/zina.js).
+// Only the full sentence is counted, so the score, the mistake round and the saved session work as in "yoz".
+const tzYoz = m => m === "yoz" || m === "zina";
+const tzKp = () => tuzMode === "zina" ? "tuzz-" : tuzMode === "yoz" ? "tuzy-" : "tuz-";
+const zinaOf = it => (window.ZINA && it && !it.long && window.ZINA[it.e]) || null;
 
 const TZ_PAIRS = { was: "were", were: "was", is: "are", are: "is", has: "have", have: "has", did: "does", does: "did", went: "go", in: "on", on: "in", at: "in", to: "for", for: "to", the: "a", a: "the", an: "a", my: "me", his: "he", her: "she", their: "they", our: "we", this: "these", that: "what", which: "who", who: "which", much: "many", many: "much", than: "then", then: "than", would: "will", will: "would", could: "can", can: "could" };
 
@@ -6562,6 +6573,7 @@ function tzRules(A, W, raw, tile) {
   if (raw) { const f = []; if (/^[a-z]/.test(raw.trim())) f.push("gap katta harf bilan boshlanadi"); if (/(^|[^a-z'])i([^a-z']|$)/.test(raw)) f.push("I doim katta yoziladi"); if (f.length) out.push({ k: "form", n: 5, t: "Yozib bo'lgach tekshiring", h: f[0][0].toUpperCase() + f.slice(0).join("; ").slice(1) }); }
   return out;
 }
+const ICON_ZINA = sv('<path d="M4 19h5v-5h5V9h6"/>');
 const ICON_RETRY = sv('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>');
 const tzCard = c => `<div class="rq"><p class="rq-k">${ICON_BULB}${c.n ? "Qoida " + c.n + " · " : ""}${esc(c.t)}</p><h3>${esc(c.h)}</h3>${c.p ? `<p>${esc(c.p)}</p>` : ""}${c.ex ? `<p class="rq-ex">${c.ex}</p>` : ""}${c.order ? `<div class="rq-fx" aria-label="Kim, nima qiladi, nimani, qayerda, qachon"><span class="s1">Kim</span>→<span class="s2">nima qiladi</span>→<span class="s3">nimani</span>→<span class="s4">qayerda</span>→<span class="s5">qachon</span></div>` : ""}</div>`;
 
@@ -6780,14 +6792,15 @@ function longPool() {
   return out;
 }
 route(/^tuz$/, () => {
-  const kp = tuzMode === "yoz" ? "tuzy-" : "tuz-", LP = longPool(), lk = "tuzl-" + curBk() + (tuzMode === "yoz" ? "-y" : ""), lb = S.pat[lk];
+  const kp = tzKp(), LP = longPool(), lk = "tuzl-" + curBk() + (tzYoz(tuzMode) ? "-y" : ""), lb = S.pat[lk];
   app.innerHTML = `${wideNav() ? nav(null, "", "Gap tuzish") : nav(`#unitlar`, `Unitlar`, `Gap tuzish`)}
   <div class="stack">
     <div class="card"><p class="label">Mashq turi</p><div class="modes">
       ${modeBtn("tile", "So'zlardan yig'aman", "So'zlarni to'g'ri tartibda bosasiz. Orasida tuzoq so'zlar ham bor (am, do).")}
       ${modeBtn("yoz", "O'zim yozaman", "Gapni o'zingiz to'liq yozasiz. I'm va I am — ikkalasi ham to'g'ri.")}
+      ${BLD.some(x => lvOf(x.unit) === curLvId() && zinaOf(x)) ? modeBtn("zina", "Zina: so'z → birikma → gap", "Avval so'zni, keyin birikmani, oxirida butun gapni yozasiz. Natijaga faqat butun gap kiradi.") : ""}
     </div></div>
-    ${LP.length >= 8 ? `<div class="card tzl"><div class="tzl-h"><div><p class="label" style="margin:0 0 4px">Uzun gaplar · ${curBk()}</p><b>Hikoyalardagi ${TZ_MIN[curBk()] || 9}–18 so'zli gaplar</b><p class="muted" style="margin:6px 0 0">${LP.length} ta gap. ${tuzMode === "yoz" ? "Kompyuterda klaviatura bilan yozish qulay." : "Uzun gapda so'z tartibi va kichik so'zlar (the, a, in, on) tekshiriladi."}${lb != null ? ` Eng yaxshi natija: ${lb}/8.` : ""}</p></div></div>
+    ${LP.length >= 8 ? `<div class="card tzl"><div class="tzl-h"><div><p class="label" style="margin:0 0 4px">Uzun gaplar · ${curBk()}</p><b>Hikoyalardagi ${TZ_MIN[curBk()] || 9}–18 so'zli gaplar</b><p class="muted" style="margin:6px 0 0">${LP.length} ta gap. ${tzYoz(tuzMode) ? "Kompyuterda klaviatura bilan yozish qulay." : "Uzun gapda so'z tartibi va kichik so'zlar (the, a, in, on) tekshiriladi."}${lb != null ? ` Eng yaxshi natija: ${lb}/8.` : ""}</p></div></div>
       <button class="btn" id="tzlong" style="margin-top:14px">8 ta uzun gap</button></div>` : ""}
     <div class="card ksc"><p class="label" style="margin:0 0 4px">Kichik so'zlar</p><b>in, on, at, to, from, of, the…</b>
       <p class="muted" style="margin:6px 0 0">Bu so'zlar — o'zbekchadagi qo'shimchalar (-da, -ga, -dan, -ning), faqat so'zning <b>oldida</b> turadi. Gapdagi bo'sh joyga mosini tanlang.${S.pat && S.pat["ks-" + curBk()] != null ? ` Eng yaxshi natija: ${S.pat["ks-" + curBk()]}/${KS_N}.` : ""}</p>
@@ -6825,9 +6838,9 @@ function tLoad() {
     return true;
   } catch (e) { return false; }
 }
-function startTuz(list, title, key, tag) {
+function startTuz(list, title, key, tag, mode) {
   if (!list.length) return;
-  T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: tuzMode, back: location.hash || "#tuz" };
+  T = { q: shuffle(list), i: 0, right: 0, total: list.length, wrong: [], again: new Set(), title, key, tag, mode: mode || tuzMode, back: location.hash || "#tuz" };
   if (list.some(x => x.long)) bkFetch(T.q);
   if (location.hash === "#tuzmashq") render(); else go("tuzmashq");
 }
@@ -6990,13 +7003,60 @@ function tuzNext() {
 }
 
 function tuzRetry() { if (!T) return; stopVoice(); T.retryOf = T.q[T.i]; render(); }
+// Zina stairs: three rows (word, phrase, sentence). r — the step being asked now, ok — results of the steps passed.
+// On the sentence step the earlier answers are hidden, so the sentence is written from memory.
+function zinaStairs(it, zn, r, ok) {
+  const part = r === 0 ? zn.w[0] : zn.c[0], at = r < 2 ? it.u.toLowerCase().indexOf(part.toLowerCase()) : -1;
+  const uzS = at < 0 ? esc(it.u) : esc(it.u.slice(0, at)) + "<mark>" + esc(it.u.slice(at, at + part.length)) + "</mark>" + esc(it.u.slice(at + part.length));
+  const row = (k, name, uz, en) => {
+    const done = k < r, now = k === r, good = done && !!ok[k];
+    return `<div class="zn-r${now ? " now" : done ? (good ? " done" : " lost") : ""}"><span class="zn-t">${name}</span><span class="zn-e">${now ? "hozir yozasiz" : done ? (r === 2 ? "yashirildi" : `<span lang="en">${esc(en)}</span>`) : uz}</span>${done ? (good ? ICON.check : ICON.x) + `<span class="sr-only">${good ? "to'g'ri" : "xato"}</span>` : ""}</div>`;
+  };
+  return `<div class="zn${r === 2 ? " hid" : ""}" role="group" aria-label="Zina: so'z, birikma, gap">${row(0, "So'z", esc(zn.w[0]), zn.w[1])}${row(1, "Birikma", esc(zn.c[0]), zn.c[1])}${row(2, "Gap", uzS, "")}</div>`;
+}
+function zinaStep(it, zn) {
+  const r = T.zr, uz = r === 0 ? zn.w[0] : zn.c[0], en = r === 0 ? zn.w[1] : zn.c[1], multi = words(en).length > 1;
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
+  <div class="card qcard"><p class="label">${esc(T.title)} · zina</p>${zinaStairs(it, zn, r, T.zok)}
+    <p class="zn-l">${r === 0 ? "Inglizcha so'zni yozing" : "Endi birikmani yozing"}</p><div class="q qsmall" id="znq">${esc(uz)}</div>
+    <textarea class="spell" id="zin" lang="en" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…" aria-labelledby="znq"></textarea>
+    <div class="tools"><button class="icon" id="zsay">Eshitish</button><button class="icon" id="zop">${multi ? "So'z ochish" : "Harf ochish"}</button></div><div class="hintline" id="zhint" role="status"></div>
+    <div class="fb hidden" id="zf" role="status"></div>
+    <div class="row" style="margin-top:14px"><button class="btn ghost" id="zidk" type="button">Bilmayman</button><button class="btn" id="zchk" disabled>Tekshirish</button></div>
+  </div>`;
+  tuzBar(T.i < T.total && !T.again.has(it) ? (T.res || []).length : -1);
+  $("#quit").onclick = () => confirmQuit(T ? T.i : 0, T ? T.q.length : 0, () => { const b = T.back; T = null; tSave(); location.hash = b; });
+  const inp = $("#zin"), chk = $("#zchk"); let done = false, hn = 0;
+  inp.focus();
+  inp.oninput = () => { if (!done) chk.disabled = !inp.value.trim(); };
+  $("#zsay").onclick = () => say(en);
+  $("#zop").onclick = () => {
+    const u = multi ? words(en) : [...en]; hn = Math.min(hn + 1, u.length - 1);
+    $("#zhint").textContent = multi ? u.slice(0, hn).join(" ") + " …" : u.map((c, k) => k < hn ? c : "_").join(" ");
+    $("#zop").textContent = multi ? "Yana so'z" : "Yana harf"; $("#zop").disabled = hn >= u.length - 1;
+  };
+  const finish = (ok, idk) => {
+    done = true; T.zok[r] = ok; inp.dataset.lock = inp.value; inp.className = "spell " + (ok ? "ok" : "bad"); inp.style.fontSize = "19px"; buzz(ok);
+    const f = $("#zf"); f.className = "fb tz " + (ok ? "ok" : "bad");
+    f.innerHTML = `<div class="tzh">${ok ? ICON.check + "To'g'ri!" : ICON.x + (idk ? "Javob" : "Xato")}</div>${ok ? "" : "To'g'risi: "}<b lang="en">${esc(en)}</b> <button aria-label="Tinglash" class="icon" data-say="${esc(en)}" style="padding:4px 8px">${ICON.vol}</button>`;
+    bindSay(f); say(en);
+    const k = $("#zidk"); if (k) k.remove();
+    chk.disabled = false; chk.textContent = r === 0 ? "Birikmaga o'tish" : "Butun gapga o'tish"; if (idk || document.activeElement !== inp) chk.focus();
+  };
+  const check = () => { if (done) { T.zr++; return render(); } if (!inp.value.trim()) return; finish(canon(inp.value).join(" ") === canon(en).join(" ")); };
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
+  chk.onclick = check; $("#zidk").onclick = () => { if (!done) finish(false, true); };
+}
 route(/^tuzmashq$/, () => {
   if (!T && !tLoad()) return go("tuz");
   tSave();
   if (T.round || T.i >= T.q.length) return T.round && window.DAVRA ? tuzRound() : tuzFinish();
-  const it = T.q[T.i], yoz = T.mode === "yoz";
+  const it = T.q[T.i], yoz = tzYoz(T.mode);
+  const zn = T.mode === "zina" && !T.again.has(it) && T.retryOf !== it ? zinaOf(it) : null;
+  if (zn && T.zi !== T.i) { T.zi = T.i; T.zr = 0; T.zok = []; }
+  if (zn && T.zr < 2) return zinaStep(it, zn);
   app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar"><i style="width:${T.i / T.q.length * 100}%"></i></div><span class="cnt">${T.i + 1}/${T.q.length}</span></div>
-  <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p>${T.retryOf === it ? `<p class="tz-re">${ICON_RETRY}Qayta urinish — natijaga ta'sir qilmaydi</p>` : ""}<div class="q qsmall">${esc(it.u)}</div>
+  <div class="card qcard"><p class="label">${esc(T.title)} · ${yoz ? "inglizcha yozing" : "inglizcha gap tuzing"}</p>${T.retryOf === it ? `<p class="tz-re">${ICON_RETRY}Qayta urinish — natijaga ta'sir qilmaydi</p>` : ""}${zn && T.zi === T.i ? zinaStairs(it, zn, 2, T.zok || []) + `<p class="zn-l">Butun gapni inglizcha yozing</p>` : ""}<div class="q qsmall">${esc(it.u)}</div>
     ${yoz ? "" : `<p class="tz-glh">${ICON_BOOK_GL}${matchMedia("(hover:hover)").matches ? "So'z ma'nosi: kursorni so'z ustiga olib boring" : "So'z ma'nosi: so'zni bosib turing"}</p>`}
     ${yoz ? `<textarea class="spell" id="tin" rows="1" wrap="off" enterkeyhint="go" style="font-size:19px" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Inglizcha yozing…"></textarea>
       <div class="tools"><button class="icon" id="th1">1-so'z</button><button class="icon" id="th2">So'zlar</button></div><div class="hintline" id="thint"></div>`
@@ -7113,7 +7173,7 @@ function tuzRound() {
   const nx = R.cur ? null : DAVRA.next(all);
   if (nx && nx.state === "end") return tuzFinish();
   if (nx && nx.job) { R.cur = nx.job; R.sub = nx.state; }
-  const j = R.cur, st = j ? R.sub : nx.state, left = all.filter(x => !x.seen), last = left.length === 1, yoz = T.mode === "yoz";
+  const j = R.cur, st = j ? R.sub : nx.state, left = all.filter(x => !x.seen), last = left.length === 1, yoz = tzYoz(T.mode);
   const sayB = t => `<button aria-label="Tinglash" class="icon" data-say="${esc(t)}" style="padding:4px 8px">${ICON.vol}</button>`;
   const nextL = last ? "Yakunlash" : "Davom etish";
   let body;

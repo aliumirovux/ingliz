@@ -20,7 +20,7 @@ function prompt(b: Row, ctx: Row) {
   return `Kursdagi joyi: Unit ${clip(b.unit, 6)}${b.unit_title ? ` «${clip(b.unit_title, 60)}»` : ""}.
 Unitning so'zlari (kamida 4 tasini sahnada ishlat, eng muhimlari ro'yxat boshida):
 ${words || "(ro'yxat yo'q)"}
-${ctx.rules ? `\nAlining o'qituvchi bilan darsdagi xatolari (sahnada shu qoidalar to'g'ri ishlatilsin):\n${ctx.rules}\n` : ""}${ctx.stuck ? `\nDarsda tutilib qolgan gaplari (bittasi sahnaga tabiiy tushsa yaxshi):\n${ctx.stuck}\n` : ""}${ctx.recent ? `\nOxirgi kunlardagi sahnalar (takrorlama, boshqa vaziyat tanla): ${ctx.recent}\n` : ""}
+${b.next ? `\nKechagi sahnada Aliga bugungi sahna shunday deb aytilgan: «${clip(b.next, 60)}». Iloji bo'lsa shu vaziyatni yoz.\n` : ""}${ctx.rules ? `\nAlining o'qituvchi bilan darsdagi xatolari (sahnada shu qoidalar to'g'ri ishlatilsin):\n${ctx.rules}\n` : ""}${ctx.stuck ? `\nDarsda tutilib qolgan gaplari (bittasi sahnaga tabiiy tushsa yaxshi):\n${ctx.stuck}\n` : ""}${ctx.recent ? `\nOxirgi kunlardagi sahnalar (takrorlama, boshqa vaziyat tanla): ${ctx.recent}\n` : ""}
 JSON shakli:
 {
   "title": "sahna nomi, o'zbekcha, masalan: Restoranda hisobni so'rash",
@@ -90,6 +90,17 @@ async function context(uid: string) {
   return ctx;
 }
 
+// Writes the scene for `day` (tries: 1 = full effort only, 2 = then one medium-effort retry) and returns the stored row.
+async function make(uid: string, day: string, b: Row, tries: number): Promise<Row | null> {
+  let scene: Row | null = null;
+  const ctx = await context(uid);
+  for (let i = 0; i < tries && !scene; i++) { try { scene = clean(await claude(prompt(b, ctx), i ? "medium" : AI_EFFORT, i ? 45000 : 95000)); } catch (e) { console.error("sahna", e); } }
+  if (!scene) return null;
+  await db("scenes?on_conflict=user_id,day", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ user_id: uid, day, scene, model: MODEL }) });
+  const row = await db(`scenes?user_id=eq.${uid}&day=eq.${day}&select=day,scene,progress,done_at`);
+  return row && row[0] ? row[0] : null;
+}
+
 Deno.serve(async (req) => {
   const o = req.headers.get("Origin");
   if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(o) });
@@ -105,14 +116,15 @@ Deno.serve(async (req) => {
     const day = typeof b.day === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.day) && [tashkentDay(-1), tashkentDay(), tashkentDay(1)].includes(b.day) ? b.day : tashkentDay();
     const have = await db(`scenes?user_id=eq.${uid}&day=eq.${day}&select=day,scene,progress,done_at`);
     if (have && have[0]) return json(have[0], 200, o);
-    let scene: Row | null = null, last: unknown = null;
-    const ctx = await context(uid);
-    for (let i = 0; i < 2 && !scene; i++) { try { scene = clean(await claude(prompt(b, ctx), i ? "medium" : AI_EFFORT, i ? 45000 : 95000)); } catch (e) { last = e; console.error("sahna", e); } }
-    if (!scene) return json({ error: "generate", detail: clip(String(last), 200) }, 502, o);
-
-    await db("scenes?on_conflict=user_id,day", { method: "POST", headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }, body: JSON.stringify({ user_id: uid, day, scene, model: MODEL }) });
-    const row = await db(`scenes?user_id=eq.${uid}&day=eq.${day}&select=day,scene,progress,done_at`);
-    return json(row[0], 200, o);
+    // Writing a scene at full effort takes up to ~2 minutes. With "pre" the page asks for tomorrow's scene ahead of time:
+    // the answer comes at once and the scene is written in the background, so tomorrow «Bugun» opens with it ready.
+    if (b.pre === true && day === tashkentDay(1)) {
+      // @ts-ignore EdgeRuntime is provided by the Supabase runtime
+      EdgeRuntime.waitUntil(make(uid, day, b, 1).catch((e) => console.error("sahna pre", e)));
+      return json({ queued: true, day }, 202, o);
+    }
+    const row = await make(uid, day, b, 2);
+    return row ? json(row, 200, o) : json({ error: "generate" }, 502, o);
   } catch (e) {
     console.error(e);
     return json({ error: "server", detail: clip(String(e), 200) }, 500, o);

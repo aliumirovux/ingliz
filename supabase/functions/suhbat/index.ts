@@ -126,10 +126,14 @@ async function context(uid: string) {
     if (rules.length) out.push(`His recent mistakes in class (ask questions where these come up naturally):\n${rules.join("\n")}`);
   } catch (e) { console.error("ctx class", e); }
   try {
-    const p = await db(`calls?user_id=eq.${uid}&done_at=not.is.null&select=topic,fixes,off&order=created_at.desc&limit=3`);
-    const topics = (p || []).map((x: Row) => clip(x.topic, 60)).filter(Boolean);
+    // Recent calls, finished or not: a call left after the greeting still used up its topic and opening question,
+    // so the next call must not open with the same one. Fixes exist only on finished calls.
+    const p = await db(`calls?user_id=eq.${uid}&select=topic,fixes,off,turns->0->>x&order=created_at.desc&limit=5`);
+    const topics = [...new Set((p || []).map((x: Row) => clip(x.topic, 60)).filter(Boolean))];
+    const asked = [...new Set((p || []).map((x: Row) => clip(x.x, 120)).filter(Boolean))].slice(0, 3);
     const fx = (p || []).flatMap((x: Row) => (x.fixes || []).filter((_: Row, i: number) => !(x.off || []).includes(i))).slice(0, 4).map((f: Row) => `- ${clip(f.you, 80)} → ${clip(f.fix, 80)}`);
     if (topics.length) out.push(`Topics of the last calls (choose a different one): ${topics.join("; ")}`);
+    if (asked.length) out.push(`Opening lines of the last calls (do not repeat them or ask the same question):\n${asked.map((a) => `- ${a}`).join("\n")}`);
     if (fx.length) out.push(`Mistakes from the last calls (give him a chance to say these right):\n${fx.join("\n")}`);
   } catch (e) { console.error("ctx calls", e); }
   return out.join("\n\n");

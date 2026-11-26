@@ -60,6 +60,13 @@ easywords.uz: «Repetitor darsi» kartasi → #repetitor → javoblar agent_less
 - Natijalar `speak_log` jadvaliga (src `dars` | `rep`): bosh sahifadagi «Bu hafta gapirdingiz» (darsdagi `metrics.talk_s` + saytdagi `secs`) va repetitorning `speaking.practice` shundan.
 - Repetitor «Gapirish» bo'limidagi `type` savollarga ham ovoz bilan javob berish mumkin (so'zlarning 85% i to'g'ri bo'lsa qabul).
 
+## Shadowing (diktor bilan birga aytish)
+- Sahifa: `#soya` — «Bugun» sahifasining eng tepasidagi to'q sariq «Shadowing» bloki (faqat Ali, `shOn()`).
+- Kuniga bitta abzats: daraja hikoyasidan (`BOOKS`, `curBk()`), hikoya tugaguncha ketma-ket. Holat `localStorage` `ingliz-soya` da (`book`, `par`, `day`, `hist`).
+- 3 bosqich: 1) butun abzatsni sekin tinglash, 2) har gapni diktordan keyin aytish, 3) butun abzatsni diktor bilan birga aytish. Tezlik darajaga qarab (`SY_RATE`: Beginner 0.75/0.85 … Intermediate 0.9/1).
+- Tekshiruv — brauzerning nutqni tanishi (`srListen`, 3-bosqichda uzluksiz `syListen`) va `spMatch`, kredit sarflanmaydi. Eshitilmagan so'z lug'atda bo'lsa «Xatolarim»ga (`misAdd`) qo'shiladi. 3-bosqichda diktordan kechikish o'lchanadi (taxminiy; quloqchin bilan aniqroq).
+- Natijalar `speak_log` (src `soya`): «Bu hafta gapirdingiz → Saytda» shundan. Migratsiya: `20261126b_speak_log_soya.sql`.
+
 ## Repetitorga qo'ng'iroq (ovozli suhbat)
 - Sahifa: `#suhbat` — «Bugun»dagi «Repetitorga qo'ng'iroq» qatori. 5 daqiqa (+2 daqiqa bir marta), kuniga 3 ta qo'ng'iroq, har birida 24 tagacha gap.
 - Har gap alohida yozib olinadi (1,5 soniya jimlikdan keyin to'xtaydi) → `supabase/functions/suhbat`: Gemini so'zma-so'z matn (xatoni tuzatmaydi, noaniq so'zlarni belgilaydi) → Claude (`claude-opus-5-5`) javob va tuzatish → telefon ovozi o'qiydi. Ovoz saqlanmaydi.

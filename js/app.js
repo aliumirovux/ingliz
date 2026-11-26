@@ -518,24 +518,24 @@ function vlFlush() {
 document.addEventListener("visibilitychange", () => { if (document.hidden) { clearTimeout(VLT); vlFlush(); } });
 if (AEL) AEL.addEventListener("pause", () => { const v = VL; if (v && v.el === AEL && v.live && !AEL.ended && AEL.currentTime < (AEL.duration || 0) - .15) vlEnd(v, "pause:system"); });
 function stopVoice() { if (VL) vlEnd(VL, "stop " + vlWho()); VG++; VBUSY = false; if (AEL) { AEL.onended = AEL.onerror = null; try { AEL.pause(); } catch (e) {} } try { speechSynthesis.cancel(); } catch (e) {} }
-function synth(text, done) {
-  try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = .85;
+function synth(text, done, rate) {
+  try { const u = new SpeechSynthesisUtterance(text); if (voice) u.voice = voice; u.lang = voice ? voice.lang : "en-GB"; u.rate = rate || .85;
     const v = vlStart("synth", text);
     u.onend = () => { vlEnd(v, "ended"); if (done) done(); };
     u.onerror = e => vlEnd(v, "err " + ((e && e.error) || ""));
     speechSynthesis.speak(u); } catch (e) {}
 }
-function speakOne(text, done) {
+function speakOne(text, done, rate) {
   text = String(text).replace(/[\[\]]/g, "");
   const id = AEL && OVM && OVM.set.has(voiceId(text)) ? voiceId(text) : null;
-  if (!id) return synth(text, done);
+  if (!id) return synth(text, done, rate);
   const g = VG; let fell = false; VBUSY = true;
   const v = vlStart("apollo", text, AEL);
-  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; vlEnd(v, "error>synth"); synth(text, done); };
+  const back = () => { if (fell || g !== VG) return; fell = true; VBUSY = false; vlEnd(v, "error>synth"); synth(text, done, rate); };
   audioUrl(id).then(u => {
     if (g !== VG) return;
     AEL.onended = () => { if (g !== VG) return; VBUSY = false; vlEnd(v, "ended"); if (done) done(); };
-    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = VRATE; if (v) v.live = true;
+    AEL.onerror = back; AEL.src = u; AEL.defaultPlaybackRate = AEL.playbackRate = rate || VRATE; if (v) v.live = true;
     const p = AEL.play(); if (p && p.catch) p.catch(back);
   }).catch(back);
 }
@@ -1891,23 +1891,18 @@ function eslList(n) {
 const eslK = L => { const s = shToday(); if (!s) return 0; const sw = new Set((s.scene.words || []).map(x => String(x.en || "").toLowerCase().trim())); return L.filter(w => sw.has(String(w.w).toLowerCase().trim())).length; };
 const repIsDone = r => !!r && (!!r.done_at || r.lesson.sections.every((_, si) => repSecDone(r, si)));
 function shAllDone(n) {
-  const r = repToday(), s = shToday();
-  return !!s && !!s.done_at && (!r || repIsDone(r)) && (dayDone().includes("esl") || !eslList(n).length);
+  const s = shToday();
+  return !!s && !!s.done_at && (dayDone().includes("esl") || !eslList(n).length);
 }
 function sceneHome3(n) {
   const s = shToday(), more = `<a class="sh-link" href="#unitlar">${ICON.read || ""}Boshqa mashqlar «Unitlar» bo'limida</a>`;
   const next = s && s.scene.next ? `<p class="sh-next">Ertaga: «${esc(s.scene.next)}»</p>` : "";
   if (shAllDone(n)) {
     const nx = eslList(n).length;
-    return `<section class="sh-done-card"><span class="big">${ICON.check}</span><h2>Bugungi ish tugadi</h2><p>Repetitor · sahna · so'zlar${s.scene.next ? `. Ertaga: «${esc(s.scene.next)}»` : ""}</p>
+    return `<section class="sh-done-card"><span class="big">${ICON.check}</span><h2>Bugungi ish tugadi</h2><p>Sahna · so'zlar${s.scene.next ? `. Ertaga: «${esc(s.scene.next)}»` : ""}</p>
       <div class="sh-extra">${rsNewWords().length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="tx"><b>Darsdan ${rsNewWords().length} ta yangi so'z</b></span><span class="m">${Math.max(2, Math.round(rsNewWords().length * .6))} daq</span></button>` : ""}${nx ? `<button type="button" class="sh-row" data-sr="esl"><span class="tx"><b>Yana ${nx} so'z eslash</b></span><span class="m">${Math.max(2, Math.round(nx * .27))} daq</span></button>` : ""}<a class="sh-row" href="#unitlar"><span class="tx"><b>Unit ${un(n)} mashqlari</b></span><span class="m">Unitlar ${ICON.chev}</span></a></div></section>`;
   }
-  const r = repToday(); let rr = "";
-  if (r) {
-    const dn = repIsDone(r), left = r.lesson.sections.filter((_, si) => !repSecDone(r, si)).length;
-    rr = dn ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Repetitor darsi</b><span>${r.lesson.sections.length}/${r.lesson.sections.length} bajarildi · ertalab yangisi</span></span></div>`
-      : `<button type="button" class="sh-row" data-sr="rep"><span class="ic">${ICON.spark}</span><span class="tx"><b>Repetitor darsi</b><span>${left} bo'lim qoldi · ${esc(r.lesson.title || "bugungi dars")}</span></span><span class="m">${r.lesson.minutes || 5} daq</span></button>`;
-  }
+  const rr = ""; /* the «Repetitor darsi» row no longer shows on Bugun (Ali, 26 Nov) */
   const L = eslList(n), ed = dayDone().includes("esl"), DW = rsNewWords();
   const er = DW.length ? `<button type="button" class="sh-row" data-sr="dnew"><span class="ic esl">${ICON.redo}</span><span class="tx"><b>Eslab qolish<span class="rs-badge">+${DW.length} darsdan</span></b><span>${DW.length} ta yangi so'z darsdan · avval tanishasiz</span></span><span class="m">${Math.max(2, Math.round(DW.length * .6))} daq</span></button>`
     : !L.length ? "" : ed ? `<div class="sh-row is-done"><span class="ic ok">${ICON.check}</span><span class="tx"><b>Eslab qolish</b><span>Bugungi so'zlar takrorlandi</span></span></div>`
@@ -1925,6 +1920,271 @@ function bindSceneHome(n) {
     if (b.dataset.sr === "dnew") { const D = rsNewWords(); if (D.length) startLearn(D, "Darsdan so'zlar", "#", null); return; }
     const L = eslList(n); if (L.length) startQuiz(L, "auto", "Eslab qolish", "#", "esl");
   });
+}
+
+/* Shadowing («#soya»): one paragraph a day from a story of the learner's level (BOOKS).
+   1) listen to the whole paragraph slowly, 2) say each sentence right after the voice, 3) say the whole paragraph together with the voice.
+   Speech is checked in the browser (srListen / spMatch, as in «Darsdagi lahza"); seconds go to speak_log (src "soya"). */
+const SY_KEY = "ingliz-soya";
+let SOY = (() => { try { const o = JSON.parse(localStorage.getItem(SY_KEY) || "null"); return o && typeof o === "object" ? o : {}; } catch (e) { return {}; } })();
+const sySave = () => { try { localStorage.setItem(SY_KEY, JSON.stringify(SOY)); } catch (e) {} };
+const SY_RATE = { Beginner: [.75, .85], Elementary: [.75, .9], "Pre-intermediate": [.85, 1], Intermediate: [.9, 1] };
+const SY_ST = [["Sekin tinglang", "butun abzats"], ["Gapma-gap ayting", "har gapdan keyin"], ["Birga ayting", "butun abzats"]];
+const SY_IC = { play: sv('<path d="M7 5v14l11-7Z" fill="currentColor"/>'), stop: sv('<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/>'), wave: sv('<path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 7v10"/>'), head: sv('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="2"/><rect x="17" y="14" width="4" height="7" rx="2"/>') };
+const syOn = () => shOn();
+let SS = null, SYP = null;
+
+/* Today's paragraph: keeps one story until all its paragraphs are done, then the next unfinished story of the level. */
+function syPick() {
+  const fin = SOY.fin || {}, lv = curBk();
+  let b = BOOKS.find(x => x.id === SOY.book);
+  if (b && b.lv !== lv && !SOY.par) b = null;
+  if (b && (SOY.par || 0) >= b.p.length) { fin[b.id] = today(); SOY.fin = fin; b = null; }
+  if (!b) { b = lvBooks().find(x => !fin[x.id]) || bookList().find(x => !fin[x.id]) || lvBooks()[0]; SOY.book = b.id; SOY.par = 0; sySave(); }
+  const pi = SOY.par || 0, S = b.p[pi], rt = SY_RATE[b.lv] || SY_RATE.Beginner;
+  return { b, pi, S, key: b.id + ":" + pi, slow: rt[0], rate: rt[1], words: S.reduce((a, s) => a + s[0].split(/\s+/).length, 0) };
+}
+const syDoneToday = () => SOY.day === today();
+const syFx = v => String((Math.round(v * 10) / 10).toFixed(1)).replace(".", ",");
+const syLastLag = () => { const h = (SOY.hist || []).filter(x => x.lag != null); return h.length ? h[h.length - 1].lag : null; };
+
+function soyaCard() {
+  if (!syOn()) return "";
+  if (syDoneToday() && !(SS && SS.key === syPick().key && SS.st > 0)) {
+    const h = (SOY.hist || [])[(SOY.hist || []).length - 1] || {}, nx = syPick();
+    return `<div class="swb-slot"><div class="swb-done"><span class="ic">${ICON.check}</span><span class="tx"><b>Shadowing · ${(h.par || 0) + 1}-abzats tayyor</b><span>${h.lag != null ? "Kechikish " + syFx(h.lag) + " s · " : ""}ertaga ${nx.pi + 1}-abzats</span></span><button type="button" id="sygo2">Yana</button></div></div>`;
+  }
+  const d = syPick(), st = SS && SS.key === d.key ? SS.st : 0, mins = Math.max(2, Math.round(d.words * 4.2 / 60));
+  return `<div class="swb-slot"><section class="swb" aria-labelledby="swbh"><div><span class="swb-t">${SY_IC.wave}Shadowing · ${esc(d.b.lv)} · ~${mins} daq</span>
+    <h2 id="swbh" lang="en">${esc(d.b.t)}</h2>
+    <p>${d.pi + 1}-abzats / ${d.b.p.length} · ${d.S.length} gap · ${d.words} so'z${st ? " · " + st + "-bosqich tugadi" : ""}</p></div>
+    <ol class="swb-lad">${SY_ST.map((x, k) => `<li class="${k < st ? "d" : ""}"><b>${k < st ? "✓" : k + 1 + "."} ${x[0]}</b>${x[1]}${k === 0 ? " · " + d.slow + "×" : k === 2 ? " · " + d.rate + "×" : ""}</li>`).join("")}</ol>
+    <button class="swb-go" type="button" id="sygo">${st ? "Davom etish" : "Boshlash"} ${ICON.arrow}</button></section></div>`;
+}
+function bindSoyaHome() {
+  const g = $("#sygo"), g2 = $("#sygo2");
+  if (g) g.onclick = () => go("soya");
+  if (g2) g2.onclick = () => { SS = null; go("soya"); };
+}
+
+/* Paragraph with word spans. mode: "one" (current sentence i) | "all"; marks: {si: [missed word indexes]} */
+const syToks = s => s.split(/\s+/);
+function syPara(d, mode, i, marks) {
+  return `<p class="sy-pg${mode === "all" ? " all" : ""}" lang="en" id="sypg">${d.S.map((s, si) => {
+    const cls = mode === "all" ? "cur" : si === i ? "cur" : si < i ? "done" : "todo", mk = marks && marks[si];
+    return `<span class="sn ${cls}" data-s="${si}">${syToks(s[0]).map((w, k) => `<span class="w${mk ? (mk.includes(k) ? " miss" : " ok") : ""}" data-k="${k}">${esc(w)}</span>`).join(" ")}</span>`;
+  }).join(" ")}</p>`;
+}
+/* which display tokens of `text` were not heard, from spMatch hits (one hit per spWords word) */
+function syMiss(text, hit, from) {
+  const out = []; let k = from || 0;
+  syToks(text).forEach((tok, ti) => { const n = spWords(tok).length; if (n && !hit.slice(k, k + n).every(Boolean)) out.push(ti); k += n; });
+  return { miss: out, next: k };
+}
+const syWord = tok => tok.replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g, "");
+
+/* karaoke: highlight the word being read (Apollo: by playback time; browser voice: by an estimate) */
+function syLoop() {
+  if (!SYP) { syMark(-1, -1); return; }
+  const s = SS && SS.d.S[SYP.si]; if (!s) return;
+  const toks = syToks(s[0]), lens = toks.map(t => t.length + 1), tot = lens.reduce((a, b) => a + b, 0);
+  let f = 0;
+  if (VBUSY && AEL && AEL.duration && !AEL.paused) f = AEL.currentTime / AEL.duration;
+  else f = (performance.now() - SYP.t0) / (toks.length * 380 / SYP.rate);
+  f = Math.min(.999, Math.max(0, f));
+  let c = 0, k = 0; while (k < toks.length - 1 && (c + lens[k]) / tot <= f) { c += lens[k]; k++; }
+  syMark(SYP.si, k);
+  requestAnimationFrame(syLoop);
+}
+function syMark(si, k) {
+  const p = $("#sypg"); if (!p) return;
+  p.classList.toggle("playing", si >= 0);
+  p.querySelectorAll(".sn").forEach(sn => { const s = +sn.dataset.s;
+    sn.querySelectorAll(".w").forEach(w => { const j = +w.dataset.k; w.classList.toggle("on", s === si && j === k); w.classList.toggle("past", si >= 0 && (s < si || (s === si && j < k))); }); });
+}
+/* play sentences one after another; stopVoice() (any render) ends the chain */
+function syPlay(list, rate, done, onStart) {
+  stopVoice(); const g = VG; let k = 0, started = false;
+  const next = () => {
+    if (g !== VG) return;
+    if (k >= list.length) { SYP =null; syMark(-1, -1); if (done) done(); return; }
+    const si = list[k++]; SYP ={ si, t0: performance.now(), rate };
+    if (!started) { started = true; if (onStart) { let fired = false; const once = t => { if (!fired) { fired = true; onStart(t); } };
+      if (AEL) { const t = performance.now(), f = () => once(performance.now()); AEL.addEventListener("playing", f, { once: true }); setTimeout(() => { AEL.removeEventListener("playing", f); once(t + 150); }, 1500); } else once(performance.now()); } }
+    /* watchdog: some phones never fire the end of the browser voice — go on after a generous estimate */
+    const text = SS.d.S[si][0]; let fired = false;
+    const fin = () => { if (fired) return; fired = true; clearTimeout(wd); setTimeout(next, 220); };
+    const wd = setTimeout(fin, Math.max(4000, syToks(text).length * 380 / rate * 2.5) + 2000);
+    speakOne(text, fin, rate);
+  };
+  next(); requestAnimationFrame(syLoop);
+}
+/* continuous listening for the whole paragraph (srListen stops after the first pause) */
+function syListen(o) {
+  let stopped = false, finals = "", last = "", first = false, rec = null, cb = null, ended = false;
+  const run = () => {
+    rec = new SRec(); rec.lang = "en-US"; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 1;
+    rec.onspeechstart = () => { if (!first) { first = true; o.onFirst(performance.now()); } };
+    rec.onresult = e => {
+      if (!first) { first = true; o.onFirst(performance.now()); }
+      let fin = "", mid = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) (e.results[i].isFinal ? (fin += " " + e.results[i][0].transcript) : (mid += " " + e.results[i][0].transcript));
+      if (fin) finals += fin; last = (finals + " " + mid).trim(); o.onText(last);
+    };
+    rec.onerror = e => { rec.err = e.error; };
+    rec.onend = () => {
+      const err = rec.err;
+      if (err === "not-allowed" || err === "service-not-allowed" || err === "audio-capture") { SR_CUR = null; return o.onFail(err); }
+      if (!stopped) { try { run(); return; } catch (er) {} }
+      SR_CUR = null; ended = true; if (cb) cb(finals.trim().length >= last.length * .8 ? finals.trim() : last);
+    };
+    try { rec.start(); } catch (er) { SR_CUR = null; o.onFail("start"); }
+  };
+  run();
+  SR_CUR = { stop() { stopped = true; try { rec.stop(); } catch (e) {} }, abort() { stopped = true; try { rec.onend = null; rec.abort(); } catch (e) {} SR_CUR = null; } };
+  return { stop(f) { stopped = true; if (ended) return f(last); cb = f; try { rec.stop(); } catch (e) { cb = null; f(last); } } };
+}
+
+function syAbort() { stopVoice(); srStop(); SYP =null; if (SS && ["play", "rec", "check"].includes(SS.step)) SS.step = "idle"; }
+addEventListener("hashchange", () => { if (location.hash !== "#soya" && SS) syAbort(); });
+function syAddMiss(words) {
+  let n = 0;
+  words.forEach(t => { const lw = t.toLowerCase(); const w = lw.length > 1 && WORDS.find(x => spoken(x).toLowerCase() === lw); if (w && !(("w:" + w.id) in S.mis && S.mis["w:" + w.id] === today())) { misAdd("w:" + w.id); n++; } });
+  if (n) save();
+  return n;
+}
+function syFinish() {
+  const d = SS.d, lag = SS.lags.length ? SS.lags[SS.lags.length - 1] : null;
+  const uniq = [...new Set(SS.missAll)];
+  SS.added = syAddMiss(uniq);
+  SOY.hist = (SOY.hist || []).concat({ day: today(), book: d.b.id, par: d.pi, lag, first: SS.lags.length ? SS.lags[0] : null, score: SS.wscore }).slice(-40);
+  SOY.day = today(); SOY.par = d.pi + 1; sySave(); markDone("soya");
+  SS.step = "sum"; SS.st = 3;
+}
+
+route(/^soya$/, () => {
+  if (!syOn()) return go("");
+  const d0 = syPick();
+  if (!SS || SS.key !== d0.key) SS = { key: d0.key, d: d0, st: 0, i: 0, step: "idle", res: null, miss: [], wmiss: null, live: "", lags: [], secs: 0, missAll: [], tries: 0, nomic: !SRec, wscore: null };
+  SS.d = d0; syView();
+});
+function syView(focusSel) {
+  const d = SS.d, st = SS.st, n = d.S.length, nomic = SS.nomic;
+  const seg = SY_ST.map((_, k) => `<i class="${k < st || SS.step === "sum" ? "ok" : k === st ? "now" : ""}"></i>`).join("");
+  const meta = `<p class="sy-meta"><b lang="en">«${esc(d.b.t)}»</b> · ${esc(d.b.lv)} · ${d.pi + 1}-abzats / ${d.b.p.length} · ${d.words} so'z</p>`;
+  let body = "", foot = "";
+  if (SS.step === "sum") {
+    const prev = (SOY.hist || []).slice(0, -1).filter(x => x.lag != null).slice(-1)[0], lag = SS.lags[SS.lags.length - 1], uniq = [...new Set(SS.missAll)];
+    const cmp = lag != null ? `<div class="lz-cmp" role="img" aria-label="Kechikish">${[[prev ? "Oldingi" : "1-urinish", prev ? prev.lag : SS.lags.length > 1 ? SS.lags[0] : null], ["Bugun", lag]].filter(x => x[1] != null).map(([t, v], k) => `<div class="${k ? "now" : ""}"><span>${t}</span><s style="width:${Math.min(100, Math.round(v / 2 * 100))}%"></s><b>${syFx(v)} s</b></div>`).join("")}</div>` : "";
+    body = `<section class="card lz-end sy-end"><span class="rep-chip">${SY_IC.wave}Shadowing tugadi</span><p class="lz-big">${d.pi + 1}-abzats</p><p class="lz-sub" lang="en">«${esc(d.b.t)}» · ${SS.wscore != null ? SS.wscore + "% so'z aytildi" : "ovoz chiqarib aytildi"} · ${Math.max(1, Math.round(SS.secs / 60))} daq gapirdingiz</p>
+      ${cmp ? `<p class="sy-l">Diktordan kechikish (kam — yaxshi, maqsad 0,5 s)</p>${cmp}` : ""}
+      ${uniq.length ? `<p class="sy-l">Eshitilmagan so'zlar${SS.added ? ` · ${SS.added} tasi «Xatolarim»ga qo'shildi` : ""}</p><div class="sy-tags">${uniq.map(w => `<span lang="en">${esc(w)}</span>`).join("")}</div>` : `<p class="lz-ok">${ICON.check}Hamma so'z eshitildi</p>`}
+      <p class="sy-next">${d.pi + 1 < d.b.p.length ? `Ertaga: ${d.pi + 2}-abzats` : "Hikoya tugadi — ertaga yangi hikoya"}</p></section>`;
+    foot = `<div class="lz-foot"><button class="btn ghost" id="symore">Keyingi abzats</button><button class="btn" id="syhome">Bosh sahifaga</button></div>`;
+  } else {
+    const steps = SY_ST.map((x, k) => `<li class="${k < st ? "d" : k === st ? "on" : ""}"><b>${k < st ? ICON.check : k + 1 + "."} ${x[0]}</b>${k === 1 && st === 1 ? `gap ${SS.i + 1} / ${n}` : x[1] + (k === 0 ? " · " + d.slow + "×" : k === 2 ? " · " + d.rate + "×" : "")}</li>`).join("");
+    const res = SS.step === "res", marks = res ? (st === 2 ? SS.wmiss : { [SS.i]: SS.miss }) : null;
+    let extra = "";
+    if (st === 2 && SS.step === "idle" && !nomic) extra = `<p class="sy-note">${SY_IC.head}<span>Quloqchin bilan qiling: telefon ovozi mikrofonga tushsa, natija noto'g'ri chiqadi.</span></p>`;
+    if (nomic) extra = `<p class="sy-note">${ICON.info || ""}<span>${SRec ? "Mikrofonga ruxsat yo'q — manzil satridagi belgi → Mikrofon → Ruxsat." : "Bu brauzer nutqni tanimaydi."} Hozircha eshitib, ovoz chiqarib ayting; so'zlar tekshirilmaydi.</span></p>`;
+    if (res && st === 2) {
+      const lag = SS.lags[SS.lags.length - 1];
+      extra += `<div class="lz-mt sy-mt"><div><b>${lag == null ? "—" : syFx(lag) + " s"}</b><span>diktordan kechikdingiz</span>${lag != null ? `<em class="${lag <= .5 ? "up" : ""}">maqsad 0,5 s</em>` : ""}</div><div><b>${SS.res.n} / ${SS.res.of}</b><span>so'z aytildi</span></div><div><b>${Math.max(1, Math.round(SS.lastSecs || 0))} s</b><span>gapirdingiz</span></div></div>`;
+    }
+    body = `<ol class="sy-steps" aria-label="Bosqichlar">${steps}</ol>${meta}${syPara(d, st === 1 ? "one" : "all", SS.i, marks)}${st === 1 ? `<p class="sy-uz">${esc(d.S[SS.i][1])}</p>` : ""}${extra}`;
+    let cap = "", btn = "";
+    const big = (id, ic, lab, cls) => `<div class="lz-micw"><button type="button" class="lz-mic${cls ? " " + cls : ""}" id="${id}" aria-label="${lab}"${cls === "wait" ? " disabled" : ""}>${ic}</button>`;
+    if (SS.step === "idle") {
+      if (st === 0) { btn = big("syplay", SY_IC.play, "Abzatsni sekin eshitish", "play"); cap = `Butun abzats <b>sekin</b> o'qiladi`; }
+      else if (nomic) { btn = ""; }
+      else { btn = big("symic", ICON.mic, st === 1 ? "Gapni eshitib ortidan aytish" : "Abzatsni birga aytish"); cap = st === 1 ? "Gap o'qiladi, tugashi bilan <b>darhol ayting</b>" : "Audio boshlanadi — <b>u bilan birga</b>, to'xtamasdan"; }
+    }
+    if (SS.step === "play") { btn = big("systop", SY_IC.stop, "To'xtatish", "play on"); cap = "Tinglang…"; }
+    if (SS.step === "rec") { btn = big("systop", SY_IC.stop, "Tugatdim", "on"); cap = esc(SS.live) || (st === 2 ? "<b>Birga ayting</b>" : "<b>Endi siz</b> — tugagach to'xtating"); }
+    if (SS.step === "check") { btn = big("syw", ICON.mic, "Tekshirilmoqda", "wait"); cap = "Tekshirilmoqda…"; }
+    if (btn) foot = `${btn}<p class="lz-live" id="sylive" aria-live="polite">${cap}</p></div>`;
+    if (nomic && SS.step === "idle" && st > 0) foot = `<div class="lz-foot"><button class="btn ghost" id="sylisten">${ICON.vol}Eshitish</button><button class="btn" id="syself">Aytdim · keyingisi</button></div>`;
+    if (res) {
+      const w = st === 2 ? SS.res.of : SS.res.of, miss = st === 2 ? Object.entries(SS.wmiss).flatMap(([si, ks]) => ks.map(k => syWord(syToks(d.S[+si][0])[k]))) : SS.miss.map(k => syWord(syToks(d.S[SS.i][0])[k]));
+      body += `<p class="lz-v ${miss.length ? "bad" : "ok"}" aria-live="polite">${miss.length ? `${SS.res.n} / ${w} so'z · eshitilmadi: <span lang="en">${esc(miss.join(", "))}</span>${st === 1 ? " — kichik so'zni ham ayting" : ""}` : `${w} / ${w} so'z — to'g'ri`}</p>`;
+      foot = `<div class="lz-foot"><button class="btn ghost" id="syagain">${ICON.redo}Qayta</button><button class="btn" id="synext">${st === 2 ? "Natija" : SS.i === n - 1 ? "3-bosqichga" : "Keyingi gap"} ${ICON.arrow}</button></div>`;
+    }
+  }
+  app.innerHTML = `<div class="top"><button class="icon" id="quit" aria-label="Chiqish" title="Chiqish">${ICON.x}</button><div class="bar seg" role="img" aria-label="${Math.min(st + 1, 3)}-bosqich / 3">${seg}</div><span class="cnt">${Math.min(st + 1, 3)}/3</span></div>
+  <h1 class="sr-only">Shadowing</h1><div class="lz sy">${body}${foot}</div>`;
+  syBind();
+  const f = $(focusSel || "#synext, #syhome, #symic, #syplay, #systop, #syself");
+  if (f && focusSel !== false) f.focus({ preventScroll: true });
+}
+function syBind() {
+  const on = (id, fn) => { const b = $(id); if (b) b.onclick = fn; };
+  const d = SS.d;
+  on("#quit", () => { syAbort(); go(""); });
+  on("#syhome", () => { SS = null; go(""); });
+  on("#symore", () => { SS = null; go("soya"); });
+  on("#syplay", () => {
+    SS.step = "play"; syView("#systop");
+    syPlay(d.S.map((_, k) => k), d.slow, () => { SS.st = 1; SS.i = 0; SS.step = "idle"; syView("#symic"); });
+  });
+  on("#systop", () => {
+    if (SS.step === "play") { stopVoice(); SYP =null; SS.step = "idle"; if (SS.st === 0) { SS.st = 1; SS.i = 0; } syView(); return; }
+    if (SS.stopper) SS.stopper(); else if (SR_CUR) SR_CUR.stop();
+  });
+  on("#symic", () => SS.st === 1 ? syOne() : syAll());
+  on("#syagain", () => { SS.step = "idle"; SS.tries++; syView(); });
+  on("#synext", () => syNext());
+  on("#sylisten", () => syPlay(SS.st === 1 ? [SS.i] : d.S.map((_, k) => k), d.slow, () => {}));
+  on("#syself", () => { SS.secs += Math.round((SS.st === 1 ? syToks(d.S[SS.i][0]).length : d.words) * .45); SS.res = null; if (SS.st === 2) { SS.wscore = null; syFinish(); syView(); } else syNext(true); });
+}
+function syLive(t) { SS.live = t; const l = $("#sylive"); if (l) l.textContent = t || "Tinglayapman…"; }
+function syFail() { SS.nomic = true; SS.step = "idle"; syView(); }
+function syOne() {
+  const d = SS.d, text = d.S[SS.i][0];
+  SS.step = "play"; SS.live = ""; syView("#systop");
+  syPlay([SS.i], d.rate, () => {
+    if (SS.step !== "play") return;
+    SS.step = "rec"; syView("#systop");
+    let lat = null; const t0 = performance.now();
+    srListen({
+      onFirst: ms => { lat = ms; }, onText: syLive, onFail: syFail,
+      onEnd: (said, secs) => {
+        if (!SS || SS.step !== "rec") return;
+        const m = spMatch(said, text), mk = syMiss(text, m.hit).miss;
+        SS.res = m; SS.miss = mk; SS.secs += secs || Math.round((performance.now() - t0) / 1000);
+        mk.forEach(k => SS.missAll.push(syWord(syToks(text)[k])));
+        spkLog({ src: "soya", item: text.slice(0, 300), lat_ms: lat == null ? null : Math.min(120000, Math.round(lat)), hints: 0, score: m.score, secs: Math.min(3600, secs || 0) });
+        SS.step = "res"; syView(mk.length ? "#syagain" : "#synext");
+      }
+    });
+  });
+}
+function syAll() {
+  const d = SS.d, full = d.S.map(s => s[0]).join(" ");
+  SS.step = "rec"; SS.live = ""; syView("#systop");
+  let start = null, first = null; const t0 = performance.now();
+  const L = syListen({ onFirst: t => { first = t; }, onText: syLive, onFail: () => { stopVoice(); syFail(); } });
+  const end = () => {
+    SS.stopper = null; stopVoice(); SYP =null;
+    if (!SS || SS.step !== "rec") return;
+    SS.step = "check"; syView(false);
+    L.stop(said => {
+      if (!SS || SS.step !== "check") return;
+      const m = spMatch(said, full), wm = {}; let k = 0;
+      d.S.forEach((s, si) => { const r = syMiss(s[0], m.hit, k); k = r.next; if (r.miss.length) wm[si] = r.miss; });
+      const secs = Math.round((performance.now() - t0) / 1000), lag = start != null && first != null ? Math.max(0, (first - start) / 1000) : null;
+      SS.res = m; SS.wmiss = wm; SS.wscore = m.score; SS.secs += secs; SS.lastSecs = secs; if (lag != null && lag < 8) SS.lags.push(lag);
+      Object.entries(wm).forEach(([si, ks]) => ks.forEach(x => SS.missAll.push(syWord(syToks(d.S[+si][0])[x]))));
+      spkLog({ src: "soya", item: full.slice(0, 300), lat_ms: lag == null ? null : Math.min(120000, Math.round(lag * 1000)), hints: 0, score: m.score, secs: Math.min(3600, secs) });
+      SS.step = "res"; syView("#synext");
+    });
+  };
+  SS.stopper = end;
+  setTimeout(() => { if (SS && SS.step === "rec") syPlay(d.S.map((_, x) => x), d.rate, () => setTimeout(end, 1200), t => { start = t; }); }, 350);
+}
+function syNext() {
+  const n = SS.d.S.length; SS.tries = 0; SS.miss = []; SS.res = null; SS.live = "";
+  if (SS.st === 1) { if (SS.i < n - 1) { SS.i++; SS.step = "idle"; return syView("#symic"); } SS.st = 2; SS.step = "idle"; return syView(SS.nomic ? "#syself" : "#symic"); }
+  if (SS.st === 2) { syFinish(); return syView("#syhome"); }
 }
 
 const CLKEY = "ingliz-calls", CL_MAX_S = 300, CL_WARN_S = 270, CL_EXTRA_S = 120;
@@ -2733,7 +2993,7 @@ function darsCard() {
   if (YZ_SAVED.length) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.mic}</span><span class="tx"><b>Saqlangan yozuv tahlilga yuborilmagan</b><span>${yzClock(YZ_SAVED[0].dur)} · yuborish uchun oching</span></span><span class="go">${ICON.chev}</span></a>`;
   if (a) return `<a class="cls dsc" href="#dars"><span class="lic">${ICON.clock}</span><span class="tx"><b>Dars tahlil qilinmoqda</b><span>${DS_STAGE[a.status][0]} · tayyor bo'lganda Telegram'ga xabar keladi</span></span><span class="go">${ICON.chev}</span></a>`;
   if (last && !rsIsPhoto(last)) { const n = last.analysis.mistakes.length, dn = dsDone(last); if (n && dn < n) return `<a class="cls dsc" href="#dars-${last.id}"><span class="lic">${ICON.pen}</span><span class="tx"><b>Dars tahlili: ${esc(last.analysis.headline)}</b><span>${dn ? `${dn}/${n} qayta yozildi · davom eting` : `Xatolarni qayta yozing · ~${Math.max(3, Math.round(n * .6))} daqiqa`}</span></span><span class="go">${ICON.chev}</span></a>`; return ""; }
-  if (clsDays().includes(d.getDay()) && !DS.list.some(x => x.day === today() && x.status !== "uploading" && x.status !== "cancelled") && !rsSkipped()) return rsCard();
+  /* the «Darsdan doska rasmi bormi?» prompt (rsCard) no longer shows on Bugun: photos and recordings start from «Dars tahlili» */
   return "";
 }
 
@@ -2946,7 +3206,7 @@ route(/^$/, () => {
     <button class="pill" id="kursb" data-k="lvl" aria-haspopup="dialog" aria-label="Darajani o'zgartirish: ${esc(lv.t)}"><span>${esc(lv.t)}</span><span class="dn">${ICON.down}</span></button>${lvReady ? `<button class="pill" id="unitb" data-k="unit" aria-haspopup="dialog" aria-label="Unitni o'zgartirish"><span>${S.course ? "Unit " + un(cu.n) : "Unitni tanlang"}</span><span class="dn">${ICON.down}</span></button>` : ""}
   </div>${meBtn()}</div>
   <div class="stack">
-    ${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}${darsCard()}${goalCard()}
+    ${lvReady && !askUnit && !lv.zero ? soyaCard() : ""}${syncWarnCard()}${msCard(mast)}${lostCard()}${seen < 10 && !lv.zero ? guideCard(seen) : ""}${lvReady && !askUnit ? classCard(cu) : ""}${darsCard()}
     <div class="lcol">${lv.zero ? zeroCard() : !lvReady ? emptyLevelCard(lv) : askUnit ? `<section class="lesson ask-unit">
       <h2>Kursingizni tanlang</h2>
       <p class="uz">Navigate (Oxford) darajasi va kursda qaysi unitdasiz — bugungi reja shunga qarab tuziladi. Keyin yuqoridagi tugmadan o'zgartirasiz.</p>
@@ -2988,11 +3248,12 @@ route(/^$/, () => {
   bindInstall();
   app.querySelectorAll(".tl button:not([disabled])").forEach(b => b.onclick = () => plan[+b.dataset.i].run());
   if (shOn()) bindSceneHome(cu.n);
+  bindSoyaHome();
   bindGoal();
   if (app.classList.contains("hin")) countUp(app);
 });
 
-const APP_V = "202611260130";
+const APP_V = "202611261833";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();

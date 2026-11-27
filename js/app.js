@@ -3215,7 +3215,7 @@ route(/^$/, () => {
       <div class="ugrid" role="group" aria-labelledby="ul">${readyUnits().map(n => `<button data-u="${n}"${!cu.fresh && cu.n === n ? ' class="guess"' : ""}><b>${un(n)}</b><span>${esc(UNIT_INFO[n][1])}</span></button>`).join("")}${soonUnits()}</div>
     </section>` : shOn() ? sceneHome3(cu.n) : lessonCard(cu, st, info, plan, done, left, mins)}
     ${lv.zero || (lvReady && !askUnit) ? "" : felCard() + ibCard() + hikCard()}</div>
-    <div class="side">${streakCard(streak)}
+    <div class="side">${streakCard(streak)}${window.YUTUQ && !lv.zero ? YUTUQ.rowHTML(yuDeps()) : ""}
     ${seen >= 10 && !lv.zero ? guideCard(seen) : ""}
     ${weekCard()}
     ${retCard()}
@@ -3253,9 +3253,10 @@ route(/^$/, () => {
   if (app.classList.contains("hin")) countUp(app);
   const skm = $("#skmedal"); if (skm) skm.onclick = () => mdlQuick(skm);
   const due = mdlDue(); if (due) mdlHome(due);
+  else if (window.YUTUQ && S.streak.last === today()) setTimeout(() => { if (curH === "" && !(window.MEDAL && MEDAL.isOpen())) YUTUQ.daily(yuDeps()); }, app.classList.contains("hin") ? 900 : 400);
 });
 
-const APP_V = "202611271214";
+const APP_V = "202611271300";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4590,6 +4591,23 @@ function mdlHome(n) {
   }, app.classList.contains("hin") ? 1250 : 500);
 }
 
+/* Yutuqlar — daily summary, every day and medals (js/yutuq.js, variant "B · Yutuqlar") */
+const dayKeyOf = ts => { const d = new Date(ts); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+function yuDeps() {
+  const us = readyUnits(), st = liveStreak();
+  return {
+    app, nav, esc, ICON, today: today(), log: S.log, rest: S.rest || [], streak: st,
+    counts: { seriya: Math.max(S.streak.best || 0, st), soz: WORDS.filter(isMastered).length, unit: us.filter(n => unitStat(n).pct >= 85).length, fel: FEL.filter(v => { const r = felRec(v); return r && (r.b || 0) >= 4; }).length },
+    max: { soz: WORDS.length, unit: us.length, fel: FEL.length },
+    words: k => WORDS.filter(w => { const r = rec(w.id); return r && r.lt && dayKeyOf(r.lt) === k; }).map(w => ({ w: w.w, u: w.u })),
+    share: mdlShare
+  };
+}
+route(/^yutuqlar(?:-(kunlar|medallar))?(?:-(\d{4}-\d{2}-\d{2}))?$/, (tab, day) => {
+  if (!window.YUTUQ) return go("");
+  YUTUQ.page(yuDeps(), tab || (day ? "kunlar" : ""), day);
+});
+
 function streakCard(n) {
   const did = S.streak && S.streak.last === today();
   const mm = window.MEDAL ? MEDAL.lastMilestone(n) : 0, mini = mm >= 7 && !mdlDue();
@@ -4643,6 +4661,7 @@ route(/^yakun$/, () => {
     <a class="btn" href="#">Davom etish</a>
   </div></div>`;
   bindInstall();
+  if (L && L.a) { try { localStorage.setItem("ingliz-kun", JSON.stringify(today())); } catch (e) {} }   // the day-finish screen is today's summary
   const due = mdlDue();   // a milestone day: the medal moment replaces the confetti
   if (due) setTimeout(() => { const sl = $(".ystreak .ysl"); if (curH === "yakun" && sl) mdlOpen(due, true, sl, sl); }, 650);
   else { confetti(); buzz(true); }

@@ -23,6 +23,7 @@ const MASTERY = require("../js/mastery.js");
 const PRONOUNCE = require("../js/pronounce.js");
 const DAVRA = require("../js/davra.js");
 const MEDAL = require("../js/medal.js");
+const YUTUQ = require("../js/yutuq.js");
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HTML = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
@@ -203,6 +204,34 @@ test("js/medal.js: milestones, path and the calendar span of a streak", () => {
   assert.equal(short.start, "2026-11-27");
 });
 
+test("js/yutuq.js: weeks, journal, streak day and medal categories", () => {
+  const W = YUTUQ.weeks("2026-11-28", 12);
+  assert.equal(W.length, 12);
+  assert.equal(W[11][0], "2026-11-23");              // the last column is the week of 28 Nov, Monday first
+  assert.equal(W[11][6], "2026-11-29");
+  assert.equal(W[0][0], "2026-09-07");
+  const log = { "2026-11-28": { a: 40, ok: 36, t: 840 }, "2026-11-27": { a: 20, ok: 10, t: 300 }, "2026-11-25": { a: 5, ok: 5, t: 30 } };
+  const rest = ["2026-11-26"];
+  assert.deepEqual(YUTUQ.day("2026-11-28", log, rest, "2026-11-28", "2026-11-25"), { k: "2026-11-28", st: "on", a: 40, pct: 90, min: 14 });
+  assert.equal(YUTUQ.day("2026-11-26", log, rest, "2026-11-28", "2026-11-25").st, "rest");
+  assert.equal(YUTUQ.day("2026-11-24", log, rest, "2026-11-28", "2026-11-25").st, "pre");
+  assert.equal(YUTUQ.day("2026-11-29", log, rest, "2026-11-28", "2026-11-25").st, "fut");
+  const J = YUTUQ.journal("2026-11-28", 12, log, rest);
+  assert.equal(J.length, 1);                            // nothing before the first practised day
+  assert.equal(J[0].lab, "Shu hafta");
+  assert.deepEqual(J[0].days.map(x => x.k), ["2026-11-28", "2026-11-27", "2026-11-26", "2026-11-25"]);
+  assert.equal(J[0].on, 3);
+  assert.equal(YUTUQ.streakDay("2026-11-28", log, rest), 3);   // the rest day keeps the chain but does not count
+  assert.equal(YUTUQ.dayTitle("2026-11-27"), "Juma, 27-noyabr");
+  const M = YUTUQ.medals({ seriya: 30, soz: 400, unit: 9, fel: 31 }, { soz: 2304, unit: 10, fel: 120 });
+  const by = Object.fromEntries(M.map(c => [c.id, c]));
+  assert.equal(by.seriya.got, 3); assert.equal(by.seriya.next, 60); assert.equal(by.seriya.left, 30);
+  assert.equal(by.soz.got, 4); assert.equal(by.soz.next, 800);
+  assert.deepEqual(by.unit.items.map(x => x.m), [1, 3, 6, 9, 10]);   // the level's last unit closes the list
+  assert.equal(by.unit.next, 10);
+  assert.equal(by.fel.next, 50); assert.equal(by.fel.left, 19);
+});
+
 test("js/davra.js: reordered answers, AI reply cleaning, and the order of the mistake round", () => {
   const w = t => t.toLowerCase().split(" ");
   // A time or place phrase moved to the start or the end may be a correct alternative → shown as "being checked".
@@ -270,7 +299,7 @@ test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match
 });
 
 test("All JS files parse without syntax errors", () => {
-  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/davra.js", "js/medal.js", "js/app.js", "sw.js"]) {
+  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/davra.js", "js/medal.js", "js/yutuq.js", "js/app.js", "sw.js"]) {
     const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
     assert.doesNotThrow(() => new Function(code), `Syntax error in ${rel}`);
   }

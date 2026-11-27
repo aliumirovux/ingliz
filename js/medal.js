@@ -69,18 +69,18 @@
   const miniHTML = (n, id) => `<button class="mdl-mini" type="button"${id ? ` id="${id}"` : ""} aria-label="${n} kunlik medalni ko'rish"><span>${n}</span></button>`;
 
   /* ---- the medal: drawn in CSS, really spins (drag, tap, Enter, arrows) ---- */
-  function medal(host, n, size, back, label) {
+  function medal(host, n, size, back, label, emblem, ringTxt) {
     defs();
     let edges = "";
     for (let i = 0; i < 14; i++) edges += `<div class="mdl-edge" style="--z:${(-6.5 + i).toFixed(1)}px"></div>`;
     // ring text as HTML spans: Chrome does not paint SVG <text> inside a 3D-transformed layer
-    const chars = [...`EASY ENGLISH · ${n} KUN KETMA-KET · EASY ENGLISH · ${n} KUN KETMA-KET · `];
+    const rl = ringTxt || `${n} KUN KETMA-KET`, chars = [...`EASY ENGLISH · ${rl} · EASY ENGLISH · ${rl} · `];
     const ring = chars.map((c, i) => `<span style="transform:rotate(${(i / chars.length * 360).toFixed(2)}deg)">${c === " " ? "&nbsp;" : c}</span>`).join("");
     host.innerHTML = `<div class="mdl-medal" role="button" tabindex="-1" style="--ms:${size}px" aria-label="${label}">
       <div class="mdl-shadow"></div><div class="mdl-float"><div class="mdl-m3d">${edges}
         <div class="mdl-face"><div class="mdl-rim"></div><div class="mdl-bevel"></div><div class="mdl-rt" aria-hidden="true">${ring}</div><div class="mdl-enamel"></div>
-          <svg class="mdl-emb" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6c1.1 3.7 5.4 5.9 5.4 10.8a5.4 5.4 0 0 1-10.8.3c0-2.6 1.5-4.1 2.7-5.4.3 1.7 1.1 2.8 2.1 3.3-.2-3.1-1-5.9.6-9Z" fill="rgba(70,20,5,.45)" transform="translate(.25 .45)"/><path d="M12 2.6c1.1 3.7 5.4 5.9 5.4 10.8a5.4 5.4 0 0 1-10.8.3c0-2.6 1.5-4.1 2.7-5.4.3 1.7 1.1 2.8 2.1 3.3-.2-3.1-1-5.9.6-9Z" fill="url(#mdl-silv)" stroke="rgba(120,60,30,.35)" stroke-width=".25"/><path d="M12 3.6c.9 2.6 3.6 4.4 4.4 7.2-1.4-2.4-3.6-3.6-4.4-7.2Z" fill="url(#mdl-silvE)"/></svg>
-          <div class="mdl-n${n > 99 ? " w3" : ""}" aria-hidden="true">${n}</div><div class="mdl-glint"></div></div>
+${emblem ? `<div class="mdl-emi" aria-hidden="true">${emblem}</div><div class="mdl-enm${String(n).length > 3 ? " w4" : ""}" aria-hidden="true">${n}</div>` : `<svg class="mdl-emb" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6c1.1 3.7 5.4 5.9 5.4 10.8a5.4 5.4 0 0 1-10.8.3c0-2.6 1.5-4.1 2.7-5.4.3 1.7 1.1 2.8 2.1 3.3-.2-3.1-1-5.9.6-9Z" fill="rgba(70,20,5,.45)" transform="translate(.25 .45)"/><path d="M12 2.6c1.1 3.7 5.4 5.9 5.4 10.8a5.4 5.4 0 0 1-10.8.3c0-2.6 1.5-4.1 2.7-5.4.3 1.7 1.1 2.8 2.1 3.3-.2-3.1-1-5.9.6-9Z" fill="url(#mdl-silv)" stroke="rgba(120,60,30,.35)" stroke-width=".25"/><path d="M12 3.6c.9 2.6 3.6 4.4 4.4 7.2-1.4-2.4-3.6-3.6-4.4-7.2Z" fill="url(#mdl-silvE)"/></svg>
+          <div class="mdl-n${n > 99 ? " w3" : ""}" aria-hidden="true">${n}</div>`}<div class="mdl-glint"></div></div>
         <div class="mdl-face mdl-back"><div class="mdl-rim"></div><div class="mdl-bdisc"></div><div class="mdl-btxt">${back}</div><div class="mdl-glint"></div></div>
       </div></div></div>`;
     const el = host.querySelector(".mdl-medal"), m3d = host.querySelector(".mdl-m3d"), flo = host.querySelector(".mdl-float");
@@ -170,9 +170,9 @@
     const win = streakWindow(streak, today, o.log, o.rest);
     const next = nextMilestone(streak), path = pathAround(streak), short = innerHeight < 780;
     const restTxt = win.rest === 1 ? " — bitta dam olish kuni bilan." : win.rest > 1 ? ` — ${win.rest} ta dam olish kuni bilan.` : ".";
-    const title = o.story ? `${n} kun ketma-ket!` : `${n} kunlik medal`;
-    const lead = o.story ? `${uzDate(win.start)}dan beri seriyani uzmadingiz${restTxt}` : `Hozir ${streak} kun ketma-ket.${next ? ` Keyingi medalgacha ${next - streak} kun qoldi.` : ""}`;
-    const back = `<div class="mdl-bn">${n}</div><div class="mdl-bk">KUN KETMA-KET</div>${o.story ? `<div class="mdl-bd">${dotDate(win.start)} — ${dotDate(today, 1)}</div><hr><div class="mdl-bs">${win.practice} mashq kuni${win.rest ? `<br>${win.rest} dam olish kuni` : ""}</div>` : `<hr><div class="mdl-bs">Seriya: ${streak} kun</div>`}`;
+    const title = o.title || (o.story ? `${n} kun ketma-ket!` : `${n} kunlik medal`);
+    const lead = o.lead != null ? o.lead : o.story ? `${uzDate(win.start)}dan beri seriyani uzmadingiz${restTxt}` : `Hozir ${streak} kun ketma-ket.${next ? ` Keyingi medalgacha ${next - streak} kun qoldi.` : ""}`;
+    const back = o.back || `<div class="mdl-bn">${n}</div><div class="mdl-bk">KUN KETMA-KET</div>${o.story ? `<div class="mdl-bd">${dotDate(win.start)} — ${dotDate(today, 1)}</div><hr><div class="mdl-bs">${win.practice} mashq kuni${win.rest ? `<br>${win.rest} dam olish kuni` : ""}</div>` : `<hr><div class="mdl-bs">Seriya: ${streak} kun</div>`}`;
 
     /* calendar: Monday-first weeks of the streak, at most the last five weeks */
     let days = win.days; if (days.length > 35) days = days.slice(-35);
@@ -208,15 +208,15 @@
         <div class="mdl-slot"><span class="mdl-cap">${cap}</span><span class="mdl-hint">${IC.spin}Aylantirish uchun suring</span></div>
         <h2 class="mdl-h mdl-rev" id="mdl-h" tabindex="-1">${title}</h2>
         <p class="mdl-lead mdl-rev" id="mdl-lead">${lead}</p>
-        <section class="mdl-path mdl-rev" aria-labelledby="mdl-pt"><h3 id="mdl-pt">${next ? "Keyingi marra" : "Marralar"}</h3><ol class="mdl-ms" style="--cols:${path.length};--fill:${(Math.max(0, ci) / path.length * 100).toFixed(1)}%">${items}</ol>${nextTxt}</section>
+        ${o.nextHTML ? `<section class="mdl-path mdl-rev">${o.nextHTML}</section>` : `<section class="mdl-path mdl-rev" aria-labelledby="mdl-pt"><h3 id="mdl-pt">${next ? "Keyingi marra" : "Marralar"}</h3><ol class="mdl-ms" style="--cols:${path.length};--fill:${(Math.max(0, ci) / path.length * 100).toFixed(1)}%">${items}</ol>${nextTxt}</section>`}
       </div>
-      <div class="mdl-acts mdl-rev"><button class="mdl-btn mdl-pri" type="button" data-mdl="go">Davom etish</button><button class="mdl-btn mdl-sec" type="button" data-mdl="sh">${IC.share}Ulashish</button></div>
+      <div class="mdl-acts mdl-rev"><button class="mdl-btn mdl-pri" type="button" data-mdl="go">${o.primary || "Davom etish"}</button><button class="mdl-btn mdl-sec" type="button" data-mdl="sh">${IC.share}Ulashish</button></div>
       <div class="sr-only" aria-live="polite"></div>`;
     document.body.appendChild(ov);
     const $ = s => ov.querySelector(s), live = $("[aria-live]"), say = t => { live.textContent = ""; setTimeout(() => { live.textContent = t; }, 60); };
     const hold = $(".mdl-hold"), fx = sparks($(".mdl-fx"));
-    const M = medal(hold, n, short ? 140 : 188, back, `${n} kunlik medal. Aylantirish uchun suring yoki Enter bosing.`);
-    M.onSide(s => say(s ? `Medalning orqa tomoni. ${n} kun ketma-ket.${o.story ? ` ${uzDate(win.start)}dan ${uzDate(today)}gacha, ${win.practice} mashq kuni${win.rest ? ", " + win.rest + " dam olish kuni" : ""}.` : ""}` : "Medalning old tomoni."));
+    const M = medal(hold, n, short ? 140 : 188, back, `${title}. Aylantirish uchun suring yoki Enter bosing.`, o.emblem, o.ring);
+    M.onSide(s => say(s ? `Medalning orqa tomoni. ${o.title || n + " kun ketma-ket"}.${o.story ? ` ${uzDate(win.start)}dan ${uzDate(today)}gacha, ${win.practice} mashq kuni${win.rest ? ", " + win.rest + " dam olish kuni" : ""}.` : ""}` : "Medalning old tomoni."));
     M.onTouch(() => $(".mdl-hint").classList.add("gone"));
 
     /* page behind: inert, no scroll */
@@ -229,7 +229,7 @@
     const ui = base => {
       ov.querySelectorAll(".mdl-rev").forEach((e, i) => later(() => e.classList.add("in"), base + i * 100));
       later(() => $(".mdl-hint").classList.add("on"), base + 150);
-      later(() => { state = "open"; ov.classList.add("ui"); M.live(true); M.idle(true); $("#mdl-h").focus({ preventScroll: true }); say(o.story ? `${n} kun ketma-ket! Yangi medal olindi.${next ? ` Keyingi marra: ${next} kun, ${next - streak} kun qoldi.` : ""}` : `${n} kunlik medal.`); }, base + 300);
+      later(() => { state = "open"; ov.classList.add("ui"); M.live(true); M.idle(true); $("#mdl-h").focus({ preventScroll: true }); say(o.story ? `${n} kun ketma-ket! Yangi medal olindi.${next ? ` Keyingi marra: ${next} kun, ${next - streak} kun qoldi.` : ""}` : `${title}.`); }, base + 300);
     };
     requestAnimationFrame(() => ov.classList.add("open"));
     M.idle(false);
@@ -286,7 +286,7 @@
     }
     ov.querySelector(".mdl-x").onclick = () => close();
     ov.querySelector('[data-mdl="go"]').onclick = () => close();
-    ov.querySelector('[data-mdl="sh"]').onclick = () => o.onShare && o.onShare(`Easy English'da ${n} kun ketma-ket ingliz tilini mashq qildim!`);
+    ov.querySelector('[data-mdl="sh"]').onclick = () => o.onShare && o.onShare(o.shareText || `Easy English'da ${n} kun ketma-ket ingliz tilini mashq qildim!`);
     ov.addEventListener("keydown", e => {
       if (e.key === "Escape") { e.preventDefault(); close(); return; }
       if (e.key !== "Tab") return;
@@ -299,5 +299,5 @@
     return OPEN;
   }
 
-  root.MEDAL = Object.assign({}, core, { open, miniHTML, isOpen: () => !!OPEN });
+  root.MEDAL = Object.assign({}, core, { open, miniHTML, defs, isOpen: () => !!OPEN });
 })(typeof globalThis !== "undefined" ? globalThis : window);

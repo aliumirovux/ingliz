@@ -3251,9 +3251,11 @@ route(/^$/, () => {
   bindSoyaHome();
   bindGoal();
   if (app.classList.contains("hin")) countUp(app);
+  const skm = $("#skmedal"); if (skm) skm.onclick = () => mdlQuick(skm);
+  const due = mdlDue(); if (due) mdlHome(due);
 });
 
-const APP_V = "202611261833";
+const APP_V = "202611271214";
 let updAt = 0, updShown = false;
 function checkUpdate() {
   if (!/^(www\.)?easywords\.uz$|github\.io$/.test(location.hostname) || updShown || Date.now() - updAt < 6e5) return; updAt = Date.now();
@@ -4554,10 +4556,45 @@ HOME_WIDE.addEventListener("change", () => { if (app.classList.contains("home"))
   addEventListener("scroll", hide, { passive: true }); addEventListener("hashchange", hide);
 })();
 
+/* Seriya medali — the milestone moment lives in js/medal.js (variant "B · Yo'l") */
+const MDL_KEY = "ingliz-medal";
+const mdlSeen = () => { try { return JSON.parse(localStorage.getItem(MDL_KEY) || "{}") || {}; } catch (e) { return {}; } };
+// The milestone reached today that has not been celebrated on this device yet (0 if none).
+function mdlDue() {
+  if (!window.MEDAL) return 0;
+  const n = liveStreak(), s = mdlSeen();
+  return S.streak.last === today() && MEDAL.isMilestone(n) && !(s.n === n && s.d === today()) ? n : 0;
+}
+function mdlShare(text) {
+  const url = "https://easywords.uz";
+  if (navigator.share) { navigator.share({ text, url }).catch(() => {}); return; }
+  (navigator.clipboard ? navigator.clipboard.writeText(text + " " + url) : Promise.reject())
+    .then(() => toast("Matn nusxalandi", null, null, { sub: "Telegramga joylashingiz mumkin" }), () => toast("Nusxalab bo'lmadi", null, null, { type: "warn" }));
+}
+function mdlOpen(n, story, from, slot) {
+  if (!window.MEDAL || MEDAL.isOpen()) return;
+  if (story) { try { localStorage.setItem(MDL_KEY, JSON.stringify({ n, d: today() })); } catch (e) {} }
+  MEDAL.open({ n, streak: liveStreak(), story, from, slot, log: S.log, rest: S.rest, today: today(), miniId: slot && slot.closest(".skc") ? "skmedal" : "",
+    onShare: mdlShare, buzz: () => buzz(true), onMini: b => { b.onclick = () => mdlQuick(b); } });
+}
+// Tap on the small medal: the medal opens straight away, without the calendar.
+function mdlQuick(btn) { const n = window.MEDAL ? MEDAL.lastMilestone(liveStreak()) : 0; if (n) mdlOpen(n, false, btn, btn.parentElement); }
+// Home page: let the count-up finish, bring the streak card into view, then play the moment from its flame.
+function mdlHome(n) {
+  setTimeout(() => {
+    const card = app.querySelector(".skc"), fl = card && card.querySelector(".fl");
+    if (curH !== "" || !fl || mdlDue() !== n) return;
+    const rm = matchMedia("(prefers-reduced-motion: reduce)").matches, r = card.getBoundingClientRect();
+    const off = r.top < 0 || r.bottom > innerHeight; if (off) card.scrollIntoView({ block: "center", behavior: rm ? "auto" : "smooth" });
+    setTimeout(() => { if (curH === "" && fl.isConnected) mdlOpen(n, true, fl, fl); }, off && !rm ? 520 : 60);
+  }, app.classList.contains("hin") ? 1250 : 500);
+}
+
 function streakCard(n) {
   const did = S.streak && S.streak.last === today();
+  const mm = window.MEDAL ? MEDAL.lastMilestone(n) : 0, mini = mm >= 7 && !mdlDue();
   const sub = n ? did ? "Ertaga qaytsangiz — " + (n + 1) + " kun" : "Bugun darsni tugatsangiz — " + (n + 1) + " kun" : "Darsni oxirigacha qilgan kun olov yonadi";
-  return `<section class="skc"><div class="sh"><span class="fl">${ICON.flame}</span><span class="tx"><b>${n ? `<span data-c="${n}">${n}</span> kun ketma-ket` : "Seriyani boshlang"}</b><span>${sub}</span></span></div><div class="week" aria-label="Shu hafta">${weekDays()}</div>${spkCard()}</section>`;
+  return `<section class="skc"><div class="sh"><span class="fl">${mini ? MEDAL.miniHTML(mm, "skmedal") : ICON.flame}</span><span class="tx"><b>${n ? `<span data-c="${n}">${n}</span> kun ketma-ket` : "Seriyani boshlang"}</b><span>${sub}</span></span></div><div class="week" aria-label="Shu hafta">${weekDays()}</div>${spkCard()}</section>`;
 }
 
 function weekDays() {
@@ -4597,7 +4634,7 @@ route(/^yakun$/, () => {
     : !L || !L.a ? "Bugungi dars tugadi." : pct >= 85 ? `Ajoyib natija: ${L.ok} ta to'g'ri javob.` : pct >= 60 ? `Yaxshi ish: ${L.ok} ta to'g'ri javob. Xatolar ertaga yana so'raladi.` : "Muhimi — bugun ham mashq qildingiz. Xato so'zlar ertaga yana so'raladi.";
   app.innerHTML = `<div class="yk">${MASCOT}<h1 class="done-h">Barakalla!</h1><p class="sub yk-sub">${line}</p>
   <div class="stack">
-    <div class="ystreak">${FLAME}<span class="tx"><b>${streak ? streak + " kun ketma-ket" : "Seriya ertaga boshlanadi"}</b><span>${streak ? "Ertaga qaytsangiz — " + (streak + 1) + " kun." + rec : "Darsni oxirigacha qilgan har kun olovni yoqadi."}${rl > 0 ? " Bu hafta yana " + rl + " ta dam olish kuni bor." : ""}</span></span></div>
+    <div class="ystreak"><span class="ysl">${FLAME}</span><span class="tx"><b>${streak ? streak + " kun ketma-ket" : "Seriya ertaga boshlanadi"}</b><span>${streak ? "Ertaga qaytsangiz — " + (streak + 1) + " kun." + rec : "Darsni oxirigacha qilgan har kun olovni yoqadi."}${rl > 0 ? " Bu hafta yana " + rl + " ta dam olish kuni bor." : ""}</span></span></div>
     <div class="week yweek" aria-label="Shu hafta">${weekDays()}</div>
     ${L && L.a ? `<div class="ytiles"><div><b>${L.a}</b><span>ta javob</span></div><div><b>${pct}%</b><span>to'g'ri</span></div><div><b>${mins}</b><span>daqiqa</span></div></div>` : ""}
     <div class="list"><a class="li" href="#unit-${cu.n}"><span class="tx"><b>Unit ${un(cu.n)}</b><span>${esc(UNIT_INFO[cu.n][0])}</span></span><span class="st">${st.pct}%</span><span class="go">${ICON.chev}</span></a><div class="li"><span class="tx"><b>Mustahkam so'zlar</b></span><span class="st">${WORDS.filter(isMastered).length}</span></div></div>
@@ -4606,7 +4643,9 @@ route(/^yakun$/, () => {
     <a class="btn" href="#">Davom etish</a>
   </div></div>`;
   bindInstall();
-  confetti(); buzz(true);
+  const due = mdlDue();   // a milestone day: the medal moment replaces the confetti
+  if (due) setTimeout(() => { const sl = $(".ystreak .ysl"); if (curH === "yakun" && sl) mdlOpen(due, true, sl, sl); }, 650);
+  else { confetti(); buzz(true); }
 });
 
 route(/^talaffuz$/, () => {

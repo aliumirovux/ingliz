@@ -22,6 +22,7 @@ const FSRS = require("../js/fsrs.js");
 const MASTERY = require("../js/mastery.js");
 const PRONOUNCE = require("../js/pronounce.js");
 const DAVRA = require("../js/davra.js");
+const MEDAL = require("../js/medal.js");
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const HTML = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
@@ -176,6 +177,32 @@ test("js/pronounce.js: packs structure and speech evaluation (target vs confusab
   assert.deepEqual(PRONOUNCE.evaluate("hello", "think", "sink"), { ok: false, confused: false, heard: "hello" });
 });
 
+test("js/medal.js: milestones, path and the calendar span of a streak", () => {
+  assert.equal(MEDAL.isMilestone(30), true);
+  assert.equal(MEDAL.isMilestone(31), false);
+  assert.equal(MEDAL.lastMilestone(6), 0);
+  assert.equal(MEDAL.lastMilestone(45), 30);
+  assert.equal(MEDAL.nextMilestone(30), 60);
+  assert.equal(MEDAL.nextMilestone(400), 0);
+  assert.deepEqual(MEDAL.pathAround(30), [7, 14, 30, 60, 100]);
+  assert.deepEqual(MEDAL.pathAround(7), [7, 14, 30, 60, 100]);
+  assert.deepEqual(MEDAL.pathAround(365), [60, 100, 150, 200, 365]);
+  assert.equal(MEDAL.uzDate("2026-10-30"), "30-oktabr");
+  // 30 practice days ending 28 Nov with one rest day (26 Nov) inside: the span starts on 29 Oct.
+  const log = {};
+  for (let i = 0; i < 31; i++) { const k = MEDAL.addTo("2026-11-28", -i); if (k !== "2026-11-26") log[k] = { a: 5, t: 600 }; }
+  const w = MEDAL.streakWindow(30, "2026-11-28", log, ["2026-11-26"]);
+  assert.equal(w.practice, 30);
+  assert.equal(w.rest, 1);
+  assert.equal(w.start, "2026-10-29");
+  assert.equal(w.days.length, 31);
+  assert.equal(w.days[w.days.length - 1].min, 10);
+  // A gap with no practice and no rest ends the span.
+  const short = MEDAL.streakWindow(7, "2026-11-28", { "2026-11-28": { a: 1 }, "2026-11-27": { a: 1 } }, []);
+  assert.equal(short.practice, 2);
+  assert.equal(short.start, "2026-11-27");
+});
+
 test("js/davra.js: reordered answers, AI reply cleaning, and the order of the mistake round", () => {
   const w = t => t.toLowerCase().split(" ");
   // A time or place phrase moved to the start or the end may be a correct alternative → shown as "being checked".
@@ -243,7 +270,7 @@ test("All versioned assets (?v=HASH) in index.html and js/app.js exist and match
 });
 
 test("All JS files parse without syntax errors", () => {
-  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/davra.js", "js/app.js", "sw.js"]) {
+  for (const rel of ["data/stories.js", "data/pictures.js", "js/state.js", "js/fsrs.js", "js/mastery.js", "js/pronounce.js", "js/davra.js", "js/medal.js", "js/app.js", "sw.js"]) {
     const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
     assert.doesNotThrow(() => new Function(code), `Syntax error in ${rel}`);
   }
